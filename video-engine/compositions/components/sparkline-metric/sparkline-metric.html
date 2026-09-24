@@ -5,15 +5,11 @@
   A single full-bleed metric card: a label, a big current-value number that
   counts up, and an animated SVG sparkline line that draws itself across
   the card in sync. Generalizes kpi-cluster.html's count-up-via-onUpdate-
-  proxy technique to a single hero metric, and adds a real SVG path-draw
-  animation (stroke-dasharray/dashoffset driven by the path's own
-  getTotalLength(), never a guessed length) as the standard clean approach
-  for line-chart-style reveals in this library.
+  proxy technique to a single hero metric, and reveals a continuous SVG
+  path through a viewBox clip so non-scaling strokes stay unbroken.
 
   The path's `d` attribute is built ONCE from the resolved `points` list
-  (normalized into the sparkline viewBox) and its length measured ONCE via
-  getTotalLength() BEFORE the GSAP timeline is built -- matching this
-  library's "build/measure, then animate" ordering rule.
+  (normalized into the sparkline viewBox) before the GSAP timeline is built.
 
   MULTI-INSTANCE PATTERN: one fixed literal id ("sparkline-metric"); every
   per-instance difference arrives via data-composition-variables +
@@ -112,9 +108,11 @@
             <div class="sm-value" id="sm-value"></div>
             <div class="sm-spark-wrap" id="sm-spark-wrap">
               <svg id="sm-svg" viewBox="0 0 100 40" preserveAspectRatio="none">
+                <clipPath id="sm-reveal"><rect id="sm-reveal-rect" x="0" y="0" width="0" height="40"></rect></clipPath>
                 <path
                   id="sm-path"
                   fill="none"
+                  clip-path="url(#sm-reveal)"
                   stroke="var(--sm-accent, var(--hf-brand, #6ea8fe))"
                   stroke-width="2.4"
                   stroke-linecap="round"
@@ -205,11 +203,9 @@
               .join(" ");
             path.setAttribute("d", d);
 
-            // Measure ONCE via the path's own real geometry -- never a
-            // guessed/assumed length.
-            var totalLength = path.getTotalLength();
-            path.style.strokeDasharray = totalLength;
-            path.style.strokeDashoffset = totalLength;
+            // Reveal the continuous stroke through a viewBox clip. A dash
+            // measured in SVG units breaks into segments under non-scaling-stroke.
+            var revealRect = document.getElementById("sm-reveal-rect");
 
             var lastPoint = coords[coords.length - 1];
             dot.setAttribute("cx", lastPoint[0]);
@@ -251,8 +247,8 @@
             tl.fromTo(card, { opacity: 0, y: 24, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" }, revealAt);
 
             tl.to(
-              path,
-              { strokeDashoffset: 0, duration: drawDur, ease: "power1.inOut" },
+              revealRect,
+              { attr: { width: 100 }, duration: drawDur, ease: "power1.inOut" },
               revealAt + 0.15
             );
 

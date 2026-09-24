@@ -236,6 +236,9 @@
 
                 var lines = document.createElement("div");
                 lines.className = "sl-lines";
+                // Reserve the resolved two-line height before the absolute
+                // text overlay is shown; skeleton bars alone are shorter.
+                lines.style.minHeight = titleFontCqmin * 2.6 + "cqmin";
                 var barWide = document.createElement("div");
                 barWide.className = "sl-bar wide";
                 var wideShimmer = document.createElement("div");

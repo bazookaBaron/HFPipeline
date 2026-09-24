@@ -85,6 +85,7 @@ async function main() {
   const mascotOn = bool(args.mascot, true);
   const brandHandle = typeof args.handle === "string" ? args.handle : "";
   const accentColor = typeof args.accent === "string" ? args.accent : "#6ea8fe";
+  const reuseVoice = bool(args["reuse-voice"], false);
 
   const metrics = createRunMetrics({ runId, metricsPath: `${outPath}.metrics.json`, config: { contract: "v2", storyboard: sbPath, speed, ttsSpeed, captionsOn, sfxOn, mascotOn } });
   const die = (stage, message, err) => {
@@ -117,8 +118,17 @@ async function main() {
     const s = storyboard.sentences[i];
     const audioPath = path.join(assetsDir, `s${i + 1}.wav`);
     const timingPath = path.join(assetsDir, `s${i + 1}.timing.json`);
+    const textPath = path.join(assetsDir, `s${i + 1}.txt`);
+    const key = JSON.stringify({ text: s.text, ttsSpeed });
+    // --reuse-voice: skip synthesis only when this exact sentence text + speed was already voiced.
+    if (reuseVoice && fs.existsSync(audioPath) && fs.existsSync(timingPath) && fs.existsSync(textPath) && fs.readFileSync(textPath, "utf-8") === key) {
+      clips.push({ audioPath, durationSeconds: probeDurationSeconds(audioPath), words: JSON.parse(fs.readFileSync(timingPath, "utf-8")) });
+      log(`reused voice for ${s.id}`);
+      continue;
+    }
     try {
       const synth = await synthesizeScene({ genText: s.text, outAudio: audioPath, outTiming: timingPath, speed: ttsSpeed, log });
+      fs.writeFileSync(textPath, key, "utf-8");
       clips.push({ audioPath, durationSeconds: synth.durationSeconds, words: JSON.parse(fs.readFileSync(timingPath, "utf-8")) });
     } catch (err) {
       return die("voice", `voice failed for ${s.id}: ${err.message}`, err);
@@ -172,7 +182,7 @@ async function main() {
   fs.mkdirSync(path.dirname(compositionPath), { recursive: true });
   fs.writeFileSync(
     compositionPath,
-    buildComposition({ runId, scenes, accentColor, brandHandle, captionsOn, sfxOn, mascotOn, hudStates: [], theme: "dark", topicCategory: "", narrationRelPath: narrationRel }),
+    buildComposition({ runId, scenes, accentColor, brandHandle, captionsOn, sfxOn, mascotOn, hudStates: [], theme: "dark", topicCategory: "", narrationRelPath: narrationRel, captionStyle: "v2", layout: "v2" }),
     "utf-8"
   );
   log(`composition -> ${compositionPath}; timeline -> ${timelinePath}`);

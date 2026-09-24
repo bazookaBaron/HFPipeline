@@ -168,12 +168,117 @@ function buildCaptionsComposition(phrases, totalDuration, safeAccent) {
       </div>`;
 }
 
+/**
+ * v2 captions -- the reference caption system, measured on R1/R2 full-res frames: one line of
+ * ~3 words in a box centred at 77.0% of frame height (box ~115 px tall + ~8 px hard offset
+ * shadow in the accent colour, light border, ~60 px bold glyphs), karaoke colouring
+ * (spoken = white, current word = accent, upcoming = grey), chunks handing over in one frame
+ * with no blank gap between them.
+ * Fully seek-safe: every phrase is pre-built as its own element and every change is a
+ * reversible tl.set (the v1 captions swap text with tl.call, which a direct seek cannot
+ * guarantee to replay).
+ */
+function buildCaptionsV2(words, totalDuration, safeAccent) {
+  if (!words.length) return "";
+  const phrases = [];
+  for (let i = 0; i < words.length; i += CAPTION_WORDS_PER_GROUP) {
+    const g = words.slice(i, i + CAPTION_WORDS_PER_GROUP);
+    phrases.push({ words: g.map((w) => ({ t: String(w.word || w.text || "").trim(), s: w.start })), start: g[0].start, end: g[g.length - 1].end });
+  }
+  // Hand over directly to the next phrase; only hide when the pause is long (> 0.6 s).
+  phrases.forEach((p, i) => {
+    const next = phrases[i + 1];
+    p.hide = next ? (next.start - p.end > 0.6 ? p.end + 0.3 : null) : Math.min(totalDuration, p.end + 0.5);
+  });
+  const json = JSON.stringify(phrases).replace(/</g, "\u003c");
+  return `      <div
+        id="captions-comp"
+        data-composition-id="captions"
+        data-start="0"
+        data-duration="${totalDuration.toFixed(3)}"
+        data-width="1080"
+        data-height="1920"
+        data-track-index="5"
+        data-timeline-role="captions"
+        data-caption-root="true"
+      >
+        <style>
+          #captions-comp { position: absolute; inset: 0; pointer-events: none; }
+          #captions-comp .cap2 {
+            position: absolute;
+            left: 50%;
+            top: 77%;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            padding: 20px 34px 22px;
+            font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            line-height: 1.1;
+            background: #07090c;
+            border: 3px solid rgba(236, 240, 246, 0.92);
+            border-radius: 3px;
+            box-shadow: 8px 8px 0 0 ${safeAccent};
+            opacity: 0;
+          }
+          #captions-comp .cap2 span { color: #7d8594; }
+          #captions-comp .cap2 span[data-s="now"] { color: ${safeAccent}; }
+          #captions-comp .cap2 span[data-s="past"] { color: #ffffff; }
+        </style>
+        <script>
+          (function () {
+            "use strict";
+            var PHRASES = ${json};
+            var root = document.getElementById("captions-comp");
+            var FAMILY = "Inter, ui-sans-serif, system-ui, sans-serif";
+            var capTl = gsap.timeline({ paused: true });
+            PHRASES.forEach(function (p, pi) {
+              var line = document.createElement("div");
+              line.className = "cap2";
+              var text = p.words.map(function (w) { return w.t; }).join(" ");
+              // One line, never wider than 88% of the frame: shrink from the reference 60px.
+              var size = 60;
+              if (window.HFTextFit) {
+                while (size > 34 && HFTextFit.measure(text, 800, size, FAMILY) > 1080 * 0.88 - 68) size -= 2;
+              }
+              line.style.fontSize = size + "px";
+              var spans = p.words.map(function (w, wi) {
+                var sp = document.createElement("span");
+                sp.textContent = w.t;
+                line.appendChild(sp);
+                if (wi < p.words.length - 1) line.appendChild(document.createTextNode(" "));
+                return sp;
+              });
+              root.appendChild(line);
+              capTl.set(line, { opacity: 1 }, p.start);
+              var next = PHRASES[pi + 1];
+              var off = p.hide != null ? p.hide : next.start;
+              capTl.set(line, { opacity: 0 }, off);
+              spans.forEach(function (sp, wi) {
+                capTl.set(sp, { attr: { "data-s": "now" } }, p.words[wi].s);
+                if (wi + 1 < spans.length) capTl.set(sp, { attr: { "data-s": "past" } }, p.words[wi + 1].s);
+              });
+            });
+            capTl.set({}, {}, ${totalDuration.toFixed(3)});
+            window.__timelines = window.__timelines || {};
+            window.__timelines["captions"] = capTl;
+          })();
+        </script>
+      </div>`;
+}
+
 /** Persistent host-character layer. Corner-positioned (see file header for why), one calm
  * entrance animation then static -- per this project's own motion-doctrine skill, a
  * "ban on idle wobble": a persistent character should not gratuitously bob/breathe just to
  * look alive; it should perform a real motion once (the entrance) and then hold, the same
  * discipline every other component in this library already follows. */
-function buildMascot(totalDuration) {
+function buildMascot(totalDuration, layout) {
+  // v2 layout = the reference placement (R1/R2/R4: character in a left column, x 0-27%,
+  // y ~28-72%); v1 keeps the small bottom-left corner sticker.
+  const v2Css =
+    layout === "v2"
+      ? `#mascot-comp .mascot-img { left: 1.5%; bottom: auto; top: 49%; width: 24%; }`
+      : "";
   return `      <div
         id="mascot-comp"
         data-composition-id="mascot"
@@ -202,6 +307,7 @@ function buildMascot(totalDuration) {
             opacity: 0;
             filter: drop-shadow(0 8px 18px rgba(0,0,0,0.5));
           }
+          ${v2Css}
         </style>
         <img class="mascot-img" id="mascot-img" src="assets/mascot/spongebob.svg" alt="" />
         <script>
@@ -397,7 +503,13 @@ function buildAnimationSfxTags(composedScenes) {
  *
  * @param {{at:number, label?:string, statusText?:string, statusColor?:string, metric?:string}[]} hudStates
  */
-function buildStatusHud(hudStates, totalDuration, safeAccent, defaultLabel) {
+function buildStatusHud(hudStates, totalDuration, safeAccent, defaultLabel, layout) {
+  // v2: the reference HUD is an inset rounded bar sitting inside the safe band (R1 ~17-19%,
+  // R2 ~13-15% of frame height), not a full-width strip under the platform's own top chrome.
+  const v2Css =
+    layout === "v2"
+      ? `#hud-comp .hud-bar { top: 214px; left: 4%; right: 4%; height: 64px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.10); }`
+      : "";
   const states =
     hudStates && hudStates.length
       ? hudStates
@@ -451,6 +563,7 @@ function buildStatusHud(hudStates, totalDuration, safeAccent, defaultLabel) {
             display: inline-block;
           }
           #hud-comp .hud-metric { color: #9aa1ad; font-size: 18px; white-space: nowrap; flex: 0 0 auto; }
+          ${v2Css}
         </style>
         <div class="hud-bar" id="hud-bar">
           <div class="hud-left">
@@ -473,10 +586,14 @@ function buildStatusHud(hudStates, totalDuration, safeAccent, defaultLabel) {
               metricEl.textContent = s.metric || "";
             }
             var hudTl = gsap.timeline({ paused: true });
-            hudTl.call(applyState, [STATES[0]], 0);
+            // Baseline state applied directly; later states are reversible tl.set calls (a
+            // tl.call cannot be undone by a backward seek, nor guaranteed on a direct seek).
+            applyState(STATES[0]);
             hudTl.fromTo("#hud-bar", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 0);
             for (var i = 1; i < STATES.length; i++) {
-              hudTl.call(applyState, [STATES[i]], STATES[i].at);
+              hudTl.set(labelEl, { textContent: STATES[i].label || "" }, STATES[i].at);
+              hudTl.set(pillEl, { textContent: STATES[i].statusText || "", color: STATES[i].statusColor || "${safeAccent}" }, STATES[i].at);
+              hudTl.set(metricEl, { textContent: STATES[i].metric || "" }, STATES[i].at);
               hudTl.fromTo(
                 pillEl,
                 { scale: 1 },
@@ -520,6 +637,8 @@ function buildComposition({
   theme,
   topicCategory,
   narrationRelPath,
+  captionStyle,
+  layout,
 }) {
   const totalDuration = scenes.length ? scenes[scenes.length - 1].start + scenes[scenes.length - 1].durationSeconds : 0;
 
@@ -571,7 +690,15 @@ function buildComposition({
   // (no horizontal clip; the complaint was vertical only) with a full-bleed bg-filler div
   // behind so the letterboxed strips above/below read as continuous background, not a
   // visible seam -- see bgFillerDiv below.
-  const SAFE_RECT = { top: 210, left: 0, width: 1080, height: 1250 };
+  // v2 (reference) layout: content column to the right of the character column, between the
+  // HUD (214-278 px) and the caption box (centred at 77%, top ~1416 px). Without a mascot the
+  // column spans the full width.
+  const SAFE_RECT =
+    layout === "v2"
+      ? mascotOn === false
+        ? { top: 300, left: 24, width: 1032, height: 1080 }
+        : { top: 300, left: 280, width: 776, height: 1080 }
+      : { top: 210, left: 0, width: 1080, height: 1250 };
 
   const sceneTags = scenes
     .map((s, i) => {
@@ -673,12 +800,14 @@ function buildComposition({
         });
       });
     });
-    const phrases = groupCaptionPhrases(globalWords);
-    captionsBlock = buildCaptionsComposition(phrases, totalDuration, safeAccent);
+    captionsBlock =
+      captionStyle === "v2"
+        ? buildCaptionsV2(globalWords, totalDuration, safeAccent)
+        : buildCaptionsComposition(groupCaptionPhrases(globalWords), totalDuration, safeAccent);
   }
 
-  const mascotBlock = mascotOn === false ? "" : buildMascot(totalDuration);
-  const hudBlock = buildStatusHud(hudStates, totalDuration, safeAccent, brandHandle);
+  const mascotBlock = mascotOn === false ? "" : buildMascot(totalDuration, layout);
+  const hudBlock = buildStatusHud(hudStates, totalDuration, safeAccent, brandHandle, layout);
 
   return `<!doctype html>
 <html lang="en" data-resolution="portrait">

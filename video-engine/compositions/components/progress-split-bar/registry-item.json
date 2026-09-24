@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "progress-split-bar",
+  "type": "hyperframes:component",
+  "title": "Progress Split Bar",
+  "description": "A single bar split into 2-4 proportional segments (before/after, percentage split) that grow to their resolved proportion with a count-up percentage label per segment.",
+  "tags": ["data", "metrics", "chart", "progress", "split", "percentage"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "progress-split-bar.html",
+      "target": "compositions/components/progress-split-bar/progress-split-bar.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "Before vs after" },
+    { "id": "segments", "type": "string", "default": "[{\"label\":\"Before\",\"value\":72},{\"label\":\"After\",\"value\":28}]" },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "grow_duration", "type": "number", "default": 0.9 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

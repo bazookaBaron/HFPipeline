@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<!--
+  browser-window -- HyperFrames sub-composition (software mockup / Foundation)
+
+  A browser chrome card: traffic-light dots, a URL bar that types out `url`
+  character-by-character, a bolded heading line (real text-fit protected),
+  and N skeleton content rows that stagger in underneath it.
+
+  MULTI-INSTANCE PATTERN (see ../README.md for the full write-up): this file
+  keeps ONE fixed literal data-composition-id/timeline key ("browser-window"),
+  exactly like HyperFrames' own registry items (browser-device-stage,
+  chat-thread -- see ../_registry-reference/). Every per-instance difference
+  (url text, heading, row count, accent, timing) comes through
+  data-composition-variables, resolved via lib/props.js so no field ever
+  falls back inconsistently. To show three different browser-window scenes
+  in one video, wire this SAME file three times in the host index.html, each
+  host <div> with its own data-start/data-duration and its own
+  data-variable-values -- never fork the file or rename the id per instance.
+
+  Variables:
+    - url          (string): full URL typed into the address bar.
+    - heading      (string): bold line under the chrome; real text-fit
+                    protected (canvas measureText shrink, then truncate).
+    - row_count    (number, 0-4): number of skeleton content rows below the
+                    heading.
+    - accent       (enum: brand|accent|accent-2|accent-3|accent-4): caret +
+                    focus-ring color. Opt-in only -- default is the one
+                    fixed brand accent; use a rotation value only to tell
+                    apart multiple browser-window instances on screen at once.
+    - type_at      (number, seconds): when the URL typing animation starts,
+                    computed by the narration-timing bridge from the word
+                    that should trigger it.
+    - type_duration(number, seconds): how long the typing animation runs.
+    - content_at   (number, seconds): when the heading + content rows
+                    reveal, computed the same way.
+
+  Registers window.__timelines["browser-window"] under the literal key.
+-->
+<html lang="en" data-composition-id="browser-window" data-composition-duration="6" data-composition-variables="[
+    { &quot;id&quot;: &quot;url&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;URL&quot;, &quot;description&quot;: &quot;Full address typed into the URL bar.&quot;, &quot;default&quot;: &quot;https://example.com/dashboard&quot; },
+    { &quot;id&quot;: &quot;heading&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Heading&quot;, &quot;description&quot;: &quot;Bold heading line under the chrome.&quot;, &quot;default&quot;: &quot;Welcome back&quot; },
+    { &quot;id&quot;: &quot;row_count&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Content rows&quot;, &quot;description&quot;: &quot;Number of skeleton content rows below the heading.&quot;, &quot;default&quot;: 3, &quot;min&quot;: 0, &quot;max&quot;: 4, &quot;step&quot;: 1 },
+    { &quot;id&quot;: &quot;accent&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Accent&quot;, &quot;description&quot;: &quot;Caret + focus-ring color. Opt-in only; default is the fixed brand accent.&quot;, &quot;default&quot;: &quot;brand&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;brand&quot;, &quot;label&quot;: &quot;Brand&quot; }, { &quot;value&quot;: &quot;accent&quot;, &quot;label&quot;: &quot;Accent&quot; }, { &quot;value&quot;: &quot;accent-2&quot;, &quot;label&quot;: &quot;Accent 2&quot; }, { &quot;value&quot;: &quot;accent-3&quot;, &quot;label&quot;: &quot;Accent 3&quot; }, { &quot;value&quot;: &quot;accent-4&quot;, &quot;label&quot;: &quot;Accent 4&quot; }] },
+    { &quot;id&quot;: &quot;type_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Type at&quot;, &quot;description&quot;: &quot;Seconds from mount when URL typing starts.&quot;, &quot;default&quot;: 0.3, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;type_duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Type duration&quot;, &quot;description&quot;: &quot;Seconds the typing animation takes.&quot;, &quot;default&quot;: 1.6, &quot;min&quot;: 0.3, &quot;max&quot;: 8, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;content_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Content at&quot;, &quot;description&quot;: &quot;Seconds from mount when heading + rows reveal.&quot;, &quot;default&quot;: 2.2, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays. Must match (or be <=) the host clip" s="" data-duration="" --="" read="" from="" props,="" never="" static="" markup,="" so="" each="" instance="" can="" be="" re-timed="" independently.",="" "default":="" 6,="" "min":="" 2,="" "max":="" 30,="" "step":="" 0.1="" }="" ]'="">
+  <head>
+    <meta charset="UTF-8">
+    <title>Browser Window</title>
+  </head>
+  <body>
+    <template>
+      <div data-hf-id="hf-spkk" id="root" data-composition-id="browser-window" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          /* Small/low-element-count component: expand to fill the frame
+             rather than sitting in a small fixed box (README hard rule). */
+          .bw-card {
+            width: 100%;
+            height: 100%;
+            max-width: 118cqh;
+            border-radius: calc(var(--hf-radius, 16px) * 1.25);
+            overflow: hidden;
+            background: var(--hf-surface, #16181c);
+            box-shadow: 0 4cqh 10cqh rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+          }
+          .bw-chrome {
+            display: flex;
+            align-items: center;
+            gap: 3cqmin;
+            padding: 2.6cqmin 3.2cqmin;
+            background: var(--hf-surface-2, #1e2126);
+            border-bottom: 1px solid var(--hf-border, #2c2f36);
+            flex: 0 0 auto;
+          }
+          .bw-dots {
+            display: flex;
+            gap: 1.2cqmin;
+            flex-shrink: 0;
+          }
+          .bw-dot {
+            width: 1.7cqmin;
+            height: 1.7cqmin;
+            border-radius: 50%;
+          }
+          .bw-dot.red {
+            background: #ff5f57;
+          }
+          .bw-dot.yellow {
+            background: #febc2e;
+          }
+          .bw-dot.green {
+            background: #28c840;
+          }
+          .bw-urlbar {
+            flex: 1;
+            min-width: 0;
+            background: var(--hf-bg, #0b0d10);
+            border: 1px solid transparent;
+            border-radius: var(--hf-radius-sm, 10px);
+            padding: 1.6cqmin 2.6cqmin;
+            color: var(--hf-muted, #9aa1ad);
+            font-family: var(--hf-font-mono, ui-monospace, monospace);
+            font-size: 2.9cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            transition: border-color 0.2s;
+          }
+          .bw-urlbar.bw-active {
+            border-color: var(--bw-accent, var(--hf-brand, #6ea8fe));
+          }
+          .bw-caret {
+            display: inline-block;
+            width: 0.35cqmin;
+            height: 2.6cqmin;
+            background: var(--bw-accent, var(--hf-brand, #6ea8fe));
+            vertical-align: -0.5cqmin;
+            margin-left: 0.3cqmin;
+          }
+          .bw-content {
+            flex: 1;
+            min-height: 0;
+            padding: 5cqmin 4.4cqmin;
+            background: var(--hf-bg, #0b0d10);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 2.4cqmin;
+          }
+          .bw-heading {
+            font-weight: 700;
+            color: var(--hf-fg, #f4f5f7);
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          #bw-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 2.2cqmin;
+          }
+          .bw-row {
+            height: 3cqmin;
+            border-radius: 999px;
+            background: var(--hf-surface-2, #1e2126);
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+          }
+        </style>
+
+        <div data-hf-id="hf-r84a" class="bw-card" id="bw-card">
+          <div data-hf-id="hf-9vf4" class="bw-chrome">
+            <div data-hf-id="hf-qzx1" class="bw-dots" aria-hidden="true">
+              <div data-hf-id="hf-w272" class="bw-dot red"></div>
+              <div data-hf-id="hf-nizp" class="bw-dot yellow"></div>
+              <div data-hf-id="hf-ru2m" class="bw-dot green"></div>
+            </div>
+            <div data-hf-id="hf-2k3a" class="bw-urlbar" id="bw-urlbar">
+              <span data-hf-id="hf-29mx" id="bw-url-text"></span><span data-hf-id="hf-us8n" class="bw-caret" id="bw-caret"></span>
+            </div>
+          </div>
+          <div data-hf-id="hf-p4mx" class="bw-content">
+            <div data-hf-id="hf-srli" class="bw-heading" id="bw-heading"></div>
+            <div data-hf-id="hf-gnhi" id="bw-rows"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            // HFTextFit / HFProps are shared globals from
+            // compositions/components/lib/{text-fit,props}.js. A relative
+            // <script src> INSIDE this template is not safe here -- once
+            // the runtime clones this template's contents into the host
+            // document, a relative src resolves against the HOST document's
+            // location, not this file's own folder, so a path correct for
+            // one mount context breaks in another. Exactly like gsap (an
+            // ASSUMED global, redundantly loaded above via an absolute CDN
+            // URL for standalone robustness), the two local libs are an
+            // assumed pre-loaded dependency: every host that mounts this
+            // composition -- the real project's index.html, this folder's
+            // own demo.html, or gallery.html -- loads
+            // lib/text-fit.js + lib/props.js itself, relative to ITS OWN
+            // location, before this composition mounts. See ../README.md
+            // "Shared library contract".
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "browser-window: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              url: { type: "string", default: "https://example.com/dashboard", maxLength: 90 },
+              heading: { type: "string", default: "Welcome back", maxLength: 80 },
+              row_count: { type: "number", default: 3, min: 0, max: 4 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              type_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              type_duration: { type: "number", default: 1.6, min: 0.3, max: 8 },
+              content_at: { type: "number", default: 2.2, min: 0, max: 30 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var card = document.getElementById("bw-card");
+            var urlbar = document.getElementById("bw-urlbar");
+            var urlText = document.getElementById("bw-url-text");
+            var heading = document.getElementById("bw-heading");
+            var rowsWrap = document.getElementById("bw-rows");
+
+            root.style.setProperty("--bw-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Real text-fit: heading is a single line that must never
+            // overflow the card's content width regardless of authored
+            // length -- shrink first, then truncate. Width is measured in
+            // the box's own CSS pixels via getBoundingClientRect so the
+            // fit is correct at whatever frame size this instance renders.
+            function fitHeading() {
+              var boxWidth = rowsWrap.parentElement.getBoundingClientRect().width || 800;
+              HFTextFit.fitOrTruncate(heading, props.heading, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: boxWidth,
+                maxHeight: 1000,
+                baseSize: Math.max(24, boxWidth * 0.052),
+                minSize: 16,
+                maxLines: 1,
+              });
+            }
+
+            // Content rows: cleared and rebuilt from props every mount so
+            // a re-seek never accumulates stale rows from a prior variable
+            // set (multi-phase clear/rebuild discipline).
+            var rowWidths = [92, 78, 86, 68];
+            var rowEls = [];
+            HFProps.rebuild(rowsWrap, function (container) {
+              rowEls = [];
+              for (var i = 0; i < props.row_count; i++) {
+                var row = document.createElement("div");
+                row.className = "bw-row";
+                row.style.width = rowWidths[i % rowWidths.length] + "%";
+                container.appendChild(row);
+                rowEls.push(row);
+              }
+            });
+
+            function layout() {
+              fitHeading();
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var typeStart = Math.min(props.type_at, Math.max(0, duration - 0.2));
+            var typeDur = Math.min(props.type_duration, Math.max(0.2, duration - typeStart - 0.2));
+            var contentAt = Math.min(Math.max(props.content_at, typeStart + typeDur), Math.max(0, duration - 0.1));
+
+            var tl = gsap.timeline({ paused: true });
+
+            tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
+            tl.set(urlbar, { className: "bw-urlbar bw-active" }, typeStart);
+
+            var proxy = { i: 0 };
+            tl.to(
+              proxy,
+              {
+                i: props.url.length,
+                duration: typeDur,
+                ease: "none",
+                onUpdate: function () {
+                  urlText.textContent = props.url.slice(0, Math.round(proxy.i));
+                },
+              },
+              typeStart
+            );
+            tl.set(urlbar, { className: "bw-urlbar" }, typeStart + typeDur + 0.1);
+
+            tl.fromTo(
+              heading,
+              { opacity: 0, y: 16 },
+              { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+              contentAt
+            );
+            rowEls.forEach(function (row, i) {
+              tl.fromTo(
+                row,
+                { opacity: 0, y: 16 },
+                { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+                contentAt + 0.15 + i * 0.12
+              );
+            });
+
+            // Pad tl.duration() to the authored `duration` prop with a
+            // no-op tween, matching the real registry's own convention
+            // (chat-thread.html: `tl.set({}, {}, duration)`). Without this,
+            // GSAP reports the timeline's duration as "time of the last
+            // real tween", which is shorter than the instance's intended
+            // visible window whenever content settles early -- harmless for
+            // the real renderer (the HOST clip's data-duration governs the
+            // visible window regardless), but it makes a standalone
+            // scrubber (demo.html/gallery.html) stop short and never show
+            // the held final frame for the rest of the instance's duration.
+            tl.set({}, {}, duration);
+            window.__timelines["browser-window"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

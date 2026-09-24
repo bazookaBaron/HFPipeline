@@ -1,0 +1,18 @@
+{
+  "categories": {
+    "cs-fundamentals": {
+      "recentComponents": [
+        "browser-window",
+        "terminal-session",
+        "browser-window",
+        "browser-window",
+        "kpi-cluster",
+        "browser-window",
+        "browser-window",
+        "terminal-session",
+        "browser-window",
+        "browser-window"
+      ]
+    }
+  }
+}

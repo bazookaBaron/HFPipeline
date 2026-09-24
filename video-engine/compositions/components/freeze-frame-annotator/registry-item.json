@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "freeze-frame-annotator",
+  "type": "hyperframes:component",
+  "title": "Freeze Frame Annotator",
+  "description": "A freeze-frame effect: the subject desaturates and vignettes as if paused, then an annotation circle draws on with a leader line and label, telestrator-style.",
+  "tags": ["editing", "transition", "freeze-frame", "annotation", "callout"],
+  "category": "editing",
+  "files": [
+    {
+      "path": "freeze-frame-annotator.html",
+      "target": "compositions/components/freeze-frame-annotator/freeze-frame-annotator.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "subject_title", "type": "string", "default": "This request" },
+    { "id": "subject_subtitle", "type": "string", "default": "hangs waiting on the database" },
+    { "id": "annotation_label", "type": "string", "default": "Blocking call" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "freeze_at", "type": "number", "default": 1.2 },
+    { "id": "annotate_at", "type": "number", "default": 1.7 },
+    { "id": "duration", "type": "number", "default": 5.5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

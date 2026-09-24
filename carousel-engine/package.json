@@ -1,0 +1,15 @@
+{
+  "name": "carousel-engine",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Phase 5: static-image carousel renderer for Instagram-style CS/tech carousel posts. Plain Puppeteer + HTML/CSS, no HyperFrames timeline involved (see PHASE5-REPORT.md for why).",
+  "type": "commonjs",
+  "main": "render.js",
+  "scripts": {
+    "render": "node render.js",
+    "render:sample": "node render.js content/sample-carousel.json output"
+  },
+  "dependencies": {
+    "puppeteer": "^23.11.1"
+  }
+}

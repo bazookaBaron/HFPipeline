@@ -1,0 +1,370 @@
+<!doctype html>
+<!--
+  skeleton-loader -- HyperFrames sub-composition (Software mockup)
+
+  N loading-skeleton rows (avatar block + two shimmering bars) that pulse
+  while "loading", then each resolves into real content (a title + subtitle)
+  at `resolve_at`, staggered per row. The shimmer is a GSAP tween NESTED
+  inside the one paused root timeline -- never a CSS @keyframes animation
+  running on the wall clock -- so a frame-exact seek (snapshot/render)
+  always reproduces the exact same shimmer phase for a given timeline time,
+  matching this project's determinism rule (no Date.now()-driven visuals).
+  Uses a FINITE repeat count computed from the remaining scene duration,
+  NOT repeat:-1 -- a real bug found this session: repeat:-1 makes GSAP
+  report the whole root timeline's own .duration() as effectively
+  infinite, corrupting the "pad tl.duration() to the authored duration
+  prop" line every component in this library relies on (confirmed via a
+  real hyperframes snapshot picking an end-of-timeline frame at ~9.7
+  BILLION seconds). The per-frame phase-at-a-given-seek-time IS
+  deterministic either way -- the bug is specifically about the timeline's
+  own reported length, not per-frame determinism.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("skeleton-loader"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="skeleton-loader"
+  data-composition-duration="7"
+  data-composition-variables='[
+    { "id": "items", "type": "string", "role": "content", "label": "Items", "description": "Pipe-separated rows, each Title~Subtitle (tilde-separated). Example: \"Ada Lovelace~Engineering|Grace Hopper~Design\"", "default": "Ada Lovelace~Senior Engineer|Grace Hopper~Product Design|Alan Turing~Data Platform" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Resolved avatar color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "resolve_at", "type": "number", "role": "timing", "label": "Resolve at", "description": "Seconds from mount when rows begin resolving from skeleton to real content.", "default": 1.6, "min": 0.3, "max": 30, "step": 0.05 },
+    { "id": "resolve_stagger", "type": "number", "role": "timing", "label": "Resolve stagger", "description": "Seconds between successive rows resolving.", "default": 0.4, "min": 0.1, "max": 2, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 7, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Skeleton Loader</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="skeleton-loader" data-duration="7" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 7cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .sl-list {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+          }
+          .sl-row {
+            display: flex;
+            align-items: center;
+            gap: 3.6cqmin;
+            border-radius: var(--hf-radius, 16px);
+            background: var(--hf-surface, #16181c);
+            padding: 3.6cqmin;
+            opacity: 0;
+            transform: translateY(1.4cqmin);
+          }
+          .sl-avatar {
+            position: relative;
+            flex: 0 0 auto;
+            width: 10cqmin;
+            height: 10cqmin;
+            min-width: 34px;
+            min-height: 34px;
+            border-radius: 50%;
+            background: var(--hf-surface-2, #1e2126);
+            overflow: hidden;
+          }
+          .sl-avatar-real {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: var(--sl-accent, var(--hf-brand, #6ea8fe));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            color: var(--hf-bg, #0b0d10);
+            opacity: 0;
+          }
+          .sl-lines {
+            position: relative;
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1.6cqmin;
+          }
+          .sl-bar {
+            position: relative;
+            height: 3cqmin;
+            border-radius: 999px;
+            background: var(--hf-surface-2, #1e2126);
+            overflow: hidden;
+          }
+          .sl-bar.wide {
+            width: 62%;
+          }
+          .sl-bar.narrow {
+            width: 40%;
+            opacity: 0.7;
+          }
+          .sl-shimmer {
+            position: absolute;
+            inset: 0;
+            transform: translateX(-100%);
+            background: linear-gradient(
+              90deg,
+              transparent 0%,
+              rgba(255, 255, 255, 0.14) 50%,
+              transparent 100%
+            );
+          }
+          .sl-real-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            opacity: 0;
+          }
+          .sl-title {
+            font-weight: 700;
+            font-size: 3.4cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .sl-subtitle {
+            font-weight: 500;
+            font-size: 2.6cqmin;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+            overflow: hidden;
+            margin-top: 0.4cqmin;
+          }
+        </style>
+
+        <div class="sl-list" id="sl-list"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "skeleton-loader: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              items: {
+                type: "list",
+                default: [
+                  "Ada Lovelace~Senior Engineer",
+                  "Grace Hopper~Product Design",
+                  "Alan Turing~Data Platform",
+                ],
+                max: 5,
+                delimiter: "|",
+              },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              resolve_at: { type: "number", default: 1.6, min: 0.3, max: 30 },
+              resolve_stagger: { type: "number", default: 0.4, min: 0.1, max: 2 },
+              duration: { type: "number", default: 7, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var list = document.getElementById("sl-list");
+
+            root.style.setProperty("--sl-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var entries = props.items.map(function (raw) {
+              var parts = raw.split("~");
+              return {
+                title: (parts[0] || "Untitled").trim(),
+                subtitle: (parts[1] || "").trim(),
+              };
+            });
+
+            var count = Math.max(1, entries.length);
+            var rowGapCqmin = count <= 2 ? 5 : count <= 4 ? 3.2 : 2.2;
+            var titleFontCqmin = count <= 2 ? 4.4 : count <= 4 ? 3.4 : 2.8;
+            list.style.gap = rowGapCqmin + "cqmin";
+
+            // Clear/rebuild: rows are torn down and rebuilt from props
+            // every mount so a re-seek or variable change never leaves a
+            // stale row from a previous build.
+            var rowEls = [];
+            HFProps.rebuild(list, function (container) {
+              rowEls = [];
+              entries.forEach(function (entry) {
+                var row = document.createElement("div");
+                row.className = "sl-row";
+
+                var avatar = document.createElement("div");
+                avatar.className = "sl-avatar";
+                var avatarShimmer = document.createElement("div");
+                avatarShimmer.className = "sl-shimmer";
+                var avatarReal = document.createElement("div");
+                avatarReal.className = "sl-avatar-real";
+                avatarReal.textContent = entry.title.charAt(0).toUpperCase();
+                avatar.appendChild(avatarShimmer);
+                avatar.appendChild(avatarReal);
+
+                var lines = document.createElement("div");
+                lines.className = "sl-lines";
+                var barWide = document.createElement("div");
+                barWide.className = "sl-bar wide";
+                var wideShimmer = document.createElement("div");
+                wideShimmer.className = "sl-shimmer";
+                barWide.appendChild(wideShimmer);
+                var barNarrow = document.createElement("div");
+                barNarrow.className = "sl-bar narrow";
+                var narrowShimmer = document.createElement("div");
+                narrowShimmer.className = "sl-shimmer";
+                barNarrow.appendChild(narrowShimmer);
+                lines.appendChild(barWide);
+                lines.appendChild(barNarrow);
+
+                var realText = document.createElement("div");
+                realText.className = "sl-real-text";
+                var titleEl = document.createElement("div");
+                titleEl.className = "sl-title";
+                var subtitleEl = document.createElement("div");
+                subtitleEl.className = "sl-subtitle";
+                realText.appendChild(titleEl);
+                realText.appendChild(subtitleEl);
+                lines.appendChild(realText);
+
+                row.appendChild(avatar);
+                row.appendChild(lines);
+                container.appendChild(row);
+
+                rowEls.push({
+                  row: row,
+                  shimmers: [avatarShimmer, wideShimmer, narrowShimmer],
+                  skeletonEls: [barWide, barNarrow],
+                  titleEl: titleEl,
+                  subtitleEl: subtitleEl,
+                  avatarReal: avatarReal,
+                  title: entry.title,
+                  subtitle: entry.subtitle,
+                });
+              });
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              rowEls.forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.titleEl, item.title, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: item.row.clientWidth * 0.7,
+                  maxHeight: 1000,
+                  baseSize: titleFontCqmin * rootMin,
+                  minSize: 14,
+                  maxLines: 1,
+                });
+                HFTextFit.fitOrTruncate(item.subtitleEl, item.subtitle, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 500,
+                  maxWidth: item.row.clientWidth * 0.7,
+                  maxHeight: 1000,
+                  baseSize: titleFontCqmin * rootMin * 0.76,
+                  minSize: 12,
+                  maxLines: 1,
+                });
+              });
+            }
+
+            rowEls.forEach(function (item) {
+              item.titleEl.dataset.src = item.title;
+              item.subtitleEl.dataset.src = item.subtitle;
+            });
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var resolveAt = Math.min(props.resolve_at, Math.max(0, duration - 1));
+            var stagger = props.resolve_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+
+            rowEls.forEach(function (item, i) {
+              var revealAt = Math.min(0.15 + i * 0.12, Math.max(0, duration - 0.5));
+              tl.fromTo(item.row, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, revealAt);
+
+              // Shimmer: a GSAP tween nested in the root timeline (not CSS
+              // @keyframes) so it stays deterministic under a frame-exact
+              // seek. A FINITE repeat count, never repeat:-1 -- an
+              // infinite-repeat tween makes GSAP report this timeline's own
+              // .duration() as effectively infinite, which broke the "pad
+              // tl.duration() to the authored duration prop" line below
+              // (confirmed via a real hyperframes snapshot picking an
+              // end-of-timeline frame at ~9.7 BILLION seconds instead of the
+              // real ~duration seconds elsewhere in this project). Repeating
+              // exactly enough times to cover the remaining scene duration
+              // shimmers correctly without corrupting the timeline's length.
+              item.shimmers.forEach(function (shimmerEl, k) {
+                var shimmerStart = revealAt + k * 0.08;
+                var shimmerReps = Math.max(1, Math.ceil((duration - shimmerStart) / 1.1) + 1);
+                tl.fromTo(
+                  shimmerEl,
+                  { x: "-100%" },
+                  { x: "100%", duration: 1.1, ease: "none", repeat: shimmerReps },
+                  shimmerStart
+                );
+              });
+            });
+
+            rowEls.forEach(function (item, i) {
+              var at = Math.min(resolveAt + i * stagger, Math.max(0, duration - 0.4));
+              // Skeleton -> real crossfade: skeleton shapes fade out, real
+              // content fades in, staggered per row.
+              tl.to(item.skeletonEls, { opacity: 0, duration: 0.3, ease: "power1.in" }, at);
+              tl.to(item.shimmers, { opacity: 0, duration: 0.3, ease: "power1.in" }, at);
+              tl.to(item.avatarReal, { opacity: 1, duration: 0.35, ease: "power1.out" }, at + 0.05);
+              tl.fromTo(
+                item.subtitleEl.parentElement,
+                { opacity: 0 },
+                { opacity: 1, duration: 0.35, ease: "power1.out" },
+                at + 0.1
+              );
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["skeleton-loader"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

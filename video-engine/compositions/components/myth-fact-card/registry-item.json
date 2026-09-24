@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "myth-fact-card",
+  "type": "hyperframes:component",
+  "title": "Myth Fact Card",
+  "description": "A struck-through myth claim (red, X icon) paired with the corrected fact (green, check icon) that reveals after a beat.",
+  "tags": ["narrative", "myth", "fact", "correction"],
+  "category": "narrative",
+  "files": [
+    {
+      "path": "myth-fact-card.html",
+      "target": "compositions/components/myth-fact-card/myth-fact-card.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "myth", "type": "string", "default": "The cloud means you never have to think about hardware." },
+    { "id": "fact", "type": "string", "default": "You just stopped seeing the hardware -- someone still capacity-plans it." },
+    { "id": "myth_at", "type": "number", "default": 0.3 },
+    { "id": "fact_at", "type": "number", "default": 1.8 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

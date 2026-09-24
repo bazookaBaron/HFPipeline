@@ -1,0 +1,248 @@
+<!doctype html>
+<!--
+  myth-fact-card -- HyperFrames sub-composition (Narrative)
+
+  A "myth" claim (struck-through, X icon, red-tinted row) paired with the
+  corrected "fact" (check icon, green-tinted row) that reveals after a
+  beat. Structurally the same reveal/settle pattern as
+  problem-solution-pair.html, with a strikethrough on the myth text
+  applied via plain CSS text-decoration (no inline markup needed, so no
+  risk of the "rebuild replaces timeline-referenced nodes" bug class --
+  see keyword-highlighter.html's fix for that).
+
+  COLOR NOTE: red-for-myth / green-for-fact is fixed semantic content
+  coding (like browser-window's traffic-light dots), not the opt-in
+  --hf-accent* content rotation -- no `accent` variable here.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("myth-fact-card"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="myth-fact-card"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "myth", "type": "string", "role": "content", "label": "Myth", "description": "The false claim.", "default": "The cloud means you never have to think about hardware." },
+    { "id": "fact", "type": "string", "role": "content", "label": "Fact", "description": "The correction.", "default": "You just stopped seeing the hardware -- someone still capacity-plans it." },
+    { "id": "myth_at", "type": "number", "role": "timing", "label": "Myth at", "description": "Seconds from mount when the myth reveals.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "fact_at", "type": "number", "role": "timing", "label": "Fact at", "description": "Seconds from mount when the fact reveals.", "default": 1.8, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Myth Fact Card</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="myth-fact-card" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .mfc-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4cqmin;
+            padding: 8cqmin;
+          }
+          .mfc-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 3cqmin;
+            padding: 3.4cqmin 3.6cqmin;
+            border-radius: 1.8cqmin;
+            border-left-width: 0.6cqmin;
+            border-left-style: solid;
+            opacity: 0;
+            transform: translateY(1.6cqmin) scale(0.98);
+          }
+          .mfc-row--myth {
+            background: color-mix(in srgb, var(--hf-accent-4, #ff6e6e) 12%, var(--hf-surface, #16181c));
+            border-left-color: var(--hf-accent-4, #ff6e6e);
+          }
+          .mfc-row--fact {
+            background: color-mix(in srgb, var(--hf-accent, #71f5a7) 12%, var(--hf-surface, #16181c));
+            border-left-color: var(--hf-accent, #71f5a7);
+          }
+          .mfc-icon {
+            flex: 0 0 auto;
+            width: 7.5cqmin;
+            height: 7.5cqmin;
+            min-width: 30px;
+            min-height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 3.6cqmin;
+          }
+          .mfc-icon--myth {
+            background: var(--hf-accent-4, #ff6e6e);
+            color: #2a0a0a;
+          }
+          .mfc-icon--fact {
+            background: var(--hf-accent, #71f5a7);
+            color: #06210f;
+          }
+          .mfc-body {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6cqmin;
+          }
+          .mfc-label {
+            font-size: 2.1cqmin;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+          }
+          .mfc-row--myth .mfc-label {
+            color: var(--hf-accent-4, #ff6e6e);
+          }
+          .mfc-row--fact .mfc-label {
+            color: var(--hf-accent, #71f5a7);
+          }
+          .mfc-text {
+            font-weight: 600;
+            line-height: 1.32;
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .mfc-text--myth {
+            text-decoration: line-through;
+            text-decoration-color: var(--hf-accent-4, #ff6e6e);
+            text-decoration-thickness: 0.22em;
+            color: var(--hf-muted, #9aa1ad);
+          }
+        </style>
+
+        <div class="mfc-stage" id="mfc-stage">
+          <div class="mfc-row mfc-row--myth" id="mfc-row-myth">
+            <div class="mfc-icon mfc-icon--myth">&#10005;</div>
+            <div class="mfc-body">
+              <div class="mfc-label">Myth</div>
+              <div class="mfc-text mfc-text--myth" id="mfc-myth-text"></div>
+            </div>
+          </div>
+          <div class="mfc-row mfc-row--fact" id="mfc-row-fact">
+            <div class="mfc-icon mfc-icon--fact">&#10003;</div>
+            <div class="mfc-body">
+              <div class="mfc-label">Fact</div>
+              <div class="mfc-text" id="mfc-fact-text"></div>
+            </div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "myth-fact-card: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              myth: { type: "string", default: "The cloud means you never have to think about hardware.", maxLength: 160 },
+              fact: {
+                type: "string",
+                default: "You just stopped seeing the hardware -- someone still capacity-plans it.",
+                maxLength: 160,
+              },
+              myth_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              fact_at: { type: "number", default: 1.8, min: 0, max: 30 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("mfc-stage");
+            var rowMyth = document.getElementById("mfc-row-myth");
+            var rowFact = document.getElementById("mfc-row-fact");
+            var mythTextEl = document.getElementById("mfc-myth-text");
+            var factTextEl = document.getElementById("mfc-fact-text");
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxWidth = stage.clientWidth - stage.clientWidth * 0.16 - stage.clientWidth * 0.12 - stage.clientWidth * 0.1;
+
+              HFTextFit.fitOrTruncate(mythTextEl, props.myth, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: boxWidth,
+                maxHeight: 4.6 * rootMin * 1.32 * 3,
+                baseSize: 4.6 * rootMin,
+                minSize: 16,
+                lineHeightRatio: 1.32,
+                maxLines: 3,
+              });
+
+              HFTextFit.fitOrTruncate(factTextEl, props.fact, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: boxWidth,
+                maxHeight: 4.6 * rootMin * 1.32 * 3,
+                baseSize: 4.6 * rootMin,
+                minSize: 16,
+                lineHeightRatio: 1.32,
+                maxLines: 3,
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var mythAt = Math.min(props.myth_at, Math.max(0, duration - 0.3));
+            var factAt = Math.min(Math.max(props.fact_at, mythAt + 0.5), Math.max(0, duration - 0.2));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(
+              rowMyth,
+              { opacity: 0, y: 18, scale: 0.98 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" },
+              mythAt
+            );
+            tl.to(rowMyth, { opacity: 0.78, scale: 0.97, duration: 0.4, ease: "power1.out" }, factAt - 0.15);
+            tl.fromTo(
+              rowFact,
+              { opacity: 0, y: 18, scale: 0.98 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" },
+              factAt
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["myth-fact-card"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

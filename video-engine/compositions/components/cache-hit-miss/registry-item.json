@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cache-hit-miss",
+  "type": "hyperframes:component",
+  "title": "Cache Hit Miss",
+  "description": "A request travels into a cache box which branches into a green hit path (fast, straight to response) or an amber miss path (falls through to a backend box) -- both paths always drawn dim so the branch reads regardless of outcome.",
+  "tags": ["architecture", "diagram", "cache", "hit-miss", "branching"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "cache-hit-miss.html",
+      "target": "compositions/components/cache-hit-miss/cache-hit-miss.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "outcome", "type": "enum", "default": "hit", "options": ["hit", "miss"] },
+    { "id": "request_label", "type": "string", "default": "GET /user/42" },
+    { "id": "cache_label", "type": "string", "default": "Cache" },
+    { "id": "backend_label", "type": "string", "default": "Database" },
+    { "id": "request_at", "type": "number", "default": 0.6 },
+    { "id": "branch_at", "type": "number", "default": 1.6 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

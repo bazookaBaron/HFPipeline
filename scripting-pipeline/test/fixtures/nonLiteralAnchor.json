@@ -1,0 +1,21 @@
+{
+  "topic": "How DNS resolution works",
+  "topicCategory": "cs-fundamentals",
+  "scenes": [
+    {
+      "sceneId": "scene-1",
+      "componentType": "browser-window",
+      "durationSeconds": 8,
+      "narration": "Every time you visit a website, your browser first needs to find the numeric address behind that friendly domain name.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": {
+        "urlText": "www.wikipedia.org",
+        "highlightWord": "IP address"
+      },
+      "narrationAnchors": [
+        { "anchorText": "IP address", "propPath": "props.highlightWord" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "chat-session",
+  "type": "hyperframes:component",
+  "title": "Chat Session",
+  "description": "Chat/messaging UI with message bubbles popping in one at a time, alternating received (left) and sent (right, accent-colored). Prefix-switch parsing, clear/rebuild list handling, per-bubble text-fit.",
+  "tags": ["software-mockup", "chat", "messaging", "conversation"],
+  "category": "software-mockup",
+  "files": [
+    {
+      "path": "chat-session.html",
+      "target": "compositions/components/chat-session/chat-session.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "contact", "type": "string", "default": "Priya" },
+    { "id": "messages", "type": "string", "default": "Are we still on for 3pm?|sent:Yes! See you then|One sec, pulling up the doc|sent:Sounds good, no rush" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "start_at", "type": "number", "default": 0.4 },
+    { "id": "message_stagger", "type": "number", "default": 0.85 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "queue-backpressure",
+  "type": "hyperframes:component",
+  "title": "Queue Backpressure",
+  "description": "A row of queue slots filling one item at a time until full, then a pulsing QUEUE FULL / BACKPRESSURE badge and a bounced item show the producer-visible backpressure signal.",
+  "tags": ["architecture", "diagram", "queue", "backpressure", "systems"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "queue-backpressure.html",
+      "target": "compositions/components/queue-backpressure/queue-backpressure.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "capacity", "type": "number", "default": 6 },
+    { "id": "queue_label", "type": "string", "default": "Message Queue" },
+    { "id": "start_at", "type": "number", "default": 0.5 },
+    { "id": "item_interval", "type": "number", "default": 0.45 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

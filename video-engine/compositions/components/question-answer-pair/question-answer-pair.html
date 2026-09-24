@@ -1,0 +1,268 @@
+<!doctype html>
+<!--
+  question-answer-pair -- HyperFrames sub-composition (Narrative)
+
+  Classic Q -> A reveal: a question shown with a "Q" badge, then the
+  answer reveals after a beat with an "A" badge, on the same accent.
+  Built on the content-panel/definition-card skeleton.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("question-answer-pair");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="question-answer-pair"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "question", "type": "string", "role": "content", "label": "Question", "description": "The question text.", "default": "What happens if two writes race?" },
+    { "id": "answer", "type": "string", "role": "content", "label": "Answer", "description": "The answer text.", "default": "The last write wins -- unless the store uses vector clocks to detect the conflict." },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Q/A badge color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "question_at", "type": "number", "role": "timing", "label": "Question at", "description": "Seconds from mount when the question reveals.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "answer_at", "type": "number", "role": "timing", "label": "Answer at", "description": "Seconds from mount when the answer reveals.", "default": 1.6, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Question Answer Pair</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="question-answer-pair" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .qa-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4.5cqmin;
+            padding: 8cqmin;
+          }
+          .qa-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 3cqmin;
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+          }
+          .qa-badge {
+            flex: 0 0 auto;
+            width: 8.5cqmin;
+            height: 8.5cqmin;
+            min-width: 34px;
+            min-height: 34px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 3.6cqmin;
+            opacity: 0;
+            transform: scale(0.4);
+          }
+          .qa-badge--q {
+            background: transparent;
+            border: 0.28cqmin solid var(--qa-accent, var(--hf-brand, #6ea8fe));
+            color: var(--qa-accent, var(--hf-brand, #6ea8fe));
+          }
+          .qa-badge--a {
+            background: var(--qa-accent, var(--hf-brand, #6ea8fe));
+            color: var(--hf-bg, #0b0d10);
+          }
+          /* Connecting rule between the Q and A rows -- neutral border color
+             (not the accent) since color/accent logic is out of scope here.
+             A normal-flow flex child pulled up with a negative margin so it
+             adds only a little vertical rhythm, never absolutely positioned. */
+          .qa-divider {
+            flex: 0 0 auto;
+            width: 100%;
+            height: 1px;
+            margin: -1.6cqmin 0;
+            background: var(--hf-border, #2c2f36);
+            transform-origin: left center;
+            transform: scaleX(0);
+            opacity: 0;
+          }
+          .qa-text {
+            flex: 1;
+            min-width: 0;
+            padding-top: 0.6cqmin;
+            font-weight: 600;
+            line-height: 1.32;
+          }
+          .qa-row--q .qa-text {
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .qa-row--a .qa-text {
+            color: var(--hf-fg, #f4f5f7);
+            font-weight: 500;
+          }
+        </style>
+
+        <div class="qa-stage" id="qa-stage">
+          <div class="qa-row qa-row--q" id="qa-row-q">
+            <div class="qa-badge qa-badge--q" id="qa-badge-q">Q</div>
+            <div class="qa-text" id="qa-question"></div>
+          </div>
+          <div class="qa-divider" id="qa-divider"></div>
+          <div class="qa-row qa-row--a" id="qa-row-a">
+            <div class="qa-badge qa-badge--a" id="qa-badge-a">A</div>
+            <div class="qa-text" id="qa-answer"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "question-answer-pair: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              question: { type: "string", default: "What happens if two writes race?", maxLength: 140 },
+              answer: {
+                type: "string",
+                default: "The last write wins -- unless the store uses vector clocks to detect the conflict.",
+                maxLength: 200,
+              },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              question_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              answer_at: { type: "number", default: 1.6, min: 0, max: 30 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("qa-stage");
+            var rowQ = document.getElementById("qa-row-q");
+            var rowA = document.getElementById("qa-row-a");
+            var qEl = document.getElementById("qa-question");
+            var aEl = document.getElementById("qa-answer");
+            var badgeQ = document.getElementById("qa-badge-q");
+            var badgeA = document.getElementById("qa-badge-a");
+            var divider = document.getElementById("qa-divider");
+
+            root.style.setProperty("--qa-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Frame-filling: a shorter Q+A pair scales type up.
+            var totalChars = props.question.length + props.answer.length;
+            var big = totalChars < 90;
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxWidth = stage.clientWidth - stage.clientWidth * 0.16 - stage.clientWidth * 0.11;
+              var qSize = big ? 5.4 : 4.4;
+              var aSize = big ? 4.6 : 3.8;
+
+              HFTextFit.fitOrTruncate(qEl, props.question, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: boxWidth,
+                maxHeight: qSize * rootMin * 1.32 * 3,
+                baseSize: qSize * rootMin,
+                minSize: 18,
+                lineHeightRatio: 1.32,
+                maxLines: 3,
+              });
+
+              HFTextFit.fitOrTruncate(aEl, props.answer, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 500,
+                maxWidth: boxWidth,
+                maxHeight: aSize * rootMin * 1.32 * 4,
+                baseSize: aSize * rootMin,
+                minSize: 16,
+                lineHeightRatio: 1.32,
+                maxLines: 4,
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var questionAt = Math.min(props.question_at, Math.max(0, duration - 0.3));
+            var answerAt = Math.min(Math.max(props.answer_at, questionAt + 0.5), Math.max(0, duration - 0.2));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(rowQ, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, questionAt);
+            // Q badge entrance pop -- a distinct, punchier back.out reveal
+            // layered on the row's own plain fade, so the badge reads as its
+            // own beat instead of just riding along with the question text.
+            tl.fromTo(
+              badgeQ,
+              { scale: 0.4, opacity: 0 },
+              { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.5)" },
+              Math.min(questionAt + 0.12, Math.max(0, duration - 0.15))
+            );
+
+            // Connecting rule growing in between Q and A, timed to land
+            // shortly before the answer itself arrives.
+            var dividerAt = Math.min(questionAt + 0.5, Math.max(0, answerAt - 0.2));
+            tl.fromTo(
+              divider,
+              { scaleX: 0, opacity: 0 },
+              { scaleX: 1, opacity: 1, duration: 0.4, ease: "power2.out" },
+              Math.max(0, dividerAt)
+            );
+
+            tl.fromTo(rowA, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, answerAt);
+            // A badge entrance pop, same idiom as the Q badge.
+            var badgeAAt = Math.min(answerAt + 0.12, Math.max(0, duration - 0.15));
+            tl.fromTo(
+              badgeA,
+              { scale: 0.4, opacity: 0 },
+              { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2.5)" },
+              badgeAAt
+            );
+            // "Answer confirmed" settle flourish right after the A badge
+            // lands -- a single finite up-down pulse (repeat:1 + yoyo:true
+            // is ONE cycle, never a loop), not decoration for its own sake:
+            // it's the beat that says "this is the resolved answer."
+            tl.fromTo(
+              badgeA,
+              { scale: 1 },
+              { scale: 1.15, duration: 0.14, yoyo: true, repeat: 1, ease: "power1.out" },
+              Math.min(badgeAAt + 0.32, Math.max(0, duration - 0.1))
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["question-answer-pair"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

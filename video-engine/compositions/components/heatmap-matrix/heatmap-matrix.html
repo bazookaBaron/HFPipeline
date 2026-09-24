@@ -1,0 +1,237 @@
+<!doctype html>
+<!--
+  heatmap-matrix -- HyperFrames sub-composition (Data / metrics)
+
+  A grid of cells shaded by intensity (0-1), lighting up in a staggered
+  wave (row-major order) from the fixed brand accent color at low opacity
+  through to full opacity/brightness -- a heatmap reveal. Cells are built
+  ONCE via HFProps.rebuild from the resolved `rows`/`cols`/`cells` before
+  the GSAP timeline captures references to each cell (kpi-cluster.html's
+  own documented build-before-timeline rule).
+
+  Cell intensity maps to the SAME fixed --hf-brand accent at varying
+  opacity/lightness -- not the opt-in --hf-accent* content rotation --
+  because intensity here is measured DATA, not a set of distinct labeled
+  content items to tell apart (matches the README's accent-vs-chrome
+  distinction: a heatmap's color encodes a value, so accent stays the one
+  configurable hue and intensity does the encoding via opacity).
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("heatmap-matrix"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="heatmap-matrix"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "label", "type": "string", "role": "content", "label": "Label", "description": "Heading above the grid.", "default": "Request Volume by Hour" },
+    { "id": "rows", "type": "number", "role": "content", "label": "Rows", "description": "Number of grid rows.", "default": 4, "min": 2, "max": 8, "step": 1 },
+    { "id": "cols", "type": "number", "role": "content", "label": "Columns", "description": "Number of grid columns.", "default": 6, "min": 2, "max": 10, "step": 1 },
+    { "id": "cells", "type": "string", "role": "content", "label": "Cells", "description": "JSON array or comma-separated list of intensities 0-1, row-major, length rows*cols. Shorter lists repeat/cycle; missing values default to 0.3.", "default": "[0.1,0.2,0.3,0.5,0.4,0.2,0.2,0.4,0.6,0.8,0.6,0.3,0.3,0.6,0.9,1,0.8,0.5,0.15,0.3,0.5,0.7,0.5,0.25]" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "The single hue every cell's intensity is rendered in. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when cells start lighting up.", "default": 0.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "cell_stagger", "type": "number", "role": "timing", "label": "Cell stagger", "description": "Seconds between successive cells lighting up (row-major).", "default": 0.04, "min": 0.01, "max": 0.4, "step": 0.01 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Heatmap Matrix</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="heatmap-matrix" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .hm-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3.4cqmin;
+            padding: 6cqmin;
+          }
+          .hm-label {
+            font-weight: 700;
+            font-size: 3.4cqmin;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 90cqmin;
+            opacity: 0;
+          }
+          .hm-grid {
+            display: grid;
+            gap: 1.4cqmin;
+            width: 100%;
+            max-width: 100%;
+          }
+          .hm-cell {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: 1cqmin;
+            background: var(--hf-surface-2, #1e2126);
+            border: 1px solid var(--hf-border, #2c2f36);
+            opacity: 0;
+            transform: scale(0.7);
+          }
+          .hm-cell-fill {
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: var(--hm-accent, var(--hf-brand, #6ea8fe));
+            opacity: 0;
+          }
+        </style>
+
+        <div class="hm-stage" id="hm-stage">
+          <div class="hm-label" id="hm-label"></div>
+          <div class="hm-grid" id="hm-grid"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "heatmap-matrix: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              label: { type: "string", default: "Request Volume by Hour", maxLength: 50 },
+              rows: { type: "number", default: 4, min: 2, max: 8 },
+              cols: { type: "number", default: 6, min: 2, max: 10 },
+              cells: {
+                type: "list",
+                default: [0.1, 0.2, 0.3, 0.5, 0.4, 0.2, 0.2, 0.4, 0.6, 0.8, 0.6, 0.3, 0.3, 0.6, 0.9, 1, 0.8, 0.5, 0.15, 0.3, 0.5, 0.7, 0.5, 0.25],
+                max: 80,
+                delimiter: ",",
+              },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              cell_stagger: { type: "number", default: 0.04, min: 0.01, max: 0.4 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var labelEl = document.getElementById("hm-label");
+            var grid = document.getElementById("hm-grid");
+
+            root.style.setProperty("--hm-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var rows = Math.round(props.rows);
+            var cols = Math.round(props.cols);
+            var total = rows * cols;
+
+            // Every cell's intensity resolved independently against a
+            // fallback default -- never a silent partial array (same
+            // discipline as HFProps.resolve itself, applied one level
+            // deeper for this list-of-numbers field). Shorter authored
+            // lists CYCLE rather than leaving trailing cells blank, so a
+            // caller supplying fewer values than rows*cols still gets a
+            // fully-formed grid.
+            var rawCells = props.cells
+              .map(function (c) {
+                var n = typeof c === "number" ? c : parseFloat(c);
+                return isFinite(n) ? Math.min(1, Math.max(0, n)) : null;
+              })
+              .filter(function (n) {
+                return n !== null;
+              });
+            if (rawCells.length === 0) rawCells = [0.3];
+
+            var intensities = [];
+            for (var i = 0; i < total; i++) {
+              intensities.push(rawCells[i % rawCells.length]);
+            }
+
+            grid.style.gridTemplateColumns = "repeat(" + cols + ", 1fr)";
+            grid.style.gridTemplateRows = "repeat(" + rows + ", 1fr)";
+
+            var cellEls = [];
+            HFProps.rebuild(grid, function (container) {
+              cellEls = [];
+              intensities.forEach(function (intensity) {
+                var cell = document.createElement("div");
+                cell.className = "hm-cell";
+                var fill = document.createElement("div");
+                fill.className = "hm-cell-fill";
+                cell.appendChild(fill);
+                container.appendChild(cell);
+                cellEls.push({ el: cell, fill: fill, intensity: intensity });
+              });
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(labelEl, props.label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: 90 * rootMin,
+                maxHeight: 1000,
+                baseSize: 3.4 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.5));
+            var stagger = Math.min(
+              props.cell_stagger,
+              Math.max(0.005, (duration - revealAt - 0.6) / Math.max(1, cellEls.length - 1))
+            );
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(labelEl, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, Math.max(0, revealAt - 0.15));
+
+            cellEls.forEach(function (cell, i) {
+              var at = revealAt + i * stagger;
+              tl.to(cell.el, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" }, at);
+              // Minimum 0.12 floor opacity so an intensity of 0 still reads
+              // as an existing (empty) grid cell, never an invisible one.
+              tl.to(cell.fill, { opacity: Math.max(0.12, cell.intensity), duration: 0.35, ease: "power2.out" }, at + 0.05);
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["heatmap-matrix"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

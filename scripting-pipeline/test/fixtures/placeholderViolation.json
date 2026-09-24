@@ -1,0 +1,30 @@
+{
+  "topic": "How DNS resolution works",
+  "topicCategory": "cs-fundamentals",
+  "scenes": [
+    {
+      "sceneId": "scene-1",
+      "componentType": "browser-window",
+      "durationSeconds": 8,
+      "narration": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": {
+        "urlText": "www.wikipedia.org"
+      },
+      "narrationAnchors": []
+    },
+    {
+      "sceneId": "scene-2",
+      "componentType": "kpi-cluster",
+      "durationSeconds": 8,
+      "narration": "This metric panel shows the response times measured for each resolver step in the lookup chain.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": {
+        "statLabel": "kpi-cluster"
+      },
+      "narrationAnchors": []
+    }
+  ]
+}

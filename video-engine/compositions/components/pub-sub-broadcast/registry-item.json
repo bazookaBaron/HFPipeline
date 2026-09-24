@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "pub-sub-broadcast",
+  "type": "hyperframes:component",
+  "title": "Pub/Sub Broadcast",
+  "description": "A publisher node broadcasting a message to N subscriber nodes via a message bus, with pulse dots fanning out along measured connector lines.",
+  "tags": ["architecture", "systems", "messaging", "pubsub", "event-driven"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "pub-sub-broadcast.html",
+      "target": "compositions/components/pub-sub-broadcast/pub-sub-broadcast.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "publisher_label", "type": "string", "default": "New Order Event" },
+    { "id": "subscribers", "type": "string", "default": "Email Service|Inventory Service|Analytics" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "publish_at", "type": "number", "default": 1 },
+    { "id": "fan_stagger", "type": "number", "default": 0.3 },
+    { "id": "travel_duration", "type": "number", "default": 0.9 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

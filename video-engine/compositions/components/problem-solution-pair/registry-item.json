@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "problem-solution-pair",
+  "type": "hyperframes:component",
+  "title": "Problem Solution Pair",
+  "description": "A problem statement (warning icon, red-tinted row) that resolves into a solution statement (check icon, green-tinted row) after a beat.",
+  "tags": ["narrative", "problem", "solution", "contrast"],
+  "category": "narrative",
+  "files": [
+    {
+      "path": "problem-solution-pair.html",
+      "target": "compositions/components/problem-solution-pair/problem-solution-pair.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "problem", "type": "string", "default": "Every deploy takes down the site for 90 seconds." },
+    { "id": "solution", "type": "string", "default": "Roll traffic to the new version gradually behind a load balancer." },
+    { "id": "problem_at", "type": "number", "default": 0.3 },
+    { "id": "solution_at", "type": "number", "default": 1.8 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

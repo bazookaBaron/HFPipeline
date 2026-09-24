@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "trust-boundary",
+  "type": "hyperframes:component",
+  "title": "Trust Boundary",
+  "description": "A dashed trusted-zone boundary box with an inside and outside node, and a labeled request crossing the boundary while it flashes brand-accent (an auth-check beat).",
+  "tags": ["architecture", "systems", "security", "auth", "zone", "boundary"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "trust-boundary.html",
+      "target": "compositions/components/trust-boundary/trust-boundary.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "zone_label", "type": "string", "default": "Trusted Zone" },
+    { "id": "inside_label", "type": "string", "default": "Internal API" },
+    { "id": "outside_label", "type": "string", "default": "Public Client" },
+    { "id": "request_label", "type": "string", "default": "Auth Token" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "cross_at", "type": "number", "default": 1.2 },
+    { "id": "cross_duration", "type": "number", "default": 1.2 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

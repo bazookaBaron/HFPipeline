@@ -1,0 +1,366 @@
+<!doctype html>
+<!--
+  progress-split-bar -- HyperFrames sub-composition (Data / metrics)
+
+  A single bar split into 2-4 proportional segments (e.g. "before vs
+  after", or a percentage split). Segments grow from zero width to their
+  resolved proportion of the total simultaneously, each with its
+  label/percentage revealing as it settles.
+
+  Each segment is a distinct proportion/category (genuinely N content
+  items -- 2-4 of them), so each rotates through its own accent token
+  (--hf-accent, --hf-accent-2, -3, -4, then --hf-brand) rather than
+  sharing one resolved color -- the same per-item rotation discipline as
+  mini-legend.html's SWATCH_ROTATION.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("progress-split-bar");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="progress-split-bar"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "title", "type": "string", "role": "content", "label": "Title", "description": "Heading above the split bar.", "default": "Before vs after" },
+    { "id": "segments", "type": "string", "role": "content", "label": "Segments", "description": "JSON array of {label, value} objects, 2-4 items. Values are normalized to proportions of their sum.", "default": "[{\"label\":\"Before\",\"value\":72},{\"label\":\"After\",\"value\":28}]" },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the title and bar frame appear.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "grow_duration", "type": "number", "role": "timing", "label": "Grow duration", "description": "Seconds the segments take to animate to their proportions.", "default": 0.9, "min": 0.3, "max": 4, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Progress Split Bar</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="progress-split-bar" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .ps-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 6cqmin;
+            padding: 8cqmin 8cqmin;
+          }
+          .ps-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            opacity: 0;
+            transform: translateY(1.4cqmin);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .ps-bar {
+            position: relative;
+            width: 100%;
+            height: 12cqmin;
+            min-height: 34px;
+            border-radius: 2.4cqmin;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            display: flex;
+            overflow: hidden;
+            opacity: 0;
+          }
+          .ps-seg {
+            position: relative;
+            height: 100%;
+            width: 0%;
+            background: var(--hf-brand, #6ea8fe);
+            border-right: 1px solid rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+          }
+          .ps-seg:last-child {
+            border-right: none;
+          }
+          .ps-seg-inner {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.2cqmin;
+            opacity: 0;
+            padding: 0 1cqmin;
+          }
+          .ps-seg-pct {
+            font-weight: 800;
+            /* Color is set per-segment in script from that segment's ACTUAL
+               resolved rotation color's luminance -- a light accent (e.g.
+               --hf-accent-3) needs dark text; a dark one needs light text.
+               This default is a placeholder only. */
+            color: var(--hf-fg, #f4f5f7);
+            font-variant-numeric: tabular-nums;
+            white-space: nowrap;
+          }
+          .ps-caption-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 2cqmin;
+          }
+          .ps-caption {
+            display: flex;
+            align-items: center;
+            gap: 1.2cqmin;
+            opacity: 0;
+            transform: translateY(0.8cqmin);
+          }
+          .ps-caption-swatch {
+            flex: 0 0 auto;
+            width: 1.8cqmin;
+            height: 1.8cqmin;
+            min-width: 8px;
+            min-height: 8px;
+            border-radius: 3px;
+            background: var(--hf-brand, #6ea8fe);
+          }
+          .ps-caption-label {
+            font-weight: 600;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+          }
+        </style>
+
+        <div class="ps-stage" id="ps-stage">
+          <div class="ps-title" id="ps-title"></div>
+          <div class="ps-bar" id="ps-bar"></div>
+          <div class="ps-caption-row" id="ps-caption-row"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "progress-split-bar: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var DEFAULT_SEGMENTS = [
+              { label: "Before", value: 72 },
+              { label: "After", value: 28 },
+            ];
+
+            var SCHEMA = {
+              title: { type: "string", default: "Before vs after", maxLength: 80 },
+              segments: { type: "list", default: DEFAULT_SEGMENTS, max: 4, delimiter: "|" },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              grow_duration: { type: "number", default: 0.9, min: 0.3, max: 4 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("ps-stage");
+            var titleEl = document.getElementById("ps-title");
+            var bar = document.getElementById("ps-bar");
+            var captionRow = document.getElementById("ps-caption-row");
+
+            // Per-segment accent rotation -- each segment is a distinct
+            // proportion/category (the sanctioned per-item case), so each
+            // gets its own token instead of one shared resolved accent.
+            // Accent tokens first, brand last (mini-legend.html convention).
+            var SEGMENT_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            // Real-contrast text color: probe each rotation color's ACTUAL
+            // resolved RGB, then pick dark or light text by real contrast
+            // ratio against it -- never a single hardcoded text color.
+            function parseRgb(str) {
+              var m = /rgba?\(\s*([\d.]+)[,\s]+([\d.]+)[,\s]+([\d.]+)/.exec(str || "");
+              return m ? [parseFloat(m[1]), parseFloat(m[2]), parseFloat(m[3])] : [110, 168, 254];
+            }
+            function relativeLuminance(rgb) {
+              var a = rgb.map(function (v) {
+                v = v / 255;
+                return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+              });
+              return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+            }
+            function contrastRatio(l1, l2) {
+              var lighter = Math.max(l1, l2);
+              var darker = Math.min(l1, l2);
+              return (lighter + 0.05) / (darker + 0.05);
+            }
+            var DARK_TEXT = [11, 13, 16];
+            var LIGHT_TEXT = [244, 245, 247];
+            var darkLum = relativeLuminance(DARK_TEXT);
+            var lightLum = relativeLuminance(LIGHT_TEXT);
+            var probe = document.createElement("div");
+            probe.style.position = "absolute";
+            probe.style.opacity = "0";
+            probe.style.pointerEvents = "none";
+            root.appendChild(probe);
+            var ROTATION_TEXT_COLOR = SEGMENT_ROTATION.map(function (color) {
+              probe.style.background = color;
+              var rgb = parseRgb(getComputedStyle(probe).backgroundColor);
+              var lum = relativeLuminance(rgb);
+              var darkContrast = contrastRatio(lum, darkLum);
+              var lightContrast = contrastRatio(lum, lightLum);
+              return lightContrast > darkContrast ? "rgb(" + LIGHT_TEXT.join(",") + ")" : "rgb(" + DARK_TEXT.join(",") + ")";
+            });
+            root.removeChild(probe);
+
+            function normalizeSegment(raw, i) {
+              raw = raw && typeof raw === "object" ? raw : {};
+              var fallback = DEFAULT_SEGMENTS[i % DEFAULT_SEGMENTS.length];
+              var label = typeof raw.label === "string" && raw.label.trim() ? raw.label.trim() : fallback.label;
+              var value = typeof raw.value === "number" && isFinite(raw.value) && raw.value >= 0 ? raw.value : fallback.value;
+              return { label: label, value: value };
+            }
+
+            var segments = props.segments.slice(0, 4).map(normalizeSegment);
+            if (segments.length < 2) {
+              segments = DEFAULT_SEGMENTS.map(normalizeSegment);
+            }
+
+            var total = segments.reduce(function (sum, s) {
+              return sum + s.value;
+            }, 0) || 1;
+
+            var segEls = [];
+            var captionEls = [];
+            HFProps.rebuild(bar, function (container) {
+              segEls = [];
+              segments.forEach(function (seg, i) {
+                var pct = (seg.value / total) * 100;
+                var color = SEGMENT_ROTATION[i % SEGMENT_ROTATION.length];
+                var el = document.createElement("div");
+                el.className = "ps-seg";
+                el.style.background = color;
+                el.dataset.targetWidth = pct;
+                var inner = document.createElement("div");
+                inner.className = "ps-seg-inner";
+                var pctEl = document.createElement("div");
+                pctEl.className = "ps-seg-pct";
+                pctEl.style.color = ROTATION_TEXT_COLOR[i % ROTATION_TEXT_COLOR.length];
+                pctEl.textContent = "0%";
+                inner.appendChild(pctEl);
+                el.appendChild(inner);
+                container.appendChild(el);
+                segEls.push({ el: el, inner: inner, pctEl: pctEl, pct: pct, seg: seg });
+              });
+            });
+
+            HFProps.rebuild(captionRow, function (container) {
+              captionEls = [];
+              segments.forEach(function (seg, i) {
+                var item = document.createElement("div");
+                item.className = "ps-caption";
+                var swatch = document.createElement("span");
+                swatch.className = "ps-caption-swatch";
+                swatch.style.background = SEGMENT_ROTATION[i % SEGMENT_ROTATION.length];
+                var labelEl = document.createElement("span");
+                labelEl.className = "ps-caption-label";
+                item.appendChild(swatch);
+                item.appendChild(labelEl);
+                container.appendChild(item);
+                captionEls.push({ el: item, labelEl: labelEl, seg: seg });
+              });
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var titleBoxWidth = stage.clientWidth - stage.clientWidth * 0.16;
+
+              HFTextFit.fitOrTruncate(titleEl, props.title, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: titleBoxWidth,
+                maxHeight: 1000,
+                baseSize: 6.4 * rootMin,
+                minSize: 18,
+                maxLines: 1,
+              });
+
+              captionEls.forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.labelEl, item.seg.label + " · " + Math.round((item.seg.value / total) * 100) + "%", {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 600,
+                  maxWidth: Math.max(60, (stage.clientWidth * 0.85) / captionEls.length),
+                  maxHeight: 1000,
+                  baseSize: 2.8 * rootMin,
+                  minSize: 12,
+                  maxLines: 1,
+                });
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.5));
+            var growDur = Math.min(props.grow_duration, Math.max(0.2, duration - revealAt - 0.6));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(titleEl, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, revealAt);
+            tl.fromTo(bar, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, revealAt + 0.15);
+
+            var growAt = revealAt + 0.35;
+            segEls.forEach(function (seg, i) {
+              tl.to(seg.el, { width: seg.pct + "%", duration: growDur, ease: "power2.out" }, growAt);
+              var proxy = { v: 0 };
+              tl.to(
+                proxy,
+                {
+                  v: Math.round((seg.seg.value / total) * 100),
+                  duration: growDur,
+                  ease: "power2.out",
+                  onUpdate: function () {
+                    seg.pctEl.textContent = Math.round(proxy.v) + "%";
+                  },
+                },
+                growAt
+              );
+              tl.to(seg.inner, { opacity: 1, duration: 0.3, ease: "power2.out" }, growAt + growDur * 0.4);
+              tl.fromTo(
+                captionEls[i].el,
+                { opacity: 0, y: 6 },
+                { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
+                growAt
+              );
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["progress-split-bar"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<!--
+  content-panel -- HyperFrames sub-composition (Foundation)
+
+  Generic full-bleed title + bulleted-list scene. The base primitive many
+  Narrative components (definitionCard, takeawayBanner, etc.) can be built
+  as thin variations of. Demonstrates, in one place:
+
+    - a "list" prop (items) resolved through HFProps with a delimiter or
+      JSON-array string, never a raw unchecked read;
+    - clear-and-rebuild for multi-item content (HFProps.rebuild) so a
+      re-seek or a variable change never leaves stale items behind;
+    - text-fit protection on BOTH the title (single line, truncate) and
+      every item (multi-line shrink, up to 2 lines);
+    - frame-filling for a low element count: item font size and vertical
+      rhythm scale up as item count goes down, so 2 items reads as a
+      deliberate full-bleed layout, not a small cluster in a big empty box.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("content-panel"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html lang="en" data-composition-id="content-panel" data-composition-duration="6" data-composition-variables="[
+    { &quot;id&quot;: &quot;title&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Title&quot;, &quot;description&quot;: &quot;Panel headline.&quot;, &quot;default&quot;: &quot;Three things to remember&quot; },
+    { &quot;id&quot;: &quot;items&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Items&quot;, &quot;description&quot;: &quot;Pipe-separated bullet list, e.g. \&quot;First point|Second point|Third point\&quot;. Also accepts a JSON array string.&quot;, &quot;default&quot;: &quot;First point|Second point|Third point&quot; },
+    { &quot;id&quot;: &quot;accent&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Accent&quot;, &quot;description&quot;: &quot;Bullet marker color. Opt-in only; default is the fixed brand accent.&quot;, &quot;default&quot;: &quot;brand&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;brand&quot;, &quot;label&quot;: &quot;Brand&quot; }, { &quot;value&quot;: &quot;accent&quot;, &quot;label&quot;: &quot;Accent&quot; }, { &quot;value&quot;: &quot;accent-2&quot;, &quot;label&quot;: &quot;Accent 2&quot; }, { &quot;value&quot;: &quot;accent-3&quot;, &quot;label&quot;: &quot;Accent 3&quot; }, { &quot;value&quot;: &quot;accent-4&quot;, &quot;label&quot;: &quot;Accent 4&quot; }] },
+    { &quot;id&quot;: &quot;reveal_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Reveal at&quot;, &quot;description&quot;: &quot;Seconds from mount when the title appears.&quot;, &quot;default&quot;: 0.3, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;item_stagger&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Item stagger&quot;, &quot;description&quot;: &quot;Seconds between successive item reveals.&quot;, &quot;default&quot;: 0.5, &quot;min&quot;: 0.1, &quot;max&quot;: 3, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays.&quot;, &quot;default&quot;: 6, &quot;min&quot;: 2, &quot;max&quot;: 30, &quot;step&quot;: 0.1 }
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <title>Content Panel</title>
+  </head>
+  <body>
+    <template>
+      <div data-hf-id="hf-i2tp" id="root" data-composition-id="content-panel" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .cp-panel {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4cqmin;
+            padding: 8cqmin 8cqmin;
+          }
+          .cp-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            opacity: 0;
+            transform: translateY(1.4cqmin);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          /* Short accent underline beneath the title -- a normal-flow flex
+             child (never absolutely positioned/overflowing), pulled up with
+             a negative margin so it adds only a little extra vertical rhythm
+             rather than a full extra gap's worth of space. */
+          .cp-title-rule {
+            flex: 0 0 auto;
+            width: 9cqmin;
+            min-width: 30px;
+            height: 0.5cqmin;
+            min-height: 3px;
+            margin-top: -2.2cqmin;
+            border-radius: 999px;
+            background: var(--cp-accent, var(--hf-brand, #6ea8fe));
+            transform-origin: left center;
+            transform: scaleX(0);
+            opacity: 0;
+          }
+          .cp-items {
+            display: flex;
+            flex-direction: column;
+          }
+          .cp-item {
+            display: flex;
+            align-items: flex-start;
+            opacity: 0;
+            transform: translateY(1.4cqmin);
+          }
+          .cp-bullet {
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: var(--cp-accent, var(--hf-brand, #6ea8fe));
+            margin-top: 0.55em;
+            opacity: 0;
+            transform: scale(0);
+          }
+          .cp-item-text {
+            flex: 1;
+            min-width: 0;
+            font-weight: 500;
+            line-height: 1.28;
+            color: var(--hf-fg, #f4f5f7);
+          }
+        </style>
+
+        <div data-hf-id="hf-bjpa" class="cp-panel" id="cp-panel">
+          <div data-hf-id="hf-5676" class="cp-title" id="cp-title"></div>
+          <div class="cp-title-rule" id="cp-title-rule"></div>
+          <div data-hf-id="hf-z5lu" class="cp-items" id="cp-items"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            // See browser-window.html for the full rationale: HFTextFit /
+            // HFProps are pre-loaded globals, never a relative <script src>
+            // inside this template. Host contract: ../README.md "Shared
+            // library contract".
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "content-panel: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              title: { type: "string", default: "Three things to remember", maxLength: 90 },
+              items: {
+                type: "list",
+                default: ["First point", "Second point", "Third point"],
+                max: 6,
+                delimiter: "|",
+              },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              item_stagger: { type: "number", default: 0.5, min: 0.1, max: 3 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var panel = document.getElementById("cp-panel");
+            var titleEl = document.getElementById("cp-title");
+            var titleRule = document.getElementById("cp-title-rule");
+            var itemsWrap = document.getElementById("cp-items");
+
+            root.style.setProperty("--cp-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Frame-filling for a low element count: fewer items -> larger
+            // type + more breathing room per item, so 2 items reads as a
+            // deliberate full-bleed layout rather than a small cluster
+            // marooned in empty space (README hard rule).
+            var count = Math.max(1, props.items.length);
+            var itemFontCqmin = count <= 2 ? 4.6 : count <= 4 ? 3.6 : 2.9;
+            var itemGapCqmin = count <= 2 ? 5 : count <= 4 ? 3.4 : 2.4;
+            var titleFontCqmin = count <= 2 ? 7.2 : 6.2;
+            itemsWrap.style.gap = itemGapCqmin + "cqmin";
+
+            // Multi-phase clear/rebuild: items are torn down and rebuilt
+            // from props every mount, so a variable change or a re-seek
+            // never leaves a stale item from a previous build alongside a
+            // new one.
+            var itemEls = [];
+            HFProps.rebuild(itemsWrap, function (container) {
+              itemEls = [];
+              props.items.forEach(function (text) {
+                var item = document.createElement("div");
+                item.className = "cp-item";
+                var bullet = document.createElement("span");
+                bullet.className = "cp-bullet";
+                var textEl = document.createElement("span");
+                textEl.className = "cp-item-text";
+                item.appendChild(bullet);
+                item.appendChild(textEl);
+                container.appendChild(item);
+                itemEls.push({ el: item, text: textEl, bullet: bullet });
+              });
+            });
+
+            function layout() {
+              var boxWidth = panel.clientWidth - panel.clientWidth * 0.16;
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+
+              // Title: single line, shrink then truncate.
+              HFTextFit.fitOrTruncate(titleEl, props.title, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: boxWidth,
+                maxHeight: 1000,
+                baseSize: titleFontCqmin * rootMin,
+                minSize: 18,
+                maxLines: 1,
+              });
+
+              // Each item: up to 2 lines, shrink then truncate.
+              itemEls.forEach(function (item) {
+                var bulletSize = itemFontCqmin * rootMin * 0.32;
+                item.bullet.style.width = bulletSize + "px";
+                item.bullet.style.height = bulletSize + "px";
+                HFTextFit.fitOrTruncate(item.text, item.text.dataset.src || item.text.textContent, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 500,
+                  maxWidth: boxWidth - bulletSize - rootMin * 2,
+                  maxHeight: itemFontCqmin * rootMin * 1.28 * 2,
+                  baseSize: itemFontCqmin * rootMin,
+                  minSize: 14,
+                  maxLines: 2,
+                });
+              });
+            }
+
+            // Stash the authored source text before fitOrTruncate mutates
+            // textContent, so re-layout (e.g. after fonts load) re-measures
+            // from the ORIGINAL string rather than an already-truncated one.
+            itemEls.forEach(function (item, i) {
+              item.text.dataset.src = props.items[i];
+            });
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.3));
+            var stagger = props.item_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(titleEl, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, revealAt);
+
+            // Title accent-rule growing in via scaleX, right on the tail of
+            // the title's own fade -- a distinct connecting-line beat rather
+            // than decoration bolted onto the title tween itself.
+            tl.fromTo(
+              titleRule,
+              { scaleX: 0, opacity: 0 },
+              { scaleX: 1, opacity: 1, duration: 0.35, ease: "power2.out" },
+              Math.min(revealAt + 0.3, Math.max(0, duration - 0.3))
+            );
+
+            itemEls.forEach(function (item, i) {
+              var at = Math.min(revealAt + 0.35 + i * stagger, Math.max(0, duration - 0.2));
+              item.at = at;
+              tl.fromTo(
+                item.el,
+                { opacity: 0, y: 14 },
+                { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+                at
+              );
+              // Bullet entrance pop -- punchier back.out reveal, a second
+              // distinct beat per item beyond its own plain fade-in (mirrors
+              // ide-diff-panel's gutter-glyph pop-in and checklist-progress's
+              // per-item flourish).
+              tl.fromTo(
+                item.bullet,
+                { scale: 0, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.5)" },
+                Math.min(at + 0.1, Math.max(0, duration - 0.15))
+              );
+              // Secondary settle: a tiny finite scale flourish once the item
+              // has landed, for a snappier, less-flat reveal. repeat:1 with
+              // yoyo:true is ONE up-down cycle, never a loop.
+              tl.fromTo(
+                item.el,
+                { scale: 1 },
+                { scale: 1.015, duration: 0.12, yoyo: true, repeat: 1, ease: "power1.out" },
+                Math.min(at + 0.4, Math.max(0, duration - 0.1))
+              );
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["content-panel"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

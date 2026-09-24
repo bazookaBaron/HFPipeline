@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "failure-recovery",
+  "type": "hyperframes:component",
+  "title": "Failure Recovery",
+  "description": "A single node illustrating a retry/circuit-breaker pattern: fails (red), works through staggered retry-attempt dots (amber, spinner icon), then recovers (green, checkmark, settle pulse).",
+  "tags": ["architecture", "systems", "reliability", "retry", "circuit-breaker"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "failure-recovery.html",
+      "target": "compositions/components/failure-recovery/failure-recovery.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "node_label", "type": "string", "default": "Payment Service" },
+    { "id": "retry_attempts", "type": "number", "default": 3 },
+    { "id": "fail_at", "type": "number", "default": 0.8 },
+    { "id": "retry_at", "type": "number", "default": 2 },
+    { "id": "recover_at", "type": "number", "default": 4.4 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

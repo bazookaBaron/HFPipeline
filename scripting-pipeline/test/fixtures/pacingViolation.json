@@ -1,0 +1,20 @@
+{
+  "topic": "How DNS resolution works",
+  "topicCategory": "cs-fundamentals",
+  "scenes": [
+    {
+      "sceneId": "scene-1",
+      "componentType": "browser-window",
+      "durationSeconds": 10,
+      "narration": "DNS turns names into numbers.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": {
+        "urlText": "www.wikipedia.org"
+      },
+      "narrationAnchors": [
+        { "anchorText": "DNS", "propPath": "props.urlText" }
+      ]
+    }
+  ]
+}

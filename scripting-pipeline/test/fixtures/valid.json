@@ -1,0 +1,51 @@
+{
+  "topic": "How DNS resolution works",
+  "topicCategory": "cs-fundamentals",
+  "scenes": [
+    {
+      "sceneId": "scene-1",
+      "componentType": "browser-window",
+      "durationSeconds": 8,
+      "narration": "Every time you visit a website, your browser first needs to find the numeric address behind that friendly domain name.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": {
+        "urlText": "www.wikipedia.org",
+        "highlightWord": "domain name"
+      },
+      "narrationAnchors": [
+        { "anchorText": "domain name", "propPath": "props.type_at" }
+      ]
+    },
+    {
+      "sceneId": "scene-2",
+      "componentType": "terminal-session",
+      "durationSeconds": 10,
+      "narration": "It sends the request to a DNS resolver, which checks its cache, then asks a root server and the domain's authoritative server for the answer.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": {
+        "commandText": "dig +short wikipedia.org",
+        "cacheStatus": "cache miss"
+      },
+      "narrationAnchors": [
+        { "anchorText": "root server", "propPath": "props.type_at" }
+      ]
+    },
+    {
+      "sceneId": "scene-3",
+      "componentType": "kpi-cluster",
+      "durationSeconds": 6,
+      "narration": "This lookup happens in milliseconds, which is why the page feels instant almost immediately.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": {
+        "statLabel": "less than 50ms",
+        "statValue": "50ms"
+      },
+      "narrationAnchors": [
+        { "anchorText": "milliseconds", "propPath": "props.reveal_at" }
+      ]
+    }
+  ]
+}

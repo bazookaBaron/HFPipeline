@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "timeline-milestones",
+  "type": "hyperframes:component",
+  "title": "Timeline Milestones",
+  "description": "Horizontal timeline: a rule line grows while N milestone dots pop in with a pulse ring and alternating above/below labels as narration reaches each one.",
+  "tags": ["data", "metrics", "timeline", "milestones", "roadmap"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "timeline-milestones.html",
+      "target": "compositions/components/timeline-milestones/timeline-milestones.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "Project timeline" },
+    { "id": "milestones", "type": "string", "default": "[{\"label\":\"Kickoff\"},{\"label\":\"Design review\"},{\"label\":\"Beta launch\"},{\"label\":\"GA release\"}]" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "milestone_stagger", "type": "number", "default": 0.6 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

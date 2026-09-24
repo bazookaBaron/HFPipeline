@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HyperFrames Control Panel</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="masthead">
+    <div><span class="dot"></span><strong>HyperFrames</strong> <span class="muted">control panel · Phase 6 · local only</span></div>
+    <div class="muted">127.0.0.1</div>
+  </header>
+
+  <main>
+    <section class="grid-2">
+      <!-- CS-Explainer pipeline -->
+      <form class="card" id="form-cs-explainer" data-pipeline="cs-explainer">
+        <div class="card-head">
+          <h2>CS-explainer video</h2>
+          <span class="badge badge-real">wired to real video-engine render</span>
+        </div>
+        <label>Topic
+          <input type="text" name="topic" placeholder="e.g. How hash maps work" value="How hash maps work">
+        </label>
+        <label>Length (seconds)
+          <input type="number" name="lengthSeconds" min="10" max="600" value="60">
+        </label>
+        <div class="row">
+          <label>Accent color
+            <input type="color" name="accentColor" value="#7c5cff">
+          </label>
+          <label>TTS speed
+            <input type="number" name="ttsSpeed" min="0.5" max="2" step="0.05" value="1.0">
+          </label>
+        </div>
+        <label>Brand handle / banner text
+          <input type="text" name="brandHandle" placeholder="@yourhandle" value="@hyperframes.dev">
+        </label>
+        <div class="row row-toggles">
+          <label class="toggle"><input type="checkbox" name="captionsOn" checked> Captions</label>
+          <label class="toggle"><input type="checkbox" name="sfxOn"> SFX</label>
+        </div>
+        <button type="submit" class="run-btn">Run render (real)</button>
+        <p class="hint">Shells out to <code>npx hyperframes render</code> against <code>video-engine/index.html</code> (Phase 1's hardcoded composition), quality=draft. Real process, real MP4, real streamed logs.</p>
+      </form>
+
+      <!-- Carousel pipeline -->
+      <form class="card" id="form-carousel" data-pipeline="carousel">
+        <div class="card-head">
+          <h2>Carousel post</h2>
+          <span class="badge badge-real">wired to real carousel-engine render</span>
+        </div>
+        <label>Topic
+          <input type="text" name="topic" placeholder="e.g. 5 Big-O gotchas" value="5 Big-O gotchas">
+        </label>
+        <label>Length (slides)
+          <input type="number" name="lengthSeconds" min="3" max="15" value="7">
+        </label>
+        <div class="row">
+          <label>Accent color
+            <input type="color" name="accentColor" value="#22c55e">
+          </label>
+          <label>TTS speed
+            <input type="number" name="ttsSpeed" min="0.5" max="2" step="0.05" value="1.0">
+          </label>
+        </div>
+        <label>Brand handle / banner text
+          <input type="text" name="brandHandle" placeholder="@yourhandle" value="@hyperframes.dev">
+        </label>
+        <div class="row row-toggles">
+          <label class="toggle"><input type="checkbox" name="captionsOn" checked> Captions</label>
+          <label class="toggle"><input type="checkbox" name="sfxOn"> SFX</label>
+        </div>
+        <button type="submit" class="run-btn">Run render (real)</button>
+        <p class="hint">Shells out to carousel-engine's real <code>render.js</code> (Puppeteer, sample-carousel.json). This checks at run time whether carousel-engine has a working render entrypoint; if it ever doesn't (e.g. mid-refactor), it reports an honest stub instead of faking an image.</p>
+      </form>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>30-day topic calendar</h2>
+        <span class="badge badge-real">real Gemini + real full pipeline per click</span>
+      </div>
+      <p class="hint">Generates 30 distinct CS/tech topics via a real Gemini call, one per day. Click any topic to immediately kick off BOTH a real cs-explainer video run and a real carousel run for it -- uses your active cloned voice if you've uploaded one.</p>
+      <div class="row">
+        <button type="button" id="topics-generate-btn">Generate 30 topics</button>
+        <span id="topics-generate-status" class="muted"></span>
+      </div>
+      <div id="topics-list" class="topics-list">
+        <p class="muted">No topic calendar yet -- click "Generate 30 topics".</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head">
+        <h2>Live run</h2>
+        <span id="run-status" class="status-pill status-idle">idle</span>
+      </div>
+      <div id="phase-timeline" class="phase-timeline"></div>
+      <pre id="log-console" class="log-console">Run one of the pipelines above to see live logs here.</pre>
+      <div id="preview-area" class="preview-area" hidden>
+        <h3>Result preview</h3>
+        <video id="preview-video" controls hidden></video>
+        <div id="preview-gallery" class="gallery" hidden></div>
+        <div id="preview-empty" class="muted" hidden>No renderable output for this run (stubbed).</div>
+        <div id="output-folder" class="output-folder" hidden>
+          <code id="output-folder-path"></code>
+          <button type="button" id="output-folder-open" class="quiet">Open folder</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" id="review-panel" hidden>
+      <div class="card-head"><h2>Review &amp; publish</h2><span class="muted">for run <code id="review-run-id"></code></span></div>
+      <label>Title
+        <input type="text" id="review-title" placeholder="Video / post title">
+      </label>
+      <label>Caption
+        <textarea id="review-caption" rows="4" placeholder="Caption text..."></textarea>
+      </label>
+      <label>Hashtags
+        <input type="text" id="review-hashtags" placeholder="#dsa #hashmap #csexplained">
+      </label>
+      <div class="row">
+        <button type="button" id="save-review">Save edits</button>
+      </div>
+      <div class="row row-publish">
+        <button type="button" id="publish-youtube" class="publish-btn">Publish to YouTube (not yet wired)</button>
+        <button type="button" id="publish-instagram" class="publish-btn">Publish to Instagram (not yet wired)</button>
+      </div>
+      <p id="publish-result" class="hint"></p>
+    </section>
+
+    <section class="grid-2">
+      <div class="card">
+        <div class="card-head"><h2>YouTube reconnect</h2></div>
+        <p id="youtube-status" class="muted">checking…</p>
+        <div class="row">
+          <button type="button" id="youtube-connect">Connect / Reconnect YouTube</button>
+          <button type="button" id="youtube-force-expire" class="quiet">Force-expire (test)</button>
+        </div>
+        <p class="hint">Real Google OAuth exchange is a placeholder (Phase 7). The click → redirect → consent → callback → reconnected shape is fully real and testable now.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head"><h2>Voice-clone reference upload</h2></div>
+        <p class="hint">Upload a short reference clip of the voice to clone (auto-trimmed to ~12s if longer) plus the exact words spoken in it -- F5-TTS needs the real transcript to clone the voice correctly. Once uploaded, every CS-explainer video you generate uses this voice instead of the default reference.</p>
+        <label for="voice-ref-text">Reference transcript (exact words spoken in the clip)</label>
+        <textarea id="voice-ref-text" rows="2" placeholder="e.g. Hi, this is my voice sample for cloning. I'm reading this sentence naturally."></textarea>
+        <input type="file" id="voice-file" accept="audio/wav,audio/mpeg,audio/mp4,.wav,.mp3,.m4a">
+        <button type="button" id="voice-upload-btn">Upload &amp; set as active voice</button>
+        <p id="voice-status" class="muted">no upload yet</p>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>Run history</h2></div>
+      <table class="history-table">
+        <thead>
+          <tr><th>ID</th><th>Pipeline</th><th>Topic</th><th>Status</th><th>Started</th><th>Result</th></tr>
+        </thead>
+        <tbody id="history-body"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

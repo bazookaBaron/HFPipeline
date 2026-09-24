@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "step-list-card",
+  "type": "hyperframes:component",
+  "title": "Step List Card",
+  "description": "A small card of 2-5 numbered sequential instructions with colored numerals, staggered reveal -- a compact companion card (e.g. beside a terminal), not a checkbox progress tracker.",
+  "tags": ["narrative", "software-mockup", "steps", "instructions", "list"],
+  "category": "narrative",
+  "files": [
+    {
+      "path": "step-list-card.html",
+      "target": "compositions/components/step-list-card/step-list-card.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "" },
+    { "id": "steps", "type": "string", "default": "stash your feature|switch to hotfix|fix, commit, push|pop your stash back" },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "step_stagger", "type": "number", "default": 0.3 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

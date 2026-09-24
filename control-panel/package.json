@@ -1,0 +1,12 @@
+{
+  "name": "hf-control-panel",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Phase 6: local browser control panel for the HyperFrames pipeline (plain HTML/JS over a small Node server, no framework).",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {}
+}

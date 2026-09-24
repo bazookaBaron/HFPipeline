@@ -1,0 +1,309 @@
+<!doctype html>
+<!--
+  etl-pipeline -- HyperFrames sub-composition (Architecture)
+
+  A horizontal Extract -> Transform -> Load pipeline: three stage boxes
+  connected by dashed tracks, with a single data block traveling through
+  each stage in turn. Each stage box highlights (border + icon lit) for
+  the window while the data block occupies it, then dims again once the
+  block moves on -- proving a straight-through pipeline pattern distinct
+  from client-server-exchange.html's round-trip request/response shape.
+
+  Stage positions are measured ONCE from real layout via
+  getBoundingClientRect, exactly like client-server-exchange.html, and
+  baked into the GSAP timeline before any tween reads them.
+
+  Per-stage color rotation (added in the aesthetic-plan pass): each of the
+  3 stage boxes (Extract/Transform/Load are 3 distinct content items) gets
+  its own active-highlight color -- border + icon -- cycling through
+  --hf-accent, -2, -3 by stage index, via a NEW --ep-stage-accent custom
+  property set once per box before the timeline captures references
+  (mini-legend.html's/kpi-cluster.html's established pattern). The
+  existing `accent` prop is KEPT: it still legitimately controls the ONE
+  traveling data block, a single continuous piece of data moving through
+  the pipeline rather than a per-item content list.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("etl-pipeline"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="etl-pipeline"
+  data-composition-duration="7"
+  data-composition-variables='[
+    { "id": "extract_label", "type": "string", "role": "content", "label": "Extract label", "description": "First stage label.", "default": "Extract" },
+    { "id": "transform_label", "type": "string", "role": "content", "label": "Transform label", "description": "Second stage label.", "default": "Transform" },
+    { "id": "load_label", "type": "string", "role": "content", "label": "Load label", "description": "Third stage label.", "default": "Load" },
+    { "id": "data_label", "type": "string", "role": "content", "label": "Data label", "description": "Text on the traveling data block.", "default": "raw.csv" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Active-stage border + data-block color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "start_at", "type": "number", "role": "timing", "label": "Start at", "description": "Seconds from mount when the data block enters the Extract stage.", "default": 0.6, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "stage_duration", "type": "number", "role": "timing", "label": "Stage duration", "description": "Seconds spent inside each stage (processing + travel to next).", "default": 1.5, "min": 0.4, "max": 5, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 7, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>ETL Pipeline</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="etl-pipeline" data-duration="7" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .ep-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6cqmin;
+          }
+          .ep-box {
+            position: relative;
+            z-index: 2;
+            flex: 1 1 0;
+            max-width: 26cqmin;
+            height: 30cqmin;
+            min-height: 100px;
+            border-radius: 2.4cqmin;
+            border: 0.32cqmin solid var(--hf-border, #2c2f36);
+            background: var(--hf-surface, #16181c);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.6cqmin;
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+            transition: border-color 0.25s, box-shadow 0.25s;
+          }
+          .ep-box.ep-active {
+            border-color: var(--ep-stage-accent, var(--hf-brand, #6ea8fe));
+            box-shadow: 0 0 3cqmin rgba(110, 168, 254, 0.25);
+          }
+          .ep-box-icon {
+            width: 7.6cqmin;
+            height: 7.6cqmin;
+            min-width: 26px;
+            min-height: 26px;
+            border-radius: 1.4cqmin;
+            background: var(--hf-border, #2c2f36);
+            transition: background 0.25s;
+          }
+          .ep-box.ep-active .ep-box-icon {
+            background: var(--ep-stage-accent, var(--hf-brand, #6ea8fe));
+          }
+          .ep-box-label {
+            font-weight: 800;
+            font-size: 3.4cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 22cqmin;
+          }
+          .ep-track {
+            position: absolute;
+            top: 50%;
+            height: 0;
+            border-top: 0.28cqmin dashed var(--hf-border, #2c2f36);
+            transform: translateY(-50%);
+            z-index: 1;
+          }
+          .ep-block {
+            position: absolute;
+            top: 50%;
+            z-index: 3;
+            padding: 1.4cqmin 2.4cqmin;
+            border-radius: 999px;
+            background: var(--ep-accent, var(--hf-brand, #6ea8fe));
+            color: var(--hf-bg, #0b0d10);
+            font-weight: 700;
+            font-size: 2.6cqmin;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translate(0, -50%);
+          }
+        </style>
+
+        <div class="ep-stage" id="ep-stage">
+          <div class="ep-box" id="ep-box-extract">
+            <div class="ep-box-icon"></div>
+            <div class="ep-box-label" id="ep-label-extract"></div>
+          </div>
+          <div class="ep-track" id="ep-track-1"></div>
+          <div class="ep-box" id="ep-box-transform">
+            <div class="ep-box-icon"></div>
+            <div class="ep-box-label" id="ep-label-transform"></div>
+          </div>
+          <div class="ep-track" id="ep-track-2"></div>
+          <div class="ep-box" id="ep-box-load">
+            <div class="ep-box-icon"></div>
+            <div class="ep-box-label" id="ep-label-load"></div>
+          </div>
+          <div class="ep-block" id="ep-block"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "etl-pipeline: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              extract_label: { type: "string", default: "Extract", maxLength: 24 },
+              transform_label: { type: "string", default: "Transform", maxLength: 24 },
+              load_label: { type: "string", default: "Load", maxLength: 24 },
+              data_label: { type: "string", default: "raw.csv", maxLength: 24 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              start_at: { type: "number", default: 0.6, min: 0, max: 30 },
+              stage_duration: { type: "number", default: 1.5, min: 0.4, max: 5 },
+              duration: { type: "number", default: 7, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("ep-stage");
+            var boxes = [
+              { el: document.getElementById("ep-box-extract"), label: document.getElementById("ep-label-extract"), text: props.extract_label },
+              { el: document.getElementById("ep-box-transform"), label: document.getElementById("ep-label-transform"), text: props.transform_label },
+              { el: document.getElementById("ep-box-load"), label: document.getElementById("ep-label-load"), text: props.load_label },
+            ];
+            var track1 = document.getElementById("ep-track-1");
+            var track2 = document.getElementById("ep-track-2");
+            var block = document.getElementById("ep-block");
+
+            root.style.setProperty("--ep-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Per-stage rotation, matching mini-legend.html/kpi-cluster.html exactly --
+            // real hex fallbacks (not bare var() refs) so this still renders correctly
+            // in isolation. Applied once per box, before the timeline below captures
+            // element references. This is separate from the `accent` prop above, which
+            // stays scoped to the single traveling data block.
+            var STAGE_ACCENT_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+            boxes.forEach(function (box, i) {
+              box.el.style.setProperty("--ep-stage-accent", STAGE_ACCENT_ROTATION[i % STAGE_ACCENT_ROTATION.length]);
+            });
+
+            function fitAll() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              boxes.forEach(function (box) {
+                HFTextFit.fitOrTruncate(box.label, box.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 800,
+                  maxWidth: 22 * rootMin,
+                  maxHeight: 1000,
+                  baseSize: 3.4 * rootMin,
+                  minSize: 14,
+                  maxLines: 1,
+                });
+              });
+              HFTextFit.fitOrTruncate(block, props.data_label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: 34 * rootMin,
+                maxHeight: 1000,
+                baseSize: 2.6 * rootMin,
+                minSize: 12,
+                maxLines: 1,
+              });
+            }
+
+            fitAll();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(fitAll);
+            }
+
+            // Measure ONCE from real layout, relative to #root.
+            var rootRect = root.getBoundingClientRect();
+            var rects = boxes.map(function (b) {
+              return b.el.getBoundingClientRect();
+            });
+            function centerX(r) {
+              return r.left + r.width / 2 - rootRect.left;
+            }
+
+            track1.style.left = rects[0].right - rootRect.left + "px";
+            track1.style.width = Math.max(0, rects[1].left - rects[0].right) + "px";
+            track2.style.left = rects[1].right - rootRect.left + "px";
+            track2.style.width = Math.max(0, rects[2].left - rects[1].right) + "px";
+
+            var blockHalfWidth = block.getBoundingClientRect().width / 2 || 50;
+            var centers = rects.map(centerX);
+
+            var duration = props.duration;
+            var startAt = Math.min(props.start_at, Math.max(0, duration - 1));
+            var stageDur = Math.min(props.stage_duration, Math.max(0.3, (duration - startAt) / 3));
+
+            var tl = gsap.timeline({ paused: true });
+            boxes.forEach(function (box, i) {
+              tl.fromTo(box.el, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, 0.15 + i * 0.1);
+            });
+
+            block.style.left = centers[0] - blockHalfWidth + "px";
+
+            var travelDur = stageDur * 0.55;
+            var holdDur = stageDur * 0.45;
+
+            boxes.forEach(function (box, i) {
+              var arriveAt = startAt + i * stageDur;
+              tl.set(block, { left: centers[i] - blockHalfWidth, opacity: i === 0 ? 0 : 1 }, Math.max(0, arriveAt - 0.01));
+              if (i === 0) {
+                tl.to(block, { opacity: 1, duration: 0.15, ease: "power1.out" }, arriveAt);
+              }
+              tl.set(box.el, { className: "ep-box ep-active" }, arriveAt);
+              tl.set(box.el, { className: "ep-box" }, arriveAt + holdDur);
+              if (i < boxes.length - 1) {
+                tl.to(
+                  block,
+                  { left: centers[i + 1] - blockHalfWidth, duration: travelDur, ease: "power1.inOut" },
+                  arriveAt + holdDur
+                );
+              } else {
+                // Final stage: fade the block out after its hold instead of
+                // traveling further.
+                tl.to(block, { opacity: 0, duration: 0.3, ease: "power1.in" }, arriveAt + holdDur + 0.3);
+              }
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["etl-pipeline"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,410 @@
+<!doctype html>
+<!--
+  cache-hit-miss -- HyperFrames sub-composition (Architecture)
+
+  A request travels from a client node into a cache box, which branches
+  into two pre-drawn paths: a short "hit" path (green, fast) straight to
+  the response, and a longer "miss" path (amber, falls through to a
+  backend box before reaching the response). Both paths are always drawn
+  dim so the branch itself is legible; only the path matching `outcome`
+  animates at full brightness with a traveling dot, matching the
+  measure-once/linear-interpolation discipline used across this batch's
+  other diagrams.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("cache-hit-miss"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="cache-hit-miss"
+  data-composition-duration="7"
+  data-composition-variables='[
+    { "id": "outcome", "type": "enum", "role": "content", "label": "Outcome", "description": "Which branch this request takes.", "default": "hit", "options": [{ "value": "hit", "label": "Cache hit" }, { "value": "miss", "label": "Cache miss" }] },
+    { "id": "request_label", "type": "string", "role": "content", "label": "Request label", "description": "Label on the incoming request node.", "default": "GET /user/42" },
+    { "id": "cache_label", "type": "string", "role": "content", "label": "Cache label", "description": "Label on the cache box.", "default": "Cache" },
+    { "id": "backend_label", "type": "string", "role": "content", "label": "Backend label", "description": "Label on the fallback backend box (miss path only).", "default": "Database" },
+    { "id": "request_at", "type": "number", "role": "timing", "label": "Request at", "description": "Seconds from mount when the request departs toward the cache.", "default": 0.6, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "branch_at", "type": "number", "role": "timing", "label": "Branch at", "description": "Seconds from mount when the cache branches down the hit or miss path.", "default": 1.6, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 7, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cache Hit Miss</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="cache-hit-miss" data-duration="7" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .chm-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+          }
+          .chm-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+          }
+          .chm-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2.6cqmin;
+            border: 0.3cqmin solid var(--hf-border, #2c2f36);
+            background: var(--hf-surface, #16181c);
+            opacity: 0;
+            padding: 1.6cqmin;
+            text-align: center;
+          }
+          .chm-node-label {
+            font-weight: 700;
+            font-size: 2.7cqmin;
+            /* Real layout bug found in production check: this was `white-space: nowrap`,
+               which silently defeats the `maxLines: 2` passed to HFTextFit.fitOrTruncate()
+               below -- fitOrTruncate picks a font size assuming 2-line wrap capacity, but
+               nowrap prevents any actual wrapping, so a long label overflows on one line
+               instead. Real wrapping (up to the same 2 lines fitOrTruncate was already told
+               about) fixes it without changing the text-fit call itself. */
+            white-space: normal;
+            overflow-wrap: break-word;
+            overflow: hidden;
+            max-width: 100%;
+            /* Real WCAG contrast bug found in production check: the miss-path SVG dot/line
+               (amber, matching this node's amber border-color) travels through the backend
+               node and can visually sit behind this label at certain timestamps, dropping
+               white-on-amber contrast to ~1.46:1. An opaque backdrop chip guarantees legible
+               contrast regardless of whatever animates behind it, without touching the SVG
+               path/z-order logic. */
+            background: var(--hf-surface, #16181c);
+            border-radius: 1.2cqmin;
+            padding: 0.3cqmin 0.9cqmin;
+            position: relative;
+            z-index: 1;
+          }
+          .chm-request {
+            width: 24cqmin;
+            height: 12cqmin;
+            min-width: 96px;
+            min-height: 48px;
+            left: 6cqw;
+            top: 14cqh;
+          }
+          .chm-cache {
+            width: 24cqmin;
+            height: 14cqmin;
+            min-width: 96px;
+            min-height: 56px;
+            left: 50%;
+            top: 38cqh;
+            transform: translateX(-50%);
+            border-color: var(--hf-brand, #6ea8fe);
+          }
+          .chm-backend {
+            width: 24cqmin;
+            height: 12cqmin;
+            min-width: 96px;
+            min-height: 48px;
+            left: 12cqw;
+            bottom: 12cqh;
+            border-color: #ffb84d;
+          }
+          .chm-response {
+            width: 24cqmin;
+            height: 12cqmin;
+            min-width: 96px;
+            min-height: 48px;
+            right: 8cqw;
+            bottom: 12cqh;
+          }
+          .chm-tag {
+            position: absolute;
+            padding: 0.8cqmin 2.2cqmin;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 2.2cqmin;
+            opacity: 0;
+          }
+          .chm-tag.hit {
+            background: #71f5a7;
+            color: #063616;
+          }
+          .chm-tag.miss {
+            background: #ffb84d;
+            color: #3a2400;
+          }
+        </style>
+
+        <div class="chm-stage" id="chm-stage">
+          <svg class="chm-svg" id="chm-svg" preserveAspectRatio="none"></svg>
+          <div class="chm-node chm-request" id="chm-request">
+            <div class="chm-node-label" id="chm-request-label"></div>
+          </div>
+          <div class="chm-node chm-cache" id="chm-cache">
+            <div class="chm-node-label" id="chm-cache-label"></div>
+          </div>
+          <div class="chm-node chm-backend" id="chm-backend">
+            <div class="chm-node-label" id="chm-backend-label"></div>
+          </div>
+          <div class="chm-node chm-response" id="chm-response">
+            <div class="chm-node-label">Response</div>
+          </div>
+          <div class="chm-tag hit" id="chm-tag-hit">HIT</div>
+          <div class="chm-tag miss" id="chm-tag-miss">MISS</div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "cache-hit-miss: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SVG_NS = "http://www.w3.org/2000/svg";
+
+            var SCHEMA = {
+              outcome: { type: "enum", default: "hit", options: ["hit", "miss"] },
+              request_label: { type: "string", default: "GET /user/42", maxLength: 26 },
+              cache_label: { type: "string", default: "Cache", maxLength: 20 },
+              backend_label: { type: "string", default: "Database", maxLength: 20 },
+              request_at: { type: "number", default: 0.6, min: 0, max: 30 },
+              branch_at: { type: "number", default: 1.6, min: 0, max: 30 },
+              duration: { type: "number", default: 7, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("chm-stage");
+            var svg = document.getElementById("chm-svg");
+            var requestNode = document.getElementById("chm-request");
+            var requestLabelEl = document.getElementById("chm-request-label");
+            var cacheNode = document.getElementById("chm-cache");
+            var cacheLabelEl = document.getElementById("chm-cache-label");
+            var backendNode = document.getElementById("chm-backend");
+            var backendLabelEl = document.getElementById("chm-backend-label");
+            var responseNode = document.getElementById("chm-response");
+            var tagHit = document.getElementById("chm-tag-hit");
+            var tagMiss = document.getElementById("chm-tag-miss");
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              [
+                { el: requestLabelEl, text: props.request_label, box: requestNode },
+                { el: cacheLabelEl, text: props.cache_label, box: cacheNode },
+                { el: backendLabelEl, text: props.backend_label, box: backendNode },
+              ].forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.el, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: item.box.clientWidth * 0.86,
+                  maxHeight: 1000,
+                  baseSize: 2.7 * rootMin,
+                  minSize: 11,
+                  maxLines: 2,
+                });
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function () {
+                layout();
+                buildTimeline();
+              });
+            }
+
+            var duration = props.duration;
+            var requestAt = Math.min(props.request_at, Math.max(0, duration - 2));
+            var branchAt = Math.min(Math.max(props.branch_at, requestAt + 0.6), Math.max(0, duration - 1.2));
+            var isHit = props.outcome === "hit";
+
+            var tl = gsap.timeline({ paused: true });
+
+            function edgePoint(el, stageRect, side) {
+              var r = el.getBoundingClientRect();
+              var x, y;
+              if (side === "top") {
+                x = r.left + r.width / 2;
+                y = r.top;
+              } else if (side === "bottom") {
+                x = r.left + r.width / 2;
+                y = r.bottom;
+              } else if (side === "left") {
+                x = r.left;
+                y = r.top + r.height / 2;
+              } else {
+                x = r.right;
+                y = r.top + r.height / 2;
+              }
+              return { x: x - stageRect.left, y: y - stageRect.top };
+            }
+
+            function addPath(points, color, opacity) {
+              var d = "M " + points.map(function (p) { return p.x + " " + p.y; }).join(" L ");
+              var path = document.createElementNS(SVG_NS, "path");
+              path.setAttribute("d", d);
+              path.setAttribute("stroke", color);
+              path.setAttribute("stroke-width", "2.4");
+              path.setAttribute("fill", "none");
+              path.setAttribute("opacity", opacity);
+              svg.appendChild(path);
+              return path;
+            }
+
+            function addDot(color) {
+              var dot = document.createElementNS(SVG_NS, "circle");
+              dot.setAttribute("r", "5.5");
+              dot.setAttribute("fill", color);
+              dot.setAttribute("opacity", "0");
+              svg.appendChild(dot);
+              return dot;
+            }
+
+            function travelPath(dot, points, at, totalDur) {
+              // Piecewise-linear travel across a polyline: interpolate
+              // within whichever segment the overall progress `t` falls
+              // in, same measure-once/linear-interpolation approach as
+              // this batch's single-segment components, just chained.
+              var segLens = [];
+              var total = 0;
+              for (var i = 1; i < points.length; i++) {
+                var len = Math.hypot(points[i].x - points[i - 1].x, points[i].y - points[i - 1].y);
+                segLens.push(len);
+                total += len;
+              }
+              var proxy = { t: 0 };
+              tl.set(dot, { attr: { opacity: 1, cx: points[0].x, cy: points[0].y } }, at);
+              tl.to(
+                proxy,
+                {
+                  t: 1,
+                  duration: totalDur,
+                  ease: "power1.inOut",
+                  onUpdate: function () {
+                    var dist = proxy.t * total;
+                    var i = 0;
+                    while (i < segLens.length - 1 && dist > segLens[i]) {
+                      dist -= segLens[i];
+                      i++;
+                    }
+                    var segLen = segLens[i] || 1;
+                    var f = Math.min(1, dist / segLen);
+                    var a = points[i];
+                    var b = points[i + 1];
+                    dot.setAttribute("cx", a.x + (b.x - a.x) * f);
+                    dot.setAttribute("cy", a.y + (b.y - a.y) * f);
+                  },
+                },
+                at
+              );
+              tl.to(dot, { attr: { opacity: 0 }, duration: 0.15 }, at + totalDur);
+            }
+
+            function buildTimeline() {
+              tl.clear();
+              while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+              var stageRect = stage.getBoundingClientRect();
+              var reqOut = edgePoint(requestNode, stageRect, "bottom");
+              var cacheIn = edgePoint(cacheNode, stageRect, "top");
+              var cacheOutHit = edgePoint(cacheNode, stageRect, "right");
+              var respIn = edgePoint(responseNode, stageRect, "top");
+              var cacheOutMiss = edgePoint(cacheNode, stageRect, "left");
+              var backendIn = edgePoint(backendNode, stageRect, "top");
+              var backendOut = edgePoint(backendNode, stageRect, "right");
+              var respIn2 = edgePoint(responseNode, stageRect, "left");
+
+              var hitPoints = [cacheOutHit, respIn];
+              var missPoints = [cacheOutMiss, backendIn, backendOut, respIn2];
+
+              // Both branches are always drawn, dim, so the branch itself
+              // reads even on the path not taken this instance.
+              addPath([reqOut, cacheIn], "var(--hf-border, #2c2f36)", isHit ? "0.35" : "0.35");
+              var hitPath = addPath(hitPoints, "#71f5a7", isHit ? "0.9" : "0.25");
+              var missPath = addPath(missPoints, "#ffb84d", isHit ? "0.25" : "0.9");
+
+              tl.fromTo(requestNode, { opacity: 0, y: -10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.1);
+              tl.fromTo(cacheNode, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.25);
+              tl.fromTo(responseNode, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0.35);
+              // Real WCAG contrast bug found in production check (see .chm-node-label's own
+              // comment): a slow opacity fade-in here blends this node's semi-transparent
+              // pixels with the always-visible dim amber miss-path line rendered behind it,
+              // producing an amber-tinted composite that fails contrast during the fade
+              // window -- `check` samples transition boundaries, so this was hit reliably,
+              // not a rare fluke. Fixed by snapping opacity instantly (no continuous blend
+              // window) and using a scale-pop for the reveal polish instead.
+              tl.set(backendNode, { opacity: isHit ? 0.45 : 1 }, 0.4);
+              tl.fromTo(backendNode, { scale: 0.92 }, { scale: 1, duration: 0.25, ease: "power2.out" }, 0.4);
+
+              var reqDot = addDot("var(--hf-fg, #f4f5f7)");
+              travelPath(reqDot, [reqOut, cacheIn], requestAt, 0.5);
+              tl.to(cacheNode, { scale: 1.05, duration: 0.14, ease: "power1.out" }, requestAt + 0.48);
+              tl.to(cacheNode, { scale: 1, duration: 0.2, ease: "power1.in" }, requestAt + 0.62);
+
+              var tag = isHit ? tagHit : tagMiss;
+              tl.call(
+                function () {
+                  var cacheRect = cacheNode.getBoundingClientRect();
+                  var rootRect = root.getBoundingClientRect();
+                  tag.style.left = cacheRect.right - rootRect.left + 8 + "px";
+                  tag.style.top = cacheRect.top - rootRect.top - 24 + "px";
+                },
+                null,
+                Math.max(0, branchAt - 0.01)
+              );
+              tl.fromTo(tag, { opacity: 0, y: -6 }, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, branchAt);
+
+              if (isHit) {
+                var hitDot = addDot("#71f5a7");
+                travelPath(hitDot, hitPoints, branchAt + 0.15, 0.5);
+                tl.to(responseNode, { scale: 1.05, duration: 0.14, ease: "power1.out" }, branchAt + 0.63);
+                tl.to(responseNode, { scale: 1, duration: 0.2, ease: "power1.in" }, branchAt + 0.77);
+              } else {
+                var missDot = addDot("#ffb84d");
+                travelPath(missDot, missPoints, branchAt + 0.15, 0.9);
+                tl.to(backendNode, { scale: 1.05, duration: 0.14, ease: "power1.out" }, branchAt + 0.55);
+                tl.to(backendNode, { scale: 1, duration: 0.2, ease: "power1.in" }, branchAt + 0.69);
+                tl.to(responseNode, { scale: 1.05, duration: 0.14, ease: "power1.out" }, branchAt + 1.03);
+                tl.to(responseNode, { scale: 1, duration: 0.2, ease: "power1.in" }, branchAt + 1.17);
+              }
+
+              // Pad tl.duration() to the authored `duration` prop -- see the
+              // matching comment in browser-window.html for why.
+              tl.set({}, {}, duration);
+              tl.seek(0, false);
+            }
+
+            buildTimeline();
+            window.__timelines["cache-hit-miss"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

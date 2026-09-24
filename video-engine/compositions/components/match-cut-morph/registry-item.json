@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "match-cut-morph",
+  "type": "hyperframes:component",
+  "title": "Match Cut Morph",
+  "description": "A reusable match-cut transition: one shape element morphs its position, size, and corner radius from a before placement to an after placement while its caption crossfades underneath.",
+  "tags": ["editing", "transition", "morph", "match-cut", "shape"],
+  "category": "editing",
+  "files": [
+    {
+      "path": "match-cut-morph.html",
+      "target": "compositions/components/match-cut-morph/match-cut-morph.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "before_label", "type": "string", "default": "One request" },
+    { "id": "after_label", "type": "string", "default": "One response" },
+    { "id": "before_shape", "type": "enum", "default": "circle", "options": ["circle", "square", "rounded"] },
+    { "id": "after_shape", "type": "enum", "default": "rounded", "options": ["circle", "square", "rounded"] },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "morph_at", "type": "number", "default": 1.4 },
+    { "id": "duration", "type": "number", "default": 4 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

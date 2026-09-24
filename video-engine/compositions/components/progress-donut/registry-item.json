@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "progress-donut",
+  "type": "hyperframes:component",
+  "title": "Progress Donut",
+  "description": "A circular donut progress ring animating 0 to a target percentage with a synced count-up number at its center, built from the ring's own measured circumference (stroke-dasharray/dashoffset).",
+  "tags": ["data-metrics", "chart", "donut", "progress", "ring", "count-up"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "progress-donut.html",
+      "target": "compositions/components/progress-donut/progress-donut.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "label", "type": "string", "default": "Storage Used" },
+    { "id": "target_percent", "type": "number", "default": 72 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.4 },
+    { "id": "fill_duration", "type": "number", "default": 1.6 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

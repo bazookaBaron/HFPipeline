@@ -1,0 +1,362 @@
+<!doctype html>
+<!--
+  fan-out-fan-in -- HyperFrames sub-composition (Architecture)
+
+  One source node fans out to N parallel worker nodes, which fan back into
+  one sink node. Connector lines are static SVG <line>s; dots travel
+  source -> worker (fan-out) then worker -> sink (fan-in) by linear
+  interpolation of cx/cy, driven by a GSAP proxy tween -- the same
+  measure-once-bake-into-timeline discipline as
+  client-server-exchange.html's packet and actor-to-system-funnel.html's
+  flow dots, extended to two hops instead of one.
+
+  Per-branch color rotation (added in the aesthetic-plan pass): each of the
+  N parallel worker nodes -- the actual "N simultaneous content items" --
+  gets its own color (border + both its fan-out and fan-in travel dots),
+  cycling through --hf-accent, -2, -3, -4, then --hf-brand by worker index,
+  via a NEW --ffi-worker-accent custom property set once per worker before
+  the timeline captures references (mini-legend.html's/kpi-cluster.html's
+  established pattern). The existing `accent` prop is KEPT: it still
+  legitimately controls the single source and single sink nodes, which are
+  singular endpoints, not part of the per-branch content list.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("fan-out-fan-in"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="fan-out-fan-in"
+  data-composition-duration="8"
+  data-composition-variables='[
+    { "id": "worker_count", "type": "number", "role": "content", "label": "Worker count", "description": "Number of parallel worker nodes.", "default": 4, "min": 2, "max": 5, "step": 1 },
+    { "id": "source_label", "type": "string", "role": "content", "label": "Source label", "description": "Label on the fan-out origin node.", "default": "Dispatcher" },
+    { "id": "worker_label", "type": "string", "role": "content", "label": "Worker label", "description": "Label prefix on each worker node (numbered automatically).", "default": "Worker" },
+    { "id": "sink_label", "type": "string", "role": "content", "label": "Sink label", "description": "Label on the fan-in destination node.", "default": "Aggregator" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Node border + connector/dot color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "fanout_at", "type": "number", "role": "timing", "label": "Fan-out at", "description": "Seconds from mount when dots travel from source to workers.", "default": 0.8, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "fanin_at", "type": "number", "role": "timing", "label": "Fan-in at", "description": "Seconds from mount when dots travel from workers to the sink.", "default": 2.6, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 8, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Fan Out Fan In</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="fan-out-fan-in" data-duration="8" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .ffi-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+          }
+          .ffi-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+          }
+          .ffi-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2.6cqmin;
+            border: 0.3cqmin solid var(--ffi-accent, var(--hf-brand, #6ea8fe));
+            background: var(--hf-surface, #16181c);
+            opacity: 0;
+            padding: 1.4cqmin;
+            text-align: center;
+          }
+          .ffi-node-label {
+            font-weight: 700;
+            font-size: 2.6cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 100%;
+          }
+          .ffi-source,
+          .ffi-sink {
+            width: 22cqmin;
+            height: 16cqmin;
+            min-width: 90px;
+            min-height: 62px;
+            top: 50%;
+            transform: translateY(-50%);
+          }
+          .ffi-source {
+            left: 5cqw;
+          }
+          .ffi-sink {
+            right: 5cqw;
+          }
+          .ffi-worker {
+            width: 22cqmin;
+            height: 12cqmin;
+            min-width: 90px;
+            min-height: 48px;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border-color: var(--ffi-worker-accent, var(--ffi-accent, var(--hf-brand, #6ea8fe)));
+          }
+        </style>
+
+        <div class="ffi-stage" id="ffi-stage">
+          <svg class="ffi-svg" id="ffi-svg" preserveAspectRatio="none"></svg>
+          <div class="ffi-node ffi-source" id="ffi-source">
+            <div class="ffi-node-label" id="ffi-source-label"></div>
+          </div>
+          <div id="ffi-workers"></div>
+          <div class="ffi-node ffi-sink" id="ffi-sink">
+            <div class="ffi-node-label" id="ffi-sink-label"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "fan-out-fan-in: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SVG_NS = "http://www.w3.org/2000/svg";
+
+            var SCHEMA = {
+              worker_count: { type: "number", default: 4, min: 2, max: 5 },
+              source_label: { type: "string", default: "Dispatcher", maxLength: 24 },
+              worker_label: { type: "string", default: "Worker", maxLength: 16 },
+              sink_label: { type: "string", default: "Aggregator", maxLength: 24 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              fanout_at: { type: "number", default: 0.8, min: 0, max: 30 },
+              fanin_at: { type: "number", default: 2.6, min: 0, max: 30 },
+              duration: { type: "number", default: 8, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("ffi-stage");
+            var svg = document.getElementById("ffi-svg");
+            var source = document.getElementById("ffi-source");
+            var sourceLabelEl = document.getElementById("ffi-source-label");
+            var sink = document.getElementById("ffi-sink");
+            var sinkLabelEl = document.getElementById("ffi-sink-label");
+            var workersWrap = document.getElementById("ffi-workers");
+
+            root.style.setProperty("--ffi-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Per-branch rotation, matching mini-legend.html/kpi-cluster.html exactly --
+            // real hex fallbacks (not bare var() refs) so this still renders correctly
+            // in isolation. Applied once per worker, before the timeline below captures
+            // element references. Separate from the `accent` prop above, which stays
+            // scoped to the single source/sink nodes.
+            var WORKER_ACCENT_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            var n = Math.round(props.worker_count);
+
+            // Clear/rebuild: worker nodes are torn down and rebuilt from
+            // props every mount so a re-seek or variable change never
+            // leaves a stale node from a previous build.
+            var workerEls = [];
+            HFProps.rebuild(workersWrap, function (container) {
+              workerEls = [];
+              for (var i = 0; i < n; i++) {
+                var worker = document.createElement("div");
+                worker.className = "ffi-node ffi-worker";
+                var top = ((i + 1) / (n + 1)) * 100;
+                worker.style.top = top + "%";
+                worker.style.setProperty("--ffi-worker-accent", WORKER_ACCENT_ROTATION[i % WORKER_ACCENT_ROTATION.length]);
+                var label = document.createElement("div");
+                label.className = "ffi-node-label";
+                worker.appendChild(label);
+                container.appendChild(worker);
+                workerEls.push({ el: worker, label: label, text: props.worker_label + " " + (i + 1) });
+              }
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              [
+                { el: sourceLabelEl, text: props.source_label, box: source },
+                { el: sinkLabelEl, text: props.sink_label, box: sink },
+              ].forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.el, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: item.box.clientWidth * 0.86,
+                  maxHeight: 1000,
+                  baseSize: 2.9 * rootMin,
+                  minSize: 12,
+                  maxLines: 2,
+                });
+              });
+              workerEls.forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.label, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: item.el.clientWidth * 0.86,
+                  maxHeight: 1000,
+                  baseSize: 2.6 * rootMin,
+                  minSize: 11,
+                  maxLines: 1,
+                });
+              });
+            }
+
+            workerEls.forEach(function (item) {
+              item.label.dataset.src = item.text;
+            });
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function () {
+                layout();
+                buildTimeline();
+              });
+            }
+
+            var duration = props.duration;
+            var fanoutAt = Math.min(props.fanout_at, Math.max(0, duration - 2));
+            var faninAt = Math.min(Math.max(props.fanin_at, fanoutAt + 1), Math.max(0, duration - 0.6));
+
+            var tl = gsap.timeline({ paused: true });
+
+            function point(el, stageRect, side) {
+              var r = el.getBoundingClientRect();
+              var x = side === "left" ? r.right : side === "right" ? r.left : r.left + r.width / 2;
+              var y = r.top + r.height / 2;
+              return { x: x - stageRect.left, y: y - stageRect.top };
+            }
+
+            function buildTimeline() {
+              tl.clear();
+              while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+              var stageRect = stage.getBoundingClientRect();
+              var sourcePt = point(source, stageRect, "left");
+              var sinkPt = point(sink, stageRect, "right");
+              var workerPts = workerEls.map(function (item) {
+                return point(item.el, stageRect, "center");
+              });
+
+              function addLine(a, b) {
+                var line = document.createElementNS(SVG_NS, "line");
+                line.setAttribute("x1", a.x);
+                line.setAttribute("y1", a.y);
+                line.setAttribute("x2", b.x);
+                line.setAttribute("y2", b.y);
+                line.setAttribute("stroke", "var(--hf-border, #2c2f36)");
+                line.setAttribute("stroke-width", "2");
+                svg.appendChild(line);
+              }
+              function addDot(color) {
+                var dot = document.createElementNS(SVG_NS, "circle");
+                dot.setAttribute("r", "5.5");
+                dot.setAttribute("fill", color);
+                dot.setAttribute("opacity", "0");
+                svg.appendChild(dot);
+                return dot;
+              }
+
+              workerPts.forEach(function (wp) {
+                addLine(sourcePt, wp);
+                addLine(wp, sinkPt);
+              });
+
+              tl.fromTo(source, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, 0.1);
+              tl.fromTo(sink, { opacity: 0, x: 14 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, 0.2);
+              workerEls.forEach(function (item, i) {
+                tl.fromTo(item.el, { opacity: 0, scale: 0.85 }, { opacity: 1, scale: 1, duration: 0.35, ease: "power2.out" }, 0.35 + i * 0.08);
+              });
+
+              function travel(dot, from, to, at, dur) {
+                var proxy = { t: 0 };
+                dot.setAttribute("cx", from.x);
+                dot.setAttribute("cy", from.y);
+                tl.set(dot, { attr: { opacity: 1, cx: from.x, cy: from.y } }, at);
+                tl.to(
+                  proxy,
+                  {
+                    t: 1,
+                    duration: dur,
+                    ease: "power1.inOut",
+                    onUpdate: function () {
+                      dot.setAttribute("cx", from.x + (to.x - from.x) * proxy.t);
+                      dot.setAttribute("cy", from.y + (to.y - from.y) * proxy.t);
+                    },
+                  },
+                  at
+                );
+                tl.to(dot, { attr: { opacity: 0 }, duration: 0.15 }, at + dur);
+              }
+
+              // Fan-out: source -> each worker, staggered. Each dot takes its
+              // worker's own rotation color so a branch reads as one color
+              // across both hops.
+              workerPts.forEach(function (wp, i) {
+                var dot = addDot(WORKER_ACCENT_ROTATION[i % WORKER_ACCENT_ROTATION.length]);
+                travel(dot, sourcePt, wp, fanoutAt + i * 0.1, 0.55);
+              });
+              workerEls.forEach(function (item, i) {
+                var at = fanoutAt + i * 0.1 + 0.5;
+                tl.to(item.el, { scale: 1.06, duration: 0.14, ease: "power1.out" }, at);
+                tl.to(item.el, { scale: 1, duration: 0.2, ease: "power1.in" }, at + 0.14);
+              });
+
+              // Fan-in: each worker -> sink, staggered. Same per-worker color
+              // as the fan-out hop above.
+              workerPts.forEach(function (wp, i) {
+                var dot = addDot(WORKER_ACCENT_ROTATION[i % WORKER_ACCENT_ROTATION.length]);
+                travel(dot, wp, sinkPt, faninAt + i * 0.12, 0.55);
+              });
+              tl.to(sink, { scale: 1.06, duration: 0.14, ease: "power1.out" }, faninAt + (workerPts.length - 1) * 0.12 + 0.55);
+              tl.to(sink, { scale: 1, duration: 0.2, ease: "power1.in" }, faninAt + (workerPts.length - 1) * 0.12 + 0.69);
+
+              // Pad tl.duration() to the authored `duration` prop -- see the
+              // matching comment in browser-window.html for why.
+              tl.set({}, {}, duration);
+              tl.seek(0, false);
+            }
+
+            buildTimeline();
+            window.__timelines["fan-out-fan-in"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

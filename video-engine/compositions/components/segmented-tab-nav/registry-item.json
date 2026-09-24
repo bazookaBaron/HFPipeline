@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "segmented-tab-nav",
+  "type": "hyperframes:component",
+  "title": "Segmented Tab Nav",
+  "description": "Pill-shaped segmented control with a sliding active-tab indicator (measured once from real layout) that autoplays through tabs on a fixed interval, crossfading the content pane below to match.",
+  "tags": ["software-mockup", "tabs", "navigation", "ui"],
+  "category": "software-mockup",
+  "files": [
+    {
+      "path": "segmented-tab-nav.html",
+      "target": "compositions/components/segmented-tab-nav/segmented-tab-nav.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "tabs", "type": "string", "default": "Overview|Pricing|Docs" },
+    { "id": "contents", "type": "string", "default": "See how it all fits together|Simple, usage-based pricing|Everything you need to integrate" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "start_at", "type": "number", "default": 0.4 },
+    { "id": "switch_interval", "type": "number", "default": 2 },
+    { "id": "duration", "type": "number", "default": 9 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

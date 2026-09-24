@@ -1,0 +1,340 @@
+<!doctype html>
+<!--
+  keyword-highlighter -- HyperFrames sub-composition (Narrative)
+
+  A body-text paragraph where one or more specific keywords get
+  highlighted (fill sweep / underline growth / color change) in sync with
+  a reveal timestamp -- built on the content-panel skeleton and the same
+  three hard rules (text-fit, HFProps.resolve, clear/rebuild).
+
+  Because the paragraph contains inline <mark> markup (not plain text),
+  HFTextFit.fitOrTruncate (which replaces textContent wholesale) can't be
+  used directly on the final markup. Instead this component measures the
+  PLAIN text with HFTextFit.fitFontToBox to pick a font size + confirm it
+  fits within maxLines, then builds the marked-up HTML at that size. If it
+  still doesn't fit at minSize, it falls back to a truncated plain-text
+  render (never silently overflows, never leaves stray broken markup).
+
+  Each highlighted keyword is a distinct content item (the sanctioned
+  per-item case), so each rotates through its own accent token
+  (--hf-accent, --hf-accent-2, -3, -4, then --hf-brand) via a per-mark
+  `--kh-mark-accent` custom property, instead of every keyword sharing one
+  resolved accent -- same discipline as mini-legend.html's SWATCH_ROTATION.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("keyword-highlighter");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="keyword-highlighter"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "text", "type": "string", "role": "content", "label": "Body text", "description": "The paragraph to display.", "default": "The cache stores recently accessed data close to the CPU, so repeat lookups skip the slow trip to main memory." },
+    { "id": "keywords", "type": "string", "role": "content", "label": "Keywords", "description": "Pipe-separated substrings of the text to highlight, in reveal order, e.g. \"cache|CPU\".", "default": "cache|CPU" },
+    { "id": "style", "type": "enum", "role": "style", "label": "Highlight style", "description": "How each keyword is marked.", "default": "fill", "options": [{ "value": "fill", "label": "Fill sweep" }, { "value": "underline", "label": "Underline growth" }, { "value": "color", "label": "Color change" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the paragraph fades in.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "highlight_at", "type": "number", "role": "timing", "label": "First highlight at", "description": "Seconds from mount when the first keyword highlights.", "default": 1.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "highlight_stagger", "type": "number", "role": "timing", "label": "Highlight stagger", "description": "Seconds between successive keyword highlights.", "default": 0.5, "min": 0.1, "max": 3, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Keyword Highlighter</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="keyword-highlighter" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .kh-panel {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 9cqmin 9cqmin;
+          }
+          .kh-text {
+            opacity: 0;
+            transform: translateY(1.4cqmin);
+            font-weight: 600;
+            line-height: 1.34;
+            text-align: left;
+          }
+          .kh-mark {
+            position: relative;
+            font-weight: 800;
+            padding: 0 0.06em;
+            border-radius: 0.18em;
+            white-space: nowrap;
+            background: none;
+            color: inherit;
+          }
+          .kh-mark--fill {
+            color: var(--hf-bg, #0b0d10);
+            background-image: linear-gradient(var(--kh-mark-accent, var(--hf-brand, #6ea8fe)), var(--kh-mark-accent, var(--hf-brand, #6ea8fe)));
+            background-repeat: no-repeat;
+            background-position: left center;
+            background-size: 0% 100%;
+          }
+          .kh-mark--color {
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .kh-mark--underline {
+            color: var(--hf-fg, #f4f5f7);
+            white-space: normal;
+          }
+          .kh-underline-bar {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -0.06em;
+            height: 0.14em;
+            background: var(--kh-mark-accent, var(--hf-brand, #6ea8fe));
+            border-radius: 999px;
+            transform: scaleX(0);
+            transform-origin: left center;
+          }
+        </style>
+
+        <div class="kh-panel" id="kh-panel">
+          <div class="kh-text" id="kh-text"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "keyword-highlighter: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              text: {
+                type: "string",
+                default:
+                  "The cache stores recently accessed data close to the CPU, so repeat lookups skip the slow trip to main memory.",
+                maxLength: 240,
+              },
+              keywords: { type: "list", default: ["cache", "CPU"], max: 6, delimiter: "|" },
+              style: { type: "enum", default: "fill", options: ["fill", "underline", "color"] },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              highlight_at: { type: "number", default: 1.3, min: 0, max: 30 },
+              highlight_stagger: { type: "number", default: 0.5, min: 0.1, max: 3 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var panel = document.getElementById("kh-panel");
+            var textEl = document.getElementById("kh-text");
+
+            // Per-keyword accent rotation -- each keyword is a distinct
+            // content item (the sanctioned per-item case), so each gets its
+            // own token instead of every keyword sharing one resolved
+            // accent. Accent tokens first, brand last (mini-legend.html
+            // convention). Applied per-mark below via --kh-mark-accent,
+            // once, before the GSAP timeline captures element references.
+            var KEYWORD_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            function escapeHtml(s) {
+              return String(s).replace(/[&<>"']/g, function (c) {
+                return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+              });
+            }
+
+            // Build the mark-annotated HTML from the plain text + keyword
+            // list. Longest keyword first so a shorter keyword that is a
+            // substring of a longer one never splits it apart.
+            function buildMarkup(text, keywords) {
+              if (!keywords.length) return escapeHtml(text);
+              var sorted = keywords
+                .map(function (k, i) {
+                  return { k: k, i: i };
+                })
+                .sort(function (a, b) {
+                  return b.k.length - a.k.length;
+                });
+              var escapedPattern = sorted
+                .map(function (kw) {
+                  return kw.k.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                })
+                .join("|");
+              if (!escapedPattern) return escapeHtml(text);
+              var re = new RegExp("(" + escapedPattern + ")", "gi");
+              var parts = text.split(re);
+              var html = "";
+              parts.forEach(function (part) {
+                if (!part) return;
+                var lower = part.toLowerCase();
+                var kwIndex = -1;
+                for (var i = 0; i < keywords.length; i++) {
+                  if (keywords[i].toLowerCase() === lower) {
+                    kwIndex = i;
+                    break;
+                  }
+                }
+                if (kwIndex !== -1) {
+                  if (props.style === "underline") {
+                    html +=
+                      '<mark class="kh-mark kh-mark--underline" data-kw="' +
+                      kwIndex +
+                      '">' +
+                      escapeHtml(part) +
+                      '<span class="kh-underline-bar" data-kw-bar="' +
+                      kwIndex +
+                      '"></span></mark>';
+                  } else {
+                    html +=
+                      '<mark class="kh-mark kh-mark--' +
+                      props.style +
+                      '" data-kw="' +
+                      kwIndex +
+                      '">' +
+                      escapeHtml(part) +
+                      "</mark>";
+                  }
+                } else {
+                  html += escapeHtml(part);
+                }
+              });
+              return html;
+            }
+
+            // NOTE: the DOM structure (the <mark>/underline-bar nodes the
+            // GSAP timeline below targets) must be built EXACTLY ONCE. A
+            // later re-layout (e.g. document.fonts.ready, which always
+            // resolves asynchronously, after this script has already built
+            // the timeline and captured element references) must only
+            // adjust font-size/line-height on the EXISTING nodes -- never
+            // replace textEl's innerHTML again, or every mark/bar the
+            // timeline already grabbed becomes a detached, invisibly
+            // animated orphan (a real bug caught by manual snapshot review;
+            // `npm run check` alone does not catch it).
+            function computeFit() {
+              var boxWidth = panel.clientWidth - panel.clientWidth * 0.18;
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var baseSize = 4.6 * rootMin;
+              var minSize = 16;
+              var maxLines = 5;
+              var report = HFTextFit.fitFontToBox(props.text, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: boxWidth,
+                maxHeight: baseSize * 1.34 * maxLines,
+                baseSize: baseSize,
+                minSize: minSize,
+                lineHeightRatio: 1.34,
+                maxLines: maxLines,
+              });
+              report.boxWidth = boxWidth;
+              return report;
+            }
+
+            function applySize(report) {
+              textEl.style.fontSize = report.fontSize + "px";
+              textEl.style.lineHeight = "1.34";
+              textEl.style.maxWidth = report.boxWidth + "px";
+            }
+
+            var initialReport = computeFit();
+            applySize(initialReport);
+            if (initialReport.fits) {
+              textEl.innerHTML = buildMarkup(props.text, props.keywords);
+            } else {
+              // Still doesn't fit at minSize: fall back to plain truncated
+              // text (never leave partial/broken <mark> markup).
+              textEl.textContent = HFTextFit.truncateToWidth(
+                props.text,
+                600,
+                initialReport.fontSize,
+                "Inter, ui-sans-serif, system-ui, sans-serif",
+                initialReport.boxWidth
+              );
+            }
+
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function () {
+                // Refit size only -- structure (marks/bars) is already built
+                // and already referenced by the timeline below; never touch
+                // innerHTML here.
+                applySize(computeFit());
+              });
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.3));
+            var firstHighlightAt = Math.min(props.highlight_at, Math.max(0, duration - 0.2));
+            var stagger = props.highlight_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(
+              textEl,
+              { opacity: 0, y: 14 },
+              { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
+              revealAt
+            );
+
+            props.keywords.forEach(function (kw, i) {
+              var marks = textEl.querySelectorAll('[data-kw="' + i + '"]');
+              if (!marks.length) return;
+              var markColor = KEYWORD_ROTATION[i % KEYWORD_ROTATION.length];
+              var at = Math.min(firstHighlightAt + i * stagger, Math.max(0, duration - 0.15));
+              marks.forEach(function (mark) {
+                mark.style.setProperty("--kh-mark-accent", markColor);
+                if (props.style === "fill") {
+                  tl.to(mark, { backgroundSize: "100% 100%", duration: 0.5, ease: "power2.out" }, at);
+                } else if (props.style === "color") {
+                  tl.fromTo(
+                    mark,
+                    { color: "var(--hf-fg, #f4f5f7)" },
+                    { color: "var(--kh-mark-accent)", duration: 0.4, ease: "power1.out" },
+                    at
+                  );
+                } else {
+                  var bar = mark.querySelector(".kh-underline-bar");
+                  if (bar) {
+                    tl.to(bar, { scaleX: 1, duration: 0.4, ease: "power2.out" }, at);
+                  }
+                }
+              });
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["keyword-highlighter"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

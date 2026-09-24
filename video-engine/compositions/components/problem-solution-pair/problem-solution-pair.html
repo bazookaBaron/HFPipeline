@@ -1,0 +1,244 @@
+<!doctype html>
+<!--
+  problem-solution-pair -- HyperFrames sub-composition (Narrative)
+
+  A "problem" statement (warning-triangle icon, red-tinted left rule)
+  that resolves into a "solution" statement (check icon, green-tinted
+  left rule) after a beat -- the problem row dims and settles as the
+  solution row reveals below it, depicting resolution rather than a
+  simple two-item list.
+
+  COLOR NOTE: red-for-problem / green-for-solution is fixed semantic
+  content coding (like browser-window's traffic-light dots depict a real
+  product, not a decorative choice) -- not the opt-in --hf-accent* content
+  rotation, so there is no `accent` variable here.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("problem-solution-pair");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="problem-solution-pair"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "problem", "type": "string", "role": "content", "label": "Problem", "description": "The problem statement.", "default": "Every deploy takes down the site for 90 seconds." },
+    { "id": "solution", "type": "string", "role": "content", "label": "Solution", "description": "The solution statement.", "default": "Roll traffic to the new version gradually behind a load balancer." },
+    { "id": "problem_at", "type": "number", "role": "timing", "label": "Problem at", "description": "Seconds from mount when the problem reveals.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "solution_at", "type": "number", "role": "timing", "label": "Solution at", "description": "Seconds from mount when the solution reveals and the problem settles back.", "default": 1.8, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Problem Solution Pair</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="problem-solution-pair" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .psp-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4cqmin;
+            padding: 8cqmin;
+          }
+          .psp-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 3cqmin;
+            padding: 3.4cqmin 3.6cqmin;
+            border-radius: 1.8cqmin;
+            border-left-width: 0.6cqmin;
+            border-left-style: solid;
+            opacity: 0;
+            transform: translateY(1.6cqmin) scale(0.98);
+          }
+          .psp-row--problem {
+            background: color-mix(in srgb, var(--hf-accent-4, #ff6e6e) 12%, var(--hf-surface, #16181c));
+            border-left-color: var(--hf-accent-4, #ff6e6e);
+          }
+          .psp-row--solution {
+            background: color-mix(in srgb, var(--hf-accent, #71f5a7) 12%, var(--hf-surface, #16181c));
+            border-left-color: var(--hf-accent, #71f5a7);
+          }
+          .psp-icon {
+            flex: 0 0 auto;
+            width: 7.5cqmin;
+            height: 7.5cqmin;
+            min-width: 30px;
+            min-height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 3.6cqmin;
+          }
+          .psp-icon--problem {
+            background: var(--hf-accent-4, #ff6e6e);
+            color: #2a0a0a;
+          }
+          .psp-icon--solution {
+            background: var(--hf-accent, #71f5a7);
+            color: #06210f;
+          }
+          .psp-body {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6cqmin;
+          }
+          .psp-label {
+            font-size: 2.1cqmin;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+          }
+          .psp-row--problem .psp-label {
+            color: var(--hf-accent-4, #ff6e6e);
+          }
+          .psp-row--solution .psp-label {
+            color: var(--hf-accent, #71f5a7);
+          }
+          .psp-text {
+            font-weight: 600;
+            line-height: 1.32;
+            color: var(--hf-fg, #f4f5f7);
+          }
+        </style>
+
+        <div class="psp-stage" id="psp-stage">
+          <div class="psp-row psp-row--problem" id="psp-row-problem">
+            <div class="psp-icon psp-icon--problem">!</div>
+            <div class="psp-body">
+              <div class="psp-label">Problem</div>
+              <div class="psp-text" id="psp-problem-text"></div>
+            </div>
+          </div>
+          <div class="psp-row psp-row--solution" id="psp-row-solution">
+            <div class="psp-icon psp-icon--solution">&#10003;</div>
+            <div class="psp-body">
+              <div class="psp-label">Solution</div>
+              <div class="psp-text" id="psp-solution-text"></div>
+            </div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "problem-solution-pair: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              problem: { type: "string", default: "Every deploy takes down the site for 90 seconds.", maxLength: 160 },
+              solution: {
+                type: "string",
+                default: "Roll traffic to the new version gradually behind a load balancer.",
+                maxLength: 160,
+              },
+              problem_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              solution_at: { type: "number", default: 1.8, min: 0, max: 30 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("psp-stage");
+            var rowProblem = document.getElementById("psp-row-problem");
+            var rowSolution = document.getElementById("psp-row-solution");
+            var problemTextEl = document.getElementById("psp-problem-text");
+            var solutionTextEl = document.getElementById("psp-solution-text");
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxWidth = stage.clientWidth - stage.clientWidth * 0.16 - stage.clientWidth * 0.12 - stage.clientWidth * 0.1;
+
+              HFTextFit.fitOrTruncate(problemTextEl, props.problem, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: boxWidth,
+                maxHeight: 4.6 * rootMin * 1.32 * 3,
+                baseSize: 4.6 * rootMin,
+                minSize: 16,
+                lineHeightRatio: 1.32,
+                maxLines: 3,
+              });
+
+              HFTextFit.fitOrTruncate(solutionTextEl, props.solution, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: boxWidth,
+                maxHeight: 4.6 * rootMin * 1.32 * 3,
+                baseSize: 4.6 * rootMin,
+                minSize: 16,
+                lineHeightRatio: 1.32,
+                maxLines: 3,
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var problemAt = Math.min(props.problem_at, Math.max(0, duration - 0.3));
+            var solutionAt = Math.min(Math.max(props.solution_at, problemAt + 0.5), Math.max(0, duration - 0.2));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(
+              rowProblem,
+              { opacity: 0, y: 18, scale: 0.98 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" },
+              problemAt
+            );
+            // The problem settles back (slightly dimmed, slightly smaller)
+            // as the solution resolves it -- the "transitions into" feel
+            // from a single held row, not two independent items.
+            tl.to(rowProblem, { opacity: 0.78, scale: 0.97, duration: 0.4, ease: "power1.out" }, solutionAt - 0.15);
+            tl.fromTo(
+              rowSolution,
+              { opacity: 0, y: 18, scale: 0.98 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" },
+              solutionAt
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["problem-solution-pair"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

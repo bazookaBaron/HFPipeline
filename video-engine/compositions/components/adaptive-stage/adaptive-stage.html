@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<!--
+  adaptive-stage -- HyperFrames sub-composition (Foundation)
+
+  A generic full-bleed "stage" frame: four L-shaped corner-bracket marks
+  (never a full rectangle) around an inset area whose aspect ratio adapts
+  to `content_kind`, with a centered, text-fit-protected `label`. Meant as
+  a neutral staging frame other mockups can be cut to/from -- the bracket
+  marks read as "camera reticle / viewfinder", not chrome around a real
+  product.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id ("adaptive-stage"); every per-instance difference
+  (label, content_kind, accent, timing) arrives via
+  data-composition-variables + data-variable-values on the host clip.
+
+  Variables:
+    - label        (string): centered caption inside the bracketed area.
+    - content_kind (enum: portrait|landscape|square): sets the inset
+                    area's aspect ratio (9:16 / 16:9 / 1:1).
+    - accent       (enum: brand|accent|accent-2|accent-3|accent-4): corner
+                    bracket + label color. Opt-in only -- default is the
+                    fixed brand accent.
+    - reveal_at    (number, seconds): when the brackets + label reveal.
+    - duration     (number, seconds): total seconds this instance plays.
+
+  Registers window.__timelines["adaptive-stage"] under the literal key.
+-->
+<html lang="en" data-composition-id="adaptive-stage" data-composition-duration="5" data-composition-variables="[
+    { &quot;id&quot;: &quot;label&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Label&quot;, &quot;description&quot;: &quot;Centered caption inside the bracketed area.&quot;, &quot;default&quot;: &quot;Stage&quot; },
+    { &quot;id&quot;: &quot;content_kind&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Content kind&quot;, &quot;description&quot;: &quot;Aspect ratio of the bracketed inset area.&quot;, &quot;default&quot;: &quot;landscape&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;portrait&quot;, &quot;label&quot;: &quot;Portrait&quot; }, { &quot;value&quot;: &quot;landscape&quot;, &quot;label&quot;: &quot;Landscape&quot; }, { &quot;value&quot;: &quot;square&quot;, &quot;label&quot;: &quot;Square&quot; }] },
+    { &quot;id&quot;: &quot;accent&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Accent&quot;, &quot;description&quot;: &quot;Corner bracket + label color. Opt-in only; default is the fixed brand accent.&quot;, &quot;default&quot;: &quot;brand&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;brand&quot;, &quot;label&quot;: &quot;Brand&quot; }, { &quot;value&quot;: &quot;accent&quot;, &quot;label&quot;: &quot;Accent&quot; }, { &quot;value&quot;: &quot;accent-2&quot;, &quot;label&quot;: &quot;Accent 2&quot; }, { &quot;value&quot;: &quot;accent-3&quot;, &quot;label&quot;: &quot;Accent 3&quot; }, { &quot;value&quot;: &quot;accent-4&quot;, &quot;label&quot;: &quot;Accent 4&quot; }] },
+    { &quot;id&quot;: &quot;reveal_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Reveal at&quot;, &quot;description&quot;: &quot;Seconds from mount when the brackets + label reveal.&quot;, &quot;default&quot;: 0.3, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays.&quot;, &quot;default&quot;: 5, &quot;min&quot;: 2, &quot;max&quot;: 30, &quot;step&quot;: 0.1 }
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <title>Adaptive Stage</title>
+  </head>
+  <body>
+    <template>
+      <div data-hf-id="hf-hz1x" id="root" data-composition-id="adaptive-stage" data-duration="5" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+          }
+          .as-area {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .as-corner {
+            position: absolute;
+            width: 7cqmin;
+            height: 7cqmin;
+            opacity: 0;
+            transform: scale(0.5);
+          }
+          .as-corner.tl {
+            top: -0.6cqmin;
+            left: -0.6cqmin;
+            border-top: 0.55cqmin solid var(--as-accent, var(--hf-brand, #6ea8fe));
+            border-left: 0.55cqmin solid var(--as-accent, var(--hf-brand, #6ea8fe));
+            transform-origin: top left;
+          }
+          .as-corner.tr {
+            top: -0.6cqmin;
+            right: -0.6cqmin;
+            border-top: 0.55cqmin solid var(--as-accent, var(--hf-brand, #6ea8fe));
+            border-right: 0.55cqmin solid var(--as-accent, var(--hf-brand, #6ea8fe));
+            transform-origin: top right;
+          }
+          .as-corner.bl {
+            bottom: -0.6cqmin;
+            left: -0.6cqmin;
+            border-bottom: 0.55cqmin solid var(--as-accent, var(--hf-brand, #6ea8fe));
+            border-left: 0.55cqmin solid var(--as-accent, var(--hf-brand, #6ea8fe));
+            transform-origin: bottom left;
+          }
+          .as-corner.br {
+            bottom: -0.6cqmin;
+            right: -0.6cqmin;
+            border-bottom: 0.55cqmin solid var(--as-accent, var(--hf-brand, #6ea8fe));
+            border-right: 0.55cqmin solid var(--as-accent, var(--hf-brand, #6ea8fe));
+            transform-origin: bottom right;
+          }
+          .as-label {
+            opacity: 0;
+            transform: translateY(1cqmin);
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 90%;
+          }
+        </style>
+
+        <div data-hf-id="hf-ecp6" class="as-area" id="as-area">
+          <div data-hf-id="hf-pm2p" class="as-corner tl" id="as-tl"></div>
+          <div data-hf-id="hf-fc4d" class="as-corner tr" id="as-tr"></div>
+          <div data-hf-id="hf-arll" class="as-corner bl" id="as-bl"></div>
+          <div data-hf-id="hf-zmel" class="as-corner br" id="as-br"></div>
+          <div data-hf-id="hf-gpxm" class="as-label" id="as-label"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            // See browser-window.html for the full rationale: HFTextFit /
+            // HFProps are pre-loaded globals, never a relative <script src>
+            // inside this template. Host contract: ../README.md "Shared
+            // library contract".
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "adaptive-stage: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              label: { type: "string", default: "Stage", maxLength: 60 },
+              content_kind: { type: "enum", default: "landscape", options: ["portrait", "landscape", "square"] },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              duration: { type: "number", default: 5, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var area = document.getElementById("as-area");
+            var labelEl = document.getElementById("as-label");
+            var corners = [
+              document.getElementById("as-tl"),
+              document.getElementById("as-tr"),
+              document.getElementById("as-bl"),
+              document.getElementById("as-br"),
+            ];
+
+            root.style.setProperty("--as-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var ASPECTS = { portrait: 9 / 16, landscape: 16 / 9, square: 1 };
+
+            function layout() {
+              var rw = root.clientWidth || 1080;
+              var rh = root.clientHeight || 1920;
+              var margin = 0.14;
+              var maxW = rw * (1 - margin * 2);
+              var maxH = rh * (1 - margin * 2);
+              var ar = ASPECTS[props.content_kind] || ASPECTS.landscape;
+              var w = maxW;
+              var h = w / ar;
+              if (h > maxH) {
+                h = maxH;
+                w = h * ar;
+              }
+              area.style.width = w + "px";
+              area.style.height = h + "px";
+
+              var rootMin = Math.min(rw, rh) / 100;
+              HFTextFit.fitOrTruncate(labelEl, props.label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: w * 0.85,
+                maxHeight: 1000,
+                baseSize: Math.max(18, rootMin * 4.4),
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.3));
+
+            var tl = gsap.timeline({ paused: true });
+
+            // Area "focus-snap" -- the whole bracketed frame settles in from
+            // a slightly smaller scale in sync with the corners' own pop, so
+            // it reads as a camera racking into focus rather than the
+            // corners appearing on an inert static frame. Scale stays <=1
+            // throughout (0.94 -> 1); it never exceeds the corners' own
+            // resting scale, so it can't push their negative-outset marks
+            // past the stage bounds.
+            tl.fromTo(
+              area,
+              { scale: 0.94, opacity: 0.6 },
+              { scale: 1, opacity: 1, duration: 0.45, ease: "power2.out" },
+              revealAt
+            );
+
+            corners.forEach(function (corner, i) {
+              var cornerAt = revealAt + i * 0.08;
+              tl.to(
+                corner,
+                { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" },
+                cornerAt
+              );
+              // "Lock-on" confirm flash right after each corner lands -- an
+              // opacity dip-and-recover, deliberately NOT a scale increase:
+              // these corners sit on a negative outset (-0.6cqmin), so
+              // scaling past 1 here would push the bracket marks past the
+              // stage bounds. Finite yoyo (repeat:1), never a loop.
+              var lockAt = Math.min(cornerAt + 0.5, Math.max(0, duration - 0.15));
+              tl.fromTo(
+                corner,
+                { opacity: 1 },
+                { opacity: 0.45, duration: 0.1, yoyo: true, repeat: 1, ease: "power1.out" },
+                lockAt
+              );
+            });
+
+            var labelAt = revealAt + 0.35;
+            tl.fromTo(
+              labelEl,
+              { opacity: 0, y: 12 },
+              { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+              labelAt
+            );
+
+            // Label settle -- a tiny overshoot correction right after the
+            // label's main slide-up lands, for a less flat stop.
+            var labelSettleAt = Math.min(labelAt + 0.5, Math.max(0, duration - 0.05));
+            tl.fromTo(
+              labelEl,
+              { y: 0 },
+              { y: -2, duration: 0.12, yoyo: true, repeat: 1, ease: "power1.out" },
+              labelSettleAt
+            );
+
+            window.__timelines["adaptive-stage"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

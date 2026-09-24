@@ -1,0 +1,28 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "terminal-session",
+  "type": "hyperframes:component",
+  "title": "Terminal Session",
+  "description": "A dark terminal window with a muted title bar, a character-by-character typed command with a blinking cursor, and staggered output lines below it -- for showing a CLI / build / install beat in narration.",
+  "tags": ["software-mockup", "terminal", "cli", "code", "foundation-adjacent"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "terminal-session.html",
+      "target": "compositions/components/terminal-session/terminal-session.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "session" },
+    { "id": "prompt", "type": "string", "default": "$" },
+    { "id": "command", "type": "string", "default": "npm run build" },
+    { "id": "output_lines", "type": "string", "default": "Compiling 42 modules...|Build succeeded in 1.8s|Output: dist/bundle.js (128 kb)" },
+    { "id": "type_at", "type": "number", "default": 0.4 },
+    { "id": "output_at", "type": "number", "default": 2.6 },
+    { "id": "line_stagger", "type": "number", "default": 0.35 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "request-lifecycle",
+  "type": "hyperframes:component",
+  "title": "Request Lifecycle",
+  "description": "Horizontal step sequence (e.g. DNS -> TCP -> TLS -> HTTP -> Response) with a measured progress track and a caption naming whichever step is currently highlighted.",
+  "tags": ["architecture", "diagram", "steps", "sequence", "networking"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "request-lifecycle.html",
+      "target": "compositions/components/request-lifecycle/request-lifecycle.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "steps", "type": "string", "default": "DNS|TCP|TLS|HTTP|Response" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "start_at", "type": "number", "default": 0.4 },
+    { "id": "step_duration", "type": "number", "default": 0.9 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

@@ -1,0 +1,227 @@
+<!doctype html>
+<!--
+  status-pill -- HyperFrames sub-composition (annotation / Foundation)
+
+  A small rounded pill/badge showing a status word (Live, Beta, New,
+  Deprecated) with a color-coded state, optionally led by a small dot that
+  does a brief, FINITE pulse on reveal. Meant to be composited as an
+  ANNOTATION LAYER on top of other visual content (a different
+  data-track-index in the host index.html), anchored at a specific point
+  (x_pct/y_pct) the way callout-label is -- transparent outside its own
+  pill.
+
+  Color-discipline exemption: unlike every other component in this library,
+  `state` -- not an opt-in `accent` variable -- drives the pill's color,
+  because the color IS the semantic content here (green=live, red=
+  deprecated is a load-bearing, universally-read convention), not a
+  decorative choice for telling apart several simultaneous instances. This
+  matches the README's own carve-out for browser-window's traffic-light
+  dots (component-quality-bar.md's N2 exemption: "depicts a real product/
+  state, not a color choice").
+
+  The dot's pulse is the SAME named idiomatic exception terminal-session's
+  blinking cursor documents for motion-doctrine's anti-idle-wobble rule --
+  except here it is even more conservative: exactly two discrete scale
+  pulses at fixed offsets after reveal, then it holds still. It performs
+  once (draws the eye to a fresh status change), never loops indefinitely.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("status-pill"). Every per-instance
+  difference (text, state, position, pulse, timing) is a declared variable
+  resolved via lib/props.js -- never a forked file.
+
+  Variables:
+    - text      (string): the status word/phrase.
+    - state     (enum: live|beta|new|deprecated|neutral): drives the pill's color.
+    - show_dot  (boolean): whether a small leading dot is shown.
+    - pulse     (boolean): whether the dot does two finite pulses on reveal.
+    - x_pct     (number, 0-100): pill center, percent of frame width.
+    - y_pct     (number, 0-100): pill center, percent of frame height.
+    - reveal_at (number, seconds): when the pill reveals.
+    - duration  (number, seconds): total instance length.
+
+  Registers window.__timelines["status-pill"] under the literal key.
+-->
+<html
+  lang="en"
+  data-composition-id="status-pill"
+  data-composition-duration="4"
+  data-composition-variables='[
+    { "id": "text", "type": "string", "role": "content", "label": "Text", "description": "The status word/phrase.", "default": "Live" },
+    { "id": "state", "type": "enum", "role": "content", "label": "State", "description": "Drives the pill'"'"'s color -- a semantic status, not a decorative accent.", "default": "live", "options": [{ "value": "live", "label": "Live" }, { "value": "beta", "label": "Beta" }, { "value": "new", "label": "New" }, { "value": "deprecated", "label": "Deprecated" }, { "value": "neutral", "label": "Neutral" }] },
+    { "id": "show_dot", "type": "boolean", "role": "content", "label": "Show dot", "description": "Whether a small leading dot is shown.", "default": true },
+    { "id": "pulse", "type": "boolean", "role": "content", "label": "Pulse", "description": "Whether the dot does two finite pulses on reveal (never an infinite loop).", "default": true },
+    { "id": "x_pct", "type": "number", "role": "content", "label": "Anchor X %", "description": "Pill center, percent of frame width.", "default": 50, "min": 0, "max": 100, "step": 1 },
+    { "id": "y_pct", "type": "number", "role": "content", "label": "Anchor Y %", "description": "Pill center, percent of frame height.", "default": 16, "min": 0, "max": 100, "step": 1 },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the pill reveals.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays. Read from props, never from static markup.", "default": 4, "min": 1, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Status Pill</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="status-pill" data-duration="4" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .sp-pill {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            gap: 1.4cqmin;
+            padding: 1.4cqmin 3cqmin;
+            border-radius: 999px;
+            background: var(--hf-surface, #16181c);
+            border: 1.5px solid var(--sp-color, var(--hf-brand, #6ea8fe));
+            box-shadow: 0 1.2cqmin 3cqmin rgba(0, 0, 0, 0.45);
+            opacity: 0;
+          }
+          .sp-dot {
+            flex: 0 0 auto;
+            width: 1.9cqmin;
+            height: 1.9cqmin;
+            border-radius: 50%;
+            background: var(--sp-color, var(--hf-brand, #6ea8fe));
+          }
+          .sp-text {
+            font-weight: 700;
+            letter-spacing: 0.01em;
+            color: var(--sp-color, var(--hf-brand, #6ea8fe));
+            white-space: nowrap;
+            overflow: hidden;
+          }
+        </style>
+
+        <div class="sp-pill" id="sp-pill">
+          <span class="sp-dot" id="sp-dot"></span>
+          <span class="sp-text" id="sp-text"></span>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "status-pill: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              text: { type: "string", default: "Live", maxLength: 24 },
+              state: {
+                type: "enum",
+                default: "live",
+                options: ["live", "beta", "new", "deprecated", "neutral"],
+              },
+              show_dot: { type: "boolean", default: true },
+              pulse: { type: "boolean", default: true },
+              x_pct: { type: "number", default: 50, min: 0, max: 100 },
+              y_pct: { type: "number", default: 16, min: 0, max: 100 },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              duration: { type: "number", default: 4, min: 1, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var pill = document.getElementById("sp-pill");
+            var dot = document.getElementById("sp-dot");
+            var textEl = document.getElementById("sp-text");
+
+            // state drives the semantic color -- see file header for why
+            // this is a documented exemption from the opt-in `accent` rule.
+            var STATE_COLOR = {
+              live: "var(--hf-accent, #71f5a7)",
+              beta: "var(--hf-accent-3, #ffb84d)",
+              new: "var(--hf-accent-2, #c5a3ff)",
+              deprecated: "var(--hf-accent-4, #ff6e6e)",
+              neutral: "var(--hf-brand, #6ea8fe)",
+            };
+            root.style.setProperty("--sp-color", STATE_COLOR[props.state] || STATE_COLOR.neutral);
+
+            dot.style.display = props.show_dot ? "" : "none";
+            textEl.textContent = props.text;
+
+            function layout() {
+              var w = root.clientWidth;
+              var h = root.clientHeight;
+              var rootMin = Math.min(w, h) / 100;
+              var cx = (props.x_pct / 100) * w;
+              var cy = (props.y_pct / 100) * h;
+
+              pill.style.left = cx + "px";
+              pill.style.top = cy + "px";
+              gsap.set(pill, { xPercent: -50, yPercent: -50 });
+
+              HFTextFit.fitOrTruncate(textEl, props.text, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: 50 * rootMin,
+                maxHeight: 1000,
+                baseSize: 2.6 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.3));
+
+            var tl = gsap.timeline({ paused: true });
+
+            tl.fromTo(
+              pill,
+              { opacity: 0, scale: 0.85 },
+              { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.8)", transformOrigin: "50% 50%" },
+              revealAt
+            );
+
+            // Exactly two finite dot pulses, deterministic fixed offsets --
+            // never a repeating/infinite tween. See file header.
+            if (props.show_dot && props.pulse) {
+              var pulseStart = revealAt + 0.4;
+              [0, 0.35].forEach(function (offset) {
+                var at = Math.min(pulseStart + offset, Math.max(0, duration - 0.2));
+                tl.fromTo(
+                  dot,
+                  { scale: 1 },
+                  { scale: 1.5, duration: 0.14, ease: "power1.out", yoyo: true, repeat: 1, transformOrigin: "50% 50%" },
+                  at
+                );
+              });
+            }
+
+            // Pad tl.duration() to the authored `duration` prop -- see
+            // browser-window.html for the full rationale.
+            tl.set({}, {}, duration);
+            window.__timelines["status-pill"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

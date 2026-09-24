@@ -1,0 +1,18 @@
+{
+  "topic": "How browser caching works",
+  "topicCategory": "cs-fundamentals",
+  "scenes": [
+    {
+      "sceneId": "scene-1",
+      "componentType": "browser-window",
+      "durationSeconds": 8,
+      "narration": "Your browser keeps a local copy of files it has already downloaded so it can skip the network next time.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": {
+        "urlText": "www.wikipedia.org"
+      },
+      "narrationAnchors": []
+    }
+  ]
+}

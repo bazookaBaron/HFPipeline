@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "checklist-progress",
+  "type": "hyperframes:component",
+  "title": "Checklist Progress",
+  "description": "A checklist where items appear unchecked, then check off one by one (SVG checkmark draws via stroke-dashoffset) in sync with narration.",
+  "tags": ["software-mockup", "checklist", "progress", "list"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "checklist-progress.html",
+      "target": "compositions/components/checklist-progress/checklist-progress.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "Pre-launch checklist" },
+    { "id": "items", "type": "string", "default": "Domain connected|SSL certificate issued|Billing configured|Team invited" },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "first_check_at", "type": "number", "default": 1.4 },
+    { "id": "check_stagger", "type": "number", "default": 0.7 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

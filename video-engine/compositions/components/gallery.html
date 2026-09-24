@@ -1,0 +1,350 @@
+<!doctype html>
+<!--
+  gallery.html -- local component catalog / storybook shell.
+
+  The one real gap the README (§ "Gap") calls out: HyperFrames' own
+  hosted registry has a catalog site, but a project-local catalog isn't
+  provided by the framework. This is that thin page: a sidebar listing
+  EVERY component actually found under compositions/components/ (grouped
+  by its registry-item.json `category`), and an iframe previewing the
+  selected one's own demo.html (each demo.html is a fully self-contained
+  HFDemoRuntime harness, so the iframe needs nothing from this shell to
+  render correctly).
+
+  Per README.md's load-order contract, the shared libs are loaded here
+  too (once, for this shell's own use -- an iframe is a separate browsing
+  context and does NOT inherit these; that's why every demo.html loads
+  its own copies of text-fit.js/props.js relative to itself regardless).
+
+  Regenerate this file's ITEMS array whenever a new component folder is
+  added -- see PHASE2-REPORT.md for the full inventory this reflects.
+-->
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>HyperFrames Component Gallery</title>
+    <link rel="stylesheet" href="lib/tokens.css" />
+    <script src="lib/text-fit.js"></script>
+    <script src="lib/props.js"></script>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: var(--hf-bg, #0b0d10);
+        color: var(--hf-fg, #f4f5f7);
+        font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+      }
+      #app {
+        display: flex;
+        height: 100vh;
+        overflow: hidden;
+      }
+      #sidebar {
+        width: 300px;
+        flex: 0 0 auto;
+        background: var(--hf-surface, #16181c);
+        border-right: 1px solid var(--hf-border, #2c2f36);
+        overflow-y: auto;
+        padding: 18px 0 40px;
+      }
+      #sidebar h1 {
+        font-size: 15px;
+        font-weight: 800;
+        margin: 0 18px 4px;
+        letter-spacing: -0.01em;
+      }
+      #sidebar .subtitle {
+        margin: 0 18px 18px;
+        font-size: 11.5px;
+        color: var(--hf-muted, #9aa1ad);
+        line-height: 1.4;
+      }
+      .cat-group {
+        margin-bottom: 6px;
+      }
+      .cat-heading {
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--hf-muted, #9aa1ad);
+        padding: 10px 18px 6px;
+      }
+      .item-btn {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        width: 100%;
+        text-align: left;
+        background: none;
+        border: none;
+        border-left: 3px solid transparent;
+        color: var(--hf-fg, #f4f5f7);
+        padding: 8px 18px 8px 15px;
+        font: inherit;
+        cursor: pointer;
+      }
+      .item-btn:hover {
+        background: var(--hf-surface-2, #1e2126);
+      }
+      .item-btn.active {
+        background: var(--hf-surface-2, #1e2126);
+        border-left-color: var(--hf-brand, #6ea8fe);
+      }
+      .item-name {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .item-tags {
+        font-size: 10.5px;
+        color: var(--hf-muted, #9aa1ad);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 1px 6px;
+        border-radius: 999px;
+        border: 1px solid var(--hf-border, #2c2f36);
+        color: var(--hf-muted, #9aa1ad);
+        margin-left: 6px;
+        vertical-align: middle;
+      }
+      .badge--wip {
+        color: var(--hf-accent-3, #ffb84d);
+        border-color: var(--hf-accent-3, #ffb84d);
+      }
+      #main {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+      }
+      #topbar {
+        flex: 0 0 auto;
+        padding: 14px 22px;
+        border-bottom: 1px solid var(--hf-border, #2c2f36);
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+      #topbar h2 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 800;
+      }
+      #topbar .desc {
+        font-size: 12.5px;
+        color: var(--hf-muted, #9aa1ad);
+      }
+      #frame-wrap {
+        flex: 1 1 auto;
+        min-height: 0;
+        background: #05060a;
+      }
+      #frame-wrap iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        display: block;
+      }
+      #empty-state {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        color: var(--hf-muted, #9aa1ad);
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <nav id="sidebar">
+        <h1>Component Gallery</h1>
+        <p class="subtitle">
+          Every project-local registry-shaped component under <code>compositions/components/</code>.
+          Click one to load its own isolated <code>demo.html</code> harness.
+        </p>
+        <div id="cat-groups"></div>
+      </nav>
+      <div id="main">
+        <div id="topbar">
+          <h2 id="topbar-title">Select a component</h2>
+          <span class="desc" id="topbar-desc"></span>
+        </div>
+        <div id="frame-wrap">
+          <div id="empty-state">Pick a component from the sidebar to preview its demo.html.</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // One entry per component folder that has a working demo.html.
+      // category matches each folder's registry-item.json `category`.
+      // Kept as a hand-maintained array (no filesystem access from a
+      // static page) -- update when a component is added or removed.
+      var ITEMS = [
+        // Foundation
+        { name: "adaptive-stage", title: "Adaptive Stage", category: "Foundation", desc: "Generic full-bleed staging frame: four L-shaped corner-bracket marks around an aspect-adaptive inset area with a centered, text-fit-prote..." },
+        { name: "chapter-shell", title: "Chapter Shell", category: "Foundation", desc: "Architectural scene chrome for a 'light editorial' theme: breadcrumb + step-dot indicator + bold headline/subtitle + a fixed-rect decorative content-card frame. Chrome only -- real content is a separate sibling scene positioned to the documented fixed rect, never a nested mount." },
+        { name: "content-panel", title: "Content Panel", category: "Foundation", desc: "Full-bleed title + bulleted-list scene with clear/rebuild list handling and per-field text-fit. The base Foundation primitive several Nar..." },
+
+        // Narrative
+        { name: "acronym-expander", title: "Acronym Expander", category: "Narrative", desc: "A big acronym that expands letter-by-letter into its full meaning, each expansion row's letter matching and highlighting the correspondin..." },
+        { name: "definition-card", title: "Definition Card", category: "Narrative", desc: "A term + its definition, card-styled: the term reveals first with a brand-accent underline rule, then the definition reveals below a divi..." },
+        { name: "eyebrow-headline-block", title: "Eyebrow Headline Block", category: "Narrative", desc: "Small uppercase eyebrow label above a large bold headline, the dominant element, text-fit protected up to 3 lines." },
+        { name: "keyword-highlighter", title: "Keyword Highlighter", category: "Narrative", desc: "Body text where specific keywords highlight (fill sweep, underline growth, or color change) in sync with a reveal timestamp." },
+        { name: "myth-fact-card", title: "Myth Fact Card", category: "Narrative", desc: "A struck-through myth claim (red, X icon) paired with the corrected fact (green, check icon) that reveals after a beat." },
+        { name: "problem-solution-pair", title: "Problem Solution Pair", category: "Narrative", desc: "A problem statement (warning icon, red-tinted row) that resolves into a solution statement (check icon, green-tinted row) after a beat." },
+        { name: "question-answer-pair", title: "Question Answer Pair", category: "Narrative", desc: "Classic Q -> A reveal: a question with a Q badge, then the answer reveals after a beat with an A badge." },
+        { name: "step-list-card", title: "Step List Card", category: "Narrative", desc: "A small card of 2-5 numbered sequential instructions with colored numerals, staggered reveal -- a compact companion card, not a checkbox tracker." },
+        { name: "takeaway-banner", title: "Takeaway Banner", category: "Narrative", desc: "A bold, full-width closing-statement banner: a sweeping accent bar draws in, then the takeaway line scales/fades up large and centered." },
+
+        // Software mockups
+        { name: "browser-window", title: "Browser Window", category: "Software mockups", desc: "A browser chrome card with a typing URL bar, a text-fit-protected heading, and staggered skeleton content rows -- for showing a web page ..." },
+        { name: "chat-session", title: "Chat Session", category: "Software mockups", desc: "Chat/messaging UI with message bubbles popping in one at a time, alternating received (left) and sent (right, accent-colored). Prefix-swi..." },
+        { name: "checklist-progress", title: "Checklist Progress", category: "Software mockups", desc: "A checklist where items appear unchecked, then check off one by one (SVG checkmark draws via stroke-dashoffset) in sync with narration." },
+        { name: "folder-tree", title: "Folder Tree", category: "Software mockups", desc: "A vertical stack of folder cards (icon, name, optional colored branch-tag pill, optional secondary info line) for git/filesystem-structure explainers, staggered reveal, frame-filling as folder count goes down." },
+        { name: "form-stepper", title: "Form Stepper", category: "Software mockups", desc: "A multi-step form UI -- numbered step indicator with a filling connector track, and a panel below swapping title + skeleton fields as it ..." },
+        { name: "ide-diff-panel", title: "IDE Diff Panel", category: "Software mockups", desc: "A code diff view -- IDE tab + unified diff body with +/- gutter markers and green/red tint -- revealing line by line." },
+        { name: "magnifier-lens", title: "Magnifier Lens", category: "Software mockups", desc: "A circular magnifier lens over a generic mock settings/detail panel, revealing a zoomed-in copy of one row -- for highlighting fine detai..." },
+        { name: "media-frame", title: "Media Frame", category: "Software mockups", desc: "A bordered frame/window chrome around a generic captured-screen placeholder (image or video), with a muted title bar and an optional reve..." },
+        { name: "mobile-device-frame", title: "Mobile Device Frame", category: "Software mockups", desc: "Phone device chrome (rounded bezel, notch/status bar, home indicator) around simple app content, for a mobile-app narration beat." },
+        { name: "search-interaction", title: "Search Interaction", category: "Software mockups", desc: "A search box that types a query character-by-character, then reveals result rows underneath, staggered." },
+        { name: "segmented-tab-nav", title: "Segmented Tab Nav", category: "Software mockups", desc: "Pill-shaped segmented control with a sliding active-tab indicator (measured once from real layout) that autoplays through tabs on a fixed..." },
+        { name: "setting-control", title: "Setting Control", category: "Software mockups", desc: "A single settings row -- label, description, and a toggle switch that flips state -- under a panel title, sized to fill the frame." },
+        { name: "skeleton-loader", title: "Skeleton Loader", category: "Software mockups", desc: "Loading-skeleton rows (avatar + shimmering bars) that pulse via a timeline-nested repeating GSAP tween, then resolve into real title/subt..." },
+        { name: "terminal-session", title: "Terminal Session", category: "Software mockups", desc: "A dark terminal window with a muted title bar, a character-by-character typed command with a blinking cursor, and staggered output lines ..." },
+
+        // Annotation
+        { name: "bracket-annotation", title: "Bracket Annotation", category: "Annotation", desc: "A bracket (square caliper or curly brace) spanning a range of content along one axis, with a labeled tick -- for grouping or measuring a ..." },
+        { name: "callout-label", title: "Callout Label", category: "Annotation", desc: "A small pointer/label that calls out one specific point on screen: a marker dot, a connector line, and a text chip. Transparent outside i..." },
+        { name: "focus-spotlight", title: "Focus Spotlight", category: "Annotation", desc: "A darkened scrim across the full frame with a circular or rectangular cutout spotlight highlighting one region, with an optional caption ..." },
+        { name: "mini-legend", title: "Mini Legend", category: "Annotation", desc: "A small, compact legend (color swatch + label pairs) for a chart or diagram shown elsewhere on screen, positioned toward one corner of th..." },
+        { name: "status-pill", title: "Status Pill", category: "Annotation", desc: "A small rounded pill/badge showing a status word with a color-coded state (live, beta, new, deprecated, neutral) and an optional dot that..." },
+
+        // Background
+        { name: "perspective-grid", title: "Perspective Grid", category: "Background", desc: "A receding 3D-ish grid/floor plane background element with an optional horizon glow -- decorative and atmospheric, no dynamic text. The p..." },
+
+        // Architecture
+        { name: "actor-to-system-funnel", title: "Actor To System Funnel", category: "Architecture", desc: "Funnel diagram: N actor/user nodes across the top converge via draw-on connector lines and traveling dots into a single destination syste..." },
+        { name: "cache-hit-miss", title: "Cache Hit Miss", category: "Architecture", desc: "A request travels into a cache box which branches into a green hit path (fast, straight to response) or an amber miss path (falls through..." },
+        { name: "client-server-exchange", title: "Client Server Exchange", category: "Architecture", desc: "A two-box client/server diagram with a labeled request packet traveling client -> server, then a labeled response packet traveling back." },
+        { name: "deployment-dashboard", title: "Deployment Dashboard", category: "Architecture", desc: "ALB listener line + routing-switch visual + two side-by-side BLUE/GREEN environment cards (version, LIVE/IDLE badge, instance health rows, traffic %), optional 5xx error-rate chart + alternate users-funnel mode -- one rich reusable visual reused across a whole blue-green narrative." },
+        { name: "deployment-rollout", title: "Deployment Rollout", category: "Architecture", desc: "A row of server boxes progressively flipping from an old version to a new version, one at a time, canary/rolling-deploy style." },
+        { name: "etl-pipeline", title: "ETL Pipeline", category: "Architecture", desc: "A horizontal Extract -> Transform -> Load pipeline with a data block traveling through and each stage highlighting while it's active." },
+        { name: "failure-recovery", title: "Failure Recovery", category: "Architecture", desc: "A single node illustrating a retry/circuit-breaker pattern: fails (red), works through staggered retry-attempt dots (amber, spinner icon)..." },
+        { name: "fan-out-fan-in", title: "Fan Out Fan In", category: "Architecture", desc: "One source node fans out to N parallel worker nodes via traveling dots, then the workers fan back in to a single sink node -- classic sca..." },
+        { name: "load-balancer-cluster", title: "Load Balancer Cluster", category: "Architecture", desc: "A load-balancer box distributing traffic to N backend server boxes, round-robin, with traffic dots animating along measured connector lin..." },
+        { name: "node-graph-diagram", title: "Node Graph Diagram", category: "Architecture", desc: "Generic node-graph engine: 2-6 labeled boxes connected by labeled/animated lines, auto-positioned by a row/branch layout + node count -- one primitive covering client/server chains, permission fan-outs, and small system diagrams without a bespoke component per shape." },
+        { name: "pub-sub-broadcast", title: "Pub/Sub Broadcast", category: "Architecture", desc: "A publisher node broadcasting a message to N subscriber nodes via a message bus, with pulse dots fanning out along measured connector lines." },
+        { name: "queue-backpressure", title: "Queue Backpressure", category: "Architecture", desc: "A row of queue slots filling one item at a time until full, then a pulsing QUEUE FULL / BACKPRESSURE badge and a bounced item show the pr..." },
+        { name: "request-lifecycle", title: "Request Lifecycle", category: "Architecture", desc: "Horizontal step sequence (e.g. DNS -> TCP -> TLS -> HTTP -> Response) with a measured progress track and a caption naming whichever step ..." },
+        { name: "trust-boundary", title: "Trust Boundary", category: "Architecture", desc: "A dashed trusted-zone boundary box with an inside and outside node, and a labeled request crossing the boundary while it flashes brand-ac..." },
+
+        // Data / metrics
+        { name: "balance-beam", title: "Balance Beam", category: "Data / metrics", desc: "A balance-scale beam on a fulcrum that tips toward whichever of two labeled tradeoff options has the greater resolved weight, settling wi..." },
+        { name: "big-stat-callout", title: "Big Stat Callout", category: "Data / metrics", desc: "A single standalone giant number + short context/caption lines, no card chrome -- for a beat where ONE number carries the whole moment." },
+        { name: "cost-breakdown", title: "Cost Breakdown", category: "Data / metrics", desc: "Donut chart cost breakdown: N category arcs draw in beside a fading-in legend, staggered, with a count-up total in the center." },
+        { name: "gauge-meter", title: "Gauge Meter", category: "Data / metrics", desc: "A semicircular speedometer-style gauge: a fill arc and needle sweeping from min to a target value across a real measured arc length, with..." },
+        { name: "heatmap-matrix", title: "Heatmap Matrix", category: "Data / metrics", desc: "A grid of cells shaded by intensity, lighting up in a row-major staggered wave from the fixed brand accent at varying opacity -- a heatma..." },
+        { name: "kpi-cluster", title: "KPI Cluster", category: "Data / metrics", desc: "A headline + 2-4 KPI cards (big count-up number + label + trend arrow) in a row, frame-filling as card count goes down." },
+        { name: "latency-waterfall", title: "Latency Waterfall", category: "Data / metrics", desc: "Horizontal waterfall chart: sequential timing phases (DNS/Connect/TLS/Wait/Download) stacked in one bar, each segment's width proportiona..." },
+        { name: "particle-swarm", title: "Particle Swarm", category: "Data / metrics", desc: "An organic swarm/cloud of many small dots (deterministic seeded scatter) with an overlaid stat card -- label + big count-up number -- for 'many small distributed things forming a mass' beats (a botnet, distributed requests, compromised devices)." },
+        { name: "perspective-3d-road", title: "Perspective 3D Road", category: "Data / metrics", desc: "A road/lane receding to a vanishing point via true CSS 3D perspective, covered in glowing pulsing blocks arranged denser/larger toward the viewer -- a stylized traffic-jam/congestion visual, with an optional big headline scaling in as a climax." },
+        { name: "progress-donut", title: "Progress Donut", category: "Data / metrics", desc: "A circular donut progress ring animating 0 to a target percentage with a synced count-up number at its center, built from the ring's own ..." },
+        { name: "progress-split-bar", title: "Progress Split Bar", category: "Data / metrics", desc: "A single bar split into 2-4 proportional segments (before/after, percentage split) that grow to their resolved proportion with a count-up..." },
+        { name: "sparkline-metric", title: "Sparkline Metric", category: "Data / metrics", desc: "A full-bleed metric card: label, a big count-up value, and an animated SVG sparkline that draws itself across the card via real stroke-da..." },
+        { name: "timeline-milestones", title: "Timeline Milestones", category: "Data / metrics", desc: "Horizontal timeline: a rule line grows while N milestone dots pop in with a pulse ring and alternating above/below labels as narration re..." },
+        { name: "world-map-panel", title: "World Map Panel", category: "Data / metrics", desc: "A simplified, stylized world map (graticule grid + abstract continent blobs) with N highlighted points revealed one at a time with a puls..." },
+
+        // Editing / transitions
+        { name: "camera-push-transition", title: "Camera Push Transition", category: "Editing / transitions", desc: "A reusable scale/zoom push-in transition: a before statement punches forward (scale, blur, fade) through an accent flash-cut into an afte..." },
+        { name: "freeze-frame-annotator", title: "Freeze Frame Annotator", category: "Editing / transitions", desc: "A freeze-frame effect: the subject desaturates and vignettes as if paused, then an annotation circle draws on with a leader line and labe..." },
+        { name: "match-cut-morph", title: "Match Cut Morph", category: "Editing / transitions", desc: "A reusable match-cut transition: one shape element morphs its position, size, and corner radius from a before placement to an after place..." },
+        { name: "scanline-reveal", title: "Scanline Reveal", category: "Editing / transitions", desc: "A reusable sweep-reveal transition: a glowing scanline bar sweeps horizontally or vertically across the frame, its clip-path progressivel..." },
+      ].filter(function (item) {
+        return item.category !== "__skip";
+      });
+
+      var CATEGORY_ORDER = [
+        "Foundation",
+        "Narrative",
+        "Software mockups",
+        "Annotation",
+        "Background",
+        "Architecture",
+        "Data / metrics",
+        "Editing / transitions",
+      ];
+
+      var groupsEl = document.getElementById("cat-groups");
+      var frameWrap = document.getElementById("frame-wrap");
+      var topbarTitle = document.getElementById("topbar-title");
+      var topbarDesc = document.getElementById("topbar-desc");
+      var buttons = {};
+
+      function selectItem(item, btn) {
+        Object.keys(buttons).forEach(function (key) {
+          buttons[key].classList.toggle("active", key === item.name);
+        });
+        topbarTitle.textContent = item.title;
+        topbarDesc.textContent = item.desc || "";
+        frameWrap.innerHTML = "";
+        var iframe = document.createElement("iframe");
+        iframe.src = item.name + "/demo.html";
+        iframe.title = item.title + " demo";
+        frameWrap.appendChild(iframe);
+        if (history.replaceState) {
+          history.replaceState(null, "", "#" + item.name);
+        }
+      }
+
+      CATEGORY_ORDER.forEach(function (cat) {
+        var items = ITEMS.filter(function (it) {
+          return it.category === cat;
+        });
+        if (!items.length) return;
+        var group = document.createElement("div");
+        group.className = "cat-group";
+        var heading = document.createElement("div");
+        heading.className = "cat-heading";
+        heading.textContent = cat + " (" + items.length + ")";
+        group.appendChild(heading);
+        items.forEach(function (item) {
+          var btn = document.createElement("button");
+          btn.className = "item-btn";
+          btn.innerHTML =
+            '<span class="item-name">' +
+            item.title +
+            "</span>" +
+            '<span class="item-tags">' +
+            item.name +
+            "/demo.html</span>";
+          btn.addEventListener("click", function () {
+            selectItem(item, btn);
+          });
+          buttons[item.name] = btn;
+          group.appendChild(btn);
+        });
+        groupsEl.appendChild(group);
+      });
+
+      // Deep-link support: #component-name opens straight to it.
+      var initialName = (location.hash || "").replace(/^#/, "");
+      var initialItem = ITEMS.filter(function (it) {
+        return it.name === initialName;
+      })[0];
+      if (initialItem) {
+        selectItem(initialItem, buttons[initialItem.name]);
+      }
+    </script>
+  </body>
+</html>

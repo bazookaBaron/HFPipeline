@@ -1,0 +1,217 @@
+<!doctype html>
+<!--
+  progress-donut -- HyperFrames sub-composition (Data / metrics)
+
+  A circular donut progress ring animating from 0 to a target percentage,
+  with the percentage number counting up in sync at the ring's center, and
+  a label underneath. The ring is a single SVG <circle> whose
+  stroke-dasharray is set ONCE to its real measured circumference
+  (2 * PI * r from the circle's OWN radius attribute, never a guessed
+  constant) and whose stroke-dashoffset is tweened by GSAP -- the standard
+  clean approach this library uses for circular progress (see README
+  "For circular/donut/gauge visuals").
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("progress-donut"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="progress-donut"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "label", "type": "string", "role": "content", "label": "Label", "description": "Text under the percentage.", "default": "Storage Used" },
+    { "id": "target_percent", "type": "number", "role": "content", "label": "Target percent", "description": "Percentage the ring fills to (0-100).", "default": 72, "min": 0, "max": 100, "step": 0.1 },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Ring fill + percentage color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the ring starts filling and the number counts up.", "default": 0.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "fill_duration", "type": "number", "role": "timing", "label": "Fill duration", "description": "Seconds the ring fill + count-up takes.", "default": 1.6, "min": 0.4, "max": 5, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Progress Donut</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="progress-donut" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .pd-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 3cqmin;
+            padding: 6cqmin;
+          }
+          .pd-ring-wrap {
+            position: relative;
+            width: 66cqmin;
+            height: 66cqmin;
+            min-width: 200px;
+            min-height: 200px;
+            opacity: 0;
+            transform: scale(0.94);
+          }
+          .pd-ring-wrap svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+          }
+          .pd-center {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .pd-percent {
+            font-weight: 800;
+            font-size: 13cqmin;
+            color: var(--pd-accent, var(--hf-brand, #6ea8fe));
+            letter-spacing: -0.01em;
+          }
+          .pd-label {
+            font-weight: 600;
+            font-size: 3.2cqmin;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 80cqmin;
+          }
+        </style>
+
+        <div class="pd-stage" id="pd-stage">
+          <div class="pd-ring-wrap" id="pd-ring-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="42" fill="none" stroke="var(--hf-surface-2, #1e2126)" stroke-width="10"></circle>
+              <circle
+                id="pd-ring"
+                cx="50"
+                cy="50"
+                r="42"
+                fill="none"
+                stroke="var(--pd-accent, var(--hf-brand, #6ea8fe))"
+                stroke-width="10"
+                stroke-linecap="round"
+              ></circle>
+            </svg>
+            <div class="pd-center">
+              <div class="pd-percent" id="pd-percent">0%</div>
+            </div>
+          </div>
+          <div class="pd-label" id="pd-label"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "progress-donut: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              label: { type: "string", default: "Storage Used", maxLength: 40 },
+              target_percent: { type: "number", default: 72, min: 0, max: 100 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              fill_duration: { type: "number", default: 1.6, min: 0.4, max: 5 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var ringWrap = document.getElementById("pd-ring-wrap");
+            var ring = document.getElementById("pd-ring");
+            var percentEl = document.getElementById("pd-percent");
+            var labelEl = document.getElementById("pd-label");
+
+            root.style.setProperty("--pd-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Real measured circumference from the circle's OWN radius --
+            // never a guessed/hardcoded constant.
+            var radius = ring.r.baseVal.value;
+            var circumference = 2 * Math.PI * radius;
+            ring.style.strokeDasharray = circumference;
+            ring.style.strokeDashoffset = circumference;
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(labelEl, props.label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: 80 * rootMin,
+                maxHeight: 1000,
+                baseSize: 3.2 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.6));
+            var fillDur = Math.min(props.fill_duration, Math.max(0.3, duration - revealAt - 0.2));
+            var targetPercent = props.target_percent;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(ringWrap, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }, revealAt);
+            tl.fromTo(labelEl, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, revealAt + 0.1);
+
+            var proxy = { p: 0 };
+            tl.to(
+              proxy,
+              {
+                p: targetPercent,
+                duration: fillDur,
+                ease: "power2.out",
+                onUpdate: function () {
+                  var offset = circumference * (1 - proxy.p / 100);
+                  ring.style.strokeDashoffset = offset;
+                  percentEl.textContent = Math.round(proxy.p) + "%";
+                },
+              },
+              revealAt + 0.15
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["progress-donut"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

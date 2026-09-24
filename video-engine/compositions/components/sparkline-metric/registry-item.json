@@ -1,0 +1,28 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "sparkline-metric",
+  "type": "hyperframes:component",
+  "title": "Sparkline Metric",
+  "description": "A full-bleed metric card: label, a big count-up value, and an animated SVG sparkline that draws itself across the card via real stroke-dasharray/dashoffset (getTotalLength, never a guessed length).",
+  "tags": ["data-metrics", "chart", "sparkline", "kpi", "count-up"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "sparkline-metric.html",
+      "target": "compositions/components/sparkline-metric/sparkline-metric.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "label", "type": "string", "default": "Weekly Active Users" },
+    { "id": "value", "type": "number", "default": 48200 },
+    { "id": "decimals", "type": "number", "default": 0 },
+    { "id": "suffix", "type": "string", "default": "" },
+    { "id": "points", "type": "string", "default": "[12,18,15,22,28,24,31,40,36,48]" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.4 },
+    { "id": "draw_duration", "type": "number", "default": 1.6 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

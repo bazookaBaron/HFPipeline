@@ -1,0 +1,72 @@
+[   0.00-   1.44] How@0.00 blue@0.16 -green@0.40 deployment@0.62 works.@0.94
+[   1.62-   4.86] How@1.62 do@1.80 companies@1.90 deploy@2.24 a@2.54 new@2.74 version@2.84 of@3.14 an@3.30 app@3.38 without@3.56 taking@3.76 the@4.06 whole@4.24 thing@4.40 offline?@4.58
+[   5.18-   6.86] One@5.18 common@5.34 answer@5.62 is@5.90 blue@6.10 -green@6.30 deployment.@6.56
+[   7.16-   8.00] The@7.16 idea@7.28 is@7.56 simple.@7.74
+[   8.14-  10.60] Instead@8.14 of@8.44 having@8.64 one@8.80 production@9.02 environment,@9.40 you@10.04 keep@10.16 two.@10.36
+[  10.74-  11.98] Let's@10.74 call@11.08 them@11.22 blue@11.36 and@11.58 green.@11.74
+[  12.26-  13.58] Right@12.26 now,@12.70 blue@12.96 is@13.12 live.@13.34
+[  13.76-  15.02] All@13.76 your@13.94 users@14.10 are@14.40 hitting@14.58 blue.@14.76
+[  15.22-  18.20] Green@15.22 exists@15.58 too,@15.80 but@16.28 no@16.58 production@16.70 traffic@16.98 is@17.38 going@17.64 there@17.78 yet.@17.98
+[  18.36-  20.08] Now@18.36 imagine@18.58 you@18.94 run@19.10 an@19.28 e@19.40 -commerce@19.52 app.@19.74
+[  20.26-  21.56] Version@20.26 1@20.56 is@20.80 live@20.98 on@21.26 blue.@21.42
+[  21.84-  25.12] Users@21.84 can@22.20 browse@22.44 products,@22.72 add@23.30 items@23.40 to@23.72 their@23.86 cart,@23.98 and@24.32 check@24.46 out@24.62 normally.@24.78
+[  25.34-  28.22] You've@25.34 just@25.72 finished@25.86 version@26.16 2,@26.38 which@26.88 adds@27.20 a@27.36 new@27.50 checkout@27.60 flow.@27.92
+[  28.22-  31.54] The@28.22 risky@28.58 approach@28.82 would@29.14 be@29.36 to@29.48 deploy@29.58 version@29.82 2@30.16 directly@30.40 on@30.72 top@31.00 of@31.16 blue.@31.38
+[  31.66-  33.90] If@31.66 checkout@31.94 breaks,@32.24 every@32.70 customer@32.84 sees@33.26 it@33.48 immediately.@33.64
+[  34.22-  36.06] So@34.22 instead,@34.38 you@34.84 deploy@34.90 version@35.14 2@35.44 to@35.74 green.@35.88
+[  36.28-  37.76] Blue@36.28 keeps@36.54 serving@36.74 real@37.04 customers.@37.36
+[  38.10-  39.32] Green@38.10 gets@38.46 the@38.70 new@38.86 release.@39.00
+[  39.50-  40.80] Now@39.50 you@39.78 test@39.92 green@40.14 privately.@40.38
+[  41.08-  42.08] Can@41.08 users@41.30 log@41.54 in?@41.86
+[  42.20-  43.66] Can@42.20 they@42.48 add@42.60 products@42.78 to@43.12 their@43.30 cart?@43.42
+[  43.82-  45.56] Can@43.82 the@44.08 checkout@44.16 page@44.44 call@44.72 the@44.96 payment@45.06 API?@45.28
+[  45.98-  47.46] Does@45.98 the@46.30 order@46.44 get@46.66 saved@46.86 correctly?@47.12
+[  47.76-  48.86] Do@47.76 the@48.02 health@48.16 checks@48.34 pass?@48.58
+[  49.12-  50.70] If@49.12 something@49.38 is@49.62 broken,@49.80 no@50.24 problem.@50.36
+[  50.92-  52.26] Your@50.92 customers@51.14 are@51.52 still@51.72 on@51.90 blue.@52.06
+[  52.44-  54.30] You@52.44 fix@52.78 green,@53.02 and@53.46 you@53.76 try@53.86 again.@54.02
+[  54.56-  56.02] Now@54.56 let's@54.80 say@55.00 version@55.08 2@55.30 looks@55.54 good.@55.76
+[  56.12-  57.26] This@56.12 is@56.40 the@56.52 important@56.62 moment.@56.94
+[  57.26-  59.42] Instead@57.26 of@57.70 deploying@57.94 again,@58.20 you@58.62 switch@58.72 the@58.92 traffic.@59.12
+[  59.60-  63.24] The@59.60 load@59.88 balancer@60.08 stops@60.46 sending@60.68 users@61.02 to@61.28 blue,@61.56 and@61.86 starts@62.18 sending@62.36 them@62.68 to@62.88 green.@63.00
+[  63.42-  65.58] Almost@63.42 instantly,@63.86 green@64.54 becomes@64.86 production.@65.22
+[  65.94-  69.02] Now@65.94 imagine@66.24 that@66.54 five@66.76 minutes@66.94 later,@67.22 your@67.64 monitoring@67.76 shows@68.10 something@68.36 bad.@68.66
+[  69.30-  71.94] Checkout@69.30 errors@69.68 have@69.98 jumped@70.14 from@70.40 half@70.56 a@70.76 percent@70.86 to@71.06 18%.@71.28
+[  71.94-  72.60] That's@71.94 serious.@72.34
+[  72.84-  74.32] You@72.84 don't@73.10 need@73.26 to@73.36 rebuild@73.50 version@73.68 1.@74.04
+[  74.36-  75.48] You@74.36 don't@74.52 need@74.66 to@74.76 redeploy@74.88 it.@75.30
+[  75.60-  77.66] Blue@75.60 is@75.76 still@75.88 sitting@76.04 there@76.30 with@76.50 the@76.62 previous@76.70 working@77.00 release.@77.32
+[  77.76-  79.14] So@77.76 you@78.14 switch@78.24 the@78.44 traffic@78.60 back.@78.86
+[  79.34-  79.94] Green@79.34 to@79.60 blue.@79.76
+[  80.28-  81.76] Customers@80.28 are@80.72 back@80.80 on@80.98 the@81.14 stable@81.22 version.@81.46
+[  81.98-  83.54] That's@81.98 the@82.24 power@82.30 of@82.62 blue@82.80 -green@82.96 deployment.@83.14
+[  83.78-  85.36] But@83.78 now@83.92 we@84.04 hit@84.14 the@84.26 hard@84.38 part,@84.56 the@84.92 database.@85.02
+[  85.74-  87.24] Imagine@85.74 version@86.18 2@86.40 renamed@86.74 to@87.04 green.@87.22
+[  87.24-  87.84] The@87.24 database@87.48 column.@87.48
+[  88.04-  89.36] It@88.04 used@88.26 to@88.44 be@88.54 called@88.58 total@88.80 price.@89.08
+[  89.58-  90.88] Now@89.58 it's@89.88 called@90.06 order@90.22 total.@90.54
+[  91.04-  92.62] Green@91.04 understands@91.38 the@91.80 new@92.16 column.@92.28
+[  92.76-  93.68] But@92.76 blue@92.98 doesn't.@93.22
+[  93.70-  99.08] So@93.70 if@93.94 you@94.06 switch@94.14 back@94.36 to@94.56 blue@94.72 after@94.92 changing@95.16 the@95.50 database,@95.72 blue@96.28 may@96.48 crash,@96.68 because@97.22 it@97.44 still@97.62 expects@97.82 the@98.18 old@98.36 column@98.52 name.@98.80
+[  99.26- 101.48] This@99.26 is@99.38 why@99.50 database@99.64 changes@99.96 need@100.28 to@100.60 be@100.70 backward@100.82 compatible.@101.12
+[ 101.84- 104.14] A@101.84 common@101.92 pattern@102.18 here@102.50 is@102.76 called@102.94 expand@103.12 and@103.54 contract.@103.78
+[ 104.62- 107.12] First,@104.62 you@105.14 add@105.24 the@105.38 new@105.48 schema@105.62 without@105.92 deleting@106.16 the@106.52 old@106.74 one.@106.92
+[ 107.22- 109.06] Then@107.22 you@107.38 deploy@107.54 code@107.76 that@108.04 can@108.24 work@108.36 with@108.56 both.@108.74
+[ 109.20- 110.32] Then@109.20 you@109.40 migrate@109.54 the@109.82 data.@110.04
+[ 110.44- 113.60] And@110.44 only@110.66 once@110.84 the@111.04 new@111.20 version@111.36 is@111.64 stable,@111.80 you@112.24 remove@112.46 the@112.70 old@112.90 schema@113.02 later.@113.30
+[ 113.80- 114.90] Now@113.80 there's@114.12 another@114.34 option.@114.50
+[ 115.10- 119.50] Instead@115.10 of@115.44 switching@115.64 all@115.86 of@116.12 your@116.24 traffic@116.34 to@116.68 green,@116.88 immediately,@117.10 you@117.66 might@117.98 first@118.14 send@118.36 just@118.56 a@118.76 small@118.88 percentage.@119.08
+[ 119.62- 120.48] Maybe@119.62 5%.@119.82
+[ 120.48- 121.74] Watch@120.48 the@120.96 error@121.16 rates.@121.34
+[ 121.84- 122.82] Then@121.84 25%.@122.06
+[ 122.82- 123.82] Then@122.82 50%.@123.32
+[ 123.82- 124.40] Then@123.82 everything.@124.12
+[ 124.58- 126.28] That's@124.58 closer@124.90 to@125.14 a@125.36 canary@125.50 rollout.@125.84
+[ 126.36- 127.96] But@126.36 teams@126.50 often@126.74 combine@127.00 these@127.38 ideas.@127.62
+[ 128.24- 131.22] So@128.24 the@128.62 easiest@128.76 way@129.06 to@129.32 picture@129.46 blue@129.74 -green@130.00 deployment@130.22 is@130.54 this.@130.94
+[ 131.36- 133.44] Blue@131.36 is@131.68 the@131.86 stage@131.96 currently@132.26 serving@132.58 the@132.94 audience.@133.18
+[ 133.68- 137.22] Green@133.68 is@133.96 an@134.16 identical@134.28 stage@134.56 behind@134.92 the@135.24 curtain,@135.42 where@135.80 you@136.10 prepare@136.22 the@136.48 next@136.70 version.@136.88
+[ 137.40- 139.36] Once@137.40 green@137.68 is@137.90 ready,@138.12 you@138.48 move@138.68 the@138.84 spotlight.@139.00
+[ 139.60- 141.76] And@139.60 if@139.86 something@139.94 breaks,@140.18 you@140.70 move@140.94 it@141.12 straight@141.22 back.@141.44
+[ 141.94- 142.74] Two@141.94 environments.@142.28
+[ 142.90- 145.30] One@142.90 live,@143.06 one@143.44 ready,@143.56 and@143.92 one@144.02 traffic@144.16 switch@144.48 between@144.70 them.@145.00

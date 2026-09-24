@@ -1,0 +1,294 @@
+<!doctype html>
+<!--
+  mini-legend -- HyperFrames sub-composition (annotation / Foundation)
+
+  A small, compact legend (color swatch + label pairs) for a chart or
+  diagram shown elsewhere on screen. Meant to be composited as an
+  ANNOTATION LAYER (a different data-track-index in the host index.html)
+  alongside the chart it explains -- transparent outside its own compact
+  panel, positioned toward one `corner` of the frame rather than
+  full-bleed, since a legend is inherently a small supporting element.
+
+  Color discipline (see ../README.md): each row's swatch rotates through
+  the CONTENT-distinguishing accent tokens (--hf-accent, --hf-accent-2, -3,
+  -4, then --hf-brand) -- this is exactly the sanctioned per-item use case
+  the tokens exist for. The `accent` variable itself stays chrome-only (the
+  panel's border), matching every other component in this library.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("mini-legend"). Every per-instance
+  difference (title, items, corner, timing, accent) is a declared variable
+  resolved via lib/props.js -- never a forked file.
+
+  Variables:
+    - title        (string): optional small heading above the legend rows.
+    - show_title   (boolean): whether the heading is shown at all.
+    - items        (list): pipe-separated labels, one per legend row.
+    - corner       (enum: top-left|top-right|bottom-left|bottom-right|center):
+                   where the compact panel sits within the frame.
+    - reveal_at    (number, seconds): when the panel starts revealing.
+    - item_stagger (number, seconds): gap between successive row reveals.
+    - accent       (enum): panel border color (chrome only). Opt-in;
+                   default is the fixed brand accent.
+    - duration     (number, seconds): total instance length.
+
+  Registers window.__timelines["mini-legend"] under the literal key.
+
+  Animation-density pass (aesthetic-plan Batch 2): this is the library's
+  reference implementation for per-item color, so no new tween beats were
+  added here -- the plan's own note flagged the ROW STAGGER as too tight
+  to read as distinct beats rather than the beat count itself. Bumped the
+  default `item_stagger` from 0.18s to 0.26s so successive row reveals
+  read as separate, more clearly-paced beats; the existing clamp
+  (`Math.min(revealAt + 0.2 + i * stagger, duration - 0.15)`) already
+  keeps the last row inside `duration` regardless of stagger value, so
+  this is a pure default-value change with no new risk.
+-->
+<html
+  lang="en"
+  data-composition-id="mini-legend"
+  data-composition-duration="5"
+  data-composition-variables='[
+    { "id": "title", "type": "string", "role": "content", "label": "Title", "description": "Optional small heading above the legend rows.", "default": "Legend" },
+    { "id": "show_title", "type": "boolean", "role": "content", "label": "Show title", "description": "Whether the heading is shown at all.", "default": true },
+    { "id": "items", "type": "string", "role": "content", "label": "Items", "description": "Pipe-separated labels, one per legend row, e.g. \"Revenue|Costs|Profit\". Also accepts a JSON array string.", "default": "Revenue|Costs|Profit" },
+    { "id": "corner", "type": "enum", "role": "content", "label": "Corner", "description": "Where the compact panel sits within the frame.", "default": "top-right", "options": [{ "value": "top-left", "label": "Top left" }, { "value": "top-right", "label": "Top right" }, { "value": "bottom-left", "label": "Bottom left" }, { "value": "bottom-right", "label": "Bottom right" }, { "value": "center", "label": "Center" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the panel starts revealing.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "item_stagger", "type": "number", "role": "timing", "label": "Item stagger", "description": "Seconds between successive row reveals.", "default": 0.26, "min": 0.05, "max": 1.5, "step": 0.05 },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Panel border color (chrome only). Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays. Read from props, never from static markup.", "default": 5, "min": 1.5, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mini Legend</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="mini-legend" data-duration="5" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            padding: 5cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          #root.mg-corner-top-left {
+            align-items: flex-start;
+            justify-content: flex-start;
+          }
+          #root.mg-corner-top-right {
+            align-items: flex-start;
+            justify-content: flex-end;
+          }
+          #root.mg-corner-bottom-left {
+            align-items: flex-end;
+            justify-content: flex-start;
+          }
+          #root.mg-corner-bottom-right {
+            align-items: flex-end;
+            justify-content: flex-end;
+          }
+          #root.mg-corner-center {
+            align-items: center;
+            justify-content: center;
+          }
+          .mn-panel {
+            max-width: 60cqmin;
+            padding: 2.6cqmin 3.2cqmin;
+            border-radius: var(--hf-radius-sm, 10px);
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--mn-accent, var(--hf-brand, #6ea8fe));
+            box-shadow: 0 1.4cqmin 3.4cqmin rgba(0, 0, 0, 0.45);
+            opacity: 0;
+            transform: translateY(1cqmin) scale(0.96);
+          }
+          .mn-title {
+            color: var(--hf-muted, #9aa1ad);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+            overflow: hidden;
+            margin-bottom: 1.6cqmin;
+          }
+          .mn-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 1.6cqmin;
+          }
+          .mn-row {
+            display: flex;
+            align-items: center;
+            gap: 1.6cqmin;
+            opacity: 0;
+            transform: translateX(-0.8cqmin);
+          }
+          .mn-swatch {
+            flex: 0 0 auto;
+            border-radius: 3px;
+          }
+          .mn-label {
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+        </style>
+
+        <div class="mn-panel" id="mn-panel">
+          <div class="mn-title" id="mn-title"></div>
+          <div class="mn-rows" id="mn-rows"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "mini-legend: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              title: { type: "string", default: "Legend", maxLength: 30 },
+              show_title: { type: "boolean", default: true },
+              items: { type: "list", default: ["Revenue", "Costs", "Profit"], max: 6, delimiter: "|" },
+              corner: {
+                type: "enum",
+                default: "top-right",
+                options: ["top-left", "top-right", "bottom-left", "bottom-right", "center"],
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              item_stagger: { type: "number", default: 0.26, min: 0.05, max: 1.5 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              duration: { type: "number", default: 5, min: 1.5, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var panel = document.getElementById("mn-panel");
+            var titleEl = document.getElementById("mn-title");
+            var rowsWrap = document.getElementById("mn-rows");
+
+            root.className = "mg-corner-" + props.corner;
+            root.style.setProperty("--mn-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+            titleEl.style.display = props.show_title ? "" : "none";
+
+            // Per-item swatch colors rotate through the CONTENT-
+            // distinguishing accent tokens -- the sanctioned per-item use
+            // case (see file header / README "Color discipline"), never
+            // the chrome-only `accent` variable above.
+            var SWATCH_ROTATION = ["var(--hf-accent)", "var(--hf-accent-2)", "var(--hf-accent-3)", "var(--hf-accent-4)", "var(--hf-brand)"];
+
+            // Frame-filling for a low element count: fewer rows -> larger
+            // type + more breathing room per row (README hard rule).
+            var count = Math.max(1, props.items.length);
+            var rowFontCqmin = count <= 2 ? 2.9 : count <= 4 ? 2.4 : 2.05;
+            var swatchCqmin = count <= 2 ? 2.4 : count <= 4 ? 2 : 1.7;
+            var rowGapCqmin = count <= 2 ? 2.4 : count <= 4 ? 1.8 : 1.3;
+            rowsWrap.style.gap = rowGapCqmin + "cqmin";
+
+            var rowEls = [];
+            HFProps.rebuild(rowsWrap, function (container) {
+              rowEls = [];
+              props.items.forEach(function (text, i) {
+                var row = document.createElement("div");
+                row.className = "mn-row";
+                var swatch = document.createElement("span");
+                swatch.className = "mn-swatch";
+                swatch.style.background = SWATCH_ROTATION[i % SWATCH_ROTATION.length];
+                var labelEl = document.createElement("span");
+                labelEl.className = "mn-label";
+                row.appendChild(swatch);
+                row.appendChild(labelEl);
+                container.appendChild(row);
+                rowEls.push({ el: row, text: labelEl, swatch: swatch, src: text });
+              });
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxWidth = 60 * rootMin - 6.4 * rootMin;
+
+              if (props.show_title) {
+                HFTextFit.fitOrTruncate(titleEl, props.title, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: boxWidth,
+                  maxHeight: 1000,
+                  baseSize: 1.9 * rootMin,
+                  minSize: 10,
+                  maxLines: 1,
+                });
+              }
+
+              rowEls.forEach(function (row) {
+                row.swatch.style.width = swatchCqmin * rootMin + "px";
+                row.swatch.style.height = swatchCqmin * rootMin + "px";
+                HFTextFit.fitOrTruncate(row.text, row.src, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 500,
+                  maxWidth: boxWidth - swatchCqmin * rootMin - 1.6 * rootMin,
+                  maxHeight: 1000,
+                  baseSize: rowFontCqmin * rootMin,
+                  minSize: 11,
+                  maxLines: 1,
+                });
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.4));
+            var stagger = props.item_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(
+              panel,
+              { opacity: 0, y: 8, scale: 0.96 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "power2.out" },
+              revealAt
+            );
+            rowEls.forEach(function (row, i) {
+              var at = Math.min(revealAt + 0.2 + i * stagger, Math.max(0, duration - 0.15));
+              tl.fromTo(
+                row.el,
+                { opacity: 0, x: -6 },
+                { opacity: 1, x: 0, duration: 0.3, ease: "power2.out" },
+                at
+              );
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see
+            // browser-window.html for the full rationale.
+            tl.set({}, {}, duration);
+            window.__timelines["mini-legend"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

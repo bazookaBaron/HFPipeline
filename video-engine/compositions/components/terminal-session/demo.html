@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Demo: terminal-session</title>
+    <script src="../lib/text-fit.js"></script>
+    <script src="../lib/props.js"></script>
+    <script src="../lib/demo-runtime.js"></script>
+    <link rel="stylesheet" href="../lib/tokens.css" />
+    <style>
+      body {
+        margin: 0;
+        background: #05060a;
+        color: #f4f5f7;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      p {
+        margin: 0;
+        color: #9aa1ad;
+        font-size: 13px;
+        max-width: 640px;
+        text-align: center;
+      }
+      #stage-wrap {
+        transform-origin: top center;
+        border: 1px solid #2c2f36;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+      }
+      button {
+        background: #6ea8fe;
+        color: #0b0d10;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>terminal-session</h1>
+    <p>
+      Foundation / software-mockup primitive. This instance overrides <code>command</code>,
+      <code>output_lines</code> (5 lines) and <code>accent</code> via <code>data-variable-values</code> to
+      prove the multi-instance pattern: the SAME <code>terminal-session.html</code> file, a different look,
+      no forked composition id.
+    </p>
+    <div id="stage-wrap">
+      <div id="stage" style="transform: scale(0.42); transform-origin: top left"></div>
+    </div>
+    <div id="controls"></div>
+
+    <script>
+      var STAGE_SCALE = 0.42;
+      var stageWrap = document.getElementById("stage-wrap");
+      HFDemoRuntime.mount({
+        src: "./terminal-session.html",
+        mountEl: document.getElementById("stage"),
+        compositionId: "terminal-session",
+        width: 1080,
+        height: 1920,
+        variables: {
+          title: "deploy.sh",
+          prompt: "➜",
+          command: "git push origin main --tags",
+          output_lines:
+            "Enumerating objects: 24, done.|Compressing objects: 100% (18/18), done.|Writing objects: 100% (24/24), 4.2 KiB|To github.com:acme/app.git|  a1b2c3d..e4f5a6b  main -> main",
+          accent: "accent-2",
+          type_at: 0.4,
+          output_at: 2.2,
+          line_stagger: 0.3,
+          duration: 7,
+        },
+      }).then(function (handle) {
+        stageWrap.style.width = 1080 * STAGE_SCALE + "px";
+        stageWrap.style.height = 1920 * STAGE_SCALE + "px";
+        HFDemoRuntime.attachScrubber(handle, document.getElementById("controls"));
+      }).catch(function (err) {
+        document.getElementById("stage").textContent = String(err);
+        console.error(err);
+      });
+    </script>
+  </body>
+</html>

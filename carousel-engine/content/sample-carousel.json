@@ -1,0 +1,127 @@
+{
+  "brandHandle": "@buildwithdebo",
+  "slides": [
+    {
+      "kind": "cover",
+      "content": {
+        "kicker": "API Performance",
+        "title": "3 Ways to Cut API Latency in Half",
+        "subtitle": "Practical fixes you can ship this week — no infrastructure rewrite required."
+      }
+    },
+    {
+      "kind": "content",
+      "content": {
+        "eyebrow": "01 — Caching",
+        "heading": "Cache at the edge, not just in your app",
+        "body": [
+          "A CDN edge cache (Cloudflare, Fastly, CloudFront) serves repeat GET requests in ~20–50ms instead of round-tripping to origin.",
+          "Set Cache-Control: max-age and an ETag so clients and proxies can skip the network entirely on a 304.",
+          "Invalidation is the hard part — scope cache keys per-resource, not per-endpoint, so one update doesn't wipe the whole cache."
+        ]
+      }
+    },
+    {
+      "kind": "stat",
+      "content": {
+        "eyebrow": "Real-world impact",
+        "statValue": "68%",
+        "statLabel": "Median latency drop after adding edge caching",
+        "context": "Measured across a Node/Express API moving from origin-only responses to a CDN cache layer with 5-minute TTLs on its read-heavy endpoints."
+      }
+    },
+    {
+      "kind": "diagram",
+      "content": {
+        "heading": "Where the milliseconds actually go",
+        "steps": [
+          { "label": "Client sends request", "detail": "DNS + TLS handshake: 40–100ms cold" },
+          { "label": "CDN edge checks cache", "detail": "Cache hit returns in ~20ms" },
+          { "label": "Origin server (cache miss)", "detail": "App logic + DB query: 80–300ms" },
+          { "label": "Database round-trip", "detail": "Index lookup vs. full scan matters most here" }
+        ]
+      }
+    },
+    {
+      "kind": "compare",
+      "content": {
+        "heading": "Three latency fixes, compared",
+        "columns": [
+          {
+            "title": "Edge caching",
+            "points": ["Fastest win to ship", "Zero app code changes", "Best for read-heavy GET routes"]
+          },
+          {
+            "title": "Connection pooling",
+            "points": ["Cuts DB connect overhead", "One config change", "Best for high-QPS services"]
+          },
+          {
+            "title": "Query indexing",
+            "points": ["Fixes the root cause", "Needs a schema review", "Best for one slow, specific endpoint"]
+          }
+        ]
+      }
+    },
+    {
+      "kind": "ranked",
+      "content": {
+        "heading": "Fix these in priority order",
+        "items": [
+          { "title": "Add a database index", "detail": "Usually the single biggest win for a slow endpoint" },
+          { "title": "Turn on connection pooling", "detail": "PgBouncer or a built-in pool avoids per-request reconnects" },
+          { "title": "Add an edge cache layer", "detail": "Put a CDN in front of your read-heavy GET routes" }
+        ]
+      }
+    },
+    {
+      "kind": "hub",
+      "content": {
+        "heading": "One goal, three levers",
+        "hubLabel": "Lower API Latency",
+        "spokes": [
+          { "label": "Caching", "detail": "Edge + app-level" },
+          { "label": "Connection pooling", "detail": "Reuse DB connections" },
+          { "label": "Query indexing", "detail": "Fix slow lookups" }
+        ]
+      }
+    },
+    {
+      "kind": "dsSnapshot",
+      "content": {
+        "heading": "A cache hit vs. a cache miss",
+        "structureType": "LRU Cache — capacity 4",
+        "cells": [
+          { "value": "user:42", "highlighted": true },
+          { "value": "user:7" },
+          { "value": "user:19" },
+          { "value": "—" }
+        ],
+        "pointers": [{ "index": 0, "label": "HIT" }],
+        "caption": "The request for user:42 is already sitting in the LRU cache — it's returned in ~1ms without ever touching the database."
+      }
+    },
+    {
+      "kind": "screenshot",
+      "content": {
+        "heading": "The header pair that makes this work",
+        "codeLines": [
+          "HTTP/1.1 200 OK",
+          "Cache-Control: public, max-age=300",
+          "ETag: \"a1b2c3d4\"",
+          "X-Cache: HIT",
+          "Content-Type: application/json"
+        ],
+        "caption": "A correct Cache-Control + ETag pair lets browsers and CDNs skip the network entirely on unchanged data."
+      }
+    },
+    {
+      "kind": "cta",
+      "content": {
+        "heading": "Ship one of these this week",
+        "subtext": "Start with whichever fix matches your bottleneck — check your APM traces first.",
+        "buttonText": "Save this post",
+        "handle": "@buildwithdebo"
+      }
+    }
+  ]
+}

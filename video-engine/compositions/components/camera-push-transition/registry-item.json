@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "camera-push-transition",
+  "type": "hyperframes:component",
+  "title": "Camera Push Transition",
+  "description": "A reusable scale/zoom push-in transition: a before statement punches forward (scale, blur, fade) through an accent flash-cut into an after statement that lands from a slightly larger scale.",
+  "tags": ["editing", "transition", "zoom", "punch-in"],
+  "category": "editing",
+  "files": [
+    {
+      "path": "camera-push-transition.html",
+      "target": "compositions/components/camera-push-transition/camera-push-transition.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "before_title", "type": "string", "default": "Before: one giant monolith" },
+    { "id": "before_subtitle", "type": "string", "default": "Every team ships through the same release train." },
+    { "id": "after_title", "type": "string", "default": "After: independent services" },
+    { "id": "after_subtitle", "type": "string", "default": "Each team deploys on its own schedule." },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "push_at", "type": "number", "default": 1.5 },
+    { "id": "duration", "type": "number", "default": 4.5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "callout-label",
+  "type": "hyperframes:component",
+  "title": "Callout Label",
+  "description": "A small pointer/label that calls out one specific point on screen: a marker dot, a connector line, and a text chip. Transparent outside its own marker/line/chip -- meant to be composited as an annotation layer over other content.",
+  "tags": ["annotation", "callout", "label", "pointer", "foundation"],
+  "category": "annotation",
+  "files": [
+    {
+      "path": "callout-label.html",
+      "target": "compositions/components/callout-label/callout-label.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "text", "type": "string", "default": "New feature" },
+    { "id": "x_pct", "type": "number", "default": 50, "min": 0, "max": 100 },
+    { "id": "y_pct", "type": "number", "default": 40, "min": 0, "max": 100 },
+    { "id": "direction", "type": "enum", "default": "up", "options": ["up", "down", "left", "right"] },
+    { "id": "reveal_at", "type": "number", "default": 0.4 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "duration", "type": "number", "default": 5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

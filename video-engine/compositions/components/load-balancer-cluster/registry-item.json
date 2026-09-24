@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "load-balancer-cluster",
+  "type": "hyperframes:component",
+  "title": "Load Balancer Cluster",
+  "description": "A load-balancer box distributing traffic to N backend server boxes, round-robin, with traffic dots animating along measured connector lines and backends pulsing on arrival.",
+  "tags": ["architecture", "diagram", "load-balancer", "backend", "infrastructure"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "load-balancer-cluster.html",
+      "target": "compositions/components/load-balancer-cluster/load-balancer-cluster.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "backend_count", "type": "number", "default": 4 },
+    { "id": "lb_label", "type": "string", "default": "Load Balancer" },
+    { "id": "backend_label", "type": "string", "default": "Server" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "start_at", "type": "number", "default": 0.6 },
+    { "id": "dot_interval", "type": "number", "default": 0.6 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

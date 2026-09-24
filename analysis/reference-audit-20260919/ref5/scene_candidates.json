@@ -1,0 +1,27 @@
+{
+  "threshold": 0.15,
+  "comparison": "strictly greater",
+  "interpretation": "Cut candidates, not verified cuts or semantic beats",
+  "candidates": [
+    {
+      "frame_index": 658,
+      "pts_ms": 21933.333000000002,
+      "score": 0.240762
+    },
+    {
+      "frame_index": 713,
+      "pts_ms": 23766.667,
+      "score": 0.244378
+    },
+    {
+      "frame_index": 1676,
+      "pts_ms": 55866.667,
+      "score": 0.271244
+    },
+    {
+      "frame_index": 1719,
+      "pts_ms": 57300.0,
+      "score": 0.278539
+    }
+  ]
+}

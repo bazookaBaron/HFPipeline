@@ -1,0 +1,454 @@
+<!doctype html>
+<!--
+  chat-session -- HyperFrames sub-composition (Software mockup)
+
+  A chat/messaging UI: header bar (avatar + contact name), then message
+  bubbles that pop in one at a time, alternating received (left, muted
+  chrome) and sent (right, accent-colored). Items already occupy their
+  final flex position at build time (like content-panel's list rows) and
+  are simply revealed opacity/scale in order -- simpler and just as
+  seek-safe as chat-thread.html's absolute-position restacking, and the
+  right complexity level for a short reveal-driven scene.
+
+  Each entry in `messages` optionally starts with "sent:" to flip which
+  side it renders on; anything else is a received bubble. Parsed AFTER
+  HFProps.resolve's list coercion (delimiter "|"), matching the
+  established prefix-switch convention from the real chat-thread registry
+  item, just simplified to two sides instead of five content kinds.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("chat-session"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="chat-session"
+  data-composition-duration="8"
+  data-composition-variables='[
+    { "id": "contact", "type": "string", "role": "content", "label": "Contact", "description": "Name shown in the header; avatar shows its first letter.", "default": "Priya" },
+    { "id": "messages", "type": "string", "role": "content", "label": "Messages", "description": "Pipe-separated messages. Prefix an entry with sent: to render it on the right in the accent color; anything else renders received on the left. Example: \"Are we still on for 3pm?|sent:Yes! See you then|sent:Bringing the slides too\"", "default": "Are we still on for 3pm?|sent:Yes! See you then 🙌|One sec, pulling up the doc|sent:Sounds good, no rush" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Sent-bubble color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "start_at", "type": "number", "role": "timing", "label": "Start at", "description": "Seconds from mount when the header reveals and the first message begins arriving.", "default": 0.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "message_stagger", "type": "number", "role": "timing", "label": "Message stagger", "description": "Seconds between successive message arrivals.", "default": 0.85, "min": 0.2, "max": 3, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 8, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chat Session</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="chat-session" data-duration="8" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .cs-phone {
+            width: 100%;
+            height: 100%;
+            max-width: 118cqh;
+            border-radius: calc(var(--hf-radius, 16px) * 1.25);
+            overflow: hidden;
+            background: var(--hf-bg, #0b0d10);
+            box-shadow: 0 4cqh 10cqh rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+          }
+          .cs-header {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 3cqmin;
+            padding: 3.4cqmin 4cqmin;
+            background: var(--hf-surface, #16181c);
+            border-bottom: 1px solid var(--hf-border, #2c2f36);
+            opacity: 0;
+            transform: translateY(-1cqmin);
+          }
+          .cs-avatar {
+            flex: 0 0 auto;
+            width: 8cqmin;
+            height: 8cqmin;
+            min-width: 30px;
+            min-height: 30px;
+            border-radius: 50%;
+            background: var(--cs-accent, var(--hf-brand, #6ea8fe));
+            color: var(--hf-bg, #0b0d10);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 3.6cqmin;
+          }
+          .cs-header-text {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4cqmin;
+            min-width: 0;
+          }
+          .cs-name {
+            font-weight: 700;
+            font-size: 3.4cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .cs-status {
+            font-size: 2.4cqmin;
+            color: var(--hf-muted, #9aa1ad);
+          }
+          .cs-body {
+            flex: 1;
+            min-height: 0;
+            padding: 4.4cqmin 4cqmin;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+          }
+          .cs-row {
+            position: relative;
+            display: flex;
+            width: 100%;
+          }
+          .cs-row.recv {
+            justify-content: flex-start;
+          }
+          .cs-row.sent {
+            justify-content: flex-end;
+          }
+          .cs-bubble {
+            position: relative;
+            max-width: 74%;
+            border-radius: 3.4cqmin;
+            padding: 2.2cqmin 3.2cqmin;
+            font-weight: 500;
+            line-height: 1.32;
+            opacity: 0;
+            transform: translateY(1.6cqmin) scale(0.92);
+            transform-origin: bottom center;
+          }
+          .cs-row.recv .cs-bubble {
+            background: var(--hf-surface-2, #1e2126);
+            color: var(--hf-fg, #f4f5f7);
+            border-bottom-left-radius: 0.8cqmin;
+            transform-origin: bottom left;
+          }
+          .cs-row.sent .cs-bubble {
+            background: var(--cs-accent, var(--hf-brand, #6ea8fe));
+            color: var(--hf-bg, #0b0d10);
+            border-bottom-right-radius: 0.8cqmin;
+            transform-origin: bottom right;
+          }
+          /* Delivery tick on sent bubbles: sits inset within the bubble's own
+             padding (0.6/1.2cqmin < the bubble's 2.2/3.2cqmin padding), so it
+             never overlaps the text flow -- pure corner whitespace. */
+          .cs-bubble-tick {
+            position: absolute;
+            right: 1.2cqmin;
+            bottom: 0.6cqmin;
+            font-size: 1.8cqmin;
+            line-height: 1;
+            opacity: 0;
+            color: var(--hf-bg, #0b0d10);
+          }
+          /* "Other side is typing" pill -- absolutely positioned over its row
+             (row is position:relative) so it never disturbs the flex column's
+             already-final layout (header comment: rows occupy their final
+             position at build time). Matches the recv bubble's own chrome. */
+          .cs-typing {
+            position: absolute;
+            left: 0;
+            top: 0;
+            display: flex;
+            align-items: center;
+            gap: 1cqmin;
+            padding: 2.2cqmin 3.2cqmin;
+            border-radius: 3.4cqmin;
+            border-bottom-left-radius: 0.8cqmin;
+            background: var(--hf-surface-2, #1e2126);
+            opacity: 0;
+          }
+          .cs-typing-dot {
+            width: 1.3cqmin;
+            height: 1.3cqmin;
+            min-width: 4px;
+            min-height: 4px;
+            border-radius: 50%;
+            background: var(--hf-muted, #9aa1ad);
+          }
+        </style>
+
+        <div class="cs-phone" id="cs-phone">
+          <div class="cs-header" id="cs-header">
+            <div class="cs-avatar" id="cs-avatar"></div>
+            <div class="cs-header-text">
+              <div class="cs-name" id="cs-name"></div>
+              <div class="cs-status">Online</div>
+            </div>
+          </div>
+          <div class="cs-body" id="cs-body"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            // See browser-window.html for the full rationale: HFTextFit /
+            // HFProps are pre-loaded globals, never a relative <script src>
+            // inside this template. Host contract: ../README.md "Shared
+            // library contract".
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "chat-session: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              contact: { type: "string", default: "Priya", maxLength: 30 },
+              messages: {
+                type: "list",
+                default: [
+                  "Are we still on for 3pm?",
+                  "sent:Yes! See you then",
+                  "One sec, pulling up the doc",
+                  "sent:Sounds good, no rush",
+                ],
+                max: 6,
+                delimiter: "|",
+              },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              start_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              message_stagger: { type: "number", default: 0.85, min: 0.2, max: 3 },
+              duration: { type: "number", default: 8, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var header = document.getElementById("cs-header");
+            var avatar = document.getElementById("cs-avatar");
+            var nameEl = document.getElementById("cs-name");
+            var body = document.getElementById("cs-body");
+
+            root.style.setProperty("--cs-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            avatar.textContent = props.contact.charAt(0).toUpperCase();
+
+            // Parse the sent:/received prefix switch AFTER HFProps' own
+            // list coercion -- HFProps only knows how to split the
+            // delimited string into an array; the per-entry side switch is
+            // this component's own concern, same layering chat-thread.html
+            // uses for its five-way kind switch.
+            var entries = props.messages.map(function (raw) {
+              if (raw.indexOf("sent:") === 0) {
+                return { side: "sent", text: raw.slice(5).trim() || "Sounds good" };
+              }
+              return { side: "recv", text: raw.trim() || "Hey" };
+            });
+
+            // Frame-filling: fewer messages -> larger bubbles + more
+            // breathing room, matching content-panel's count-based tiers.
+            var count = Math.max(1, entries.length);
+            var bubbleFontCqmin = count <= 2 ? 4.2 : count <= 4 ? 3.4 : 2.8;
+            var rowGapCqmin = count <= 2 ? 4.6 : count <= 4 ? 3 : 2.2;
+            body.style.gap = rowGapCqmin + "cqmin";
+
+            // First received message, if any -- gets a "typing..." pill just
+            // before it lands. A "sent" message is the local user's own, so
+            // it never gets a typing cue for the OTHER side.
+            var firstRecvIdx = -1;
+            for (var fi = 0; fi < entries.length; fi++) {
+              if (entries[fi].side === "recv") {
+                firstRecvIdx = fi;
+                break;
+              }
+            }
+
+            // Clear/rebuild: message rows are torn down and rebuilt from
+            // props every mount so a re-seek or variable change never
+            // leaves a stale row from a previous build.
+            var rowEls = [];
+            HFProps.rebuild(body, function (container) {
+              rowEls = [];
+              entries.forEach(function (entry, i) {
+                var row = document.createElement("div");
+                row.className = "cs-row " + entry.side;
+                var bubble = document.createElement("div");
+                bubble.className = "cs-bubble";
+                // Text lives in its own child span so HFTextFit can safely
+                // overwrite ITS textContent on re-layout without wiping out
+                // the tick/typing elements also living inside the bubble/row.
+                var textEl = document.createElement("span");
+                textEl.className = "cs-bubble-text";
+                bubble.appendChild(textEl);
+
+                var tickEl = null;
+                if (entry.side === "sent") {
+                  tickEl = document.createElement("span");
+                  tickEl.className = "cs-bubble-tick";
+                  tickEl.textContent = "✓✓";
+                  bubble.appendChild(tickEl);
+                }
+
+                var typingEl = null;
+                var typingDots = null;
+                if (i === firstRecvIdx) {
+                  typingEl = document.createElement("div");
+                  typingEl.className = "cs-typing";
+                  typingDots = [];
+                  for (var d = 0; d < 3; d++) {
+                    var dot = document.createElement("span");
+                    dot.className = "cs-typing-dot";
+                    typingEl.appendChild(dot);
+                    typingDots.push(dot);
+                  }
+                }
+
+                row.appendChild(bubble);
+                if (typingEl) row.appendChild(typingEl);
+                container.appendChild(row);
+                rowEls.push({
+                  row: row,
+                  bubble: bubble,
+                  textEl: textEl,
+                  text: entry.text,
+                  tick: tickEl,
+                  typing: typingEl,
+                  typingDots: typingDots,
+                });
+              });
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(nameEl, props.contact, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: 60 * rootMin,
+                maxHeight: 1000,
+                baseSize: 3.4 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+              var bubbleMaxWidth = body.clientWidth * 0.74 - 2 * 3.2 * rootMin;
+              rowEls.forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.textEl, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 500,
+                  maxWidth: bubbleMaxWidth,
+                  maxHeight: bubbleFontCqmin * rootMin * 1.32 * 3,
+                  baseSize: bubbleFontCqmin * rootMin,
+                  minSize: 13,
+                  maxLines: 3,
+                });
+              });
+            }
+
+            // Stash authored source text so a font-load re-layout re-measures
+            // from the original string, never an already-truncated one.
+            rowEls.forEach(function (item) {
+              item.textEl.dataset.src = item.text;
+            });
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var startAt = Math.min(props.start_at, Math.max(0, duration - 0.5));
+            var stagger = props.message_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            var headerAt = Math.max(0, startAt - 0.2);
+            tl.fromTo(header, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, headerAt);
+
+            // Avatar entrance pop -- punchier back.out reveal layered on top
+            // of the header's own plain fade, so the avatar reads as a
+            // distinct beat rather than just riding along with the header text.
+            tl.fromTo(
+              avatar,
+              { scale: 0.5, opacity: 0 },
+              { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.5)" },
+              Math.min(headerAt + 0.15, Math.max(0, duration - 0.1))
+            );
+
+            rowEls.forEach(function (item, i) {
+              var at = Math.min(startAt + i * stagger, Math.max(0, duration - 0.2));
+              item.at = at;
+              tl.fromTo(
+                item.bubble,
+                { opacity: 0, y: 14, scale: 0.9 },
+                { opacity: 1, y: 0, scale: 1, duration: 0.4, ease: "back.out(1.6)" },
+                at
+              );
+            });
+
+            // Delivery tick on sent bubbles: a small checkmark pop right
+            // after each sent bubble lands -- a distinct second beat per
+            // sent message, beyond its own main reveal (mirrors
+            // ide-diff-panel's gutter-glyph pop-in beat).
+            rowEls.forEach(function (item) {
+              if (!item.tick) return;
+              var tickAt = Math.min(item.at + 0.3, Math.max(0, duration - 0.1));
+              tl.fromTo(
+                item.tick,
+                { scale: 0, opacity: 0 },
+                { scale: 1, opacity: 0.85, duration: 0.25, ease: "back.out(2.5)" },
+                tickAt
+              );
+            });
+
+            // "Typing..." indicator: three dots pop in briefly before the
+            // first received message lands, bounce once, then fade out right
+            // as that bubble's own reveal begins -- a standard chat-UI
+            // convention for a fast-paced, alive-feeling thread.
+            var typingItem = null;
+            rowEls.forEach(function (item) {
+              if (item.typing) typingItem = item;
+            });
+            if (typingItem) {
+              var typingIn = Math.max(0, typingItem.at - 0.45);
+              var typingOut = Math.max(typingIn + 0.2, typingItem.at - 0.08);
+              tl.fromTo(typingItem.typing, { opacity: 0 }, { opacity: 1, duration: 0.15, ease: "power2.out" }, typingIn);
+              tl.fromTo(
+                typingItem.typingDots,
+                { y: 0 },
+                { y: -2.5, duration: 0.14, yoyo: true, repeat: 1, ease: "power1.inOut", stagger: 0.09 },
+                Math.min(typingIn + 0.08, Math.max(0, duration - 0.1))
+              );
+              tl.to(typingItem.typing, { opacity: 0, duration: 0.12, ease: "power1.in" }, Math.min(typingOut, Math.max(0, duration - 0.05)));
+            }
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["chat-session"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<!--
+  callout-label -- HyperFrames sub-composition (annotation / Foundation)
+
+  A small pointer/label that calls out one specific point on screen: a dot
+  marker at an anchor position, a thin connector line, and a text chip that
+  the connector points to. Meant to be composited as an ANNOTATION LAYER on
+  top of other visual content (a different data-track-index in the host
+  index.html) -- this file itself stays transparent outside its own marker/
+  line/chip, never painting an opaque background over whatever it annotates.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("callout-label"). Every per-instance
+  difference (text, anchor position, direction, timing, accent) is a
+  declared variable resolved via lib/props.js -- never a forked file.
+
+  Variables:
+    - text         (string): the callout's label text.
+    - x_pct        (number, 0-100): anchor point horizontal position, percent
+                   of frame width.
+    - y_pct        (number, 0-100): anchor point vertical position, percent
+                   of frame height.
+    - direction    (enum: up|down|left|right): which side of the anchor the
+                   label chip sits on; the connector line points that way.
+    - reveal_at    (number, seconds): when the marker/line/chip reveal.
+    - accent       (enum): marker + connector + chip-border color. Opt-in;
+                   default is the fixed brand accent.
+    - duration     (number, seconds): total instance length.
+
+  Registers window.__timelines["callout-label"] under the literal key.
+-->
+<html lang="en" data-composition-id="callout-label" data-composition-duration="5" data-composition-variables="[
+    { &quot;id&quot;: &quot;text&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Text&quot;, &quot;description&quot;: &quot;The callout label text.&quot;, &quot;default&quot;: &quot;New feature&quot; },
+    { &quot;id&quot;: &quot;x_pct&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Anchor X %&quot;, &quot;description&quot;: &quot;Anchor point horizontal position, percent of frame width.&quot;, &quot;default&quot;: 50, &quot;min&quot;: 0, &quot;max&quot;: 100, &quot;step&quot;: 1 },
+    { &quot;id&quot;: &quot;y_pct&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Anchor Y %&quot;, &quot;description&quot;: &quot;Anchor point vertical position, percent of frame height.&quot;, &quot;default&quot;: 40, &quot;min&quot;: 0, &quot;max&quot;: 100, &quot;step&quot;: 1 },
+    { &quot;id&quot;: &quot;direction&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Direction&quot;, &quot;description&quot;: &quot;Which side of the anchor the label chip sits on.&quot;, &quot;default&quot;: &quot;up&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;up&quot;, &quot;label&quot;: &quot;Up&quot; }, { &quot;value&quot;: &quot;down&quot;, &quot;label&quot;: &quot;Down&quot; }, { &quot;value&quot;: &quot;left&quot;, &quot;label&quot;: &quot;Left&quot; }, { &quot;value&quot;: &quot;right&quot;, &quot;label&quot;: &quot;Right&quot; }] },
+    { &quot;id&quot;: &quot;reveal_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Reveal at&quot;, &quot;description&quot;: &quot;Seconds from mount when the marker/line/chip reveal.&quot;, &quot;default&quot;: 0.4, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;accent&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Accent&quot;, &quot;description&quot;: &quot;Marker + connector + chip-border color. Opt-in only; default is the fixed brand accent.&quot;, &quot;default&quot;: &quot;brand&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;brand&quot;, &quot;label&quot;: &quot;Brand&quot; }, { &quot;value&quot;: &quot;accent&quot;, &quot;label&quot;: &quot;Accent&quot; }, { &quot;value&quot;: &quot;accent-2&quot;, &quot;label&quot;: &quot;Accent 2&quot; }, { &quot;value&quot;: &quot;accent-3&quot;, &quot;label&quot;: &quot;Accent 3&quot; }, { &quot;value&quot;: &quot;accent-4&quot;, &quot;label&quot;: &quot;Accent 4&quot; }] },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays. Read from props, never from static markup.&quot;, &quot;default&quot;: 5, &quot;min&quot;: 1.5, &quot;max&quot;: 30, &quot;step&quot;: 0.1 }
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <title>Callout Label</title>
+  </head>
+  <body>
+    <template>
+      <div data-hf-id="hf-pd29" id="root" data-composition-id="callout-label" data-duration="5" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .cl-layer {
+            position: absolute;
+            inset: 0;
+          }
+          .cl-dot {
+            position: absolute;
+            width: 2.6cqmin;
+            height: 2.6cqmin;
+            border-radius: 50%;
+            background: var(--cl-accent, var(--hf-brand, #6ea8fe));
+            box-shadow: 0 0 0 0.6cqmin rgba(110, 168, 254, 0.28);
+            opacity: 0;
+          }
+          .cl-line {
+            position: absolute;
+            background: var(--cl-accent, var(--hf-brand, #6ea8fe));
+            opacity: 0;
+          }
+          .cl-chip {
+            position: absolute;
+            max-width: 44cqmin;
+            padding: 1.6cqmin 2.6cqmin;
+            border-radius: var(--hf-radius-sm, 10px);
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--cl-accent, var(--hf-brand, #6ea8fe));
+            box-shadow: 0 1.4cqmin 3.4cqmin rgba(0, 0, 0, 0.45);
+            color: var(--hf-fg, #f4f5f7);
+            font-weight: 600;
+            font-size: 2.7cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+          }
+        </style>
+
+        <div data-hf-id="hf-sonq" class="cl-layer" id="cl-layer">
+          <div data-hf-id="hf-69qy" class="cl-dot" id="cl-dot"></div>
+          <div data-hf-id="hf-ipdu" class="cl-line" id="cl-line"></div>
+          <div data-hf-id="hf-hwx6" class="cl-chip" id="cl-chip"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "callout-label: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              text: { type: "string", default: "New feature", maxLength: 60 },
+              x_pct: { type: "number", default: 50, min: 0, max: 100 },
+              y_pct: { type: "number", default: 40, min: 0, max: 100 },
+              direction: { type: "enum", default: "up", options: ["up", "down", "left", "right"] },
+              reveal_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              duration: { type: "number", default: 5, min: 1.5, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var dot = document.getElementById("cl-dot");
+            var line = document.getElementById("cl-line");
+            var chip = document.getElementById("cl-chip");
+
+            root.style.setProperty("--cl-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var CONNECTOR_LEN = 12; // cqmin
+            var GAP = 2; // cqmin between connector end and chip
+
+            function positionElements() {
+              var w = root.clientWidth;
+              var h = root.clientHeight;
+              var rootMin = Math.min(w, h) / 100;
+              var ax = (props.x_pct / 100) * w;
+              var ay = (props.y_pct / 100) * h;
+
+              dot.style.left = ax + "px";
+              dot.style.top = ay + "px";
+              // Static center-on-point anchor + entrance scale baseline,
+              // set once via GSAP (not a raw CSS transform string) so the
+              // timeline's own scale tween below composes cleanly.
+              gsap.set(dot, { xPercent: -50, yPercent: -50, scale: 0, transformOrigin: "50% 50%" });
+
+              var dx = 0;
+              var dy = 0;
+              var lineLenPx = CONNECTOR_LEN * rootMin;
+              var lineThickness = 0.35 * rootMin;
+              var rotateDeg = 0;
+
+              if (props.direction === "up") {
+                dy = -1;
+                rotateDeg = -90;
+              } else if (props.direction === "down") {
+                dy = 1;
+                rotateDeg = 90;
+              } else if (props.direction === "left") {
+                dx = -1;
+                rotateDeg = 180;
+              } else {
+                dx = 1;
+                rotateDeg = 0;
+              }
+
+              line.style.left = ax + "px";
+              line.style.top = ay + "px";
+              line.style.width = lineLenPx + "px";
+              line.style.height = lineThickness + "px";
+              line.style.marginTop = -lineThickness / 2 + "px";
+              // Rotation is set once via GSAP itself (not a raw CSS
+              // transform string) so GSAP's own transform cache owns
+              // rotation + scaleX independently from here on -- the
+              // timeline below only ever tweens scaleX, seek-safely.
+              gsap.set(line, { rotation: rotateDeg, scaleX: 0, transformOrigin: "0% 50%" });
+
+              var chipX = ax + dx * (lineLenPx + GAP * rootMin);
+              var chipY = ay + dy * (lineLenPx + GAP * rootMin);
+
+              // Anchor the chip's own box to the correct side of that
+              // point depending on direction, so it never drifts back over
+              // the connector line. Set once via GSAP's xPercent/yPercent
+              // (not a raw CSS transform string) so this static anchor
+              // offset composes correctly with the entrance tween's own
+              // x/y/scale below -- GSAP's transform cache tracks xPercent/
+              // yPercent independently from x/y/scale and merges them into
+              // one matrix every render, so the two never fight each other.
+              chip.style.left = chipX + "px";
+              chip.style.top = chipY + "px";
+              var xPercent = 0;
+              var yPercent = 0;
+              if (props.direction === "up") {
+                xPercent = -50;
+                yPercent = -100;
+              } else if (props.direction === "down") {
+                xPercent = -50;
+                yPercent = 0;
+              } else if (props.direction === "left") {
+                xPercent = -100;
+                yPercent = -50;
+              } else {
+                xPercent = 0;
+                yPercent = -50;
+              }
+              // yPercent/xPercent anchor the corner to the point; y/scale
+              // below are the SEPARATE, independently-composed entrance
+              // baseline the timeline's own fromTo animates toward.
+              gsap.set(chip, {
+                xPercent: xPercent,
+                yPercent: yPercent,
+                y: 0.8 * rootMin,
+                scale: 0.94,
+                transformOrigin: "50% 50%",
+              });
+            }
+
+            function layoutText() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(chip, props.text, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: 44 * rootMin - 5.2 * rootMin,
+                maxHeight: 1000,
+                baseSize: 2.7 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+
+            positionElements();
+            layoutText();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function () {
+                positionElements();
+                layoutText();
+              });
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.5));
+
+            var tl = gsap.timeline({ paused: true });
+
+            tl.to(dot, { opacity: 1, scale: 1, duration: 0.3, ease: "back.out(2)" }, revealAt);
+            tl.to(
+              line,
+              { opacity: 1, scaleX: 1, duration: 0.28, ease: "power2.out" },
+              revealAt + 0.12
+            );
+            tl.to(
+              chip,
+              { opacity: 1, y: 0, scale: 1, duration: 0.35, ease: "back.out(1.6)" },
+              revealAt + 0.3
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see
+            // browser-window.html for the full rationale.
+            tl.set({}, {}, duration);
+            window.__timelines["callout-label"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

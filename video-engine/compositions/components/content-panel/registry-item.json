@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "content-panel",
+  "type": "hyperframes:component",
+  "title": "Content Panel",
+  "description": "Full-bleed title + bulleted-list scene with clear/rebuild list handling and per-field text-fit. The base Foundation primitive several Narrative cards specialize.",
+  "tags": ["foundation", "layout", "list", "bullets", "title-card"],
+  "category": "foundation",
+  "files": [
+    {
+      "path": "content-panel.html",
+      "target": "compositions/components/content-panel/content-panel.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "Three things to remember" },
+    { "id": "items", "type": "string", "default": "First point|Second point|Third point" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "item_stagger", "type": "number", "default": 0.5 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

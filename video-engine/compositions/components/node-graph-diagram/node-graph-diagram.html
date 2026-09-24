@@ -1,0 +1,853 @@
+<!doctype html>
+<!--
+  node-graph-diagram -- HyperFrames sub-composition (Architecture)
+
+  Generic node-graph engine: 2-6 labeled boxes ("nodes"), connected by
+  labeled/animated lines ("edges"), auto-positioned from a `layout` enum
+  ("row" | "branch") + node count -- never caller-supplied pixel
+  coordinates. Built to replace a family of narrow, bespoke diagram
+  components (client-server-exchange, fan-out-fan-in, pub-sub-broadcast,
+  cache-hit-miss, actor-to-system-funnel, etl-pipeline,
+  load-balancer-cluster) with one well-designed primitive that covers the
+  same underlying "boxes + arrows" shape real reference videos use.
+
+  POSITIONING: each node gets an absolutely-positioned "slot" (left/top
+  computed via calc(centerPercent% - halfSizeCqmin), width/height in
+  cqmin) with NO transform of its own -- centering math lives entirely in
+  the static calc() so GSAP is free to animate the CHILD .ngd-card's own
+  transform (translateY + scale) for reveal without any conflict. Edge
+  lines are plain SVG <line>s whose endpoints are computed ONCE from real
+  layout (getBoundingClientRect, relative to the stage) via a
+  center-to-center vector clipped to each node's rectangle border --
+  "measure once from real layout, bake into the timeline, never
+  recompute during playback", the same discipline client-server-exchange
+  and actor-to-system-funnel use for their own travel positions.
+
+  Edge labels are static pills at the line midpoint (never rotated --
+  "clean sans-serif labels" stays legible at any line angle). A separate
+  optional traveling dot ("pulse") animates along an edge's own line at
+  caller-specified timestamps, independent of the label.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("node-graph-diagram");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+
+  Variables:
+    - nodes    (list of {id, title, subtitle?, icon?, statusColor?}):
+               2-6 node objects. icon is one of doc|db|cube|none (glyph
+               badge; "none" falls back to a plain status dot if
+               statusColor is set, or nothing). statusColor is one of
+               brand|accent|accent-2|accent-3|accent-4|none, rendered as
+               a colored left border (status ring) -- opt-in, off by
+               default.
+    - edges    (list of {from, to, label?, color?, direction?}): from/to
+               reference node ids. color is the opt-in per-edge accent
+               (brand|accent|accent-2|accent-3|accent-4). direction is
+               forward|reverse|both -- which end(s) get an arrowhead,
+               and which way a pulse dot travels by default.
+    - layout   (enum row|branch): row = single left-to-right chain.
+               branch = node[0] is the source (top-center), nodes[1..]
+               fan out in a row below it.
+    - pulses   (list of {edgeIndex, at}): at seconds from mount, animate
+               a small dot traveling along edges[edgeIndex] in that
+               edge's own `direction` (both -> two dots, opposite ways).
+    - accent   (enum): default badge/dot color for nodes that don't set
+               their own statusColor. Opt-in per README color discipline
+               -- default is the one fixed brand accent.
+    - reveal_at, edge_stagger: nodes reveal first (staggered by
+               edge_stagger starting at reveal_at), then edges draw in
+               (also staggered by edge_stagger) once every node is
+               visible.
+    - duration (number, seconds): total instance length.
+
+  Registers window.__timelines["node-graph-diagram"] under the literal key.
+-->
+<html
+  lang="en"
+  data-composition-id="node-graph-diagram"
+  data-composition-duration="8"
+  data-composition-variables='[
+    { "id": "nodes", "type": "string", "role": "content", "label": "Nodes", "description": "JSON array of 2-6 {id, title, subtitle, icon, statusColor} objects. icon: doc|db|cube|none. statusColor: brand|accent|accent-2|accent-3|accent-4|none.", "default": "[{\"id\":\"client\",\"title\":\"Browser\",\"subtitle\":\"\",\"icon\":\"none\",\"statusColor\":\"none\"},{\"id\":\"api\",\"title\":\"API\",\"subtitle\":\"\",\"icon\":\"none\",\"statusColor\":\"none\"}]" },
+    { "id": "edges", "type": "string", "role": "content", "label": "Edges", "description": "JSON array of {from, to, label, color, direction} objects. from/to reference node ids. direction: forward|reverse|both.", "default": "[{\"from\":\"client\",\"to\":\"api\",\"label\":\"Request\",\"color\":\"brand\",\"direction\":\"forward\"}]" },
+    { "id": "layout", "type": "enum", "role": "style", "label": "Layout", "description": "row = single left-to-right chain. branch = node[0] as source fanning out to nodes[1..] below it.", "default": "row", "options": [{ "value": "row", "label": "Row" }, { "value": "branch", "label": "Branch" }] },
+    { "id": "pulses", "type": "string", "role": "timing", "label": "Pulses", "description": "JSON array of {edgeIndex, at} objects -- traveling dot along that edge at that timestamp.", "default": "[]" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Default node badge/dot color for nodes without their own statusColor. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when nodes start appearing, staggered.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "edge_stagger", "type": "number", "role": "timing", "label": "Edge stagger", "description": "Seconds between successive node/edge reveals.", "default": 0.25, "min": 0.05, "max": 2, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 8, "min": 3, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Node Graph Diagram</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="node-graph-diagram" data-duration="8" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .ngd-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            overflow: hidden;
+          }
+          .ngd-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+          }
+          .ngd-nodes {
+            position: absolute;
+            inset: 0;
+          }
+          .ngd-slot {
+            position: absolute;
+          }
+          .ngd-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 1.4cqmin;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            border-left: 1px solid var(--hf-border, #2c2f36);
+            border-radius: 1.8cqmin;
+            box-shadow: 0 1.2cqmin 3cqmin rgba(0, 0, 0, 0.35);
+            opacity: 0;
+            transform: translateY(1.8cqmin) scale(0.94);
+            overflow: hidden;
+          }
+          .ngd-card.ngd-status {
+            border-left-width: 0.55cqmin;
+            border-left-color: var(--ngd-node-color, var(--hf-brand, #6ea8fe));
+          }
+          /* Connection glow ring: a one-shot recolor cue -- when a liquid pulse (see
+             spawnLiquidPulse) arrives at this node, the ring fades in to a resolved
+             concrete hex (never a var() reference, so GSAP can actually tween it frame-
+             accurately under the render pipeline's seek-based sampling) and settles at a
+             lower steady opacity, signalling "this node is now the active/connected one" --
+             a real state change, not just a traveling dot. One-shot per the project's
+             motion-doctrine "ban on idle wobble": it fades in once and holds, never loops. */
+          .ngd-glow-ring {
+            position: absolute;
+            inset: 0;
+            border-radius: 1.8cqmin;
+            border: 0.3cqmin solid transparent;
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+            opacity: 0;
+            pointer-events: none;
+          }
+          .ngd-card-inner {
+            padding: 0 3.2cqmin;
+          }
+          .ngd-head {
+            display: flex;
+            align-items: center;
+            gap: 1.6cqmin;
+            min-width: 0;
+          }
+          .ngd-badge {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: color-mix(in srgb, var(--ngd-node-color, var(--hf-brand, #6ea8fe)) 18%, transparent);
+          }
+          .ngd-badge svg {
+            width: 62%;
+            height: 62%;
+            stroke: var(--ngd-node-color, var(--hf-brand, #6ea8fe));
+            fill: none;
+            stroke-width: 1.8;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+          }
+          .ngd-dot {
+            flex: 0 0 auto;
+            border-radius: 50%;
+            background: var(--ngd-node-color, var(--hf-brand, #6ea8fe));
+          }
+          .ngd-title {
+            font-weight: 800;
+            white-space: nowrap;
+            overflow: hidden;
+            min-width: 0;
+          }
+          .ngd-pill {
+            align-self: flex-start;
+            display: inline-block;
+            max-width: 100%;
+            padding: 0.6cqmin 1.8cqmin;
+            border-radius: 999px;
+            background: var(--hf-surface-2, #1e2126);
+            color: var(--hf-muted, #9aa1ad);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .ngd-edge-label {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            padding: 0.55cqmin 1.6cqmin;
+            border-radius: 999px;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            color: var(--hf-fg, #f4f5f7);
+            font-weight: 700;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+          }
+        </style>
+
+        <div class="ngd-stage" id="ngd-stage">
+          <svg class="ngd-svg" id="ngd-svg"></svg>
+          <div class="ngd-nodes" id="ngd-nodes"></div>
+          <div class="ngd-labels" id="ngd-labels"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "node-graph-diagram: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SVG_NS = "http://www.w3.org/2000/svg";
+            var ACCENT_OPTIONS = ["brand", "accent", "accent-2", "accent-3", "accent-4"];
+            // Concrete hex fallbacks for each accent token (lib/tokens.css) -- used
+            // wherever GSAP needs to actually tween a color, since GSAP can't
+            // interpolate a var()-reference string. Kept in sync with tokens.css by
+            // convention (same values every other component's own var(--hf-X, #hex)
+            // fallback already hardcodes).
+            var ACCENT_HEX = {
+              brand: "#6ea8fe",
+              accent: "#71f5a7",
+              "accent-2": "#c5a3ff",
+              "accent-3": "#ffb84d",
+              "accent-4": "#ff6e6e",
+            };
+            var STATUS_OPTIONS = ACCENT_OPTIONS.concat(["none"]);
+            var ICON_OPTIONS = ["doc", "db", "cube", "none"];
+            var DIRECTION_OPTIONS = ["forward", "reverse", "both"];
+
+            // Minimal generic line-icon paths (viewBox 0 0 24 24), stroked
+            // via currentColor/--ngd-node-color -- not tied to any brand.
+            var ICON_PATHS = {
+              doc: '<path d="M6 2h8l5 5v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M14 2v5h5"/><path d="M8 13h8"/><path d="M8 17h8"/>',
+              db: '<ellipse cx="12" cy="5" rx="7.5" ry="2.7"/><path d="M4.5 5v14c0 1.5 3.36 2.7 7.5 2.7s7.5-1.2 7.5-2.7V5"/><path d="M4.5 12c0 1.5 3.36 2.7 7.5 2.7s7.5-1.2 7.5-2.7"/>',
+              cube: '<path d="M12 2.5l8.5 4.9v9.8L12 22.1l-8.5-4.9V7.4L12 2.5z"/><path d="M3.5 7.4L12 12.3l8.5-4.9"/><path d="M12 12.3v9.8"/>',
+            };
+
+            var DEFAULT_NODES = [
+              { id: "client", title: "Browser", subtitle: "", icon: "none", statusColor: "none" },
+              { id: "api", title: "API", subtitle: "", icon: "none", statusColor: "none" },
+            ];
+            var DEFAULT_EDGES = [
+              { from: "client", to: "api", label: "Request", color: "brand", direction: "forward" },
+            ];
+            var DEFAULT_PULSES = [];
+
+            var SCHEMA = {
+              nodes: { type: "list", default: DEFAULT_NODES, max: 6 },
+              edges: { type: "list", default: DEFAULT_EDGES, max: 12 },
+              layout: { type: "enum", default: "row", options: ["row", "branch"] },
+              pulses: { type: "list", default: DEFAULT_PULSES, max: 12 },
+              accent: { type: "enum", default: "brand", options: ACCENT_OPTIONS },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              edge_stagger: { type: "number", default: 0.25, min: 0.05, max: 2 },
+              duration: { type: "number", default: 8, min: 3, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("ngd-stage");
+            var svg = document.getElementById("ngd-svg");
+            var nodesWrap = document.getElementById("ngd-nodes");
+            var labelsWrap = document.getElementById("ngd-labels");
+
+            root.style.setProperty("--ngd-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            function colorVar(value, fallbackToAccent) {
+              if (value === "none") return null;
+              if (ACCENT_OPTIONS.indexOf(value) !== -1) return "var(--hf-" + value + ", var(--hf-brand, #6ea8fe))";
+              return fallbackToAccent ? "var(--ngd-accent)" : null;
+            }
+
+            // --- Normalize nodes: every field falls back to ITS OWN
+            // default, never a partial/broken hybrid object (same
+            // discipline as kpi-cluster.html's normalizeKpi). ---
+            function normalizeNode(raw, i) {
+              raw = raw && typeof raw === "object" ? raw : {};
+              var fallback = DEFAULT_NODES[i % DEFAULT_NODES.length];
+              var id = typeof raw.id === "string" && raw.id.trim() ? raw.id.trim() : "node-" + i;
+              var title = typeof raw.title === "string" && raw.title.trim() ? raw.title.trim().slice(0, 40) : fallback.title || "Node " + (i + 1);
+              var subtitle = typeof raw.subtitle === "string" ? raw.subtitle.trim().slice(0, 40) : "";
+              var icon = ICON_OPTIONS.indexOf(raw.icon) !== -1 ? raw.icon : "none";
+              var statusColor = STATUS_OPTIONS.indexOf(raw.statusColor) !== -1 ? raw.statusColor : "none";
+              return { id: id, title: title, subtitle: subtitle, icon: icon, statusColor: statusColor };
+            }
+
+            var nodeCount = Math.max(2, Math.min(6, props.nodes.length || 0));
+            var nodesRaw = props.nodes.length ? props.nodes.slice(0, 6) : DEFAULT_NODES;
+            if (nodesRaw.length < 2) nodesRaw = DEFAULT_NODES;
+            var nodes = nodesRaw.map(normalizeNode);
+            nodeCount = nodes.length;
+
+            var nodeIndexById = {};
+            nodes.forEach(function (n, i) {
+              // First occurrence wins so a caller's duplicate id never
+              // silently retargets an already-resolved edge.
+              if (!Object.prototype.hasOwnProperty.call(nodeIndexById, n.id)) nodeIndexById[n.id] = i;
+            });
+
+            // --- Normalize edges: unresolved from/to ids degrade
+            // gracefully into a positional chain rather than erroring. ---
+            function normalizeEdge(raw, i) {
+              raw = raw && typeof raw === "object" ? raw : {};
+              var fromIdx = Object.prototype.hasOwnProperty.call(nodeIndexById, raw.from) ? nodeIndexById[raw.from] : i % nodeCount;
+              var toIdx = Object.prototype.hasOwnProperty.call(nodeIndexById, raw.to) ? nodeIndexById[raw.to] : (i + 1) % nodeCount;
+              var label = typeof raw.label === "string" ? raw.label.trim().slice(0, 30) : "";
+              var color = ACCENT_OPTIONS.indexOf(raw.color) !== -1 ? raw.color : "brand";
+              var direction = DIRECTION_OPTIONS.indexOf(raw.direction) !== -1 ? raw.direction : "forward";
+              return { fromIdx: fromIdx, toIdx: toIdx, label: label, color: color, direction: direction };
+            }
+
+            var edgesRaw = Array.isArray(props.edges) ? props.edges.slice(0, 12) : [];
+            var edges = edgesRaw.map(normalizeEdge).filter(function (e) {
+              return e.fromIdx !== e.toIdx;
+            });
+
+            function normalizePulse(raw) {
+              raw = raw && typeof raw === "object" ? raw : {};
+              var edgeIndex =
+                typeof raw.edgeIndex === "number" && isFinite(raw.edgeIndex)
+                  ? Math.min(Math.max(Math.round(raw.edgeIndex), 0), Math.max(0, edges.length - 1))
+                  : 0;
+              var at = typeof raw.at === "number" && isFinite(raw.at) ? raw.at : props.reveal_at + 1;
+              return { edgeIndex: edgeIndex, at: at };
+            }
+            var pulses = Array.isArray(props.pulses) ? props.pulses.slice(0, 12).map(normalizePulse) : [];
+            if (!edges.length) pulses = [];
+
+            var layout = props.layout === "branch" ? "branch" : "row";
+
+            // --- Frame-filling: fewer nodes -> bigger cards (README hard
+            // rule). Keyed off the count actually laid out in a row --
+            // for "branch" that's the target row (nodeCount - 1). ---
+            function sizeForCount(n) {
+              if (n <= 2) return { w: 30, h: 25, badge: 8.6, title: 4.3, sub: 2.6 };
+              if (n === 3) return { w: 25, h: 21.5, badge: 7.4, title: 3.7, sub: 2.3 };
+              if (n === 4) return { w: 21, h: 18.5, badge: 6.4, title: 3.15, sub: 2.05 };
+              if (n === 5) return { w: 17.5, h: 16.5, badge: 5.6, title: 2.75, sub: 1.85 };
+              return { w: 15, h: 15, badge: 5.0, title: 2.45, sub: 1.65 };
+            }
+
+            // --- Auto-position: no caller pixel coordinates. Returns
+            // {xPct, yPct} center-percent-of-stage per node index. ---
+            function computePositions() {
+              var positions = [];
+              if (layout === "branch" && nodeCount >= 2) {
+                var targetCount = nodeCount - 1;
+                var size = sizeForCount(Math.max(targetCount, 2));
+                var sourceSize = sizeForCount(Math.max(2, targetCount === 1 ? 2 : targetCount - 1));
+                positions[0] = { xPct: 50, yPct: 22, size: sourceSize };
+                var margin = targetCount <= 2 ? 20 : targetCount === 3 ? 12 : targetCount === 4 ? 8 : 6;
+                var span = 100 - margin * 2;
+                // yPct:65 (not 74) for the fan-out row -- a real end-to-end render +
+                // hyperframes check found a 2-node fan-out's own card (h up to 25cqmin,
+                // i.e. ~14% of a 1920-tall frame) extending down to ~19% from the bottom
+                // at yPct:74, colliding with the orchestrator's persistent caption box
+                // (composeHtml.js's cap-box, lower ~24-30% of the frame -- see its own
+                // comment). 65 keeps the worst-case (largest, 2-node) card's bottom edge
+                // at ~72% from the top with margin, clear of that zone.
+                for (var i = 0; i < targetCount; i++) {
+                  var xPct = targetCount === 1 ? 50 : margin + (span * i) / (targetCount - 1);
+                  positions[i + 1] = { xPct: xPct, yPct: 65, size: size };
+                }
+              } else {
+                var rowSize = sizeForCount(nodeCount);
+                var rowMargin = nodeCount <= 2 ? 18 : nodeCount === 3 ? 13 : nodeCount === 4 ? 10 : nodeCount === 5 ? 8 : 7;
+                var rowSpan = 100 - rowMargin * 2;
+                for (var j = 0; j < nodeCount; j++) {
+                  var x = nodeCount === 1 ? 50 : rowMargin + (rowSpan * j) / (nodeCount - 1);
+                  positions[j] = { xPct: x, yPct: 50, size: rowSize };
+                }
+              }
+              return positions;
+            }
+            var positions = computePositions();
+
+            // --- Build node DOM ONCE (clear/rebuild discipline). ---
+            var nodeEls = [];
+            HFProps.rebuild(nodesWrap, function (container) {
+              nodeEls = [];
+              nodes.forEach(function (node, i) {
+                var pos = positions[i];
+                var size = pos.size;
+
+                var slot = document.createElement("div");
+                slot.className = "ngd-slot";
+                slot.style.left = "calc(" + pos.xPct + "% - " + size.w / 2 + "cqmin)";
+                slot.style.top = "calc(" + pos.yPct + "% - " + size.h / 2 + "cqmin)";
+                slot.style.width = size.w + "cqmin";
+                slot.style.height = size.h + "cqmin";
+
+                var card = document.createElement("div");
+                card.className = "ngd-card";
+                var nodeColorVar = colorVar(node.statusColor, false);
+                if (nodeColorVar) {
+                  card.classList.add("ngd-status");
+                  card.style.setProperty("--ngd-node-color", nodeColorVar);
+                } else {
+                  card.style.setProperty("--ngd-node-color", "var(--ngd-accent)");
+                }
+
+                var inner = document.createElement("div");
+                inner.className = "ngd-card-inner";
+
+                var head = document.createElement("div");
+                head.className = "ngd-head";
+
+                var badgeEl = null;
+                if (node.icon !== "none") {
+                  badgeEl = document.createElement("div");
+                  badgeEl.className = "ngd-badge";
+                  badgeEl.style.width = size.badge + "cqmin";
+                  badgeEl.style.height = size.badge + "cqmin";
+                  badgeEl.innerHTML =
+                    '<svg viewBox="0 0 24 24">' + ICON_PATHS[node.icon] + "</svg>";
+                  head.appendChild(badgeEl);
+                } else if (node.statusColor !== "none") {
+                  badgeEl = document.createElement("div");
+                  badgeEl.className = "ngd-dot";
+                  var dotD = size.badge * 0.34;
+                  badgeEl.style.width = dotD + "cqmin";
+                  badgeEl.style.height = dotD + "cqmin";
+                  head.appendChild(badgeEl);
+                }
+
+                var titleEl = document.createElement("div");
+                titleEl.className = "ngd-title";
+                titleEl.style.fontSize = size.title + "cqmin";
+                head.appendChild(titleEl);
+
+                inner.appendChild(head);
+
+                var subtitleEl = null;
+                if (node.subtitle) {
+                  subtitleEl = document.createElement("div");
+                  subtitleEl.className = "ngd-pill";
+                  subtitleEl.style.fontSize = size.sub + "cqmin";
+                  subtitleEl.style.marginTop = "1.2cqmin";
+                  inner.appendChild(subtitleEl);
+                }
+
+                var glowRing = document.createElement("div");
+                glowRing.className = "ngd-glow-ring";
+                card.appendChild(inner);
+                card.appendChild(glowRing);
+                slot.appendChild(card);
+                container.appendChild(slot);
+
+                nodeEls.push({
+                  node: node,
+                  slot: slot,
+                  card: card,
+                  head: head,
+                  badgeEl: badgeEl,
+                  titleEl: titleEl,
+                  subtitleEl: subtitleEl,
+                  glowRing: glowRing,
+                  titleSizeCqmin: size.title,
+                  subSizeCqmin: size.sub,
+                });
+              });
+            });
+
+            // Single-line text-fit with a width safety net: fitFontToBox
+            // detects overflow only via its wrap simulation, which is a
+            // no-op for a single unbreakable word (a title/label with no
+            // spaces always reports "1 line" regardless of actual pixel
+            // width) -- a real gap in the shared lib for maxLines:1
+            // content. Re-checking the CHOSEN font size's real measured
+            // width against maxWidth and truncating further if it still
+            // overflows closes that gap without changing the shared
+            // lib's documented contract for every other caller.
+            function fitLineSafe(el, text, opts) {
+              var report = HFTextFit.fitOrTruncate(el, text, opts);
+              var fontSize = parseFloat(el.style.fontSize) || opts.minSize || 12;
+              var width = HFTextFit.measure(el.textContent, opts.weight || 400, fontSize, opts.family);
+              if (width > opts.maxWidth) {
+                el.textContent = HFTextFit.truncateToWidth(el.textContent, opts.weight || 400, fontSize, opts.family, opts.maxWidth);
+              }
+              return report;
+            }
+
+            // Fixed cqmin constants that also appear in the <style> block
+            // above (card-inner padding, head gap, pill padding) -- kept
+            // here so available-width math matches the REAL flex layout
+            // exactly instead of a rough percentage-of-card guess (a
+            // rough guess is what originally let text overflow whenever
+            // a badge/icon ate into the head row's available space).
+            var INNER_PAD_CQMIN = 3.2;
+            var HEAD_GAP_CQMIN = 1.6;
+            var PILL_PAD_CQMIN = 1.8;
+
+            function fitNodeText() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              nodeEls.forEach(function (item) {
+                var headRect = item.head.getBoundingClientRect();
+                var badgeWidth = item.badgeEl ? item.badgeEl.getBoundingClientRect().width : 0;
+                var gapPx = item.badgeEl ? HEAD_GAP_CQMIN * rootMin : 0;
+                var titleMaxWidth = Math.max(40, headRect.width - badgeWidth - gapPx - 2);
+                fitLineSafe(item.titleEl, item.node.title, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 800,
+                  maxWidth: titleMaxWidth,
+                  maxHeight: 1000,
+                  baseSize: item.titleSizeCqmin * rootMin,
+                  minSize: 11,
+                  maxLines: 1,
+                });
+                if (item.subtitleEl) {
+                  var pillOuterWidth = item.card.clientWidth - INNER_PAD_CQMIN * rootMin * 2;
+                  var pillTextMaxWidth = Math.max(30, pillOuterWidth - PILL_PAD_CQMIN * rootMin * 2 - 2);
+                  fitLineSafe(item.subtitleEl, item.node.subtitle, {
+                    family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                    weight: 600,
+                    maxWidth: pillTextMaxWidth,
+                    maxHeight: 1000,
+                    baseSize: item.subSizeCqmin * rootMin,
+                    minSize: 9,
+                    maxLines: 1,
+                  });
+                }
+              });
+            }
+
+            // Clip a point on the rectangle centered at (cx,cy) with the
+            // given half-extents, in the direction of (towardX, towardY) --
+            // gives a clean line from box edge to box edge, never
+            // overlapping the boxes themselves.
+            function clipToRect(cx, cy, halfW, halfH, towardX, towardY) {
+              var dx = towardX - cx;
+              var dy = towardY - cy;
+              if (dx === 0 && dy === 0) return { x: cx, y: cy };
+              var scaleX = dx !== 0 ? halfW / Math.abs(dx) : Infinity;
+              var scaleY = dy !== 0 ? halfH / Math.abs(dy) : Infinity;
+              var scale = Math.min(scaleX, scaleY, 1);
+              return { x: cx + dx * scale, y: cy + dy * scale };
+            }
+
+            function labelText(el, text, sizeCqmin) {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              fitLineSafe(el, text, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: 26 * rootMin,
+                maxHeight: 1000,
+                baseSize: sizeCqmin * rootMin,
+                minSize: 10,
+                maxLines: 1,
+              });
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 1));
+            var stagger = props.edge_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+
+            function buildTimeline() {
+              tl.clear();
+              while (svg.firstChild) svg.removeChild(svg.firstChild);
+              while (labelsWrap.firstChild) labelsWrap.removeChild(labelsWrap.firstChild);
+
+              var stageRect = stage.getBoundingClientRect();
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+
+              var defs = document.createElementNS(SVG_NS, "defs");
+              svg.appendChild(defs);
+
+              // Soft glow filter for the liquid-pulse comet (see spawnLiquidPulse) --
+              // one shared filter, referenced by every comet circle.
+              var glowFilter = document.createElementNS(SVG_NS, "filter");
+              glowFilter.setAttribute("id", "ngd-glow");
+              glowFilter.setAttribute("x", "-100%");
+              glowFilter.setAttribute("y", "-100%");
+              glowFilter.setAttribute("width", "300%");
+              glowFilter.setAttribute("height", "300%");
+              var blur = document.createElementNS(SVG_NS, "feGaussianBlur");
+              blur.setAttribute("stdDeviation", Math.max(1, rootMin * 0.12));
+              blur.setAttribute("result", "blur");
+              var merge = document.createElementNS(SVG_NS, "feMerge");
+              var mergeBlur = document.createElementNS(SVG_NS, "feMergeNode");
+              mergeBlur.setAttribute("in", "blur");
+              var mergeSource = document.createElementNS(SVG_NS, "feMergeNode");
+              mergeSource.setAttribute("in", "SourceGraphic");
+              merge.appendChild(mergeBlur);
+              merge.appendChild(mergeSource);
+              glowFilter.appendChild(blur);
+              glowFilter.appendChild(merge);
+              defs.appendChild(glowFilter);
+
+              var edgeGeoms = edges.map(function (edge, i) {
+                var fromCard = nodeEls[edge.fromIdx].card;
+                var toCard = nodeEls[edge.toIdx].card;
+                var fromRect = fromCard.getBoundingClientRect();
+                var toRect = toCard.getBoundingClientRect();
+                var fromCx = fromRect.left + fromRect.width / 2 - stageRect.left;
+                var fromCy = fromRect.top + fromRect.height / 2 - stageRect.top;
+                var toCx = toRect.left + toRect.width / 2 - stageRect.left;
+                var toCy = toRect.top + toRect.height / 2 - stageRect.top;
+
+                var p1 = clipToRect(fromCx, fromCy, fromRect.width / 2, fromRect.height / 2, toCx, toCy);
+                var p2 = clipToRect(toCx, toCy, toRect.width / 2, toRect.height / 2, fromCx, fromCy);
+
+                var colorValue = "var(--hf-" + edge.color + ", var(--hf-brand, #6ea8fe))";
+
+                var markerEndId = "ngd-arrow-end-" + i;
+                var markerStartId = "ngd-arrow-start-" + i;
+                if (edge.direction === "forward" || edge.direction === "both") {
+                  defs.appendChild(makeArrowMarker(markerEndId, colorValue, "auto"));
+                }
+                if (edge.direction === "reverse" || edge.direction === "both") {
+                  defs.appendChild(makeArrowMarker(markerStartId, colorValue, "auto-start-reverse"));
+                }
+
+                var line = document.createElementNS(SVG_NS, "line");
+                line.setAttribute("x1", p1.x);
+                line.setAttribute("y1", p1.y);
+                line.setAttribute("x2", p2.x);
+                line.setAttribute("y2", p2.y);
+                line.setAttribute("stroke", colorValue);
+                line.setAttribute("stroke-width", Math.max(1.4, rootMin * 0.16));
+                line.setAttribute("opacity", "0.85");
+                if (edge.direction === "forward" || edge.direction === "both") {
+                  line.setAttribute("marker-end", "url(#" + markerEndId + ")");
+                }
+                if (edge.direction === "reverse" || edge.direction === "both") {
+                  line.setAttribute("marker-start", "url(#" + markerStartId + ")");
+                }
+                svg.appendChild(line);
+                var len = Math.hypot(p2.x - p1.x, p2.y - p1.y) || 1;
+                line.style.strokeDasharray = len;
+                line.style.strokeDashoffset = len;
+
+                var labelEl = null;
+                if (edge.label) {
+                  // The true midpoint is, by construction, the point
+                  // furthest on average from BOTH endpoint nodes (the
+                  // line is already clipped to start/end at each card's
+                  // own border) -- the safest default against colliding
+                  // with either node. A small perpendicular nudge,
+                  // alternating by edge index, separates two labels
+                  // whose lines happen to run close together (e.g. a
+                  // fan-out sharing a source) without pulling either
+                  // label back toward a node.
+                  var lx = (p1.x + p2.x) / 2;
+                  var ly = (p1.y + p2.y) / 2;
+                  var dx = p2.x - p1.x;
+                  var dy = p2.y - p1.y;
+                  var segLen = Math.hypot(dx, dy) || 1;
+                  var perpX = -dy / segLen;
+                  var perpY = dx / segLen;
+                  var side = i % 2 === 0 ? 1 : -1;
+                  var nudge = 2.2 * rootMin * side;
+                  labelEl = document.createElement("div");
+                  labelEl.className = "ngd-edge-label";
+                  labelEl.style.fontSize = 2.3 * rootMin + "px";
+                  labelEl.style.left = lx + perpX * nudge + "px";
+                  labelEl.style.top = ly + perpY * nudge + "px";
+                  labelsWrap.appendChild(labelEl);
+                  labelText(labelEl, edge.label, 2.3);
+                }
+
+                return { line: line, len: len, p1: p1, p2: p2, labelEl: labelEl, edge: edge };
+              });
+
+              // Nodes reveal first, staggered.
+              nodeEls.forEach(function (item, i) {
+                var at = Math.min(revealAt + i * stagger, Math.max(0, duration - 0.6));
+                tl.fromTo(
+                  item.card,
+                  { opacity: 0, y: 18, scale: 0.94 },
+                  { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power2.out" },
+                  at
+                );
+              });
+
+              // Then edges draw in, staggered, label fades in right after.
+              var edgesStart = Math.min(revealAt + nodeCount * stagger, Math.max(0, duration - 0.6));
+              edgeGeoms.forEach(function (geom, i) {
+                var at = Math.min(edgesStart + i * stagger, Math.max(0, duration - 0.3));
+                tl.to(geom.line, { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, at);
+                if (geom.labelEl) {
+                  tl.to(geom.labelEl, { opacity: 1, duration: 0.3, ease: "power1.out" }, at + 0.35);
+                }
+              });
+
+              // One-shot recolor cue -- see .ngd-glow-ring CSS comment. Fires when a
+              // liquid pulse (below) arrives at a node: fades in a glow ring at the
+              // edge's own resolved color, adds the colored left-border status style,
+              // then settles to a lower steady opacity so the change reads as
+              // persistent state, not a flash.
+              // Every tween below is added to the shared paused `tl` at an explicit
+              // position -- NEVER a bare gsap.to/fromTo, which would create an
+              // independent auto-playing tween outside the root timeline and break
+              // frame-accurate seeking under the render pipeline's seek-based
+              // sampling (same discipline as every other animation in this file).
+              function triggerNodeConnect(nodeIdx, colorKey, at) {
+                var item = nodeEls[nodeIdx];
+                if (!item) return;
+                var hex = ACCENT_HEX[colorKey] || ACCENT_HEX.brand;
+                tl.call(
+                  function () {
+                    item.card.style.setProperty("--ngd-node-color", hex);
+                    item.card.classList.add("ngd-status");
+                  },
+                  null,
+                  at
+                );
+                tl.fromTo(
+                  item.glowRing,
+                  { opacity: 0, scale: 0.985, borderColor: hex, boxShadow: "0 0 0 0px " + hex },
+                  { opacity: 0.85, scale: 1, boxShadow: "0 0 1.4cqmin 0.2cqmin " + hex, duration: 0.3, ease: "back.out(2)" },
+                  at
+                );
+                tl.to(item.glowRing, { opacity: 0.4, duration: 0.5, ease: "power1.out" }, at + 0.3);
+              }
+
+              // Liquid pulse: a short trailing comet of glowing circles (not one bare
+              // dot) traveling edgeGeoms[edgeIndex]'s own line, direction per that
+              // edge's `direction`. On arrival, recolors the destination node via
+              // triggerNodeConnect -- "a connection is made" becomes a real visible
+              // state change on the node it reaches, not just a line animation.
+              var COMET_SIZE = 4;
+              var COMET_TRAIL_GAP = 0.09;
+              pulses.forEach(function (pulse) {
+                var geom = edgeGeoms[pulse.edgeIndex];
+                if (!geom) return;
+                var at = Math.min(Math.max(pulse.at, 0), Math.max(0, duration - 0.4));
+                var travelDur = Math.min(0.7, Math.max(0.25, duration - at - 0.05));
+                var hex = ACCENT_HEX[geom.edge.color] || ACCENT_HEX.brand;
+
+                function spawnLiquidPulse(start, end, targetNodeIdx) {
+                  var group = document.createElementNS(SVG_NS, "g");
+                  group.setAttribute("filter", "url(#ngd-glow)");
+                  svg.appendChild(group);
+
+                  var circles = [];
+                  for (var c = 0; c < COMET_SIZE; c++) {
+                    var circle = document.createElementNS(SVG_NS, "circle");
+                    var r = Math.max(1.2, rootMin * 0.26 * (1 - c * 0.16));
+                    circle.setAttribute("r", r);
+                    circle.setAttribute("fill", hex);
+                    circle.setAttribute("opacity", "0");
+                    circle.setAttribute("cx", start.x);
+                    circle.setAttribute("cy", start.y);
+                    group.appendChild(circle);
+                    circles.push(circle);
+                  }
+
+                  var proxy = { t: 0 };
+                  tl.set(group, { attr: { opacity: 1 } }, at);
+                  tl.to(
+                    proxy,
+                    {
+                      t: 1,
+                      duration: travelDur,
+                      ease: "power1.inOut",
+                      onUpdate: function () {
+                        circles.forEach(function (circle, c) {
+                          var tc = Math.max(0, proxy.t - c * COMET_TRAIL_GAP);
+                          circle.setAttribute("cx", start.x + (end.x - start.x) * tc);
+                          circle.setAttribute("cy", start.y + (end.y - start.y) * tc);
+                          circle.setAttribute("opacity", tc <= 0 && c > 0 ? "0" : String(1 - c * (0.85 / COMET_SIZE)));
+                        });
+                      },
+                    },
+                    at
+                  );
+                  tl.to(group, { attr: { opacity: 0 }, duration: 0.18 }, at + travelDur);
+                  if (targetNodeIdx !== null) {
+                    triggerNodeConnect(targetNodeIdx, geom.edge.color, at + travelDur);
+                  }
+                }
+
+                if (geom.edge.direction === "reverse") {
+                  spawnLiquidPulse(geom.p2, geom.p1, geom.edge.fromIdx);
+                } else if (geom.edge.direction === "both") {
+                  spawnLiquidPulse(geom.p1, geom.p2, geom.edge.toIdx);
+                  spawnLiquidPulse(geom.p2, geom.p1, geom.edge.fromIdx);
+                } else {
+                  spawnLiquidPulse(geom.p1, geom.p2, geom.edge.toIdx);
+                }
+              });
+
+              // Pad tl.duration() to the authored `duration` prop -- see
+              // the matching comment in browser-window.html for why.
+              tl.set({}, {}, duration);
+              tl.seek(0, false);
+            }
+
+            fitNodeText();
+            buildTimeline();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function () {
+                fitNodeText();
+                buildTimeline();
+              });
+            }
+
+            function makeArrowMarker(id, colorValue, orient) {
+              var marker = document.createElementNS(SVG_NS, "marker");
+              marker.setAttribute("id", id);
+              marker.setAttribute("viewBox", "0 0 10 10");
+              marker.setAttribute("refX", "8.5");
+              marker.setAttribute("refY", "5");
+              marker.setAttribute("markerWidth", "6");
+              marker.setAttribute("markerHeight", "6");
+              marker.setAttribute("orient", orient);
+              var path = document.createElementNS(SVG_NS, "path");
+              path.setAttribute("d", "M0,0 L10,5 L0,10 z");
+              path.setAttribute("fill", colorValue);
+              marker.appendChild(path);
+              return marker;
+            }
+
+            window.__timelines["node-graph-diagram"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

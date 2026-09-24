@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "particle-swarm",
+  "type": "hyperframes:component",
+  "title": "Particle Swarm",
+  "description": "An organic swarm/cloud of many small dots (deterministic seeded scatter) with an overlaid stat card -- a label and a big count-up number -- for 'many small distributed things forming a mass' narration beats (a botnet, distributed requests, compromised devices).",
+  "tags": ["data-metrics", "swarm", "particles", "count-up", "scatter", "stat"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "particle-swarm.html",
+      "target": "compositions/components/particle-swarm/particle-swarm.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "label", "type": "string", "default": "SOURCES" },
+    { "id": "count", "type": "number", "default": 1190024 },
+    { "id": "dotCount", "type": "number", "default": 200, "min": 20, "max": 320 },
+    { "id": "seed", "type": "number", "default": 7 },
+    { "id": "accent", "type": "enum", "default": "accent", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.4 },
+    { "id": "count_at", "type": "number", "default": 1.6 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

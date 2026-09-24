@@ -1,0 +1,128 @@
+[
+  {
+    "word": "Here",
+    "start": 1.383,
+    "end": 1.664,
+    "score": 0.739
+  },
+  {
+    "word": "is",
+    "start": 1.844,
+    "end": 1.964,
+    "score": 0.692
+  },
+  {
+    "word": "a",
+    "start": 2.025,
+    "end": 2.065,
+    "score": 0.653
+  },
+  {
+    "word": "browser",
+    "start": 2.125,
+    "end": 2.546,
+    "score": 0.833
+  },
+  {
+    "word": "window.",
+    "start": 2.586,
+    "end": 2.947,
+    "score": 0.928
+  },
+  {
+    "word": "Watch",
+    "start": 4.39,
+    "end": 4.751,
+    "score": 0.928
+  },
+  {
+    "word": "the",
+    "start": 4.871,
+    "end": 4.971,
+    "score": 0.817
+  },
+  {
+    "word": "address",
+    "start": 5.051,
+    "end": 5.392,
+    "score": 0.831
+  },
+  {
+    "word": "bar",
+    "start": 5.452,
+    "end": 5.713,
+    "score": 0.763
+  },
+  {
+    "word": "type",
+    "start": 5.773,
+    "end": 6.014,
+    "score": 0.891
+  },
+  {
+    "word": "in",
+    "start": 6.074,
+    "end": 6.154,
+    "score": 0.846
+  },
+  {
+    "word": "a",
+    "start": 6.194,
+    "end": 6.214,
+    "score": 0.997
+  },
+  {
+    "word": "real",
+    "start": 6.294,
+    "end": 6.575,
+    "score": 0.913
+  },
+  {
+    "word": "url,",
+    "start": 6.876,
+    "end": 7.136,
+    "score": 0.658
+  },
+  {
+    "word": "then",
+    "start": 8.118,
+    "end": 8.299,
+    "score": 0.966
+  },
+  {
+    "word": "the",
+    "start": 8.359,
+    "end": 8.439,
+    "score": 0.875
+  },
+  {
+    "word": "page",
+    "start": 8.479,
+    "end": 8.76,
+    "score": 0.792
+  },
+  {
+    "word": "content",
+    "start": 8.82,
+    "end": 9.221,
+    "score": 0.933
+  },
+  {
+    "word": "fades",
+    "start": 9.281,
+    "end": 9.642,
+    "score": 0.754
+  },
+  {
+    "word": "into",
+    "start": 9.882,
+    "end": 10.163,
+    "score": 0.893
+  },
+  {
+    "word": "view.",
+    "start": 10.243,
+    "end": 10.504,
+    "score": 0.834
+  }
+]

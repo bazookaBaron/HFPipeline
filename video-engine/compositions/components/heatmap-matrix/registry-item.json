@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "heatmap-matrix",
+  "type": "hyperframes:component",
+  "title": "Heatmap Matrix",
+  "description": "A grid of cells shaded by intensity, lighting up in a row-major staggered wave from the fixed brand accent at varying opacity -- a heatmap reveal.",
+  "tags": ["data-metrics", "chart", "heatmap", "grid", "matrix"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "heatmap-matrix.html",
+      "target": "compositions/components/heatmap-matrix/heatmap-matrix.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "label", "type": "string", "default": "Request Volume by Hour" },
+    { "id": "rows", "type": "number", "default": 4 },
+    { "id": "cols", "type": "number", "default": 6 },
+    { "id": "cells", "type": "string", "default": "[0.1,0.2,0.3,0.5,0.4,0.2,0.2,0.4,0.6,0.8,0.6,0.3,0.3,0.6,0.9,1,0.8,0.5,0.15,0.3,0.5,0.7,0.5,0.25]" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.4 },
+    { "id": "cell_stagger", "type": "number", "default": 0.04 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

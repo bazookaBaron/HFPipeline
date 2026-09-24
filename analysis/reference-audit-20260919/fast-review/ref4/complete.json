@@ -1,0 +1,14 @@
+{
+  "source": "C:\\Users\\debna\\Downloads\\igexport-DdT5wzdsQWV.mp4",
+  "native_frames": 5090,
+  "review_frames": 1358,
+  "sheets": 29,
+  "duration_seconds": 169.666667,
+  "resolution": [
+    720,
+    1280
+  ],
+  "fps": "30/1",
+  "sampling": "8Hz nearest native presentation timestamp; no interpolation",
+  "decoded_selection_count_verified": true
+}

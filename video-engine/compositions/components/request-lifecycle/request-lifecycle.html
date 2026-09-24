@@ -1,0 +1,302 @@
+<!doctype html>
+<!--
+  request-lifecycle -- HyperFrames sub-composition (Architecture)
+
+  A horizontal step sequence (e.g. DNS -> TCP -> TLS -> HTTP -> Response):
+  N step chips connected by a track line, each highlighting in order while
+  a progress fill (measured once from real chip layout, like
+  client-server-exchange.html's packet track) grows underneath to the
+  active chip's center.
+
+  Color discipline: each step is a real, distinct per-item content element
+  (DNS, TCP, TLS, ...), so its dot rotates through the CONTENT-
+  distinguishing accent tokens, assigned once per step at build time --
+  the sanctioned per-item use case (see ../README.md). The `accent` prop
+  is KEPT, unlike the per-item-only components in this pass, because it
+  separately drives the track-fill progress bar -- a single continuous
+  "how far along" indicator, not per-item content, exactly like
+  timeline-milestones.html's progress-fill bar.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("request-lifecycle"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="request-lifecycle"
+  data-composition-duration="8"
+  data-composition-variables='[
+    { "id": "steps", "type": "string", "role": "content", "label": "Steps", "description": "Pipe-separated step labels, in order.", "default": "DNS|TCP|TLS|HTTP|Response" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Progress-fill bar color (chrome). Per-step dots rotate through the accent family independently of this. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "start_at", "type": "number", "role": "timing", "label": "Start at", "description": "Seconds from mount when the sequence reveals and the first step activates.", "default": 0.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "step_duration", "type": "number", "role": "timing", "label": "Step duration", "description": "Seconds each step stays highlighted before advancing to the next.", "default": 0.9, "min": 0.3, "max": 4, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 8, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Request Lifecycle</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="request-lifecycle" data-duration="8" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .rl-wrap {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 5cqmin;
+          }
+          .rl-track-wrap {
+            position: relative;
+            height: 0.6cqmin;
+            background: var(--hf-border, #2c2f36);
+            border-radius: 999px;
+            margin: 0 5cqmin;
+          }
+          .rl-track-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 0;
+            border-radius: 999px;
+            background: var(--rl-accent, var(--hf-brand, #6ea8fe));
+          }
+          .rl-steps {
+            display: flex;
+            justify-content: space-between;
+          }
+          .rl-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2cqmin;
+            opacity: 0;
+            transform: translateY(1cqmin);
+          }
+          .rl-dot {
+            width: 6cqmin;
+            height: 6cqmin;
+            min-width: 22px;
+            min-height: 22px;
+            border-radius: 50%;
+            background: var(--hf-surface, #16181c);
+            border: 0.32cqmin solid var(--hf-border, #2c2f36);
+            transition: none;
+          }
+          .rl-step.active .rl-dot {
+            background: var(--rl-step-accent, var(--hf-brand, #6ea8fe));
+            border-color: var(--rl-step-accent, var(--hf-brand, #6ea8fe));
+          }
+          .rl-step.done .rl-dot {
+            border-color: var(--rl-step-accent, var(--hf-brand, #6ea8fe));
+          }
+          .rl-label {
+            font-size: 2.4cqmin;
+            font-weight: 700;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+          }
+          .rl-step.active .rl-label {
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .rl-caption {
+            text-align: center;
+            font-weight: 800;
+            font-size: 5cqmin;
+            opacity: 0;
+            min-height: 1.4em;
+          }
+        </style>
+
+        <div class="rl-wrap" id="rl-wrap">
+          <div class="rl-caption" id="rl-caption"></div>
+          <div class="rl-track-wrap" id="rl-track-wrap">
+            <div class="rl-track-fill" id="rl-track-fill"></div>
+          </div>
+          <div class="rl-steps" id="rl-steps"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "request-lifecycle: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              steps: { type: "list", default: ["DNS", "TCP", "TLS", "HTTP", "Response"], max: 7, delimiter: "|" },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              start_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              step_duration: { type: "number", default: 0.9, min: 0.3, max: 4 },
+              duration: { type: "number", default: 8, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var wrap = document.getElementById("rl-wrap");
+            var caption = document.getElementById("rl-caption");
+            var trackWrap = document.getElementById("rl-track-wrap");
+            var trackFill = document.getElementById("rl-track-fill");
+            var stepsWrap = document.getElementById("rl-steps");
+
+            root.style.setProperty("--rl-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var labels = props.steps;
+
+            // Per-step accent rotation -- each step (DNS, TCP, TLS, ...) is
+            // a real, distinct per-item content element. Independent of
+            // the `accent` prop above, which stays the track-fill's own
+            // continuous progress color.
+            var ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            // Clear/rebuild: step chips are torn down and rebuilt from
+            // props every mount so a re-seek or variable change never
+            // leaves a stale chip from a previous build.
+            var stepEls = [];
+            HFProps.rebuild(stepsWrap, function (container) {
+              stepEls = [];
+              labels.forEach(function (label, i) {
+                var step = document.createElement("div");
+                step.className = "rl-step";
+                step.style.setProperty("--rl-step-accent", ROTATION[i % ROTATION.length]);
+                var dot = document.createElement("div");
+                dot.className = "rl-dot";
+                var labelEl = document.createElement("div");
+                labelEl.className = "rl-label";
+                step.appendChild(dot);
+                step.appendChild(labelEl);
+                container.appendChild(step);
+                stepEls.push({ el: step, labelEl: labelEl, text: label });
+              });
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var count = Math.max(1, stepEls.length);
+              stepEls.forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.labelEl, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: (stepsWrap.clientWidth / count) * 0.9,
+                  maxHeight: 1000,
+                  baseSize: 2.4 * rootMin,
+                  minSize: 11,
+                  maxLines: 1,
+                });
+              });
+              var captionFontCqmin = count <= 3 ? 6.4 : 5;
+              caption.style.fontSize = captionFontCqmin * rootMin + "px";
+            }
+
+            stepEls.forEach(function (item) {
+              item.labelEl.dataset.src = item.text;
+            });
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function () {
+                layout();
+                buildTimeline();
+              });
+            }
+
+            var duration = props.duration;
+            var startAt = Math.min(props.start_at, Math.max(0, duration - 1));
+            var stepDur = props.step_duration;
+
+            var tl = gsap.timeline({ paused: true });
+
+            function buildTimeline() {
+              tl.clear();
+
+              // Measure ONCE from real layout, in the track wrap's own
+              // local pixel coordinate space -- never recomputed later.
+              var trackRect = trackWrap.getBoundingClientRect();
+              var centers = stepEls.map(function (item) {
+                var r = item.el.getBoundingClientRect();
+                return r.left + r.width / 2 - trackRect.left;
+              });
+              var trackWidth = trackRect.width || 1;
+
+              tl.fromTo(wrap, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, 0);
+              stepEls.forEach(function (item, i) {
+                tl.fromTo(item.el, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, i * 0.08);
+              });
+
+              var n = stepEls.length || 1;
+              var maxSteps = Math.max(1, Math.floor((duration - startAt - 0.3) / stepDur) + 1);
+              var activeSteps = Math.min(n, maxSteps);
+
+              for (var i = 0; i < activeSteps; i++) {
+                var at = Math.min(startAt + i * stepDur, Math.max(0, duration - 0.3));
+                (function (i, at) {
+                  stepEls.forEach(function (item, j) {
+                    var cls = "rl-step";
+                    if (j === i) cls += " active";
+                    else if (j < i) cls += " done";
+                    tl.set(item.el, { className: cls }, at);
+                  });
+                  tl.to(trackFill, { width: centers[i], duration: 0.4, ease: "power2.inOut" }, at);
+                  tl.set(caption, { opacity: 0 }, at - 0.001);
+                  tl.call(
+                    function () {
+                      caption.textContent = stepEls[i].text;
+                    },
+                    null,
+                    at
+                  );
+                  tl.to(caption, { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" }, at);
+                })(i, at);
+              }
+
+              // Pad tl.duration() to the authored `duration` prop -- see the
+              // matching comment in browser-window.html for why.
+              tl.set({}, {}, duration);
+              tl.seek(0, false);
+            }
+
+            buildTimeline();
+            window.__timelines["request-lifecycle"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

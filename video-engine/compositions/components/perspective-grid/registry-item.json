@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "perspective-grid",
+  "type": "hyperframes:component",
+  "title": "Perspective Grid",
+  "description": "A receding 3D-ish grid/floor plane background element with an optional horizon glow -- decorative and atmospheric, no dynamic text. The plane fades in and settles from a slightly steeper starting tilt to its resting angle on reveal.",
+  "tags": ["background", "grid", "perspective", "atmosphere", "foundation"],
+  "category": "background",
+  "files": [
+    {
+      "path": "perspective-grid.html",
+      "target": "compositions/components/perspective-grid/perspective-grid.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "line_density", "type": "number", "default": 14, "min": 4, "max": 24 },
+    { "id": "horizon_pct", "type": "number", "default": 46, "min": 10, "max": 80 },
+    { "id": "glow", "type": "boolean", "default": true },
+    { "id": "reveal_at", "type": "number", "default": 0.2 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/props.js", "../lib/tokens.css"]
+}

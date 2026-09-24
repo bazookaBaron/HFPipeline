@@ -1,0 +1,244 @@
+<!doctype html>
+<!--
+  match-cut-morph -- HyperFrames sub-composition (Editing / transitions)
+
+  A reusable match-cut transition wrapper: ONE shape element morphs its
+  position, size, and corner radius (circle -> square -> rounded, etc.)
+  from a "before" placement to an "after" placement at `morph_at`, while
+  its caption label crossfades underneath -- the classic match-cut trick
+  of continuing motion/shape across a hard content change instead of a
+  plain cut. Companion to camera-push-transition.html (scale/zoom punch)
+  and scanline-reveal.html (sweep wipe) as the third reusable
+  transition-effect wrapper in this category.
+
+  Only ONE shape element exists in the DOM throughout -- it is
+  repositioned/resized/reshaped, never duplicated -- which is what makes
+  this read as a morph rather than a cross-dissolve between two shapes.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("match-cut-morph"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="match-cut-morph"
+  data-composition-duration="4"
+  data-composition-variables='[
+    { "id": "before_label", "type": "string", "role": "content", "label": "Before label", "description": "Caption shown while the shape is in its before placement.", "default": "One request" },
+    { "id": "after_label", "type": "string", "role": "content", "label": "After label", "description": "Caption shown after the shape morphs to its after placement.", "default": "One response" },
+    { "id": "before_shape", "type": "enum", "role": "content", "label": "Before shape", "description": "Shape of the element before the morph.", "default": "circle", "options": [{ "value": "circle", "label": "Circle" }, { "value": "square", "label": "Square" }, { "value": "rounded", "label": "Rounded" }] },
+    { "id": "after_shape", "type": "enum", "role": "content", "label": "After shape", "description": "Shape of the element after the morph.", "default": "rounded", "options": [{ "value": "circle", "label": "Circle" }, { "value": "square", "label": "Square" }, { "value": "rounded", "label": "Rounded" }] },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Morphing shape's fill color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "morph_at", "type": "number", "role": "timing", "label": "Morph at", "description": "Seconds from mount when the shape morphs from before to after.", "default": 1.4, "min": 0.4, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 4, "min": 1.5, "max": 20, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Match Cut Morph</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="match-cut-morph" data-duration="4" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+            overflow: hidden;
+          }
+          .mm-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+          }
+          .mm-shape {
+            position: absolute;
+            background: var(--mm-accent, var(--hf-brand, #6ea8fe));
+            will-change: transform, border-radius;
+          }
+          .mm-caption {
+            position: absolute;
+            left: 50%;
+            width: 84%;
+            text-align: center;
+            font-weight: 700;
+            transform: translateX(-50%);
+          }
+          .mm-caption-before {
+            top: 68%;
+          }
+          .mm-caption-after {
+            top: 68%;
+            opacity: 0;
+          }
+        </style>
+
+        <div class="mm-stage" id="mm-stage">
+          <div class="mm-shape" id="mm-shape"></div>
+          <div class="mm-caption mm-caption-before" id="mm-caption-before"></div>
+          <div class="mm-caption mm-caption-after" id="mm-caption-after"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "match-cut-morph: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SHAPE_RADIUS = { circle: "50%", square: "4%", rounded: "22%" };
+
+            var SCHEMA = {
+              before_label: { type: "string", default: "One request", maxLength: 60 },
+              after_label: { type: "string", default: "One response", maxLength: 60 },
+              before_shape: { type: "enum", default: "circle", options: ["circle", "square", "rounded"] },
+              after_shape: { type: "enum", default: "rounded", options: ["circle", "square", "rounded"] },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              morph_at: { type: "number", default: 1.4, min: 0.4, max: 30 },
+              duration: { type: "number", default: 4, min: 1.5, max: 20 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("mm-stage");
+            var shape = document.getElementById("mm-shape");
+            var captionBefore = document.getElementById("mm-caption-before");
+            var captionAfter = document.getElementById("mm-caption-after");
+
+            root.style.setProperty("--mm-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Before placement: smaller, upper-left of center.
+            // After placement: larger, upper-right of center.
+            // Both expressed in cqmin-independent percentages of the stage
+            // so the morph reads correctly at any host frame size.
+            var BEFORE = { leftPct: 30, topPct: 30, sizePct: 18 };
+            var AFTER = { leftPct: 70, topPct: 30, sizePct: 30 };
+
+            function applyPlacement(el, placement, radiusKey) {
+              var stageW = stage.clientWidth || 1080;
+              var stageH = stage.clientHeight || 1920;
+              var sizePx = Math.min(stageW, stageH) * (placement.sizePct / 100);
+              el.style.width = sizePx + "px";
+              el.style.height = sizePx + "px";
+              el.style.left = stageW * (placement.leftPct / 100) - sizePx / 2 + "px";
+              el.style.top = stageH * (placement.topPct / 100) - sizePx / 2 + "px";
+              el.style.borderRadius = SHAPE_RADIUS[radiusKey];
+            }
+
+            applyPlacement(shape, BEFORE, props.before_shape);
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxWidth = stage.clientWidth * 0.8;
+
+              HFTextFit.fitOrTruncate(captionBefore, props.before_label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: boxWidth,
+                maxHeight: 5.2 * rootMin * 1.2 * 2,
+                baseSize: 5.2 * rootMin,
+                minSize: 18,
+                lineHeightRatio: 1.2,
+                maxLines: 2,
+              });
+              HFTextFit.fitOrTruncate(captionAfter, props.after_label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: boxWidth,
+                maxHeight: 5.2 * rootMin * 1.2 * 2,
+                baseSize: 5.2 * rootMin,
+                minSize: 18,
+                lineHeightRatio: 1.2,
+                maxLines: 2,
+              });
+
+              // Re-apply placement after any font-driven reflow, and
+              // re-run whenever the frame itself is measured, so the
+              // shape's pixel geometry always matches the current box.
+              if (!shape.dataset.morphed) {
+                applyPlacement(shape, BEFORE, props.before_shape);
+              } else {
+                applyPlacement(shape, AFTER, props.after_shape);
+              }
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var morphAt = Math.min(Math.max(props.morph_at, 0.4), Math.max(0.4, duration - 0.6));
+
+            var afterGeom = (function () {
+              var stageW = stage.clientWidth || 1080;
+              var stageH = stage.clientHeight || 1920;
+              var sizePx = Math.min(stageW, stageH) * (AFTER.sizePct / 100);
+              return {
+                width: sizePx,
+                height: sizePx,
+                left: stageW * (AFTER.leftPct / 100) - sizePx / 2,
+                top: stageH * (AFTER.topPct / 100) - sizePx / 2,
+                borderRadius: SHAPE_RADIUS[props.after_shape],
+              };
+            })();
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(shape, { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" }, 0.1);
+            tl.fromTo(captionBefore, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.15);
+
+            tl.to(
+              shape,
+              {
+                width: afterGeom.width,
+                height: afterGeom.height,
+                left: afterGeom.left,
+                top: afterGeom.top,
+                borderRadius: afterGeom.borderRadius,
+                duration: 0.7,
+                ease: "power3.inOut",
+                onStart: function () {
+                  shape.dataset.morphed = "1";
+                },
+              },
+              morphAt
+            );
+            tl.to(captionBefore, { opacity: 0, y: -12, duration: 0.3, ease: "power2.in" }, morphAt);
+            tl.fromTo(
+              captionAfter,
+              { opacity: 0, y: 12 },
+              { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+              morphAt + 0.35
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["match-cut-morph"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "scanline-reveal",
+  "type": "hyperframes:component",
+  "title": "Scanline Reveal",
+  "description": "A reusable sweep-reveal transition: a glowing scanline bar sweeps horizontally or vertically across the frame, its clip-path progressively uncovering an after statement behind a dim, desaturated before statement.",
+  "tags": ["editing", "transition", "reveal", "wipe", "scanline"],
+  "category": "editing",
+  "files": [
+    {
+      "path": "scanline-reveal.html",
+      "target": "compositions/components/scanline-reveal/scanline-reveal.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "before_title", "type": "string", "default": "Synchronous" },
+    { "id": "before_subtitle", "type": "string", "default": "The caller blocks until the whole chain finishes." },
+    { "id": "after_title", "type": "string", "default": "Asynchronous" },
+    { "id": "after_subtitle", "type": "string", "default": "The caller moves on and picks up the result later." },
+    { "id": "direction", "type": "enum", "default": "horizontal", "options": ["horizontal", "vertical"] },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "sweep_at", "type": "number", "default": 1.4 },
+    { "id": "sweep_duration", "type": "number", "default": 0.6 },
+    { "id": "duration", "type": "number", "default": 4.5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

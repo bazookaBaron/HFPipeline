@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Demo: focus-spotlight</title>
+    <script src="../lib/text-fit.js"></script>
+    <script src="../lib/props.js"></script>
+    <script src="../lib/demo-runtime.js"></script>
+    <link rel="stylesheet" href="../lib/tokens.css" />
+    <style>
+      body {
+        margin: 0;
+        background: #05060a;
+        color: #f4f5f7;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      p {
+        margin: 0;
+        color: #9aa1ad;
+        font-size: 13px;
+        max-width: 640px;
+        text-align: center;
+      }
+      #stage-wrap {
+        transform-origin: top center;
+        border: 1px solid #2c2f36;
+        border-radius: 12px;
+        overflow: hidden;
+        background: linear-gradient(160deg, #2a2f3a, #14161b 60%);
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+      }
+      button {
+        background: #6ea8fe;
+        color: #0b0d10;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>focus-spotlight</h1>
+    <p>
+      Annotation primitive: fills the frame with a dark scrim except for a cutout region -- the one
+      component in this batch that intentionally paints over its whole frame. This instance overrides
+      <code>shape</code> (rect) and moves the cutout off-center to prove the multi-instance pattern.
+    </p>
+    <div id="stage-wrap">
+      <div id="stage" style="transform: scale(0.42); transform-origin: top left"></div>
+    </div>
+    <div id="controls"></div>
+
+    <script>
+      var STAGE_SCALE = 0.42;
+      var stageWrap = document.getElementById("stage-wrap");
+      HFDemoRuntime.mount({
+        src: "./focus-spotlight.html",
+        mountEl: document.getElementById("stage"),
+        compositionId: "focus-spotlight",
+        width: 1080,
+        height: 1920,
+        variables: {
+          shape: "rect",
+          x_pct: 30,
+          y_pct: 68,
+          size_pct: 44,
+          caption: "Your subscription renews from this menu",
+          accent: "accent-2",
+          spotlight_at: 0.35,
+          caption_at: 1,
+          duration: 5,
+        },
+      }).then(function (handle) {
+        stageWrap.style.width = 1080 * STAGE_SCALE + "px";
+        stageWrap.style.height = 1920 * STAGE_SCALE + "px";
+        HFDemoRuntime.attachScrubber(handle, document.getElementById("controls"));
+      }).catch(function (err) {
+        document.getElementById("stage").textContent = String(err);
+        console.error(err);
+      });
+    </script>
+  </body>
+</html>

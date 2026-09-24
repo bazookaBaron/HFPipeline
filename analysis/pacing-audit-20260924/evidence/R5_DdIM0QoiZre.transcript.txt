@@ -1,0 +1,45 @@
+[   0.00-   1.68] What@0.00 does@0.26 Palantir@0.44 actually@1.00 do?@1.40
+[   1.80-   3.96] People@1.80 talk@2.18 about@2.42 Palantir@2.66 all@3.24 the@3.44 time.@3.64
+[   4.16-   7.22] It@4.16 is@4.50 political,@4.64 it@5.32 is@5.64 mysterious,@5.76 it@6.46 is@6.70 controversial.@6.80
+[   7.58-  10.96] But@7.58 most@7.96 people@8.24 still@8.52 cannot@8.76 explain@9.04 what@9.40 the@9.78 company@9.94 actually@10.24 does.@10.62
+[  11.16-  12.14] So@11.16 let's@11.56 fix@11.78 that.@11.96
+[  12.40-  15.60] Palantir@12.40 was@13.04 founded@13.18 in@13.52 2003@13.72 to@14.22 solve@14.72 one@14.98 problem.@15.18
+[  16.02-  21.42] Large@16.02 organizations@16.50 already@17.06 had@17.62 enormous@17.88 amounts@18.20 of@18.54 data,@18.72 but@19.08 it@19.42 was@19.54 scattered@19.62 across@19.92 completely@20.20 different@20.62 systems.@21.00
+[  21.74-  23.24] Imagine@21.74 an@22.24 intelligence@22.44 agency.@22.80
+[  23.48-  29.60] You@23.48 have@23.84 field@24.02 reports,@24.30 satellite@24.84 imagery,@25.24 location@25.86 data,@26.32 communications@26.88 and@27.48 databases@27.86 built@28.20 by@28.66 different@28.84 departments.@29.16
+[  30.00-  31.52] The@30.00 problem@30.28 is@30.52 not@30.70 a@30.82 lack@30.94 of@31.12 data.@31.26
+[  31.66-  33.20] The@31.66 problem@31.98 is@32.26 that@32.42 none@32.54 of@32.72 it@32.82 connects.@32.90
+[  33.54-  35.28] Palantir@33.54 built@34.10 Gotham@34.28 for@34.70 this@34.82 world.@34.96
+[  35.42-  44.24] Think@35.42 of@35.84 it@35.96 as@36.04 one@36.16 giant@36.30 detective@36.62 wall,@36.96 except@37.62 instead@38.10 of@38.42 manually@38.68 connecting@38.96 photos@39.26 with@39.76 RedString,@40.06 the@40.72 software@41.02 links@41.34 people,@41.66 places,@42.12 events,@42.64 documents@43.02 and@43.38 vehicles@43.58 together.@43.86
+[  44.58-  52.10] An@44.58 analyst@45.06 can@45.34 start@45.58 with@45.80 one@46.00 person,@46.20 find@46.68 an@47.12 associated@47.30 phone@47.64 number,@48.04 connect@48.46 that@48.84 number@49.08 to@49.30 a@49.46 location,@49.54 and@50.06 then@50.38 connect@50.50 that@50.74 location@50.94 to@51.24 another@51.58 event.@51.78
+[  52.62-  55.46] Palantir@52.62 later@53.18 realized@53.38 businesses@53.86 had@54.42 the@54.82 same@54.94 problem.@55.16
+[  55.72-  56.82] Imagine@55.72 a@56.08 manufacturer.@56.36
+[  57.12-  58.80] Factory@57.12 data@57.56 is@57.86 in@58.14 one@58.26 system.@58.42
+[  58.80-  60.18] Orders@58.80 are@59.50 somewhere@59.60 else.@59.84
+[  60.38-  63.66] Shipping,@60.38 payments@60.98 and@61.30 inventory,@61.48 each@62.14 live@62.52 in@62.80 their@63.00 own@63.10 database.@63.32
+[  63.98-  65.58] So@63.98 Palantir@64.36 built@64.82 Foundry.@65.02
+[  65.78-  72.14] Foundry@65.78 brings@66.34 those@66.54 data@66.86 sources@67.08 together@67.34 and@67.72 turns@68.20 them@68.50 into@68.68 something@68.84 people@69.08 inside@69.44 the@69.72 company@69.98 can@70.22 actually@70.42 use@70.72 for@71.00 decisions@71.22 and@71.52 operations.@71.80
+[  72.92-  77.68] Foundry@72.92 is@73.48 the@73.66 commercial@73.76 data@74.04 platform,@74.36 while@75.06 Gotham@75.46 remains@75.86 associated@76.08 with@76.58 government@76.96 and@77.26 defense.@77.48
+[  78.16-  81.16] Now@78.16 there@78.52 is@78.64 one@78.76 concept@78.90 you@79.36 hear@79.56 constantly,@79.70 the@80.42 ontology.@80.68
+[  81.32-  83.66] This@81.32 is@81.76 where@81.90 raw@82.08 data@82.28 gets@82.56 real@82.84 -world@83.14 meaning.@83.44
+[  83.96-  90.08] Instead@83.96 of@84.44 a@84.64 database@84.72 saying@85.02 factory@85.36 ID@85.76 equals@86.02 847,@86.42 the@87.36 ontology@87.70 represents,@88.20 this@88.80 is@89.26 factory@89.46 A.@89.80
+[  90.22-  91.62] It@90.22 produces@90.58 these@90.92 products.@91.24
+[  91.80-  93.22] These@91.80 orders@92.18 depend@92.50 on@92.80 it.@93.08
+[  93.30-  94.68] These@93.30 shipments@93.66 leave@94.10 from@94.30 it.@94.54
+[  94.80- 100.16] So@94.80 instead@95.12 of@95.36 thinking@95.60 in@95.82 database@96.00 tables,@96.30 people@96.88 work@97.32 with@97.58 actual@97.80 objects@98.14 and@98.52 relationships@98.72 from@99.16 the@99.50 real@99.64 world.@99.80
+[ 100.32- 103.16] Then@100.32 there@100.76 are@100.90 forward@101.06 deployed@101.38 engineers,@101.58 or@102.42 FDS.@102.72
+[ 103.66- 111.38] Palantir@103.66 engineers@104.30 work@104.60 directly@105.00 inside@105.36 customer@105.66 operations,@106.16 connecting@106.86 data@107.32 and@107.70 building@108.16 workflows@108.42 around@108.80 the@109.18 real@109.38 problems@109.56 those@109.98 organizations@110.44 have.@110.84
+[ 111.62- 112.90] And@111.62 then@112.00 AI@112.16 happened.@112.46
+[ 113.08- 117.72] In@113.08 2023,@113.48 Palantir@114.36 launched@114.96 AIP,@115.28 its@116.04 artificial@116.46 intelligence@116.78 platform.@117.18
+[ 117.72- 119.30] Here@117.72 is@118.36 why@118.60 that@118.74 mattered.@118.96
+[ 119.44- 121.74] The@119.44 language@119.76 model@120.08 by@120.34 itself@120.58 can@120.94 answer@121.20 questions.@121.44
+[ 122.08- 124.88] But@122.08 a@122.50 company@122.60 does@122.90 not@123.02 just@123.20 want@123.42 to@123.64 summarize@123.74 this@124.12 document.@124.52
+[ 125.06- 128.14] It@125.06 wants@125.42 which@125.64 factories@125.80 are@126.24 at@126.44 risk@126.56 of@126.78 missing@126.92 deliveries@127.10 next@127.56 week.@127.82
+[ 128.22- 130.28] Why@128.22 and@128.58 what@129.02 should@129.32 we@129.52 do@129.66 about@129.82 it?@130.08
+[ 130.42- 136.24] That@130.42 only@130.80 works@131.00 when@131.34 the@131.54 AI@131.62 sits@131.88 on@132.20 top@132.40 of@132.62 connected@132.76 company@133.02 data,@133.36 permissions,@133.92 business@134.62 logic,@134.94 and@135.46 the@135.74 ontology.@135.80
+[ 136.74- 140.92] AIP@136.74 does@137.26 exactly@137.54 that@137.92 while@138.22 keeping@138.60 access@138.92 controls@139.26 and@139.66 governance@139.96 around@140.26 the@140.52 data.@140.70
+[ 141.10- 142.72] And@141.10 that@141.46 is@141.56 really@141.68 the@141.92 Palantir@142.10 business.@142.50
+[ 142.94- 146.56] It@142.94 is@143.22 not@143.32 simply@143.48 AI,@143.78 and@144.36 it@144.70 is@144.80 not@144.92 simply@145.06 government@145.38 surveillance@145.70 software.@146.00
+[ 146.56- 157.24] At@146.56 its@147.26 core,@147.48 Palantir@147.86 takes@148.34 messy@148.58 data@148.86 scattered@149.22 across@149.58 an@149.94 organization,@150.24 connects@150.92 it,@151.40 gives@151.74 it@152.06 real@152.20 world@152.40 meaning,@152.64 and@153.14 builds@153.42 applications@153.68 and@154.08 AI@154.42 on@154.70 top,@154.98 so@155.32 people@155.56 can@155.80 actually@156.00 make@156.30 decisions@156.52 with@156.84 it.@157.10
+[ 157.38- 159.88] Most@157.38 companies@157.86 already@158.26 have@158.60 the@158.90 information@159.02 they@159.30 need.@159.60
+[ 160.12- 164.26] Palantir@160.12 tries@160.68 to@160.88 turn@161.12 all@161.34 that@161.54 disconnected@161.74 information@162.12 into@162.58 one@163.24 operating@163.46 picture.@163.90

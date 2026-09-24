@@ -1,0 +1,287 @@
+<!doctype html>
+<!--
+  sparkline-metric -- HyperFrames sub-composition (Data / metrics)
+
+  A single full-bleed metric card: a label, a big current-value number that
+  counts up, and an animated SVG sparkline line that draws itself across
+  the card in sync. Generalizes kpi-cluster.html's count-up-via-onUpdate-
+  proxy technique to a single hero metric, and adds a real SVG path-draw
+  animation (stroke-dasharray/dashoffset driven by the path's own
+  getTotalLength(), never a guessed length) as the standard clean approach
+  for line-chart-style reveals in this library.
+
+  The path's `d` attribute is built ONCE from the resolved `points` list
+  (normalized into the sparkline viewBox) and its length measured ONCE via
+  getTotalLength() BEFORE the GSAP timeline is built -- matching this
+  library's "build/measure, then animate" ordering rule.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("sparkline-metric"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="sparkline-metric"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "label", "type": "string", "role": "content", "label": "Label", "description": "Metric name above the number.", "default": "Weekly Active Users" },
+    { "id": "value", "type": "number", "role": "content", "label": "Value", "description": "Current value the big number counts up to.", "default": 48200, "min": -1000000000, "max": 1000000000, "step": 1 },
+    { "id": "decimals", "type": "number", "role": "content", "label": "Decimals", "description": "Decimal places shown on the value.", "default": 0, "min": 0, "max": 4, "step": 1 },
+    { "id": "suffix", "type": "string", "role": "content", "label": "Suffix", "description": "Unit/suffix appended after the value, e.g. \"%\" or \"ms\".", "default": "" },
+    { "id": "points", "type": "string", "role": "content", "label": "Points", "description": "JSON array of numbers (at least 2) or a comma-separated list plotted left to right as the sparkline.", "default": "[12,18,15,22,28,24,31,40,36,48]" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Sparkline stroke + value color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the card fades in and the count-up/draw begins.", "default": 0.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "draw_duration", "type": "number", "role": "timing", "label": "Draw duration", "description": "Seconds the sparkline draw + value count-up takes.", "default": 1.6, "min": 0.4, "max": 5, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Sparkline Metric</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="sparkline-metric" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .sm-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6cqmin;
+          }
+          .sm-card {
+            width: 100%;
+            height: 60%;
+            max-width: 100%;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            border-radius: 2.4cqmin;
+            padding: 5cqmin 5.6cqmin;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 2cqmin;
+            opacity: 0;
+            transform: translateY(2cqmin) scale(0.97);
+          }
+          .sm-label {
+            font-weight: 600;
+            font-size: 3.2cqmin;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .sm-value {
+            font-weight: 800;
+            font-size: 10cqmin;
+            color: var(--sm-accent, var(--hf-brand, #6ea8fe));
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+          }
+          .sm-spark-wrap {
+            width: 100%;
+            flex: 1;
+            min-height: 0;
+          }
+          .sm-spark-wrap svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+            overflow: visible;
+          }
+        </style>
+
+        <div class="sm-stage" id="sm-stage">
+          <div class="sm-card" id="sm-card">
+            <div class="sm-label" id="sm-label"></div>
+            <div class="sm-value" id="sm-value"></div>
+            <div class="sm-spark-wrap" id="sm-spark-wrap">
+              <svg id="sm-svg" viewBox="0 0 100 40" preserveAspectRatio="none">
+                <path
+                  id="sm-path"
+                  fill="none"
+                  stroke="var(--sm-accent, var(--hf-brand, #6ea8fe))"
+                  stroke-width="2.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  vector-effect="non-scaling-stroke"
+                ></path>
+                <circle id="sm-dot" r="2.6" fill="var(--sm-accent, var(--hf-brand, #6ea8fe))" opacity="0"></circle>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "sparkline-metric: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              label: { type: "string", default: "Weekly Active Users", maxLength: 40 },
+              value: { type: "number", default: 48200, min: -1000000000, max: 1000000000 },
+              decimals: { type: "number", default: 0, min: 0, max: 4 },
+              suffix: { type: "string", default: "" },
+              points: {
+                type: "list",
+                default: [12, 18, 15, 22, 28, 24, 31, 40, 36, 48],
+                max: 24,
+                delimiter: ",",
+              },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              draw_duration: { type: "number", default: 1.6, min: 0.4, max: 5 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var card = document.getElementById("sm-card");
+            var labelEl = document.getElementById("sm-label");
+            var valueEl = document.getElementById("sm-value");
+            var path = document.getElementById("sm-path");
+            var dot = document.getElementById("sm-dot");
+
+            root.style.setProperty("--sm-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Normalize points: every entry independently falls back to 0 if
+            // malformed, never a silent partial array (HFProps.resolve's own
+            // discipline, applied one level deeper for this list-of-numbers
+            // field).
+            var rawPoints = props.points.map(function (p) {
+              var n = typeof p === "number" ? p : parseFloat(p);
+              return isFinite(n) ? n : 0;
+            });
+            if (rawPoints.length < 2) rawPoints = SCHEMA.points.default.slice();
+
+            var minV = Math.min.apply(null, rawPoints);
+            var maxV = Math.max.apply(null, rawPoints);
+            var range = maxV - minV || 1;
+
+            // Build path ONCE from normalized points, viewBox 0-100 x 0-40,
+            // 3px padding top/bottom so peaks/troughs never touch the edge.
+            var padTop = 4;
+            var padBottom = 4;
+            var plotH = 40 - padTop - padBottom;
+            var coords = rawPoints.map(function (v, i) {
+              var x = (i / (rawPoints.length - 1)) * 100;
+              var y = padTop + (1 - (v - minV) / range) * plotH;
+              return [x, y];
+            });
+            var d = coords
+              .map(function (c, i) {
+                return (i === 0 ? "M" : "L") + c[0].toFixed(2) + "," + c[1].toFixed(2);
+              })
+              .join(" ");
+            path.setAttribute("d", d);
+
+            // Measure ONCE via the path's own real geometry -- never a
+            // guessed/assumed length.
+            var totalLength = path.getTotalLength();
+            path.style.strokeDasharray = totalLength;
+            path.style.strokeDashoffset = totalLength;
+
+            var lastPoint = coords[coords.length - 1];
+            dot.setAttribute("cx", lastPoint[0]);
+            dot.setAttribute("cy", lastPoint[1]);
+
+            function formatNumber(n, decimals) {
+              var fixed = decimals > 0 ? n.toFixed(decimals) : String(Math.round(n));
+              var neg = fixed.charAt(0) === "-";
+              if (neg) fixed = fixed.slice(1);
+              var parts = fixed.split(".");
+              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              return (neg ? "-" : "") + parts.join(".");
+            }
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(labelEl, props.label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: card.clientWidth - 11.2 * rootMin || 400,
+                maxHeight: 1000,
+                baseSize: 3.2 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+
+            valueEl.textContent = formatNumber(0, props.decimals) + props.suffix;
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.6));
+            var drawDur = Math.min(props.draw_duration, Math.max(0.3, duration - revealAt - 0.2));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(card, { opacity: 0, y: 24, scale: 0.97 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" }, revealAt);
+
+            tl.to(
+              path,
+              { strokeDashoffset: 0, duration: drawDur, ease: "power1.inOut" },
+              revealAt + 0.15
+            );
+
+            var proxy = { v: 0 };
+            var targetValue = props.value;
+            var decimals = props.decimals;
+            var suffix = props.suffix;
+            tl.to(
+              proxy,
+              {
+                v: targetValue,
+                duration: drawDur,
+                ease: "power1.inOut",
+                onUpdate: function () {
+                  valueEl.textContent = formatNumber(proxy.v, decimals) + suffix;
+                },
+              },
+              revealAt + 0.15
+            );
+
+            tl.to(dot, { opacity: 1, duration: 0.25, ease: "power1.out" }, revealAt + 0.15 + drawDur - 0.15);
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["sparkline-metric"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

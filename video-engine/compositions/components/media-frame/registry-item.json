@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "media-frame",
+  "type": "hyperframes:component",
+  "title": "Media Frame",
+  "description": "A bordered frame/window chrome around a generic captured-screen placeholder (image or video), with a muted title bar and an optional revealed caption -- for showing captured content without a URL-bar-specific browser affordance.",
+  "tags": ["software-mockup", "media", "frame", "chrome", "foundation-adjacent"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "media-frame.html",
+      "target": "compositions/components/media-frame/media-frame.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "label", "type": "string", "default": "Recording" },
+    { "id": "media_type", "type": "enum", "default": "video", "options": ["video", "image"] },
+    { "id": "caption", "type": "string", "default": "Feature walkthrough" },
+    { "id": "show_caption", "type": "boolean", "default": true },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "caption_at", "type": "number", "default": 1.6 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

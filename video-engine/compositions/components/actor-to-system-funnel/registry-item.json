@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "actor-to-system-funnel",
+  "type": "hyperframes:component",
+  "title": "Actor To System Funnel",
+  "description": "Funnel diagram: N actor/user nodes across the top converge via draw-on connector lines and traveling dots into a single destination system box.",
+  "tags": ["architecture", "diagram", "funnel", "actors", "system"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "actor-to-system-funnel.html",
+      "target": "compositions/components/actor-to-system-funnel/actor-to-system-funnel.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "actor_count", "type": "number", "default": 5 },
+    { "id": "actor_label", "type": "string", "default": "User" },
+    { "id": "system_label", "type": "string", "default": "API Gateway" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "converge_at", "type": "number", "default": 1.6 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

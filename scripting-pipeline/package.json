@@ -1,0 +1,25 @@
+{
+  "name": "scripting-pipeline",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Phase 3: Gemini-based scripting pipeline for the HyperFrames video pipeline (schema-validated structured output + reject-and-repair loop).",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "generate": "tsx src/cli.ts"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "dotenv": "^16.4.5",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

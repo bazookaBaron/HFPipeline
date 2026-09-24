@@ -1,0 +1,6 @@
+{
+  "threshold": 0.15,
+  "comparison": "strictly greater",
+  "interpretation": "Cut candidates, not verified cuts or semantic beats",
+  "candidates": []
+}

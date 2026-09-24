@@ -1,0 +1,106 @@
+{
+  "topic": "why database indexes speed up lookups",
+  "topicCategory": "cs-fundamentals",
+  "scenes": [
+    {
+      "sceneId": "scene-1",
+      "componentType": "problem-solution-pair",
+      "durationSeconds": 8,
+      "narration": "A million-row table takes eight seconds to search one column. Why does adding a single index turn that into six milliseconds?",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "statLabel": "full table scan", "statValue": "8s" },
+      "narrationAnchors": [{ "anchorText": "single index", "propPath": "props.problem_at" }]
+    },
+    {
+      "sceneId": "scene-2",
+      "componentType": "myth-fact-card",
+      "durationSeconds": 8,
+      "narration": "So the obvious fix is to just add more RAM and let the database cache the whole table in memory.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "mythLabel": "more RAM fixes it", "factLabel": "still a full scan" },
+      "narrationAnchors": [{ "anchorText": "more RAM", "propPath": "props.myth_at" }]
+    },
+    {
+      "sceneId": "scene-3",
+      "componentType": "failure-recovery",
+      "durationSeconds": 8,
+      "narration": "Even cached in memory, the engine still checks every single row against your filter, so the cost barely changes at all.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "statLabel": "rows scanned", "statValue": "1,000,000" },
+      "narrationAnchors": [{ "anchorText": "every single row", "propPath": "props.fail_at" }]
+    },
+    {
+      "sceneId": "scene-4",
+      "componentType": "definition-card",
+      "durationSeconds": 10,
+      "narration": "A database index is a separate sorted structure, usually a B-tree, that stores column values alongside pointers back to their rows.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "termLabel": "B-tree index", "termDefinition": "sorted pointers to rows" },
+      "narrationAnchors": [{ "anchorText": "B-tree", "propPath": "props.term_at" }]
+    },
+    {
+      "sceneId": "scene-5",
+      "componentType": "perspective-grid",
+      "durationSeconds": 10,
+      "narration": "Because the tree keeps every key in sorted order, the database can binary search it, cutting the million rows down to about twenty comparisons.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "statLabel": "comparisons needed", "statValue": "~20" },
+      "narrationAnchors": [{ "anchorText": "binary search", "propPath": "props.reveal_at" }]
+    },
+    {
+      "sceneId": "scene-6",
+      "componentType": "latency-waterfall",
+      "durationSeconds": 8,
+      "narration": "That is why the same lookup that scanned a million rows now touches only twenty nodes on its way down the tree.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "statLabel": "tree depth", "statValue": "20 nodes" },
+      "narrationAnchors": [{ "anchorText": "twenty nodes", "propPath": "props.reveal_at" }]
+    },
+    {
+      "sceneId": "scene-7",
+      "componentType": "queue-backpressure",
+      "durationSeconds": 8,
+      "narration": "But what happens when a hundred thousand writes hit that table every minute? Each insert has to update the index too.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "statLabel": "writes per minute", "statValue": "100,000" },
+      "narrationAnchors": [{ "anchorText": "hundred thousand writes", "propPath": "props.start_at" }]
+    },
+    {
+      "sceneId": "scene-8",
+      "componentType": "cost-breakdown",
+      "durationSeconds": 8,
+      "narration": "So every index you add speeds up reads but slows down every single write, because the tree has to stay balanced.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "statLabel": "write overhead", "statValue": "per index" },
+      "narrationAnchors": [{ "anchorText": "slows down every single write", "propPath": "props.reveal_at" }]
+    },
+    {
+      "sceneId": "scene-9",
+      "componentType": "load-balancer-cluster",
+      "durationSeconds": 10,
+      "narration": "That is why real databases let you choose a handful of indexes deliberately, trading a little write cost for a lot of read speed on the columns that matter most.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "statLabel": "indexes chosen deliberately", "statValue": "few, not all" },
+      "narrationAnchors": [{ "anchorText": "a handful of indexes", "propPath": "props.start_at" }]
+    },
+    {
+      "sceneId": "scene-10",
+      "componentType": "takeaway-banner",
+      "durationSeconds": 10,
+      "narration": "So an index is just a sorted shortcut: skip it and the database rereads every row; add the right one and that same lookup drops from seconds to milliseconds.",
+      "sceneHeadline": "Test headline",
+      "sceneSubtitle": "Test subtitle",
+      "props": { "statLabel": "lookup time before vs after", "statValue": "seconds to milliseconds" },
+      "narrationAnchors": [{ "anchorText": "sorted shortcut", "propPath": "props.reveal_at" }]
+    }
+  ]
+}

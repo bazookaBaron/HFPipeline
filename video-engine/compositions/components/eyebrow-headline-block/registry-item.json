@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "eyebrow-headline-block",
+  "type": "hyperframes:component",
+  "title": "Eyebrow Headline Block",
+  "description": "Small uppercase eyebrow label above a large bold headline, the dominant element, text-fit protected up to 3 lines.",
+  "tags": ["narrative", "headline", "title-card", "text"],
+  "category": "narrative",
+  "files": [
+    {
+      "path": "eyebrow-headline-block.html",
+      "target": "compositions/components/eyebrow-headline-block/eyebrow-headline-block.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "eyebrow", "type": "string", "default": "New feature" },
+    { "id": "headline", "type": "string", "default": "Ship faster with less risk" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "duration", "type": "number", "default": 4 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

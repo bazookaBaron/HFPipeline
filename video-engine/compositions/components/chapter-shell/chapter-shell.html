@@ -1,0 +1,383 @@
+<!doctype html>
+<!--
+  chapter-shell -- HyperFrames sub-composition (Foundation / Architecture)
+
+  A per-scene "light editorial" chrome: a small breadcrumb (top-left), a
+  step-dot indicator (top-right, current step filled solid, others
+  outlined), a large bold headline + smaller gray subtitle, and a
+  decorative content-card frame (border/background/shadow) occupying a
+  FIXED rect in the lower portion of the frame.
+
+  REAL CONTENT GOES IN THAT RECT AS A SEPARATE, ORDINARY SIBLING SCENE --
+  NOT A NESTED MOUNT. Earlier revision of this file tried to have this
+  component read a `contentComponentType` variable and construct a nested
+  `data-composition-src` mount via script at runtime. That was EMPIRICALLY
+  DISPROVEN in this project's own scratch validation (video-engine/
+  _debug_cs and _debug_static_nest, both real `hyperframes snapshot`
+  renders): a `data-composition-src` attribute only gets bundled/rendered
+  by the real render/snapshot pipeline when it is present in the STATIC
+  HTML source at parse time. The live browser DOM having the right
+  attributes by the time `hyperframes check`'s console-error scan runs is
+  NOT sufficient -- check reported 0 errors in both the runtime-JS-
+  constructed case (blank card, confirmed via real snapshot at t=3s/5.5s)
+  and the plain-static-sibling case (rendered correctly, confirmed via
+  real snapshot) -- proving the bundler resolves sub-composition sources
+  by scanning source text, not by executing the page first. So: this
+  component only ever draws its OWN chrome. The caller (composeHtml.js /
+  whatever assembles a scene using this shell) places the real content
+  component as its own plain, statically-authored `data-composition-src`
+  sibling div, sized/positioned to the FIXED card rect below, on top of
+  (later in DOM order than) this component's div so it visually sits
+  inside the card frame this component draws.
+
+  FIXED CONTENT-CARD RECT CONTRACT (in cqmin of the 1080x1920 host frame,
+  i.e. 1cqmin = 10.8px at this project's standard portrait resolution --
+  recompute proportionally for any other data-width/data-height):
+    top:    40cqmin  (~432px) -- clears the persistent status HUD bar
+                                 (composeHtml.js, 0-76px) PLUS breadcrumb/
+                                 steps + a 2-line headline + subtitle with
+                                 margin, for ANY authored copy within this
+                                 schema's maxLength limits. Fixed, not
+                                 flex-computed, on purpose: composeHtml.js
+                                 (a Node script) cannot replicate this
+                                 component's in-browser HFTextFit canvas
+                                 measurement, so the rect a sibling scene
+                                 positions itself against must be a
+                                 constant, never a text-dependent one.
+    left/right: 6.4cqmin (~69px) -- matches this component's own chrome
+                                 padding, so the card's outer edge lines
+                                 up with the breadcrumb/headline's left
+                                 margin.
+    bottom: 42.6cqmin (~460px) -- NOT this component's own 5.4cqmin chrome
+                                 padding anymore. Real user feedback on a
+                                 rendered video (frame-by-frame /watch,
+                                 2026-09) found the content card running
+                                 into the bottom ~24% of the frame, exactly
+                                 where a posted Instagram/YouTube Reel or
+                                 Short overlays its OWN caption/description/
+                                 like-comment-share chrome on top of ours.
+                                 Bottom raised so the card's bottom edge
+                                 lands at y:1460 (76% down a 1920 frame),
+                                 matching composeHtml.js's dark-theme
+                                 SAFE_RECT bottom edge exactly.
+  A sibling content composition should be sized to those exact insets
+  (data-width/data-height set to the resulting box in px, positioned
+  absolute at that offset) so it fills the visible white card this
+  component paints, with `class="clip"` and its own data-start/
+  data-duration matching this component's `content_at`/remaining window.
+
+  LIGHT-THEME COLOR DISCIPLINE EXCEPTION (documented, same class of
+  exemption as browser-window's traffic-light dots / N2 in
+  component-quality-bar.md): this component deliberately renders a light
+  cream/navy editorial theme instead of the dark --hf-bg/--hf-fg tokens
+  every other component in this library uses. It defines its OWN,
+  differently namespaced custom properties (--cs-bg/--cs-fg/--cs-muted/
+  --cs-accent/...) scoped to #root, used only by this component's own
+  chrome -- it never touches --hf-* names, so a sibling content
+  composition elsewhere in the document is never affected by this
+  component's theme.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("chapter-shell"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="chapter-shell"
+  data-composition-duration="8"
+  data-composition-variables='[
+    { "id": "breadcrumb", "type": "string", "role": "content", "label": "Breadcrumb", "description": "Small uppercase label, top-left.", "default": "SYSTEM DESIGN / FILE SERVICES" },
+    { "id": "currentStep", "type": "number", "role": "content", "label": "Current step", "description": "Which step dot (1-based) renders filled solid.", "default": 2, "min": 1, "max": 9, "step": 1 },
+    { "id": "totalSteps", "type": "number", "role": "content", "label": "Total steps", "description": "How many step dots to draw, top-right.", "default": 3, "min": 1, "max": 9, "step": 1 },
+    { "id": "headline", "type": "string", "role": "content", "label": "Headline", "description": "Large bold headline.", "default": "How the cache decides" },
+    { "id": "subtitle", "type": "string", "role": "content", "label": "Subtitle", "description": "Smaller gray line under the headline.", "default": "A quick look at read-through caching" },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when breadcrumb/steps/headline/subtitle reveal.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "content_at", "type": "number", "role": "timing", "label": "Content at", "description": "Seconds from mount when the content-card frame reveals. A sibling content composition should start at this same offset.", "default": 1.8, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 8, "min": 3, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Chapter Shell</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="chapter-shell" data-duration="8" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          /* Light-editorial theme tokens, namespaced --cs-* so they never
+             cascade meaning into a sibling composition's own --hf-*
+             reads. See header comment "LIGHT-THEME COLOR DISCIPLINE
+             EXCEPTION". */
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            --cs-bg: #f2f1ea;
+            --cs-surface: #ffffff;
+            --cs-border: #ddd9c8;
+            --cs-fg: #1a2b3c;
+            --cs-muted: #5b6572;
+            --cs-accent: #1a2b3c;
+          }
+          .cs-bg-layer {
+            position: absolute;
+            inset: 0;
+            background: var(--cs-bg);
+          }
+          .cs-chrome {
+            position: absolute;
+            inset: 0;
+            padding: 5.4cqmin 6.4cqmin;
+          }
+          /* top:11cqmin (not 5.4cqmin) -- a real end-to-end render + orchestrator wiring
+             test found this row sitting directly underneath composeHtml.js's persistent
+             opaque status HUD bar (0-76px, ~7cqmin of a 1920-tall frame), which painted
+             over the breadcrumb text. 11cqmin clears it with margin, same fix pattern as
+             deployment-dashboard's own top-padding bump earlier this session. */
+          .cs-top-row {
+            position: absolute;
+            top: 11cqmin;
+            left: 6.4cqmin;
+            right: 6.4cqmin;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+          .cs-breadcrumb {
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 2cqmin;
+            color: var(--cs-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-0.8cqmin);
+          }
+          .cs-steps {
+            display: flex;
+            align-items: center;
+            gap: 1.4cqmin;
+            flex: 0 0 auto;
+            opacity: 0;
+            transform: translateY(-0.8cqmin);
+          }
+          .cs-step-dot {
+            width: 1.8cqmin;
+            height: 1.8cqmin;
+            min-width: 8px;
+            min-height: 8px;
+            border-radius: 50%;
+            border: 0.28cqmin solid var(--cs-accent);
+            background: transparent;
+          }
+          .cs-step-dot.cs-step-filled {
+            background: var(--cs-accent);
+          }
+          .cs-headline-block {
+            position: absolute;
+            top: 19cqmin;
+            left: 6.4cqmin;
+            right: 6.4cqmin;
+            display: flex;
+            flex-direction: column;
+            gap: 1.4cqmin;
+          }
+          .cs-headline {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: var(--cs-fg);
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+          }
+          .cs-subtitle {
+            font-weight: 500;
+            color: var(--cs-muted);
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          /* FIXED content-card rect -- see header comment "FIXED
+             CONTENT-CARD RECT CONTRACT". Never flex/text-dependent: a
+             sibling content composition positions itself against these
+             exact same numbers from Node (composeHtml.js SHELL_RECT
+             constant), which cannot replicate this component's in-browser
+             text measurement. bottom raised from 5.4cqmin to 42.6cqmin so
+             the card's real bottom edge clears the platform-chrome safe
+             zone (see FIXED CONTENT-CARD RECT CONTRACT comment above) --
+             keep composeHtml.js's SHELL_RECT in sync with these 4 numbers
+             if either ever changes. */
+          .cs-content-outer {
+            position: absolute;
+            top: 40cqmin;
+            left: 6.4cqmin;
+            right: 6.4cqmin;
+            bottom: 42.6cqmin;
+            border-radius: 2.4cqmin;
+            background: var(--cs-surface);
+            border: 1px solid var(--cs-border);
+            box-shadow: 0 1.2cqmin 3.4cqmin rgba(26, 43, 60, 0.12);
+            opacity: 0;
+            transform: translateY(2cqmin) scale(0.99);
+          }
+        </style>
+
+        <div class="cs-bg-layer"></div>
+        <div class="cs-chrome" id="cs-chrome">
+          <div class="cs-top-row">
+            <div class="cs-breadcrumb" id="cs-breadcrumb"></div>
+            <div class="cs-steps" id="cs-steps"></div>
+          </div>
+          <div class="cs-headline-block">
+            <div class="cs-headline" id="cs-headline"></div>
+            <div class="cs-subtitle" id="cs-subtitle"></div>
+          </div>
+          <div class="cs-content-outer" id="cs-content-outer"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "chapter-shell: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              breadcrumb: { type: "string", default: "SYSTEM DESIGN / FILE SERVICES", maxLength: 80 },
+              currentStep: { type: "number", default: 2, min: 1, max: 9 },
+              totalSteps: { type: "number", default: 3, min: 1, max: 9 },
+              headline: { type: "string", default: "How the cache decides", maxLength: 90 },
+              subtitle: { type: "string", default: "A quick look at read-through caching", maxLength: 120 },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              content_at: { type: "number", default: 1.8, min: 0, max: 30 },
+              duration: { type: "number", default: 8, min: 3, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var contentOuter = document.getElementById("cs-content-outer");
+            var breadcrumbEl = document.getElementById("cs-breadcrumb");
+            var stepsEl = document.getElementById("cs-steps");
+            var headlineEl = document.getElementById("cs-headline");
+            var subtitleEl = document.getElementById("cs-subtitle");
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.6));
+            var contentAt = Math.min(Math.max(props.content_at, revealAt), Math.max(0, duration - 0.5));
+
+            var stepCount = Math.round(props.totalSteps);
+            var currentStep = Math.min(stepCount, Math.max(1, Math.round(props.currentStep)));
+
+            var stepDotEls = [];
+            HFProps.rebuild(stepsEl, function (container) {
+              stepDotEls = [];
+              for (var i = 1; i <= stepCount; i++) {
+                var dot = document.createElement("div");
+                dot.className = "cs-step-dot" + (i === currentStep ? " cs-step-filled" : "");
+                container.appendChild(dot);
+                stepDotEls.push(dot);
+              }
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+
+              HFTextFit.fitOrTruncate(breadcrumbEl, props.breadcrumb, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: root.clientWidth * 0.55 || 400,
+                maxHeight: 1000,
+                baseSize: 2 * rootMin,
+                minSize: 10,
+                maxLines: 1,
+              });
+
+              HFTextFit.fitOrTruncate(headlineEl, props.headline, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: root.clientWidth * 0.88 || 800,
+                maxHeight: 13 * rootMin * 1.15 * 2,
+                baseSize: 6.4 * rootMin,
+                minSize: 20,
+                maxLines: 2,
+              });
+
+              HFTextFit.fitOrTruncate(subtitleEl, props.subtitle, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 500,
+                maxWidth: root.clientWidth * 0.86 || 800,
+                maxHeight: 1000,
+                baseSize: 2.9 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var tl = gsap.timeline({ paused: true });
+
+            tl.fromTo(
+              breadcrumbEl,
+              { opacity: 0, y: -8 },
+              { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+              revealAt
+            );
+            tl.fromTo(
+              stepsEl,
+              { opacity: 0, y: -8 },
+              { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+              revealAt
+            );
+            tl.fromTo(
+              headlineEl,
+              { opacity: 0, y: 18 },
+              { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+              revealAt + 0.15
+            );
+            tl.fromTo(
+              subtitleEl,
+              { opacity: 0, y: 18 },
+              { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+              revealAt + 0.32
+            );
+
+            // The content card frame fades/settles in at content_at; a sibling
+            // content composition (authored by the caller, see header comment)
+            // should start at this exact same offset so it never appears
+            // floating outside an un-rendered card.
+            tl.fromTo(
+              contentOuter,
+              { opacity: 0, y: 16, scale: 0.99 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" },
+              contentAt
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["chapter-shell"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

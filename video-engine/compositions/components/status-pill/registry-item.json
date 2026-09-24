@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "status-pill",
+  "type": "hyperframes:component",
+  "title": "Status Pill",
+  "description": "A small rounded pill/badge showing a status word with a color-coded state (live, beta, new, deprecated, neutral) and an optional dot that does two finite pulses on reveal.",
+  "tags": ["annotation", "badge", "status", "pill", "foundation"],
+  "category": "annotation",
+  "files": [
+    {
+      "path": "status-pill.html",
+      "target": "compositions/components/status-pill/status-pill.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "text", "type": "string", "default": "Live" },
+    { "id": "state", "type": "enum", "default": "live", "options": ["live", "beta", "new", "deprecated", "neutral"] },
+    { "id": "show_dot", "type": "boolean", "default": true },
+    { "id": "pulse", "type": "boolean", "default": true },
+    { "id": "x_pct", "type": "number", "default": 50, "min": 0, "max": 100 },
+    { "id": "y_pct", "type": "number", "default": 16, "min": 0, "max": 100 },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "duration", "type": "number", "default": 4 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

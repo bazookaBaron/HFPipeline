@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "setting-control",
+  "type": "hyperframes:component",
+  "title": "Setting Control",
+  "description": "A single settings row -- label, description, and a toggle switch that flips state -- under a panel title, sized to fill the frame.",
+  "tags": ["software-mockup", "settings", "toggle", "switch", "preferences"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "setting-control.html",
+      "target": "compositions/components/setting-control/setting-control.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "panel_title", "type": "string", "default": "Settings" },
+    { "id": "label", "type": "string", "default": "Push notifications" },
+    { "id": "description", "type": "string", "default": "Get notified about mentions, replies, and direct messages." },
+    { "id": "initial_state", "type": "boolean", "default": false },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "toggle_at", "type": "number", "default": 1.6 },
+    { "id": "duration", "type": "number", "default": 5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

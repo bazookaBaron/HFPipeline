@@ -1,0 +1,287 @@
+<!doctype html>
+<!--
+  acronym-expander -- HyperFrames sub-composition (Narrative)
+
+  A big acronym that expands letter-by-letter into its full meaning: the
+  acronym is shown large up top, then one expansion row per letter
+  reveals in stagger below it, each row's leading letter-badge matching
+  and highlighting the corresponding acronym letter in sync.
+
+  DOM STRUCTURE IS BUILT EXACTLY ONCE, before the GSAP timeline captures
+  element references -- see keyword-highlighter.html's header comment for
+  why a later re-layout must never replace already-referenced nodes.
+  HFProps.rebuild still clears/rebuilds the expansion-row list on initial
+  mount (never accumulates stale rows across a variable change).
+
+  Each letter is distinguished by rotating through --hf-accent, -2, -3, -4,
+  then --hf-brand by index (added in the aesthetic-plan pass; was previously
+  one uniform resolved accent color shared by every row-badge border/text
+  AND every acronym letter's expand-highlight). Real user feedback ("use
+  more colors... more different colors") drove giving each simultaneously-
+  expanding letter its own color -- exactly the sanctioned per-item use
+  case the tokens exist for (see ../README.md "Color discipline"). The big
+  acronym letters have no separate single-color role of their own: before
+  expansion they render in plain --hf-fg (never accent), and only pick up
+  color in sync with their own row's reveal -- so there is nothing left for
+  a chrome-only `accent` to legitimately control. Replaces the earlier
+  single `accent` prop entirely -- removed from this component's schema
+  rather than left as a vestigial no-op.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("acronym-expander"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="acronym-expander"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "acronym", "type": "string", "role": "content", "label": "Acronym", "description": "The letters, e.g. \"API\".", "default": "API" },
+    { "id": "expansion", "type": "string", "role": "content", "label": "Expansion", "description": "Pipe-separated word per letter, in order, e.g. \"Application|Programming|Interface\".", "default": "Application|Programming|Interface" },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the big acronym appears.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "expand_at", "type": "number", "role": "timing", "label": "First expansion at", "description": "Seconds from mount when the first letter starts expanding.", "default": 1, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "letter_stagger", "type": "number", "role": "timing", "label": "Letter stagger", "description": "Seconds between successive letter expansions.", "default": 0.45, "min": 0.1, "max": 3, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Acronym Expander</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="acronym-expander" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .ae-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5cqmin;
+            padding: 8cqmin;
+          }
+          .ae-acronym {
+            display: flex;
+            gap: 2.4cqmin;
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+          }
+          .ae-letter {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: var(--hf-fg, #f4f5f7);
+            transition: none;
+          }
+          .ae-rows {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+          }
+          .ae-row {
+            display: flex;
+            align-items: center;
+            gap: 2.6cqmin;
+            opacity: 0;
+            transform: translateX(-1.6cqmin);
+          }
+          .ae-row-badge {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 800;
+            border: 0.22cqmin solid var(--ae-accent, var(--hf-brand, #6ea8fe));
+            color: var(--ae-accent, var(--hf-brand, #6ea8fe));
+          }
+          .ae-row-word {
+            font-weight: 600;
+            color: var(--hf-fg, #f4f5f7);
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+        </style>
+
+        <div class="ae-stage" id="ae-stage">
+          <div class="ae-acronym" id="ae-acronym"></div>
+          <div class="ae-rows" id="ae-rows"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "acronym-expander: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              acronym: { type: "string", default: "API", maxLength: 8 },
+              expansion: {
+                type: "list",
+                default: ["Application", "Programming", "Interface"],
+                max: 8,
+                delimiter: "|",
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              expand_at: { type: "number", default: 1, min: 0, max: 30 },
+              letter_stagger: { type: "number", default: 0.45, min: 0.1, max: 3 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("ae-stage");
+            var acronymWrap = document.getElementById("ae-acronym");
+            var rowsWrap = document.getElementById("ae-rows");
+
+            // Per-letter rotation, matching mini-legend.html/cost-breakdown.html
+            // exactly -- real hex fallbacks so this still renders correctly in
+            // isolation. Drives both the row badge (border + text) and the
+            // matching acronym letter's expand-highlight, in sync, by index.
+            var ACCENT_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            var letters = props.acronym.split("");
+            var pairCount = Math.min(letters.length, props.expansion.length);
+
+            // Frame-filling: fewer letters -> bigger type + more row gap.
+            var big = pairCount <= 3;
+            var letterSizeCqmin = big ? 16 : pairCount <= 5 ? 12 : 9;
+            var rowGapCqmin = big ? 3.4 : 2.2;
+            var wordSizeCqmin = big ? 5.2 : 4;
+            var badgeSizeCqmin = big ? 6.4 : 5.2;
+            rowsWrap.style.gap = rowGapCqmin + "cqmin";
+
+            // Build ONCE: letter spans + expansion rows. Never rebuilt on a
+            // later re-layout (fonts.ready only adjusts size below).
+            var letterEls = [];
+            HFProps.rebuild(acronymWrap, function (container) {
+              letterEls = [];
+              letters.forEach(function (ch) {
+                var span = document.createElement("span");
+                span.className = "ae-letter";
+                span.textContent = ch;
+                container.appendChild(span);
+                letterEls.push(span);
+              });
+            });
+
+            var rowEls = [];
+            HFProps.rebuild(rowsWrap, function (container) {
+              rowEls = [];
+              for (var i = 0; i < pairCount; i++) {
+                var row = document.createElement("div");
+                row.className = "ae-row";
+                var badge = document.createElement("div");
+                badge.className = "ae-row-badge";
+                badge.textContent = letters[i];
+                var rowColor = ACCENT_ROTATION[i % ACCENT_ROTATION.length];
+                badge.style.borderColor = rowColor;
+                badge.style.color = rowColor;
+                var word = document.createElement("div");
+                word.className = "ae-row-word";
+                row.appendChild(badge);
+                row.appendChild(word);
+                container.appendChild(row);
+                rowEls.push({ el: row, badge: badge, word: word, text: props.expansion[i], color: rowColor });
+              }
+            });
+
+            function applySizes() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              letterEls.forEach(function (span) {
+                span.style.fontSize = letterSizeCqmin * rootMin + "px";
+              });
+              var boxWidth = stage.clientWidth - stage.clientWidth * 0.16 - badgeSizeCqmin * rootMin - 0.4 * rootMin * 26;
+              rowEls.forEach(function (row) {
+                row.badge.style.width = badgeSizeCqmin * rootMin + "px";
+                row.badge.style.height = badgeSizeCqmin * rootMin + "px";
+                row.badge.style.fontSize = badgeSizeCqmin * rootMin * 0.44 + "px";
+                HFTextFit.fitOrTruncate(row.word, row.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 600,
+                  maxWidth: Math.max(80, boxWidth),
+                  maxHeight: wordSizeCqmin * rootMin * 1.2 + 4,
+                  baseSize: wordSizeCqmin * rootMin,
+                  minSize: 14,
+                  maxLines: 1,
+                });
+              });
+            }
+
+            applySizes();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(applySizes);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.3));
+            var firstExpandAt = Math.min(Math.max(props.expand_at, revealAt + 0.4), Math.max(0, duration - 0.2));
+            var stagger = props.letter_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(
+              acronymWrap,
+              { opacity: 0, y: 16 },
+              { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+              revealAt
+            );
+
+            rowEls.forEach(function (row, i) {
+              var at = Math.min(firstExpandAt + i * stagger, Math.max(0, duration - 0.15));
+              tl.fromTo(
+                row.el,
+                { opacity: 0, x: -16 },
+                { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" },
+                at
+              );
+              if (letterEls[i]) {
+                tl.fromTo(
+                  letterEls[i],
+                  { color: "var(--hf-fg, #f4f5f7)" },
+                  { color: row.color, duration: 0.35, ease: "power1.out" },
+                  at
+                );
+              }
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["acronym-expander"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

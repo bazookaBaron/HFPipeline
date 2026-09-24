@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<!--
+  form-stepper -- HyperFrames sub-composition (software mockup)
+
+  A multi-step form UI: a numbered step indicator with a connecting track
+  that fills as it advances, and a panel below showing the CURRENT step's
+  title + skeleton field rows, swapped (clear/rebuild) at each step
+  transition.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("form-stepper"). Every per-instance
+  difference comes through data-composition-variables, resolved via
+  lib/props.js.
+
+  Variables:
+    - steps           (list): pipe-separated step labels, e.g.
+                      "Account|Profile|Payment|Confirm".
+    - fields_per_step (number, 1-4): skeleton field rows shown per step.
+    - accent          (enum): track-fill progress-bar color only (chrome,
+                      not per-item). Opt-in only. Each numbered step circle
+                      instead rotates through the content-distinguishing
+                      accent tokens (accent/accent-2/accent-3/accent-4/brand)
+                      -- see STEP_ROTATION in the script below, same
+                      sanctioned per-item pattern as mini-legend.html.
+    - start_at        (number, seconds): when step 1 becomes active.
+    - step_duration   (number, seconds): how long each step is shown before
+                      advancing to the next.
+    - duration        (number, seconds): total instance length.
+
+  Registers window.__timelines["form-stepper"] under the literal key.
+-->
+<html lang="en" data-composition-id="form-stepper" data-composition-duration="8" data-composition-variables="[
+    { &quot;id&quot;: &quot;steps&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Steps&quot;, &quot;description&quot;: &quot;Pipe-separated step labels.&quot;, &quot;default&quot;: &quot;Account|Profile|Payment|Confirm&quot; },
+    { &quot;id&quot;: &quot;fields_per_step&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Fields per step&quot;, &quot;description&quot;: &quot;Skeleton field rows shown per step.&quot;, &quot;default&quot;: 2, &quot;min&quot;: 1, &quot;max&quot;: 4, &quot;step&quot;: 1 },
+    { &quot;id&quot;: &quot;accent&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Accent&quot;, &quot;description&quot;: &quot;Track-fill progress-bar color only (chrome, not per-item -- each step circle rotates its own color instead). Opt-in only; default is the fixed brand accent.&quot;, &quot;default&quot;: &quot;brand&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;brand&quot;, &quot;label&quot;: &quot;Brand&quot; }, { &quot;value&quot;: &quot;accent&quot;, &quot;label&quot;: &quot;Accent&quot; }, { &quot;value&quot;: &quot;accent-2&quot;, &quot;label&quot;: &quot;Accent 2&quot; }, { &quot;value&quot;: &quot;accent-3&quot;, &quot;label&quot;: &quot;Accent 3&quot; }, { &quot;value&quot;: &quot;accent-4&quot;, &quot;label&quot;: &quot;Accent 4&quot; }] },
+    { &quot;id&quot;: &quot;start_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Start at&quot;, &quot;description&quot;: &quot;Seconds from mount when step 1 becomes active.&quot;, &quot;default&quot;: 0.4, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;step_duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Step duration&quot;, &quot;description&quot;: &quot;Seconds each step is shown before advancing.&quot;, &quot;default&quot;: 1.8, &quot;min&quot;: 0.6, &quot;max&quot;: 6, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays.&quot;, &quot;default&quot;: 8, &quot;min&quot;: 2, &quot;max&quot;: 30, &quot;step&quot;: 0.1 }
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <title>Form Stepper</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="form-stepper" data-duration="8" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .fs-card {
+            width: 100%;
+            height: 100%;
+            max-width: 118cqh;
+            border-radius: calc(var(--hf-radius, 16px) * 1.25);
+            background: var(--hf-surface, #16181c);
+            box-shadow: 0 4cqh 10cqh rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            padding: 6cqmin 5.4cqmin;
+            gap: 6cqmin;
+          }
+          .fs-indicator {
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex: 0 0 auto;
+          }
+          .fs-track {
+            position: absolute;
+            left: 4.6cqmin;
+            right: 4.6cqmin;
+            top: 50%;
+            height: 0.6cqmin;
+            background: var(--hf-border, #2c2f36);
+            border-radius: 999px;
+            transform: translateY(-50%);
+            z-index: 0;
+          }
+          .fs-track-fill {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--fs-accent, var(--hf-brand, #6ea8fe));
+            border-radius: 999px;
+          }
+          .fs-step {
+            position: relative;
+            z-index: 1;
+            width: 9.2cqmin;
+            height: 9.2cqmin;
+            border-radius: 50%;
+            background: var(--hf-surface-2, #1e2126);
+            border: 0.5cqmin solid var(--hf-border, #2c2f36);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 3.4cqmin;
+            color: var(--hf-muted, #9aa1ad);
+            transition: background 0.25s, border-color 0.25s, color 0.25s;
+          }
+          .fs-step.fs-active {
+            background: var(--fs-item-accent, var(--hf-brand, #6ea8fe));
+            border-color: var(--fs-item-accent, var(--hf-brand, #6ea8fe));
+            color: #0b0d10;
+          }
+          .fs-step.fs-done {
+            background: var(--hf-surface-2, #1e2126);
+            border-color: var(--fs-item-accent, var(--hf-brand, #6ea8fe));
+            color: var(--fs-item-accent, var(--hf-brand, #6ea8fe));
+          }
+          .fs-panel {
+            flex: 1;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 3.6cqmin;
+          }
+          .fs-step-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .fs-fields {
+            display: flex;
+            flex-direction: column;
+            gap: 2.8cqmin;
+          }
+          .fs-field {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2cqmin;
+            opacity: 0;
+            transform: translateY(1.2cqmin);
+          }
+          .fs-field-label {
+            height: 1.6cqmin;
+            width: 32%;
+            border-radius: 999px;
+            background: var(--hf-surface-2, #1e2126);
+          }
+          .fs-field-input {
+            height: 6.4cqmin;
+            border-radius: var(--hf-radius-sm, 10px);
+            background: var(--hf-bg, #0b0d10);
+            border: 1px solid var(--hf-border, #2c2f36);
+          }
+        </style>
+
+        <div class="fs-card" id="fs-card">
+          <div class="fs-indicator" id="fs-indicator">
+            <div class="fs-track"><div class="fs-track-fill" id="fs-track-fill"></div></div>
+          </div>
+          <div class="fs-panel">
+            <div class="fs-step-title" id="fs-step-title"></div>
+            <div class="fs-fields" id="fs-fields"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "form-stepper: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              steps: {
+                type: "list",
+                default: ["Account", "Profile", "Payment", "Confirm"],
+                max: 6,
+                delimiter: "|",
+              },
+              fields_per_step: { type: "number", default: 2, min: 1, max: 4 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              start_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              step_duration: { type: "number", default: 1.8, min: 0.6, max: 6 },
+              duration: { type: "number", default: 8, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var indicator = document.getElementById("fs-indicator");
+            var trackFill = document.getElementById("fs-track-fill");
+            var titleEl = document.getElementById("fs-step-title");
+            var fieldsWrap = document.getElementById("fs-fields");
+
+            root.style.setProperty("--fs-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var n = props.steps.length;
+
+            // Per-step accent rotation -- each numbered step circle is a
+            // distinct content item (the sanctioned per-item use case; see
+            // mini-legend.html's SWATCH_ROTATION). The `--fs-accent` var
+            // above (still driven by the `accent` prop) stays reserved for
+            // the single continuous track-fill progress bar, which is not
+            // a per-item element.
+            var STEP_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            // Clear-and-rebuild: step-circle indicators are torn down and
+            // rebuilt from props every mount, same discipline as the field
+            // rows below.
+            var circleEls = [];
+            HFProps.rebuild(indicator, function (container) {
+              // Re-append the track (rebuild cleared it too).
+              var track = document.createElement("div");
+              track.className = "fs-track";
+              var fill = document.createElement("div");
+              fill.className = "fs-track-fill";
+              fill.id = "fs-track-fill";
+              track.appendChild(fill);
+              container.appendChild(track);
+              trackFill = fill;
+
+              circleEls = [];
+              props.steps.forEach(function (label, i) {
+                var circle = document.createElement("div");
+                circle.className = "fs-step";
+                circle.textContent = String(i + 1);
+                circle.style.setProperty("--fs-item-accent", STEP_ROTATION[i % STEP_ROTATION.length]);
+                container.appendChild(circle);
+                circleEls.push(circle);
+              });
+            });
+
+            // Field rows: same generic skeleton set re-used across steps
+            // (this component has no per-step field content), rebuilt once
+            // and re-triggered via opacity/translate on every step change.
+            var fieldEls = [];
+            HFProps.rebuild(fieldsWrap, function (container) {
+              fieldEls = [];
+              for (var i = 0; i < props.fields_per_step; i++) {
+                var field = document.createElement("div");
+                field.className = "fs-field";
+                var flabel = document.createElement("div");
+                flabel.className = "fs-field-label";
+                var finput = document.createElement("div");
+                finput.className = "fs-field-input";
+                field.appendChild(flabel);
+                field.appendChild(finput);
+                container.appendChild(field);
+                fieldEls.push(field);
+              }
+            });
+
+            function fitTitle(text) {
+              var boxWidth = titleEl.parentElement.getBoundingClientRect().width || 600;
+              HFTextFit.fitOrTruncate(titleEl, text, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: boxWidth,
+                maxHeight: 1000,
+                baseSize: Math.max(24, boxWidth * 0.075),
+                minSize: 18,
+                maxLines: 1,
+              });
+            }
+
+            fitTitle(props.steps[0] || "Step 1");
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function () {
+                fitTitle(titleEl.dataset.current || props.steps[0] || "Step 1");
+              });
+            }
+
+            var duration = props.duration;
+            var startAt = Math.min(props.start_at, Math.max(0, duration - 0.4));
+            var stepDur = props.step_duration;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(root, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0);
+
+            for (var i = 0; i < n; i++) {
+              var at = Math.min(startAt + i * stepDur, Math.max(0, duration - 0.15));
+              (function (stepIndex, atTime) {
+                tl.call(
+                  function () {
+                    circleEls.forEach(function (c, ci) {
+                      c.className = "fs-step" + (ci === stepIndex ? " fs-active" : ci < stepIndex ? " fs-done" : "");
+                    });
+                    titleEl.dataset.current = props.steps[stepIndex] || "Step " + (stepIndex + 1);
+                    fitTitle(titleEl.dataset.current);
+                  },
+                  null,
+                  atTime
+                );
+                tl.to(trackFill, { width: n > 1 ? (stepIndex / (n - 1)) * 100 + "%" : "100%", duration: 0.4, ease: "power2.out" }, atTime);
+                fieldEls.forEach(function (field, fi) {
+                  tl.fromTo(
+                    field,
+                    { opacity: 0, y: 10 },
+                    { opacity: 1, y: 0, duration: 0.3, ease: "power2.out" },
+                    atTime + 0.1 + fi * 0.08
+                  );
+                  // Fade the field back down just before the NEXT step's
+                  // reveal so it never looks stacked with the swapped-in
+                  // content (clear/rebuild-in-time, not just in DOM).
+                  var nextAt = Math.min(atTime + stepDur - 0.15, Math.max(0, duration - 0.05));
+                  if (stepIndex < n - 1 && nextAt > atTime + 0.3) {
+                    tl.to(field, { opacity: 0, y: -6, duration: 0.2, ease: "power1.in" }, nextAt);
+                  }
+                });
+              })(i, at);
+            }
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["form-stepper"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

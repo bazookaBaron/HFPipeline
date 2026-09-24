@@ -1,0 +1,57 @@
+[   0.00-   1.02] Git@0.00 WorkTree's@0.18 explained.@0.68
+[   1.32-   3.02] A@1.32 Git@1.46 repository@1.66 has@2.04 two@2.46 parts.@2.66
+[   3.18-   6.58] The@3.18 Git@3.36 database,@3.52 which@4.12 holds@4.30 commits,@4.50 branches,@5.00 history,@5.50 and@5.98 objects.@6.20
+[   6.84-   9.94] And@6.84 the@7.02 working@7.08 tree,@7.34 the@7.76 actual@7.98 folder@8.30 of@8.72 files@8.90 you@9.14 see@9.36 and@9.56 edit.@9.68
+[  10.10-  12.36] Normally,@10.10 one@10.48 repository@10.64 means@11.14 one@11.54 working@11.76 tree.@12.12
+[  12.48-  14.06] Say@12.48 you're@12.62 on@12.80 main@12.86 and@13.08 want@13.22 to@13.34 work@13.44 on@13.58 a@13.72 feature.@13.80
+[  14.26-  17.24] You@14.26 create@14.56 a@14.74 branch@14.92 with@15.16 git@15.34 switch@15.54 dash@15.76 c@16.14 feature@16.40 auth.@16.92
+[  17.38-  18.74] Your@17.38 folder@17.56 switches@17.80 to@18.10 that@18.30 branch.@18.46
+[  18.94-  22.42] But@18.94 what@19.10 if@19.22 you@19.34 want@19.42 main@19.60 open@19.82 and@20.08 feature@20.44 auth@20.70 open@21.02 at@21.32 the@21.76 same@21.86 time?@22.06
+[  22.52-  25.62] Normally,@22.52 you'd@22.86 keep@23.04 switching@23.20 branches@23.54 or@23.92 clone@24.20 the@24.44 whole@24.58 repository@24.70 again.@25.16
+[  25.94-  27.28] WorkTree's@25.94 give@26.34 you@26.48 a@26.64 better@26.72 option.@26.92
+[  27.28-  32.18] You@27.28 run@27.82 git@27.96 worktree@28.22 add,@28.64 pointing@29.06 to@29.30 a@29.48 sibling@29.60 folder@29.84 called@30.20 auth@30.44 on@30.80 the@31.16 branch@31.30 feature@31.52 auth.@31.80
+[  32.38-  33.46] Git@32.38 creates@32.60 that@32.88 folder.@33.14
+[  33.62-  35.18] Your@33.62 original@33.78 folder@34.06 stays@34.40 on@34.68 main.@34.94
+[  35.32-  36.70] The@35.32 new@35.58 one@35.72 is@35.86 on@36.00 feature@36.12 auth.@36.42
+[  36.88-  39.30] Two@36.88 folders,@37.04 two@37.58 branches,@37.70 one@38.22 repository@38.36 underneath.@38.84
+[  39.60-  40.48] And@39.60 you@39.76 can@39.84 keep@40.00 going.@40.18
+[  40.72-  42.70] A@40.72 billing@40.98 folder@41.22 on@41.48 the@41.76 feature@41.84 billing@42.08 branch.@42.34
+[  42.92-  45.18] A@42.92 dashboard@43.10 folder@43.46 on@43.82 the@44.08 feature@44.14 dashboard@44.38 branch.@44.66
+[  45.44-  48.58] Three@45.44 independent@45.74 working@46.10 directories@46.48 all@47.12 connected@47.28 to@47.64 the@47.88 same@47.94 repository.@48.18
+[  48.66-  49.62] Here's@48.66 the@49.12 key@49.22 part.@49.38
+[  49.82-  52.08] Git@49.82 doesn't@50.00 duplicate@50.34 the@50.66 full@50.98 history@51.16 each@51.50 time.@51.78
+[  52.48-  54.36] WorkTree's@52.48 share@52.96 the@53.16 same@53.32 object@53.56 database.@53.92
+[  54.60-  57.26] So@54.60 commits,@54.84 objects,@55.34 and@55.78 most@55.98 of@56.14 the@56.28 history@56.38 are@56.64 reused.@56.88
+[  57.28-  59.44] Only@57.28 the@57.80 working@58.00 files@58.30 are@58.56 duplicated.@58.86
+[  59.56-  61.90] That@59.56 makes@59.76 WorkTree's@59.98 lighter@60.52 than@60.76 multiple@60.98 full@61.30 clones.@61.58
+[  62.16-  62.88] But@62.16 they're@62.40 not@62.50 free.@62.62
+[  63.12-  68.18] Huge@63.12 generated@63.60 files@63.92 or@64.36 a@64.78 node@64.92 modules@65.14 folder@65.46 in@65.86 every@66.08 WorkTree@66.30 can@66.72 still@66.90 eat@67.18 disk@67.36 space@67.62 fast.@67.88
+[  68.50-  69.54] Why@68.50 does@68.68 this@68.84 feature@69.00 exist?@69.22
+[  69.94-  73.14] Because@69.94 sometimes@70.26 you@70.58 genuinely@70.90 need@71.26 multiple@71.58 branches@71.82 checked@72.24 out@72.58 at@72.78 once.@72.90
+[  73.32-  75.40] You're@73.32 halfway@73.52 through@73.78 a@74.00 big@74.12 feature@74.28 and@74.62 production@74.76 breaks.@75.04
+[  75.66-  77.46] Without@75.66 WorkTree's,@76.06 you@76.70 stash@76.78 everything.@77.10
+[  77.68-  79.32] Switch,@77.68 fix@78.12 the@78.30 bug,@78.50 and@78.80 switch@78.90 back.@79.08
+[  79.58-  81.50] With@79.58 WorkTree's,@79.76 you@80.34 leave@80.42 your@80.56 feature@80.70 untouched.@80.94
+[  81.52-  83.58] Open@81.52 another@81.72 folder@81.96 already@82.32 on@82.62 the@82.84 hotfix@82.94 branch.@83.32
+[  83.76-  86.08] Fix@83.76 production@83.98 and@84.30 return@84.72 exactly@84.94 where@85.38 you@85.76 were.@85.90
+[  86.24-  87.26] And@86.24 this@86.40 is@86.52 where@86.64 WorkTree's...@86.80
+[  87.28-  88.16] became@87.28 useful@87.46 again.@87.82
+[  88.28-  89.34] AI@88.28 coding@88.60 agents.@88.90
+[  89.58-  91.12] Imagine@89.58 three@90.02 agents@90.36 at@90.72 once.@90.90
+[  91.28-  92.08] One@91.28 builds@91.46 authentication.@91.68
+[  92.50-  93.44] One@92.50 fixes@92.80 billing.@93.12
+[  93.64-  94.92] One@93.64 redesigns@93.90 the@94.50 dashboard.@94.58
+[  95.24-  99.82] In@95.24 a@95.36 single@95.46 working@95.72 directory,@95.98 they'd@96.50 edit@96.68 the@96.86 same@97.00 files,@97.18 switch@97.74 branches@97.94 under@98.36 each@98.56 other,@98.74 and@99.06 make@99.32 a@99.48 mess.@99.60
+[ 100.02- 101.90] Instead,@100.02 give@100.46 each@100.62 agent@100.82 its@101.12 own@101.28 WorkTree.@101.42
+[ 102.02- 105.80] One@102.02 repository,@102.42 three@103.14 folders,@103.26 three@103.74 branches,@103.90 three@104.42 isolated@104.66 workspaces.@105.12
+[ 105.98- 108.52] Each@105.98 agent@106.24 edits,@106.56 runs@107.02 tests,@107.20 and@107.70 commits@107.88 independently.@108.14
+[ 108.90- 111.14] When@108.90 they're@109.18 done,@109.32 you@109.64 merge@109.72 their@109.94 branches@110.10 back@110.46 into@110.72 main.@110.94
+[ 111.36- 112.82] Merge@111.36 conflicts@111.60 can@111.96 still@112.22 happen.@112.46
+[ 112.94- 115.82] If@112.94 two@113.14 branches@113.28 change@113.58 the@113.88 same@114.14 lines,@114.30 Git@114.74 still@114.92 needs@115.10 that@115.30 resolved.@115.50
+[ 115.82- 117.86] WorkTree's@115.82 don't@116.74 solve@116.98 merge@117.18 conflicts.@117.44
+[ 118.02- 119.10] They@118.02 solve@118.20 something@118.42 different.@118.70
+[ 119.20- 122.76] Letting@119.20 multiple@119.48 branches@119.74 exist@120.16 as@120.58 real@120.84 editable@121.08 folders@121.54 at@121.90 the@122.16 same@122.24 time.@122.44
+[ 122.90- 123.76] That's@122.90 the@123.18 mental@123.24 model.@123.46
+[ 123.90- 125.78] Branches@123.90 give@124.28 you@124.46 multiple@124.62 versions@124.86 of@125.24 history.@125.50
+[ 126.10- 128.86] WorkTree's@126.10 let@126.58 you@126.70 materialize@126.80 several@127.40 of@127.72 them@127.88 on@128.02 disk@128.18 at@128.38 once.@128.56
+[ 129.06- 134.10] And@129.06 AI@129.36 agents@129.64 just@130.04 happen@130.24 to@130.42 be@130.62 one@130.74 of@130.90 the@131.00 best@131.04 modern@131.28 reasons@131.60 to@131.88 use@132.14 a@132.30 Git@132.42 feature@132.56 that's@132.84 been@133.10 sitting@133.22 there@133.48 for@133.64 years.@133.82

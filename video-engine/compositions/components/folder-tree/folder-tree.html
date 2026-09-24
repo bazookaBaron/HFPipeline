@@ -1,0 +1,384 @@
+<!doctype html>
+<!--
+  folder-tree -- HyperFrames sub-composition (Software mockups)
+
+  A vertical stack of folder cards for git/filesystem-structure explainers:
+  a folder icon, a folder name (e.g. "auth/"), an optional colored
+  branch-tag pill (e.g. "feature/auth"), and an optional secondary info
+  line (e.g. "node_modules/ · dist/"). Cards stagger in top to bottom.
+
+  Frame-filling (README hard rule, same pattern as content-panel.html's
+  count<=2 branch and kpi-cluster.html's card-count branch): fewer folders
+  means bigger cards with more breathing room, never a small cluster
+  marooned in a big empty frame.
+
+  Branch-tag pill color: an opt-in per-item `branchColor` (a CSS color
+  string). When omitted, it rotates deterministically through the
+  --hf-accent* content-distinguishing set by folder INDEX -- content items
+  (each folder's own tag) telling themselves apart, matching the README's
+  accent-vs-chrome rule (the folder ICON stays the one fixed brand hue,
+  since it's chrome, not a distinguishable content item).
+
+  Cards are built ONCE via HFProps.rebuild from the resolved `folders`
+  list before the GSAP timeline captures references to each card (see
+  heatmap-matrix.html's header comment for the bug class this avoids).
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("folder-tree"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="folder-tree"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "folders", "type": "string", "role": "content", "label": "Folders", "description": "JSON array of {name, branchTag?, branchColor?, secondaryLine?} objects, 2-5 items.", "default": "[{\"name\":\"auth/\",\"branchTag\":\"feature/auth\",\"secondaryLine\":\"12 files · updated 2h ago\"},{\"name\":\"api/\",\"branchTag\":\"main\",\"secondaryLine\":\"node_modules/ · dist/\"},{\"name\":\"ui-components/\",\"branchTag\":\"feature/redesign\",\"secondaryLine\":\"38 files · updated just now\"}]" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Folder icon color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the first card reveals.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "item_stagger", "type": "number", "role": "timing", "label": "Item stagger", "description": "Seconds between successive card reveals.", "default": 0.35, "min": 0.05, "max": 2, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Folder Tree</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="folder-tree" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .ft-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 7cqmin 8cqmin;
+          }
+          .ft-list {
+            display: flex;
+            flex-direction: column;
+          }
+          .ft-card {
+            display: flex;
+            align-items: center;
+            gap: 3cqmin;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            border-radius: 1.8cqmin;
+            opacity: 0;
+            transform: translateY(2.4cqmin);
+          }
+          .ft-icon-wrap {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .ft-icon-wrap svg {
+            display: block;
+          }
+          .ft-body {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+          }
+          .ft-top-row {
+            display: flex;
+            align-items: center;
+            min-width: 0;
+          }
+          .ft-name {
+            font-weight: 700;
+            color: var(--hf-fg, #f4f5f7);
+            white-space: nowrap;
+            overflow: hidden;
+            flex: 0 1 auto;
+            min-width: 0;
+          }
+          .ft-branch {
+            flex: 0 0 auto;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            border-radius: 999px;
+            color: #0b0d10;
+          }
+          .ft-secondary {
+            color: var(--hf-muted, #9aa1ad);
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        </style>
+
+        <div class="ft-stage" id="ft-stage">
+          <div class="ft-list" id="ft-list"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "folder-tree: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var DEFAULT_FOLDERS = [
+              { name: "auth/", branchTag: "feature/auth", branchColor: "", secondaryLine: "12 files · updated 2h ago" },
+              { name: "api/", branchTag: "main", branchColor: "", secondaryLine: "node_modules/ · dist/" },
+              { name: "ui-components/", branchTag: "feature/redesign", branchColor: "", secondaryLine: "38 files · updated just now" },
+            ];
+
+            var ROTATION = ["accent", "accent-2", "accent-3", "accent-4"];
+
+            var SCHEMA = {
+              folders: { type: "list", default: DEFAULT_FOLDERS, max: 5, delimiter: "|" },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              item_stagger: { type: "number", default: 0.35, min: 0.05, max: 2 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("ft-stage");
+            var list = document.getElementById("ft-list");
+
+            root.style.setProperty("--ft-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Normalize every folder entry independently -- never a silent
+            // partial object (same discipline as kpi-cluster.html's
+            // normalizeKpi / world-map-panel.html's normalizePoint).
+            function normalizeFolder(raw, i) {
+              raw = raw && typeof raw === "object" ? raw : {};
+              var fallback = DEFAULT_FOLDERS[i % DEFAULT_FOLDERS.length];
+              var name = typeof raw.name === "string" && raw.name.trim() ? raw.name.trim() : fallback.name;
+              var branchTag = typeof raw.branchTag === "string" ? raw.branchTag.trim() : fallback.branchTag;
+              var branchColor =
+                typeof raw.branchColor === "string" && /^(#|rgb|hsl|var\()/i.test(raw.branchColor.trim())
+                  ? raw.branchColor.trim()
+                  : "";
+              var secondaryLine = typeof raw.secondaryLine === "string" ? raw.secondaryLine.trim() : fallback.secondaryLine;
+              return { name: name, branchTag: branchTag, branchColor: branchColor, secondaryLine: secondaryLine };
+            }
+
+            var folders = props.folders.slice(0, 5).map(normalizeFolder);
+            if (folders.length < 2) {
+              folders = DEFAULT_FOLDERS.map(normalizeFolder);
+            }
+
+            // Frame-filling: fewer folders -> bigger cards, more type, more
+            // breathing room (README hard rule).
+            var count = folders.length;
+            var cardPadCqmin = count <= 2 ? 4.4 : count === 3 ? 3.6 : count === 4 ? 3 : 2.5;
+            var iconCqmin = count <= 2 ? 9 : count === 3 ? 7.4 : count === 4 ? 6.2 : 5.2;
+            var nameCqmin = count <= 2 ? 4.2 : count === 3 ? 3.5 : count === 4 ? 3 : 2.6;
+            var branchCqmin = count <= 2 ? 2.4 : count === 3 ? 2.1 : count === 4 ? 1.85 : 1.65;
+            var secondaryCqmin = count <= 2 ? 2.6 : count === 3 ? 2.3 : count === 4 ? 2 : 1.75;
+            var gapCqmin = count <= 2 ? 4.2 : count === 3 ? 3.2 : count === 4 ? 2.5 : 2;
+            list.style.gap = gapCqmin + "cqmin";
+
+            function folderIconSvg(sizeCqmin) {
+              return (
+                '<svg width="' +
+                sizeCqmin +
+                'cqmin" height="' +
+                sizeCqmin * 0.8 +
+                'cqmin" viewBox="0 0 48 40" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+                '<path d="M4 8C4 5.79086 5.79086 4 8 4H18L22 9H40C42.2091 9 44 10.7909 44 13V32C44 34.2091 42.2091 36 40 36H8C5.79086 36 4 34.2091 4 32V8Z" ' +
+                'fill="var(--ft-accent, var(--hf-brand, #6ea8fe))" fill-opacity="0.22" ' +
+                'stroke="var(--ft-accent, var(--hf-brand, #6ea8fe))" stroke-width="2.4"/>' +
+                "</svg>"
+              );
+            }
+
+            var cardEls = [];
+            HFProps.rebuild(list, function (container) {
+              cardEls = [];
+              folders.forEach(function (folder, i) {
+                var card = document.createElement("div");
+                card.className = "ft-card";
+                card.style.padding = cardPadCqmin + "cqmin " + cardPadCqmin * 1.15 + "cqmin";
+                card.style.gap = cardPadCqmin * 0.85 + "cqmin";
+
+                var iconWrap = document.createElement("div");
+                iconWrap.className = "ft-icon-wrap";
+                iconWrap.innerHTML = folderIconSvg(iconCqmin);
+
+                var body = document.createElement("div");
+                body.className = "ft-body";
+                body.style.gap = secondaryCqmin * 0.4 + "cqmin";
+
+                var topRow = document.createElement("div");
+                topRow.className = "ft-top-row";
+                topRow.style.gap = branchCqmin * 0.9 + "cqmin";
+
+                var nameEl = document.createElement("span");
+                nameEl.className = "ft-name";
+                nameEl.style.fontSize = nameCqmin + "cqmin";
+
+                topRow.appendChild(nameEl);
+
+                var branchEl = null;
+                if (folder.branchTag) {
+                  branchEl = document.createElement("span");
+                  branchEl.className = "ft-branch";
+                  branchEl.style.fontSize = branchCqmin + "cqmin";
+                  branchEl.style.padding = branchCqmin * 0.5 + "cqmin " + branchCqmin * 1.1 + "cqmin";
+                  var color = folder.branchColor || "var(--hf-" + ROTATION[i % ROTATION.length] + ", #71f5a7)";
+                  branchEl.style.background = color;
+                  branchEl.textContent = folder.branchTag;
+                  topRow.appendChild(branchEl);
+                }
+
+                body.appendChild(topRow);
+
+                var secondaryEl = null;
+                if (folder.secondaryLine) {
+                  secondaryEl = document.createElement("div");
+                  secondaryEl.className = "ft-secondary";
+                  secondaryEl.style.fontSize = secondaryCqmin + "cqmin";
+                  body.appendChild(secondaryEl);
+                }
+
+                card.appendChild(iconWrap);
+                card.appendChild(body);
+                container.appendChild(card);
+
+                cardEls.push({ el: card, iconWrap: iconWrap, nameEl: nameEl, branchEl: branchEl, secondaryEl: secondaryEl, folder: folder });
+              });
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              cardEls.forEach(function (card) {
+                var nameMax = card.el.clientWidth * (card.branchEl ? 0.42 : 0.7) || 200;
+                HFTextFit.fitOrTruncate(card.nameEl, card.folder.name, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: nameMax,
+                  maxHeight: 1000,
+                  baseSize: nameCqmin * rootMin,
+                  minSize: 13,
+                  maxLines: 1,
+                });
+                if (card.branchEl) {
+                  HFTextFit.fitOrTruncate(card.branchEl, card.folder.branchTag, {
+                    family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                    weight: 700,
+                    maxWidth: card.el.clientWidth * 0.4 || 160,
+                    maxHeight: 1000,
+                    baseSize: branchCqmin * rootMin,
+                    minSize: 10,
+                    maxLines: 1,
+                  });
+                }
+                if (card.secondaryEl) {
+                  HFTextFit.fitOrTruncate(card.secondaryEl, card.folder.secondaryLine, {
+                    family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                    weight: 500,
+                    maxWidth: card.el.clientWidth * 0.86 || 300,
+                    maxHeight: 1000,
+                    baseSize: secondaryCqmin * rootMin,
+                    minSize: 11,
+                    maxLines: 1,
+                  });
+                }
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.4));
+            var stagger = props.item_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            cardEls.forEach(function (card, i) {
+              var at = Math.min(revealAt + i * stagger, Math.max(0, duration - 0.3));
+              tl.fromTo(
+                card.el,
+                { opacity: 0, y: 22 },
+                { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+                at
+              );
+
+              // Icon badge pop -- a punchier, bouncier entrance for the folder
+              // icon than the card's own plain slide/fade, landing a beat
+              // after the card starts so the icon reads as its own distinct
+              // micro-event ("clicking into place") instead of just riding
+              // along with the card's opacity.
+              var iconAt = Math.min(at + 0.12, Math.max(0, duration - 0.2));
+              tl.fromTo(
+                card.iconWrap,
+                { scale: 0.5, opacity: 0 },
+                { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.5)" },
+                iconAt
+              );
+
+              // Branch-tag pill pop -- its own bouncy beat, a touch after the
+              // icon, so each card reads as three staggered micro-events
+              // (card slide, icon pop, pill pop) rather than one flat block.
+              if (card.branchEl) {
+                var branchAt = Math.min(at + 0.2, Math.max(0, duration - 0.15));
+                tl.fromTo(
+                  card.branchEl,
+                  { scale: 0.6, opacity: 0 },
+                  { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(3)" },
+                  branchAt
+                );
+              }
+
+              // Settle micro-bounce -- a brief overshoot correction right
+              // after the card's main slide-in lands, for a less flat stop.
+              // Finite yoyo (repeat:1), never a loop.
+              var settleAt = Math.min(at + 0.45, Math.max(0, duration - 0.05));
+              tl.fromTo(
+                card.el,
+                { y: 0 },
+                { y: -3, duration: 0.12, yoyo: true, repeat: 1, ease: "power1.out" },
+                settleAt
+              );
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["folder-tree"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

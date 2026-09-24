@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "kpi-cluster",
+  "type": "hyperframes:component",
+  "title": "KPI Cluster",
+  "description": "A headline + 2-4 KPI cards (big count-up number + label + trend arrow) in a row, frame-filling as card count goes down.",
+  "tags": ["data", "metrics", "kpi", "count-up", "dashboard"],
+  "category": "data",
+  "files": [
+    {
+      "path": "kpi-cluster.html",
+      "target": "compositions/components/kpi-cluster/kpi-cluster.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "kpis", "type": "string", "default": "[{\"label\":\"Active Users\",\"value\":128000,\"suffix\":\"+\",\"decimals\":0,\"trend\":\"up\"},{\"label\":\"Uptime\",\"value\":99.95,\"suffix\":\"%\",\"decimals\":2,\"trend\":\"flat\"},{\"label\":\"P95 Latency\",\"value\":42,\"suffix\":\"ms\",\"decimals\":0,\"trend\":\"down\"}]" },
+    { "id": "title", "type": "string", "default": "The numbers" },
+    { "id": "title_reveal_at", "type": "number", "default": 0 },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "card_stagger", "type": "number", "default": 0.25 },
+    { "id": "count_duration", "type": "number", "default": 1.1 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

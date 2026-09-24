@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "mini-legend",
+  "type": "hyperframes:component",
+  "title": "Mini Legend",
+  "description": "A small, compact legend (color swatch + label pairs) for a chart or diagram shown elsewhere on screen, positioned toward one corner of the frame. Swatches rotate through the content-distinguishing accent tokens.",
+  "tags": ["annotation", "legend", "chart", "diagram", "foundation"],
+  "category": "annotation",
+  "files": [
+    {
+      "path": "mini-legend.html",
+      "target": "compositions/components/mini-legend/mini-legend.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "Legend" },
+    { "id": "show_title", "type": "boolean", "default": true },
+    { "id": "items", "type": "string", "default": "Revenue|Costs|Profit" },
+    { "id": "corner", "type": "enum", "default": "top-right", "options": ["top-left", "top-right", "bottom-left", "bottom-right", "center"] },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "item_stagger", "type": "number", "default": 0.18 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "duration", "type": "number", "default": 5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

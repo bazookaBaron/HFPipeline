@@ -1,0 +1,247 @@
+<!doctype html>
+<!--
+  camera-push-transition -- HyperFrames sub-composition (Editing / transitions)
+
+  A reusable scale/zoom "push in" transition wrapper: holds a "before"
+  statement, then at push_at punches through it (fast scale-up + blur +
+  fade, plus a quick accent flash at the cut) into an "after" statement
+  that settles in from a slightly larger scale. Proves the pattern
+  generalizes to a pure transition-effect component, not just a
+  text/card layout.
+
+  Both states + the flash overlay are static markup (no dynamic list),
+  so there's no clear/rebuild concern -- only the usual text-fit +
+  HFProps.resolve rules apply, exactly like every other component here.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("camera-push-transition");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="camera-push-transition"
+  data-composition-duration="4.5"
+  data-composition-variables='[
+    { "id": "before_title", "type": "string", "role": "content", "label": "Before title", "description": "The outgoing statement.", "default": "Before: one giant monolith" },
+    { "id": "before_subtitle", "type": "string", "role": "content", "label": "Before subtitle", "description": "Optional smaller line under the before title.", "default": "Every team ships through the same release train." },
+    { "id": "after_title", "type": "string", "role": "content", "label": "After title", "description": "The incoming statement.", "default": "After: independent services" },
+    { "id": "after_subtitle", "type": "string", "role": "content", "label": "After subtitle", "description": "Optional smaller line under the after title.", "default": "Each team deploys on its own schedule." },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Cut-flash + subtitle rule color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "push_at", "type": "number", "role": "timing", "label": "Push at", "description": "Seconds from mount when the push transition cuts from before to after.", "default": 1.5, "min": 0.3, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 4.5, "min": 1.5, "max": 20, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Camera Push Transition</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="camera-push-transition" data-duration="4.5" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+            overflow: hidden;
+          }
+          .cpt-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+          }
+          .cpt-state {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2.6cqmin;
+            padding: 10cqmin;
+            opacity: 0;
+            will-change: transform, opacity, filter;
+          }
+          .cpt-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            line-height: 1.16;
+            text-align: center;
+          }
+          .cpt-subtitle {
+            font-weight: 500;
+            line-height: 1.3;
+            text-align: center;
+            color: var(--hf-muted, #9aa1ad);
+          }
+          .cpt-rule {
+            height: 0.5cqmin;
+            min-height: 3px;
+            width: 14cqmin;
+            border-radius: 999px;
+            background: var(--cpt-accent, var(--hf-brand, #6ea8fe));
+          }
+          .cpt-flash {
+            position: absolute;
+            inset: 0;
+            background: var(--cpt-accent, var(--hf-brand, #6ea8fe));
+            opacity: 0;
+            pointer-events: none;
+            z-index: 5;
+          }
+        </style>
+
+        <div class="cpt-stage" id="cpt-stage">
+          <div class="cpt-state" id="cpt-before">
+            <div class="cpt-title" id="cpt-before-title"></div>
+            <div class="cpt-rule"></div>
+            <div class="cpt-subtitle" id="cpt-before-subtitle"></div>
+          </div>
+          <div class="cpt-state" id="cpt-after">
+            <div class="cpt-title" id="cpt-after-title"></div>
+            <div class="cpt-rule"></div>
+            <div class="cpt-subtitle" id="cpt-after-subtitle"></div>
+          </div>
+          <div class="cpt-flash" id="cpt-flash"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "camera-push-transition: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              before_title: { type: "string", default: "Before: one giant monolith", maxLength: 90 },
+              before_subtitle: {
+                type: "string",
+                default: "Every team ships through the same release train.",
+                maxLength: 140,
+              },
+              after_title: { type: "string", default: "After: independent services", maxLength: 90 },
+              after_subtitle: { type: "string", default: "Each team deploys on its own schedule.", maxLength: 140 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              push_at: { type: "number", default: 1.5, min: 0.3, max: 30 },
+              duration: { type: "number", default: 4.5, min: 1.5, max: 20 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("cpt-stage");
+            var beforeState = document.getElementById("cpt-before");
+            var afterState = document.getElementById("cpt-after");
+            var flash = document.getElementById("cpt-flash");
+            var beforeTitleEl = document.getElementById("cpt-before-title");
+            var beforeSubtitleEl = document.getElementById("cpt-before-subtitle");
+            var afterTitleEl = document.getElementById("cpt-after-title");
+            var afterSubtitleEl = document.getElementById("cpt-after-subtitle");
+
+            root.style.setProperty("--cpt-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxWidth = stage.clientWidth - stage.clientWidth * 0.2;
+
+              [
+                { el: beforeTitleEl, text: props.before_title },
+                { el: afterTitleEl, text: props.after_title },
+              ].forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.el, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 800,
+                  maxWidth: boxWidth,
+                  maxHeight: 7.4 * rootMin * 1.16 * 3,
+                  baseSize: 7.4 * rootMin,
+                  minSize: 22,
+                  lineHeightRatio: 1.16,
+                  maxLines: 3,
+                });
+              });
+
+              [
+                { el: beforeSubtitleEl, text: props.before_subtitle },
+                { el: afterSubtitleEl, text: props.after_subtitle },
+              ].forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.el, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 500,
+                  maxWidth: boxWidth * 0.85,
+                  maxHeight: 3.6 * rootMin * 1.3 * 2,
+                  baseSize: 3.6 * rootMin,
+                  minSize: 15,
+                  lineHeightRatio: 1.3,
+                  maxLines: 2,
+                });
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var pushAt = Math.min(Math.max(props.push_at, 0.6), Math.max(0.6, duration - 0.6));
+
+            var tl = gsap.timeline({ paused: true });
+
+            // Before state settles in.
+            tl.fromTo(
+              beforeState,
+              { opacity: 0, scale: 0.96 },
+              { opacity: 1, scale: 1, duration: 0.4, ease: "power2.out" },
+              0.15
+            );
+
+            // Push-out: before punches forward through the lens (scale up,
+            // blur, fade) right up to the cut.
+            tl.to(
+              beforeState,
+              { scale: 1.32, opacity: 0, filter: "blur(10px)", duration: 0.35, ease: "power2.in" },
+              pushAt - 0.35
+            );
+
+            // The cut itself: a fast accent flash sells the "punch."
+            tl.to(flash, { opacity: 0.6, duration: 0.06, ease: "power1.in" }, pushAt - 0.03);
+            tl.to(flash, { opacity: 0, duration: 0.22, ease: "power1.out" }, pushAt + 0.03);
+
+            // Push-in: after arrives from slightly beyond normal scale,
+            // settling to 1 as the blur clears -- the camera "landing."
+            tl.fromTo(
+              afterState,
+              { opacity: 0, scale: 1.32, filter: "blur(10px)" },
+              { opacity: 1, scale: 1, filter: "blur(0px)", duration: 0.45, ease: "power2.out" },
+              pushAt
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["camera-push-transition"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

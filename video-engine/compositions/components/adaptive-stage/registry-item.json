@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "adaptive-stage",
+  "type": "hyperframes:component",
+  "title": "Adaptive Stage",
+  "description": "Generic full-bleed staging frame: four L-shaped corner-bracket marks around an aspect-adaptive inset area with a centered, text-fit-protected label.",
+  "tags": ["foundation", "frame", "stage", "viewfinder"],
+  "category": "foundation",
+  "files": [
+    {
+      "path": "adaptive-stage.html",
+      "target": "compositions/components/adaptive-stage/adaptive-stage.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "label", "type": "string", "default": "Stage" },
+    { "id": "content_kind", "type": "enum", "default": "landscape", "options": ["portrait", "landscape", "square"] },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "duration", "type": "number", "default": 5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

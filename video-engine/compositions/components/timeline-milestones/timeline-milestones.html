@@ -1,0 +1,315 @@
+<!doctype html>
+<!--
+  timeline-milestones -- HyperFrames sub-composition (Data / metrics)
+
+  A horizontal timeline: a base rule line grows left-to-right, and N
+  milestone dots positioned evenly along it pop in with a pulse ring and
+  a label (alternating above/below the line to avoid crowding), as if
+  narration is reaching each one in turn.
+
+  The progress fill/line stays the single resolved `accent` (a continuous
+  chrome element, not a content item). Each milestone's own dot+pulse-ring
+  (added in the aesthetic-plan pass) automatically cycles through
+  --hf-accent, -2, -3, -4, then --hf-brand by index instead -- mini-legend.html/
+  folder-tree.html's established "N simultaneous content items" pattern
+  (README "Color discipline"), matching this component's own doc comment
+  example almost exactly.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("timeline-milestones");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="timeline-milestones"
+  data-composition-duration="8"
+  data-composition-variables='[
+    { "id": "title", "type": "string", "role": "content", "label": "Title", "description": "Heading above the timeline.", "default": "Project timeline" },
+    { "id": "milestones", "type": "string", "role": "content", "label": "Milestones", "description": "JSON array of {label} objects, in chronological order, 2-6 items.", "default": "[{\"label\":\"Kickoff\"},{\"label\":\"Design review\"},{\"label\":\"Beta launch\"},{\"label\":\"GA release\"}]" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Line + dot color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the title and line appear.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "milestone_stagger", "type": "number", "role": "timing", "label": "Milestone stagger", "description": "Seconds between successive milestone reveals.", "default": 0.6, "min": 0.15, "max": 3, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 8, "min": 3, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Timeline Milestones</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="timeline-milestones" data-duration="8" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .tm-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 8cqmin;
+            padding: 8cqmin 9cqmin;
+          }
+          .tm-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            opacity: 0;
+            transform: translateY(1.4cqmin);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .tm-track {
+            position: relative;
+            height: 26cqmin;
+          }
+          .tm-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            height: 0.5cqmin;
+            min-height: 3px;
+            width: 100%;
+            background: var(--hf-border, #2c2f36);
+            transform: translateY(-50%) scaleX(0);
+            transform-origin: left center;
+            border-radius: 999px;
+          }
+          .tm-fill {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 0%;
+            background: var(--tm-accent, var(--hf-brand, #6ea8fe));
+            border-radius: 999px;
+          }
+          .tm-node {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.4cqmin;
+          }
+          .tm-node.tm-below {
+            flex-direction: column-reverse;
+          }
+          .tm-dot-wrap {
+            position: relative;
+            width: 3.2cqmin;
+            height: 3.2cqmin;
+            min-width: 12px;
+            min-height: 12px;
+          }
+          .tm-ring {
+            position: absolute;
+            inset: -0.8cqmin;
+            border-radius: 50%;
+            border: 0.4cqmin solid var(--tm-node-accent, var(--tm-accent, var(--hf-brand, #6ea8fe)));
+            opacity: 0;
+          }
+          .tm-dot {
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: var(--tm-node-accent, var(--tm-accent, var(--hf-brand, #6ea8fe)));
+            box-shadow: 0 0 0 4px var(--hf-bg, #0b0d10);
+          }
+          .tm-label {
+            font-weight: 600;
+            color: var(--hf-fg, #f4f5f7);
+            white-space: nowrap;
+            text-align: center;
+          }
+        </style>
+
+        <div class="tm-stage" id="tm-stage">
+          <div class="tm-title" id="tm-title"></div>
+          <div class="tm-track" id="tm-track">
+            <div class="tm-line" id="tm-line">
+              <div class="tm-fill" id="tm-fill"></div>
+            </div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "timeline-milestones: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            // Per-milestone rotation, matching mini-legend.html/folder-tree.html exactly --
+            // real hex fallbacks so this still renders correctly in isolation.
+            var ACCENT_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            var DEFAULT_MILESTONES = [
+              { label: "Kickoff" },
+              { label: "Design review" },
+              { label: "Beta launch" },
+              { label: "GA release" },
+            ];
+
+            var SCHEMA = {
+              title: { type: "string", default: "Project timeline", maxLength: 80 },
+              milestones: { type: "list", default: DEFAULT_MILESTONES, max: 6, delimiter: "|" },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              milestone_stagger: { type: "number", default: 0.6, min: 0.15, max: 3 },
+              duration: { type: "number", default: 8, min: 3, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("tm-stage");
+            var titleEl = document.getElementById("tm-title");
+            var line = document.getElementById("tm-line");
+            var fill = document.getElementById("tm-fill");
+            var track = document.getElementById("tm-track");
+
+            root.style.setProperty("--tm-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            function normalizeMilestone(raw, i) {
+              raw = raw && typeof raw === "object" ? raw : {};
+              var fallback = DEFAULT_MILESTONES[i % DEFAULT_MILESTONES.length];
+              var label = typeof raw.label === "string" && raw.label.trim() ? raw.label.trim() : fallback.label;
+              return { label: label };
+            }
+
+            var milestones = props.milestones.slice(0, 6).map(normalizeMilestone);
+            if (milestones.length < 2) {
+              milestones = DEFAULT_MILESTONES.map(normalizeMilestone);
+            }
+
+            var nodeEls = [];
+            HFProps.rebuild(track, function (container) {
+              // Re-append the line (rebuild clears everything).
+              container.appendChild(line);
+              nodeEls = [];
+              var count = milestones.length;
+              milestones.forEach(function (m, i) {
+                var pct = count === 1 ? 50 : (i / (count - 1)) * 100;
+                var node = document.createElement("div");
+                node.className = "tm-node" + (i % 2 === 1 ? " tm-below" : "");
+                node.style.left = pct + "%";
+                node.style.setProperty("--tm-node-accent", ACCENT_ROTATION[i % ACCENT_ROTATION.length]);
+
+                var dotWrap = document.createElement("div");
+                dotWrap.className = "tm-dot-wrap";
+                var ring = document.createElement("div");
+                ring.className = "tm-ring";
+                var dot = document.createElement("div");
+                dot.className = "tm-dot";
+                dotWrap.appendChild(ring);
+                dotWrap.appendChild(dot);
+
+                var labelEl = document.createElement("div");
+                labelEl.className = "tm-label";
+
+                node.appendChild(dotWrap);
+                node.appendChild(labelEl);
+                container.appendChild(node);
+                nodeEls.push({ el: node, ring: ring, labelEl: labelEl, pct: pct, milestone: m });
+              });
+            });
+
+            // Frame-filling: fewer milestones -> larger label type.
+            var count = milestones.length;
+            var labelSizeCqmin = count <= 2 ? 3.6 : count <= 4 ? 2.9 : 2.4;
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var titleBoxWidth = stage.clientWidth - stage.clientWidth * 0.18;
+
+              HFTextFit.fitOrTruncate(titleEl, props.title, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: titleBoxWidth,
+                maxHeight: 1000,
+                baseSize: 6.2 * rootMin,
+                minSize: 18,
+                maxLines: 1,
+              });
+
+              var slotWidth = track.clientWidth / Math.max(1, count);
+              nodeEls.forEach(function (n) {
+                HFTextFit.fitOrTruncate(n.labelEl, n.milestone.label, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 600,
+                  maxWidth: Math.max(70, slotWidth * 0.92),
+                  maxHeight: 1000,
+                  baseSize: labelSizeCqmin * rootMin,
+                  minSize: 12,
+                  maxLines: 1,
+                });
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.5));
+            var stagger = props.milestone_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(titleEl, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" }, revealAt);
+            tl.to(line, { scaleX: 1, duration: 0.5, ease: "power2.out" }, revealAt + 0.15);
+
+            var nodesStart = revealAt + 0.5;
+            nodeEls.forEach(function (n, i) {
+              var at = Math.min(nodesStart + i * stagger, Math.max(0, duration - 0.4));
+              tl.to(fill, { width: n.pct + "%", duration: 0.35, ease: "power1.inOut" }, at);
+              tl.fromTo(
+                n.el,
+                { scale: 0 },
+                { scale: 1, duration: 0.35, ease: "back.out(2.2)" },
+                at
+              );
+              tl.fromTo(n.ring, { opacity: 0.9, scale: 1 }, { opacity: 0, scale: 2.4, duration: 0.6, ease: "power2.out" }, at);
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["timeline-milestones"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

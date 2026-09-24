@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "form-stepper",
+  "type": "hyperframes:component",
+  "title": "Form Stepper",
+  "description": "A multi-step form UI -- numbered step indicator with a filling connector track, and a panel below swapping title + skeleton fields as it advances through steps.",
+  "tags": ["software-mockup", "form", "stepper", "onboarding", "wizard"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "form-stepper.html",
+      "target": "compositions/components/form-stepper/form-stepper.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "steps", "type": "string", "default": "Account|Profile|Payment|Confirm" },
+    { "id": "fields_per_step", "type": "number", "default": 2 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "start_at", "type": "number", "default": 0.4 },
+    { "id": "step_duration", "type": "number", "default": 1.8 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

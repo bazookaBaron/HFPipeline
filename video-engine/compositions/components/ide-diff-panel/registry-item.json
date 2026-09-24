@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "ide-diff-panel",
+  "type": "hyperframes:component",
+  "title": "IDE Diff Panel",
+  "description": "A code diff view -- IDE tab + unified diff body with +/- gutter markers and green/red tint -- revealing line by line.",
+  "tags": ["software-mockup", "code", "diff", "ide", "developer"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "ide-diff-panel.html",
+      "target": "compositions/components/ide-diff-panel/ide-diff-panel.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "filename", "type": "string", "default": "utils.ts" },
+    { "id": "lines", "type": "string", "default": "=:function total(items) {|-:  return items.length|+:  return items.reduce((a, b) => a + b, 0)|=:}" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.4 },
+    { "id": "line_stagger", "type": "number", "default": 0.35 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

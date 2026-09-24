@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "folder-tree",
+  "type": "hyperframes:component",
+  "title": "Folder Tree",
+  "description": "A vertical stack of folder cards (icon, name, an optional colored branch-tag pill, an optional secondary info line) for git/filesystem-structure explainers, staggered reveal, frame-filling as folder count goes down.",
+  "tags": ["software-mockups", "folder", "filesystem", "git", "branch", "tree"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "folder-tree.html",
+      "target": "compositions/components/folder-tree/folder-tree.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "folders", "type": "string", "default": "[{\"name\":\"auth/\",\"branchTag\":\"feature/auth\",\"secondaryLine\":\"12 files · updated 2h ago\"},{\"name\":\"api/\",\"branchTag\":\"main\",\"secondaryLine\":\"node_modules/ · dist/\"},{\"name\":\"ui-components/\",\"branchTag\":\"feature/redesign\",\"secondaryLine\":\"38 files · updated just now\"}]" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "item_stagger", "type": "number", "default": 0.35 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

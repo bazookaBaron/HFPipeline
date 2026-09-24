@@ -1,0 +1,60 @@
+[   0.00-   1.42] How@0.00 a@0.28 DDoS@0.46 attack@0.84 works.@1.04
+[   1.64-   3.76] You@1.64 open@1.82 your@2.00 favorite@2.18 website,@2.44 you@2.98 refresh,@3.04 nothing.@3.54
+[   3.94-   5.24] You@3.94 refresh@4.06 again,@4.26 still@4.76 nothing.@4.94
+[   5.48-   9.00] It@5.48 hasn't@5.68 necessarily@5.94 been@6.28 hacked,@6.68 it@7.08 might@7.16 just@7.26 be@7.42 stuck@7.54 in@7.84 a@8.00 giant@8.06 traffic@8.38 jam.@8.64
+[   9.20-  10.16] That's@9.20 a@9.42 DDoS@9.48 attack.@9.88
+[  10.38-  13.26] Send@10.38 so@10.78 much@10.94 traffic@11.14 that@11.54 real@11.72 users@11.90 can@12.20 no@12.42 longer@12.58 get@12.82 through.@13.00
+[  13.46-  14.60] Think@13.46 of@13.64 it@13.76 as@13.84 a@13.96 traffic@14.06 jam.@14.32
+[  14.76-  17.02] Picture@14.76 your@15.00 site@15.20 as@15.44 a@15.60 highway@15.68 leading@15.96 into@16.26 one@16.50 city.@16.66
+[  17.12-  18.54] On@17.12 a@17.24 normal@17.36 day,@17.58 the@17.96 road@18.04 flows.@18.26
+[  18.84-  21.96] Real@18.84 users@19.04 arrive,@19.36 requests@19.92 get@20.14 processed,@20.40 everything@21.06 keeps@21.28 moving.@21.62
+[  22.40-  25.62] Now@22.40 imagine@22.60 millions@22.92 of@23.24 fake@23.58 cars@23.74 flooding@24.06 that@24.36 highway@24.62 all@24.96 at@25.18 once.@25.36
+[  25.62-  30.72] The@25.62 road@25.88 clogs,@26.08 cars@26.62 stop,@26.90 the@27.34 exits@27.40 jam,@27.68 and@28.22 your@28.60 actual@28.76 users@29.08 are@29.46 stuck@29.70 behind@29.88 all@30.16 of@30.42 it.@30.54
+[  30.78-  31.54] That's@30.78 the@31.04 outage.@31.10
+[  31.60-  35.12] Not@31.60 because@31.74 any@31.96 single@32.22 request@32.48 is@32.84 special,@33.06 but@33.50 because@33.62 the@33.84 road@34.02 is@34.24 completely@34.36 blocked.@34.62
+[  35.40-  36.84] So@35.40 what@35.76 does@35.90 that@36.02 look@36.16 like@36.32 technically?@36.50
+[  37.10-  39.46] Your@37.10 site@37.30 handles@37.46 a@37.78 thousand@37.88 requests@38.14 per@38.40 second@38.74 just@39.00 fine.@39.18
+[  39.62-  43.30] Now@39.62 it's@39.80 ten@39.98 thousand,@40.16 then@40.68 a@40.86 hundred@40.98 thousand,@41.18 then@41.70 a@41.92 million,@42.04 then@42.44 five@42.66 million.@42.98
+[  43.46-  50.70] Your@43.46 network@43.66 fills@43.92 up,@44.16 the@44.52 processor@44.62 saturates,@45.00 connections@45.76 pile@46.02 up,@46.42 queues@46.74 fill,@47.04 subs,@47.38 and@48.16 legitimate@48.38 users@48.72 start@49.12 getting@49.36 errors@49.58 and@49.96 timeouts.@50.18
+[  50.88-  52.40] So@50.88 where@51.06 does@51.18 all@51.30 that@51.42 traffic@51.56 come@51.90 from?@52.14
+[  52.50-  53.58] That's@52.50 the@52.74 distributed@52.82 part.@53.22
+[  53.72-  59.60] Instead@53.72 of@53.92 one@54.14 computer@54.26 attacking@54.64 you,@54.94 the@55.30 traffic@55.42 comes@55.66 from@55.88 thousands@56.14 or@56.52 even@56.70 millions@56.88 of@57.20 devices,@57.40 usually@57.98 through@58.34 something@58.58 called@58.82 a@59.12 botnet.@59.24
+[  59.82-  64.52] Malware@59.82 infects@60.30 computers,@60.76 routers,@61.28 cameras,@61.70 and@62.12 other@62.26 internet@62.42 -connected@62.70 devices@63.14 all@63.38 around@63.84 the@64.08 world.@64.26
+[  64.68-  66.58] Their@64.68 owners@64.78 may@65.06 have@65.26 absolutely@65.42 no@65.84 idea.@66.20
+[  66.80-  69.38] The@66.80 attacker@66.96 controls@67.30 all@67.62 of@68.06 them@68.20 and@68.36 sends@68.50 a@68.66 single@68.82 command.@69.06
+[  69.68-  71.02] Everyone@69.68 hit@69.94 this@70.18 website@70.36 now.@70.68
+[  71.24-  72.90] One@71.24 infected@71.50 camera@71.84 doesn't@72.22 matter.@72.66
+[  73.34-  76.38] A@73.34 hundred@73.42 thousand@73.64 devices@73.94 working@74.28 together@74.74 is@75.18 a@75.40 very@75.50 different@75.70 story.@75.96
+[  76.58-  78.56] And@76.58 not@76.80 every@76.94 attack@77.16 targets@77.46 the@77.88 same@78.06 thing.@78.30
+[  78.74-  79.90] First,@78.74 there@79.10 are@79.18 bandwidth@79.28 attacks.@79.60
+[  80.26-  83.16] Your@80.26 server@80.38 has@80.64 a@80.82 pipe@80.98 that@81.18 can@81.34 carry,@81.44 say,@81.80 ten@82.02 gigabits@82.30 per@82.70 second.@82.86
+[  83.28-  84.64] The@83.28 attacker@83.46 sends@83.82 two@84.08 hundred.@84.30
+[  84.64-  88.10] That's@84.64 forcing@85.36 far@85.62 more@85.92 cars@86.12 onto@86.48 a@86.68 road@86.82 than@87.06 it@87.18 can@87.26 physically@87.36 hold.@87.68
+[  88.24-  90.78] The@88.24 jam@88.42 happens@88.60 before@88.94 the@89.28 traffic@89.48 even@89.80 reaches@90.04 the@90.34 city.@90.54
+[  91.02-  92.30] Second,@91.02 there@91.42 are@91.50 connection@91.62 attacks.@91.86
+[  92.62-  95.44] A@92.62 server@92.76 can@93.04 only@93.24 hold@93.42 so@93.66 many@93.84 active@94.04 connections@94.32 open@94.70 at@95.02 once.@95.20
+[  95.60-  98.30] Fill@95.60 them@95.82 all@96.00 up@96.14 and@96.36 legitimate@96.48 users@96.80 have@97.20 nowhere@97.46 left@97.66 to@97.90 connect.@98.08
+[  98.74- 100.44] Third,@98.74 there@99.12 are@99.20 application@99.32 layer@99.72 attacks.@100.14
+[ 100.76- 101.92] These@100.76 look@100.96 much@101.14 more@101.36 normal.@101.56
+[ 102.02- 107.28] Instead@102.02 of@102.26 flooding@102.44 the@102.72 network@102.86 with@103.10 random@103.30 packets,@103.58 the@104.14 attacker@104.24 repeatedly@104.58 requests@104.90 the@105.50 most@105.68 expensive@105.84 parts@106.20 of@106.60 your@106.76 application.@106.88
+[ 107.60- 111.26] Maybe@107.60 a@107.86 single@108.04 request@108.28 that@108.68 triggers@108.88 several@109.14 database@109.44 queries@109.80 and@110.18 some@110.46 heavy@110.60 computation.@110.82
+[ 111.68- 115.56] It@111.68 costs@112.02 the@112.22 attacker@112.38 almost@112.72 nothing@112.96 to@113.32 send,@113.46 and@113.76 it@113.96 costs@114.06 your@114.24 server@114.48 a@114.80 lot@114.94 to@115.06 process.@115.20
+[ 115.80- 117.22] So@115.80 how@116.00 do@116.16 companies@116.26 survive@116.64 this?@116.88
+[ 117.36- 118.34] The@117.36 first@117.54 rule@117.70 is@117.92 simple.@118.08
+[ 118.44- 120.50] Don't@118.44 let@118.66 all@118.78 that@118.92 traffic@119.02 reach@119.38 one@119.60 small@119.80 server.@120.06
+[ 120.64- 127.70] Services@120.64 like@120.98 Cloudflare,@121.30 AWS,@121.94 and@122.62 Shield@122.82 and@123.38 the@123.68 large@123.84 content@124.04 delivery@124.36 networks@124.66 put@125.08 massive@125.34 distributed@125.70 infrastructure@126.04 in@126.70 front@127.02 of@127.16 your@127.26 application.@127.34
+[ 128.00- 129.22] Traffic@128.00 reaches@128.40 them@128.62 first.@128.92
+[ 129.40- 134.02] They@129.40 absorb@129.60 the@129.88 huge@130.06 spikes,@130.26 filter@130.72 out@130.94 the@131.16 suspicious@131.28 requests,@131.54 and@132.22 forward@132.36 only@132.62 the@132.84 legitimate@133.04 ones@133.34 to@133.62 you.@133.86
+[ 134.12- 135.36] You@134.12 can@134.24 also@134.36 use@134.58 rate@134.84 limiting.@135.08
+[ 135.56- 139.36] If@135.56 one@135.90 source@136.06 starts@136.26 behaving@136.54 abnormally,@136.90 you@137.68 slow@137.84 it@138.04 down@138.22 or@138.48 block@138.68 it@138.92 entirely.@139.10
+[ 139.68- 141.76] But@139.68 blocking@139.82 IP@140.16 addresses@140.42 alone@140.76 isn't@141.16 enough.@141.54
+[ 141.92- 143.74] A@141.92 botnet@142.06 can@142.36 use@142.58 thousands@142.76 of@143.12 different@143.32 addresses.@143.56
+[ 143.76- 153.46] So@143.76 modern@144.30 defenses@144.58 look@144.96 at@145.28 combinations@145.44 of@145.76 signals,@146.18 request@146.66 patterns,@147.00 IP@147.68 reputation,@147.92 browser@148.82 behavior,@149.14 geography,@149.82 protocol@150.52 behavior,@151.08 and@151.74 whether@151.96 the@152.16 traffic@152.30 looks@152.58 human@152.80 at@153.10 all.@153.26
+[ 153.60- 154.56] And@153.60 here's@153.78 the@153.98 hardest@154.08 part.@154.32
+[ 154.80- 157.36] Sometimes@154.80 legitimate@155.08 traffic@155.54 looks@155.96 exactly@156.30 like@156.68 an@157.02 attack.@157.16
+[ 157.64- 161.52] Tickets@157.64 for@157.90 a@158.06 huge@158.18 concert@158.36 go@158.76 on@158.94 sale,@159.08 and@159.50 millions@159.66 of@159.92 real@160.14 people@160.30 arrive@160.56 within@160.82 seconds.@161.10
+[ 161.74- 164.08] So@161.74 you@162.08 can't@162.18 just@162.38 block@162.52 traffic@162.78 because@163.22 there's@163.42 a@163.60 lot@163.66 of@163.82 it.@163.96
+[ 164.14- 168.02] You@164.14 have@164.26 to@164.36 separate@164.50 real@164.82 demand@165.10 from@165.40 malicious@165.70 traffic@165.94 while@166.42 the@166.66 system@166.78 is@167.10 already@167.24 under@167.46 pressure.@167.68
+[ 168.18- 169.92] That's@168.18 what@168.44 makes@168.48 DDoS@168.70 defense@169.06 so@169.30 difficult.@169.58
+[ 170.12- 172.60] A@170.12 DDoS@170.30 attacker@170.58 doesn't@170.86 necessarily@171.24 break@171.52 into@171.94 your@172.16 server.@172.30
+[ 172.60- 176.52] They@172.60 create@173.06 a@173.26 massive@173.40 traffic@173.68 jam@174.02 in@174.30 front@174.48 of@174.66 it@174.80 until@174.92 your@175.16 real@175.36 users@175.54 can't@175.82 get@176.20 through.@176.26

@@ -1,0 +1,1165 @@
+<!doctype html>
+<!--
+  deployment-dashboard -- HyperFrames sub-composition (Architecture)
+
+  ONE rich dashboard visual meant to be reused many times across a
+  blue-green-deployment narrative with different data each time (traffic
+  split, instance health, error rate) -- not six separate components. Real
+  research (frame-by-frame reference video) found the entire ~2-minute
+  narrative reuses this single visual: an ALB listener line, a routing
+  switch (dot/lever sliding along a track between a BLUE and a GREEN
+  anchor, positioned proportionally to the traffic split), and two
+  side-by-side environment cards (version tag, LIVE/IDLE badge, 3-4
+  instance rows, a big traffic percentage). An optional small red 5xx
+  error-rate line chart sits above the ALB line. An optional alternate
+  content mode (`showUsersFunnel`) replaces the whole LB+cards region with
+  a simple "N user icons funneling into a point" visual -- the framing
+  used BEFORE the two-environment view exists in the narrative.
+
+  Card/instance rows and funnel icons are built ONCE via HFProps.rebuild
+  from the resolved props before the GSAP timeline captures references to
+  them -- matching kpi-cluster.html's documented ordering rule. The switch
+  lever's travel range and the funnel's convergence lines are measured
+  ONCE from real layout (getBoundingClientRect), baked into the timeline
+  at build time -- matching client-server-exchange.html's packet and
+  fan-out-fan-in.html's travel-dot discipline.
+
+  Color discipline: BLUE/GREEN are a FIXED semantic pair (--dd-blue /
+  --dd-green), not the opt-in --hf-accent* content rotation -- they depict
+  a real deployment-environment identity, not a decorative color choice,
+  the same documented exemption browser-window's traffic-light dots and
+  status-pill's live/deprecated state colors get (see ../README.md "Color
+  discipline"). Instance health (HEALTHY/IDLE) is its own separate
+  semantic color (green/muted), independent of which environment the
+  instance belongs to.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("deployment-dashboard");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="deployment-dashboard"
+  data-composition-duration="8"
+  data-composition-variables='[
+    { "id": "leftLabel", "type": "string", "role": "content", "label": "Left env label", "description": "Left environment identity label (e.g. BLUE).", "default": "BLUE" },
+    { "id": "rightLabel", "type": "string", "role": "content", "label": "Right env label", "description": "Right environment identity label (e.g. GREEN).", "default": "GREEN" },
+    { "id": "leftVersion", "type": "string", "role": "content", "label": "Left version", "description": "Version tag shown on the left card.", "default": "v1.4.2" },
+    { "id": "rightVersion", "type": "string", "role": "content", "label": "Right version", "description": "Version tag shown on the right card.", "default": "v2.0.1" },
+    { "id": "leftLive", "type": "boolean", "role": "content", "label": "Left is live", "description": "Whether the left card shows a LIVE badge (false = IDLE).", "default": true },
+    { "id": "rightLive", "type": "boolean", "role": "content", "label": "Right is live", "description": "Whether the right card shows a LIVE badge (false = IDLE).", "default": false },
+    { "id": "leftInstances", "type": "string", "role": "content", "label": "Left instances", "description": "JSON array of {id, healthy} objects, 3-4 items, for the left card.", "default": "[{\"id\":\"i-0a3f8c21\",\"healthy\":true},{\"id\":\"i-7b291de4\",\"healthy\":true},{\"id\":\"i-c48a02f1\",\"healthy\":true}]" },
+    { "id": "rightInstances", "type": "string", "role": "content", "label": "Right instances", "description": "JSON array of {id, healthy} objects, 3-4 items, for the right card.", "default": "[{\"id\":\"i-9f13aa02\",\"healthy\":false},{\"id\":\"i-52dd881c\",\"healthy\":false},{\"id\":\"i-e60347bb\",\"healthy\":false}]" },
+    { "id": "leftTrafficPct", "type": "number", "role": "content", "label": "Left traffic %", "description": "Percent of traffic routed to the left environment. Should sum to ~100 with rightTrafficPct.", "default": 100, "min": 0, "max": 100, "step": 1 },
+    { "id": "rightTrafficPct", "type": "number", "role": "content", "label": "Right traffic %", "description": "Percent of traffic routed to the right environment. Should sum to ~100 with leftTrafficPct.", "default": 0, "min": 0, "max": 100, "step": 1 },
+    { "id": "showErrorChart", "type": "boolean", "role": "content", "label": "Show error chart", "description": "Whether the small 5xx error-rate line chart shows above the ALB line.", "default": false },
+    { "id": "errorRatePct", "type": "number", "role": "content", "label": "Error rate %", "description": "Current 5xx error rate percent, anchors the right-hand end of the chart.", "default": 0.4, "min": 0, "max": 100, "step": 0.01 },
+    { "id": "errorChartTrend", "type": "enum", "role": "content", "label": "Error chart trend", "description": "Shape of the hand-drawn error-rate line.", "default": "flat", "options": [{ "value": "flat", "label": "Flat" }, { "value": "rising", "label": "Rising" }] },
+    { "id": "showUsersFunnel", "type": "boolean", "role": "content", "label": "Show users funnel", "description": "Replace the LB+cards region with a simple users-funneling-into-a-point visual (the before-two-environments framing).", "default": false },
+    { "id": "listenerLabel", "type": "string", "role": "content", "label": "Listener label", "description": "ALB listener line text.", "default": "listener :443  forward" },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the chrome (ALB line, switch, cards / funnel icons) reveals.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "switch_at", "type": "number", "role": "timing", "label": "Switch at", "description": "Seconds from mount when traffic percentages count up and the routing switch slides to its resolved position (or, in funnel mode, when the flow dots travel to the convergence point).", "default": 1.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 8, "min": 3, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Deployment Dashboard</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="deployment-dashboard" data-duration="8" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+            --dd-blue: #4c8dff;
+            --dd-green: #2ecc82;
+          }
+          .dd-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            gap: 3.2cqmin;
+            /* REVERTED from 12cqmin/58cqmin (top/bottom) back down to a normal cosmetic
+               padding -- that inflated padding was this component defending ITSELF against
+               the persistent HUD bar and caption box back when it rendered across the FULL
+               1920-tall frame directly underneath them. As of composeHtml.js's dark-theme
+               SAFE_RECT (top:210/height:1250px), this component is no longer rendered at
+               full frame height at all -- the orchestrator now clips it into a box that
+               ALREADY starts below the HUD and ends above the caption zone, so this
+               component never shares frame space with either. Keeping the old 58cqmin
+               bottom padding on top of that outer clip was real, confirmed double
+               compensation: it left only ~494px of the 1250px-tall box for actual content,
+               and a real end-to-end render + `hyperframes check` caught the resulting
+               instance-row text overlap as a hard layout error (content_overlap, 14
+               instances, scene-3/scene-4 of blue-green-deployment-v3). If this component is
+               ever mounted full-frame again (e.g. a future theme without SAFE_RECT
+               clipping), the old values were 12cqmin top / 58cqmin bottom -- re-derive and
+               re-verify against that specific scenario rather than guessing them back in. */
+            padding: 5cqmin 6cqmin 5cqmin;
+          }
+
+          /* ---- ALB / switch block ---- */
+          .dd-lb-block {
+            display: flex;
+            flex-direction: column;
+            gap: 1.6cqmin;
+            opacity: 0;
+          }
+          .dd-error-chart {
+            display: none;
+            flex-direction: column;
+            gap: 0.6cqmin;
+            margin-bottom: 0.6cqmin;
+          }
+          .dd-error-chart.dd-visible {
+            display: flex;
+          }
+          .dd-error-heading {
+            font-weight: 700;
+            font-size: 2.2cqmin;
+            color: var(--hf-accent-4, #ff6e6e);
+            letter-spacing: 0.04em;
+            white-space: nowrap;
+          }
+          .dd-error-chart-body {
+            position: relative;
+            width: 100%;
+            height: 9cqmin;
+            min-height: 34px;
+          }
+          .dd-error-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+          }
+          .dd-error-axis {
+            font-size: 1.8cqmin;
+            fill: var(--hf-muted, #9aa1ad);
+            font-weight: 600;
+          }
+          .dd-lb-heading {
+            font-weight: 700;
+            font-size: 2.2cqmin;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--hf-muted, #9aa1ad);
+          }
+          .dd-lb-line {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 2cqmin;
+            font-family: var(--hf-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+            font-weight: 600;
+            font-size: 2.6cqmin;
+          }
+          .dd-lb-listener {
+            color: var(--hf-fg, #f4f5f7);
+            white-space: nowrap;
+            overflow: hidden;
+            min-width: 0;
+          }
+          .dd-lb-tg {
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+            flex: 0 0 auto;
+          }
+          .dd-lb-tg b {
+            font-weight: 700;
+          }
+          .dd-lb-tg .dd-tg-left {
+            color: var(--dd-blue);
+          }
+          .dd-lb-tg .dd-tg-right {
+            color: var(--dd-green);
+          }
+          .dd-switch {
+            position: relative;
+            width: 100%;
+            height: 9cqmin;
+            min-height: 30px;
+          }
+          .dd-switch-track {
+            position: absolute;
+            left: 5cqmin;
+            right: 5cqmin;
+            top: 50%;
+            height: 0.3cqmin;
+            min-height: 2px;
+            transform: translateY(-50%);
+            background: linear-gradient(90deg, var(--dd-blue), var(--dd-green));
+            opacity: 0.35;
+            border-radius: 999px;
+          }
+          .dd-switch-anchor {
+            position: absolute;
+            top: 50%;
+            width: 2.6cqmin;
+            height: 2.6cqmin;
+            min-width: 10px;
+            min-height: 10px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 0 0.4cqmin var(--hf-bg, #0b0d10);
+          }
+          .dd-switch-anchor--left {
+            left: 5cqmin;
+            background: var(--dd-blue);
+          }
+          .dd-switch-anchor--right {
+            right: 5cqmin;
+            left: auto;
+            background: var(--dd-green);
+          }
+          .dd-switch-anchor-label {
+            position: absolute;
+            top: 0;
+            font-weight: 700;
+            font-size: 1.9cqmin;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+            overflow: visible;
+          }
+          .dd-switch-anchor-label--left {
+            color: var(--dd-blue);
+            left: 5cqmin;
+            transform: translateX(-50%);
+          }
+          .dd-switch-anchor-label--right {
+            color: var(--dd-green);
+            right: 5cqmin;
+            transform: translateX(50%);
+          }
+          .dd-switch-lever {
+            position: absolute;
+            top: 50%;
+            left: 5cqmin;
+            width: 4cqmin;
+            height: 4cqmin;
+            min-width: 16px;
+            min-height: 16px;
+            border-radius: 50%;
+            background: var(--hf-fg, #f4f5f7);
+            border: 0.35cqmin solid var(--hf-surface, #16181c);
+            box-shadow: 0 0.6cqmin 1.4cqmin rgba(0, 0, 0, 0.5);
+            transform: translate(-50%, -50%);
+            opacity: 0;
+          }
+
+          /* ---- Environment cards ---- */
+          .dd-cards-row {
+            flex: 1;
+            display: flex;
+            gap: 3.2cqmin;
+            min-height: 0;
+          }
+          .dd-card {
+            position: relative;
+            flex: 1 1 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2.2cqmin;
+            /* A subtle tint of the card's own semantic color, not a flat neutral gray --
+               a real reference-video comparison (blue-green deployment content) found the
+               reference's environment cards visibly blue/green-tinted, while ours read as
+               two identical gray boxes distinguished only by a thin top rule and text color.
+               color-mix keeps it subtle (8% tint) so status badges/instance rows stay legible. */
+            background: color-mix(in srgb, var(--dd-card-color, var(--hf-surface, #16181c)) 8%, var(--hf-surface, #16181c));
+            border: 1px solid var(--hf-border, #2c2f36);
+            border-radius: 2.4cqmin;
+            padding: 3.2cqmin 3cqmin;
+            opacity: 0;
+            transform: translateY(2cqmin);
+            overflow: hidden;
+          }
+          .dd-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 0.55cqmin;
+            min-height: 3px;
+            background: var(--dd-card-color);
+          }
+          .dd-card--left {
+            --dd-card-color: var(--dd-blue);
+          }
+          .dd-card--right {
+            --dd-card-color: var(--dd-green);
+          }
+          .dd-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.4cqmin;
+          }
+          .dd-card-id {
+            display: flex;
+            align-items: baseline;
+            gap: 1.4cqmin;
+            min-width: 0;
+          }
+          .dd-card-label {
+            font-weight: 800;
+            font-size: 3.2cqmin;
+            letter-spacing: 0.04em;
+            color: var(--dd-card-color);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .dd-card-version {
+            font-weight: 700;
+            font-size: 2.1cqmin;
+            font-family: var(--hf-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+            color: var(--hf-muted, #9aa1ad);
+            background: var(--hf-surface-2, #1e2126);
+            padding: 0.5cqmin 1.4cqmin;
+            border-radius: 999px;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .dd-card-badge {
+            flex: 0 0 auto;
+            font-weight: 800;
+            font-size: 2cqmin;
+            letter-spacing: 0.06em;
+            padding: 0.7cqmin 1.8cqmin;
+            border-radius: 999px;
+            white-space: nowrap;
+          }
+          .dd-card-badge--live {
+            color: var(--hf-accent, #71f5a7);
+            background: rgba(113, 245, 167, 0.14);
+          }
+          .dd-card-badge--idle {
+            color: var(--hf-muted, #9aa1ad);
+            background: var(--hf-surface-2, #1e2126);
+          }
+          .dd-card-instances {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+            min-height: 0;
+          }
+          .dd-instance-row {
+            display: flex;
+            align-items: center;
+            gap: 1.8cqmin;
+            padding: 1.6cqmin 2cqmin;
+            border-radius: 1.6cqmin;
+            background: var(--hf-surface-2, #1e2126);
+            opacity: 0;
+            transform: translateX(-1cqmin);
+          }
+          .dd-instance-dot {
+            flex: 0 0 auto;
+            width: 2cqmin;
+            height: 2cqmin;
+            min-width: 8px;
+            min-height: 8px;
+            border-radius: 50%;
+          }
+          .dd-instance-dot--healthy {
+            background: var(--hf-accent, #71f5a7);
+            box-shadow: 0 0 0.8cqmin rgba(113, 245, 167, 0.55);
+          }
+          .dd-instance-dot--idle {
+            background: var(--hf-muted, #9aa1ad);
+          }
+          .dd-instance-id {
+            flex: 1 1 auto;
+            min-width: 0;
+            font-family: var(--hf-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+            font-weight: 600;
+            font-size: 2.4cqmin;
+            color: var(--hf-fg, #f4f5f7);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .dd-instance-status {
+            flex: 0 0 auto;
+            font-weight: 800;
+            font-size: 2.1cqmin;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+          }
+          .dd-instance-status--healthy {
+            color: var(--hf-accent, #71f5a7);
+          }
+          .dd-instance-status--idle {
+            color: var(--hf-muted, #9aa1ad);
+          }
+          .dd-card-pct-row {
+            text-align: center;
+            padding-top: 1.2cqmin;
+            border-top: 1px solid var(--hf-border, #2c2f36);
+          }
+          .dd-card-pct {
+            font-weight: 800;
+            font-size: 7cqmin;
+            color: var(--dd-card-color);
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -0.01em;
+          }
+          .dd-card-pct-suffix {
+            font-weight: 700;
+            font-size: 2cqmin;
+            letter-spacing: 0.1em;
+            color: var(--hf-muted, #9aa1ad);
+            display: block;
+            margin-top: 0.2cqmin;
+          }
+
+          /* ---- Users funnel (alternate content mode) ---- */
+          .dd-funnel {
+            display: none;
+            flex: 1;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            min-height: 0;
+          }
+          .dd-funnel.dd-visible {
+            display: flex;
+          }
+          .dd-funnel-icons {
+            display: flex;
+            justify-content: center;
+            gap: 4cqmin;
+            width: 100%;
+            padding: 0 6cqmin;
+          }
+          .dd-funnel-icon {
+            flex: 0 0 auto;
+            width: 8cqmin;
+            height: 8cqmin;
+            min-width: 30px;
+            min-height: 30px;
+            opacity: 0;
+            transform: translateY(-1cqmin);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .dd-funnel-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+          }
+          .dd-funnel-point {
+            position: absolute;
+            width: 2.6cqmin;
+            height: 2.6cqmin;
+            min-width: 10px;
+            min-height: 10px;
+            border-radius: 50%;
+            background: var(--hf-brand, #6ea8fe);
+            transform: translate(-50%, -50%);
+            opacity: 0;
+          }
+          .dd-funnel-label {
+            position: absolute;
+            font-weight: 800;
+            font-size: 2.6cqmin;
+            letter-spacing: 0.14em;
+            color: var(--hf-muted, #9aa1ad);
+            opacity: 0;
+            white-space: nowrap;
+          }
+        </style>
+
+        <div class="dd-stage" id="dd-stage">
+          <div class="dd-lb-block" id="dd-lb-block">
+            <div class="dd-error-chart" id="dd-error-chart">
+              <div class="dd-error-heading">5XX ERROR RATE</div>
+              <div class="dd-error-chart-body">
+                <svg class="dd-error-svg" id="dd-error-svg" preserveAspectRatio="none"></svg>
+              </div>
+            </div>
+            <div class="dd-lb-heading">Application Load Balancer</div>
+            <div class="dd-lb-line">
+              <span class="dd-lb-listener" id="dd-lb-listener"></span>
+              <span class="dd-lb-tg" id="dd-lb-tg"></span>
+            </div>
+            <div class="dd-switch" id="dd-switch">
+              <div class="dd-switch-track"></div>
+              <span class="dd-switch-anchor-label dd-switch-anchor-label--left" id="dd-anchor-left-label"></span>
+              <span class="dd-switch-anchor-label dd-switch-anchor-label--right" id="dd-anchor-right-label"></span>
+              <div class="dd-switch-anchor dd-switch-anchor--left" id="dd-anchor-left"></div>
+              <div class="dd-switch-anchor dd-switch-anchor--right" id="dd-anchor-right"></div>
+              <div class="dd-switch-lever" id="dd-switch-lever"></div>
+            </div>
+          </div>
+
+          <div class="dd-cards-row" id="dd-cards-row">
+            <div class="dd-card dd-card--left" id="dd-card-left">
+              <div class="dd-card-header">
+                <div class="dd-card-id">
+                  <span class="dd-card-label" id="dd-card-left-label"></span>
+                  <span class="dd-card-version" id="dd-card-left-version"></span>
+                </div>
+                <span class="dd-card-badge" id="dd-card-left-badge"></span>
+              </div>
+              <div class="dd-card-instances" id="dd-card-left-instances"></div>
+              <div class="dd-card-pct-row">
+                <span class="dd-card-pct" id="dd-card-left-pct">0%</span>
+                <span class="dd-card-pct-suffix">OF TRAFFIC</span>
+              </div>
+            </div>
+            <div class="dd-card dd-card--right" id="dd-card-right">
+              <div class="dd-card-header">
+                <div class="dd-card-id">
+                  <span class="dd-card-label" id="dd-card-right-label"></span>
+                  <span class="dd-card-version" id="dd-card-right-version"></span>
+                </div>
+                <span class="dd-card-badge" id="dd-card-right-badge"></span>
+              </div>
+              <div class="dd-card-instances" id="dd-card-right-instances"></div>
+              <div class="dd-card-pct-row">
+                <span class="dd-card-pct" id="dd-card-right-pct">0%</span>
+                <span class="dd-card-pct-suffix">OF TRAFFIC</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="dd-funnel" id="dd-funnel">
+            <svg class="dd-funnel-svg" id="dd-funnel-svg"></svg>
+            <div class="dd-funnel-icons" id="dd-funnel-icons"></div>
+            <div class="dd-funnel-point" id="dd-funnel-point"></div>
+            <div class="dd-funnel-label" id="dd-funnel-label">USERS</div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "deployment-dashboard: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SVG_NS = "http://www.w3.org/2000/svg";
+            var FUNNEL_ICON_COUNT = 6;
+
+            var DEFAULT_LEFT_INSTANCES = [
+              { id: "i-0a3f8c21", healthy: true },
+              { id: "i-7b291de4", healthy: true },
+              { id: "i-c48a02f1", healthy: true },
+            ];
+            var DEFAULT_RIGHT_INSTANCES = [
+              { id: "i-9f13aa02", healthy: false },
+              { id: "i-52dd881c", healthy: false },
+              { id: "i-e60347bb", healthy: false },
+            ];
+
+            var SCHEMA = {
+              leftLabel: { type: "string", default: "BLUE", maxLength: 16 },
+              rightLabel: { type: "string", default: "GREEN", maxLength: 16 },
+              leftVersion: { type: "string", default: "v1.4.2", maxLength: 20 },
+              rightVersion: { type: "string", default: "v2.0.1", maxLength: 20 },
+              leftLive: { type: "boolean", default: true },
+              rightLive: { type: "boolean", default: false },
+              leftInstances: { type: "list", default: DEFAULT_LEFT_INSTANCES, max: 4, delimiter: "|" },
+              rightInstances: { type: "list", default: DEFAULT_RIGHT_INSTANCES, max: 4, delimiter: "|" },
+              leftTrafficPct: { type: "number", default: 100, min: 0, max: 100 },
+              rightTrafficPct: { type: "number", default: 0, min: 0, max: 100 },
+              showErrorChart: { type: "boolean", default: false },
+              errorRatePct: { type: "number", default: 0.4, min: 0, max: 100 },
+              errorChartTrend: { type: "enum", default: "flat", options: ["flat", "rising"] },
+              showUsersFunnel: { type: "boolean", default: false },
+              listenerLabel: { type: "string", default: "listener :443  forward", maxLength: 40 },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              switch_at: { type: "number", default: 1.4, min: 0, max: 30 },
+              duration: { type: "number", default: 8, min: 3, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("dd-stage");
+            var lbBlock = document.getElementById("dd-lb-block");
+            var errorChart = document.getElementById("dd-error-chart");
+            var errorSvg = document.getElementById("dd-error-svg");
+            var lbListenerEl = document.getElementById("dd-lb-listener");
+            var lbTgEl = document.getElementById("dd-lb-tg");
+            var switchEl = document.getElementById("dd-switch");
+            var anchorLeft = document.getElementById("dd-anchor-left");
+            var anchorRight = document.getElementById("dd-anchor-right");
+            var anchorLeftLabel = document.getElementById("dd-anchor-left-label");
+            var anchorRightLabel = document.getElementById("dd-anchor-right-label");
+            var lever = document.getElementById("dd-switch-lever");
+            var cardsRow = document.getElementById("dd-cards-row");
+            var funnel = document.getElementById("dd-funnel");
+            var funnelSvg = document.getElementById("dd-funnel-svg");
+            var funnelIconsWrap = document.getElementById("dd-funnel-icons");
+            var funnelPoint = document.getElementById("dd-funnel-point");
+            var funnelLabel = document.getElementById("dd-funnel-label");
+
+            var SIDES = [
+              {
+                key: "left",
+                labelProp: "leftLabel",
+                versionProp: "leftVersion",
+                liveProp: "leftLive",
+                instancesProp: "leftInstances",
+                pctProp: "leftTrafficPct",
+                fallbackInstances: DEFAULT_LEFT_INSTANCES,
+                colorVar: "var(--dd-blue)",
+                labelEl: document.getElementById("dd-card-left-label"),
+                versionEl: document.getElementById("dd-card-left-version"),
+                badgeEl: document.getElementById("dd-card-left-badge"),
+                instancesEl: document.getElementById("dd-card-left-instances"),
+                pctEl: document.getElementById("dd-card-left-pct"),
+                cardEl: document.getElementById("dd-card-left"),
+              },
+              {
+                key: "right",
+                labelProp: "rightLabel",
+                versionProp: "rightVersion",
+                liveProp: "rightLive",
+                instancesProp: "rightInstances",
+                pctProp: "rightTrafficPct",
+                fallbackInstances: DEFAULT_RIGHT_INSTANCES,
+                colorVar: "var(--dd-green)",
+                labelEl: document.getElementById("dd-card-right-label"),
+                versionEl: document.getElementById("dd-card-right-version"),
+                badgeEl: document.getElementById("dd-card-right-badge"),
+                instancesEl: document.getElementById("dd-card-right-instances"),
+                pctEl: document.getElementById("dd-card-right-pct"),
+                cardEl: document.getElementById("dd-card-right"),
+              },
+            ];
+
+            function normalizeInstance(raw, i, fallbackList) {
+              raw = raw && typeof raw === "object" ? raw : {};
+              var fallback = fallbackList[i % fallbackList.length];
+              var id = typeof raw.id === "string" && raw.id.trim() ? raw.id.trim() : fallback.id;
+              var healthy = typeof raw.healthy === "boolean" ? raw.healthy : fallback.healthy;
+              return { id: id, healthy: healthy };
+            }
+
+            SIDES.forEach(function (side) {
+              var rawList = props[side.instancesProp].slice(0, 4);
+              side.instances = rawList
+                .map(function (raw, i) {
+                  return normalizeInstance(raw, i, side.fallbackInstances);
+                })
+                .filter(Boolean);
+              if (side.instances.length < 3) {
+                side.instances = side.fallbackInstances.map(function (raw, i) {
+                  return normalizeInstance(raw, i, side.fallbackInstances);
+                });
+              }
+              side.label = props[side.labelProp];
+              side.version = props[side.versionProp];
+              side.live = props[side.liveProp];
+              side.trafficPct = Math.max(0, Math.min(100, props[side.pctProp]));
+            });
+
+            var showFunnel = !!props.showUsersFunnel;
+            var showErrorChart = !!props.showErrorChart && !showFunnel;
+
+            lbBlock.style.display = showFunnel ? "none" : "flex";
+            cardsRow.style.display = showFunnel ? "none" : "flex";
+            funnel.classList.toggle("dd-visible", showFunnel);
+            errorChart.classList.toggle("dd-visible", showErrorChart);
+
+            // ---- Static content + badges ----
+            lbListenerEl.textContent = props.listenerLabel;
+            anchorLeftLabel.textContent = props.leftLabel;
+            anchorRightLabel.textContent = props.rightLabel;
+
+            SIDES.forEach(function (side) {
+              side.badgeEl.textContent = side.live ? "LIVE" : "IDLE";
+              side.badgeEl.className = "dd-card-badge " + (side.live ? "dd-card-badge--live" : "dd-card-badge--idle");
+            });
+
+            // ---- Build instance rows ONCE (clear/rebuild), before the
+            // timeline below captures references to each row. ----
+            // Frame-filling: fewer rows (3) get visibly larger chrome than
+            // a full 4, same idea as kpi-cluster.html's count-based sizing,
+            // applied to a row list instead of a card grid.
+            SIDES.forEach(function (side) {
+              var count = side.instances.length;
+              var rowPadCqmin = count <= 3 ? 2.1 : 1.5;
+              var dotSizeCqmin = count <= 3 ? 2.3 : 1.9;
+              var idSizeCqmin = count <= 3 ? 2.7 : 2.2;
+              var statusSizeCqmin = count <= 3 ? 2.3 : 1.9;
+              side.idSizeCqmin = idSizeCqmin;
+              side.rowPadCqmin = rowPadCqmin;
+              side.dotSizeCqmin = dotSizeCqmin;
+              side.statusSizeCqmin = statusSizeCqmin;
+              var rowEls = [];
+              HFProps.rebuild(side.instancesEl, function (container) {
+                rowEls = [];
+                side.instances.forEach(function (inst) {
+                  var row = document.createElement("div");
+                  row.className = "dd-instance-row";
+                  row.style.padding = rowPadCqmin + "cqmin 2cqmin";
+                  var dot = document.createElement("span");
+                  dot.className = "dd-instance-dot " + (inst.healthy ? "dd-instance-dot--healthy" : "dd-instance-dot--idle");
+                  dot.style.width = dotSizeCqmin + "cqmin";
+                  dot.style.height = dotSizeCqmin + "cqmin";
+                  var idEl = document.createElement("span");
+                  idEl.className = "dd-instance-id";
+                  idEl.style.fontSize = idSizeCqmin + "cqmin";
+                  var statusEl = document.createElement("span");
+                  statusEl.className = "dd-instance-status " + (inst.healthy ? "dd-instance-status--healthy" : "dd-instance-status--idle");
+                  statusEl.style.fontSize = statusSizeCqmin + "cqmin";
+                  statusEl.textContent = inst.healthy ? "HEALTHY" : "IDLE";
+                  row.appendChild(dot);
+                  row.appendChild(idEl);
+                  row.appendChild(statusEl);
+                  container.appendChild(row);
+                  rowEls.push({ el: row, idEl: idEl, statusEl: statusEl, inst: inst });
+                });
+              });
+              side.rowEls = rowEls;
+            });
+
+            // ---- Build funnel icons ONCE ----
+            var FUNNEL_ICON_SVG =
+              '<svg viewBox="0 0 24 24" width="100%" height="100%" fill="none" xmlns="http://www.w3.org/2000/svg">' +
+              '<circle cx="12" cy="6.4" r="3.6" fill="currentColor" opacity="0.85"/>' +
+              '<path d="M4.5 21.5c0-4.7 3.36-8 7.5-8s7.5 3.3 7.5 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity="0.85"/>' +
+              "</svg>";
+            var funnelIconEls = [];
+            HFProps.rebuild(funnelIconsWrap, function (container) {
+              funnelIconEls = [];
+              for (var i = 0; i < FUNNEL_ICON_COUNT; i++) {
+                var icon = document.createElement("div");
+                icon.className = "dd-funnel-icon";
+                icon.innerHTML = FUNNEL_ICON_SVG;
+                container.appendChild(icon);
+                funnelIconEls.push(icon);
+              }
+            });
+
+            // HFTextFit.fitOrTruncate's shrink step (fitFontToBox) decides
+            // whether text fits by simulating word-wrap: it can only
+            // detect an overflow at a WORD boundary. A single unbreakable
+            // token with no whitespace (an instance id like "i-0a3f8c21",
+            // a bare label like "BLUE", a version like "v1.4.2") never
+            // wraps, so fitFontToBox always reports a false "fits" at the
+            // untouched baseSize, regardless of maxWidth. This helper
+            // composes the SAME real canvas-measurement primitives
+            // (HFTextFit.measure / truncateToWidth) directly instead of
+            // going through fitFontToBox, so single-token fields still
+            // get real shrink-then-truncate protection.
+            function fitNoWrapToken(el, text, opts) {
+              text = String(text == null ? "" : text);
+              var family = opts.family;
+              var weight = opts.weight;
+              var maxWidth = opts.maxWidth;
+              var minSize = opts.minSize;
+              var size = opts.baseSize;
+              while (size > minSize && HFTextFit.measure(text, weight, size, family) > maxWidth) {
+                size -= 1;
+              }
+              var fitText = text;
+              if (HFTextFit.measure(text, weight, size, family) > maxWidth) {
+                fitText = HFTextFit.truncateToWidth(text, weight, size, family, maxWidth);
+              }
+              el.style.fontSize = size + "px";
+              el.textContent = fitText;
+            }
+
+            // ---- Text-fit pass (geometry-independent sizing only) ----
+            function fitAll() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+
+              // Real bug found via a real end-to-end render + hyperframes check
+              // (thorough --at-transitions sweep): `.dd-lb-tg` (the listener's sibling
+              // in the same flex row) is EMPTY at this initial layout pass -- its real
+              // content is only written later, per animation frame, by the traffic-split
+              // tween's onUpdate (see tgProxies below). A flat "50% of stage width" guess
+              // for the listener left no room for that sibling once it populated, and
+              // `.dd-lb-listener`'s `white-space: nowrap` means the browser won't shrink
+              // it below its own unwrapped width (no `min-width: 0`), so it silently
+              // overflowed past its allotted space instead of being caught by
+              // fitOrTruncate. Fixed by reserving the sibling's real WORST-CASE width
+              // upfront (both sides showing "100%", the widest digit string either can
+              // show) via the same canvas measurement fitOrTruncate itself uses, so the
+              // listener is fit against the space it will actually have once the
+              // animation is running, not just at this empty starting frame.
+              var tgWorstCase =
+                SIDES[0].label.toLowerCase() + "-tg 100%  " + SIDES[1].label.toLowerCase() + "-tg 100%";
+              var tgWorstCaseWidth = HFTextFit.measure(
+                tgWorstCase,
+                700,
+                2.6 * rootMin,
+                "ui-monospace, SFMono-Regular, Menlo, monospace"
+              );
+              var lbLineGapPx = 2 * rootMin; // matches .dd-lb-line's gap
+              var lbLineWidth = lbListenerEl.parentElement.clientWidth;
+              var listenerMaxWidth = Math.max(40, lbLineWidth - tgWorstCaseWidth - lbLineGapPx);
+
+              HFTextFit.fitOrTruncate(lbListenerEl, props.listenerLabel, {
+                family: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                weight: 600,
+                maxWidth: listenerMaxWidth,
+                maxHeight: 1000,
+                baseSize: 2.6 * rootMin,
+                minSize: 12,
+                maxLines: 1,
+              });
+
+              [
+                { el: anchorLeftLabel, text: props.leftLabel },
+                { el: anchorRightLabel, text: props.rightLabel },
+              ].forEach(function (item) {
+                fitNoWrapToken(item.el, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: 22 * rootMin,
+                  baseSize: 1.9 * rootMin,
+                  minSize: 10,
+                });
+              });
+
+              SIDES.forEach(function (side) {
+                // Real bug found via a real end-to-end render + hyperframes check: the
+                // previous flat `cardEl.clientWidth * 0.34/0.3` guesses assumed the label
+                // and version always get a fixed share of the CARD's width, but they
+                // actually share a flex row with the LIVE/IDLE badge (`.dd-card-header`,
+                // `justify-content: space-between`), whose real rendered width varies with
+                // its own text ("LIVE" vs "IDLE") and eats into the same row -- so the
+                // assumed maxWidth could exceed the row's REAL remaining space, and
+                // fitNoWrapToken (correctly) fit against the wrong number. Fixed by
+                // measuring the real available width from the actual DOM (badge text is
+                // already set above, so its width is real) instead of guessing a
+                // percentage, matching the "rowInnerWidth" pattern already used below for
+                // the instance status rows.
+                var headerEl = side.labelEl.closest(".dd-card-header");
+                var idRowGapPx = 1.4 * rootMin; // matches .dd-card-id's gap
+                var headerGapPx = 1.4 * rootMin; // matches .dd-card-header's gap
+                var badgeWidthPx = side.badgeEl.getBoundingClientRect().width;
+                var availableForIdRow = Math.max(40, headerEl.clientWidth - badgeWidthPx - headerGapPx);
+
+                fitNoWrapToken(side.labelEl, side.label, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 800,
+                  maxWidth: availableForIdRow * 0.62,
+                  baseSize: 3.2 * rootMin,
+                  minSize: 14,
+                });
+                var labelWidthPx = side.labelEl.getBoundingClientRect().width;
+                var availableForVersion = Math.max(30, availableForIdRow - labelWidthPx - idRowGapPx);
+                // .dd-card-version has 1.4cqmin horizontal padding on each side (2.8cqmin
+                // total) that HFTextFit.measure's glyph-only measurement doesn't account
+                // for -- subtract it so the truncated TEXT plus its own padding still fits
+                // inside availableForVersion, not just the glyphs alone.
+                fitNoWrapToken(side.versionEl, side.version, {
+                  family: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                  weight: 700,
+                  maxWidth: availableForVersion - 2.8 * rootMin,
+                  baseSize: 2.1 * rootMin,
+                  minSize: 10,
+                });
+                // The id span is a flex:1 child that starts out EMPTY
+                // (its text is set by fitOrTruncate itself below), so its
+                // own clientWidth can't be measured live -- an empty flex
+                // item has no reliable box yet. Instead compute the real
+                // available width analytically: the row's inner width
+                // (card column width minus row padding) minus the dot,
+                // the two gaps, and the status word's OWN canvas-measured
+                // width (status text is already set, so this part IS a
+                // real measurement) -- never an assumed flat percentage.
+                var rowInnerWidth = side.instancesEl.clientWidth - side.rowPadCqmin * 2 * rootMin;
+                var dotWidthPx = side.dotSizeCqmin * rootMin;
+                var gapPx = 1.8 * rootMin;
+                side.rowEls.forEach(function (row) {
+                  var statusWidthPx = HFTextFit.measure(
+                    row.statusEl.textContent,
+                    800,
+                    side.statusSizeCqmin * rootMin,
+                    "Inter, ui-sans-serif, system-ui, sans-serif"
+                  );
+                  var availWidth = rowInnerWidth - dotWidthPx - statusWidthPx - gapPx * 2 - 6;
+                  fitNoWrapToken(row.idEl, row.inst.id, {
+                    family: "ui-monospace, SFMono-Regular, Menlo, monospace",
+                    weight: 600,
+                    maxWidth: Math.max(40, availWidth),
+                    baseSize: side.idSizeCqmin * rootMin,
+                    minSize: 11,
+                  });
+                });
+              });
+            }
+
+            fitAll();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(fitAll);
+            }
+
+            // ---- Timing ----
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 1));
+            var switchAt = Math.min(Math.max(props.switch_at, revealAt + 0.4), Math.max(0, duration - 0.6));
+            var switchDur = Math.min(1.1, Math.max(0.3, duration - switchAt - 0.2));
+
+            var tl = gsap.timeline({ paused: true });
+
+            if (showFunnel) {
+              // ---- USERS funnel mode ----
+              tl.fromTo(funnelIconEls, { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.06 }, revealAt);
+              tl.fromTo(funnelPoint, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, revealAt + 0.3);
+              tl.fromTo(funnelLabel, { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" }, revealAt + 0.35);
+
+              // Measure convergence geometry once, after the icons/point
+              // exist in real layout (positions don't depend on font
+              // metrics, so no need to wait on document.fonts.ready here --
+              // matches client-server-exchange.html's own measure-once
+              // discipline).
+              var stageRect = funnel.getBoundingClientRect();
+              var pointX = stageRect.width / 2;
+              var pointY = stageRect.height * 0.82;
+              funnelPoint.style.left = pointX + "px";
+              funnelPoint.style.top = pointY + "px";
+              funnelLabel.style.left = pointX + "px";
+              funnelLabel.style.top = pointY + 14 + "px";
+              funnelLabel.style.transform = "translate(-50%, 0)";
+
+              var iconPts = funnelIconEls.map(function (icon) {
+                var r = icon.getBoundingClientRect();
+                return {
+                  x: r.left + r.width / 2 - stageRect.left,
+                  y: r.top + r.height - stageRect.top,
+                };
+              });
+
+              iconPts.forEach(function (pt) {
+                var line = document.createElementNS(SVG_NS, "line");
+                line.setAttribute("x1", pt.x);
+                line.setAttribute("y1", pt.y);
+                line.setAttribute("x2", pointX);
+                line.setAttribute("y2", pointY);
+                line.setAttribute("stroke", "var(--hf-border, #2c2f36)");
+                line.setAttribute("stroke-width", "2");
+                line.setAttribute("opacity", "0");
+                funnelSvg.appendChild(line);
+                tl.to(line, { attr: { opacity: 0.6 }, duration: 0.3 }, revealAt + 0.15);
+              });
+
+              iconPts.forEach(function (pt, i) {
+                var dot = document.createElementNS(SVG_NS, "circle");
+                dot.setAttribute("r", "5");
+                dot.setAttribute("fill", "var(--hf-brand, #6ea8fe)");
+                dot.setAttribute("opacity", "0");
+                funnelSvg.appendChild(dot);
+                var proxy = { t: 0 };
+                var at = Math.min(switchAt + i * 0.08, Math.max(0, duration - 0.5));
+                tl.set(dot, { attr: { opacity: 1, cx: pt.x, cy: pt.y } }, at);
+                tl.to(
+                  proxy,
+                  {
+                    t: 1,
+                    duration: 0.6,
+                    ease: "power1.inOut",
+                    onUpdate: function () {
+                      dot.setAttribute("cx", pt.x + (pointX - pt.x) * proxy.t);
+                      dot.setAttribute("cy", pt.y + (pointY - pt.y) * proxy.t);
+                    },
+                  },
+                  at
+                );
+                tl.to(dot, { attr: { opacity: 0 }, duration: 0.15 }, at + 0.6);
+              });
+              tl.to(funnelPoint, { scale: 1.2, duration: 0.12, ease: "power1.out" }, switchAt + 0.65);
+              tl.to(funnelPoint, { scale: 1, duration: 0.18, ease: "power1.in" }, switchAt + 0.77);
+            } else {
+              // ---- ALB + environment cards mode ----
+              tl.fromTo(lbBlock, { opacity: 0, y: -8 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, revealAt);
+
+              SIDES.forEach(function (side, i) {
+                tl.fromTo(
+                  side.cardEl,
+                  { opacity: 0, y: 20 },
+                  { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+                  revealAt + 0.15 + i * 0.12
+                );
+                side.rowEls.forEach(function (row, j) {
+                  tl.fromTo(
+                    row.el,
+                    { opacity: 0, x: -10 },
+                    { opacity: 1, x: 0, duration: 0.3, ease: "power2.out" },
+                    revealAt + 0.35 + i * 0.12 + j * 0.08
+                  );
+                });
+              });
+
+              // Lever + track geometry measured once from real layout.
+              var trackRect = switchEl.getBoundingClientRect();
+              var anchorLeftRect = anchorLeft.getBoundingClientRect();
+              var anchorRightRect = anchorRight.getBoundingClientRect();
+              var trackLeftX = anchorLeftRect.left + anchorLeftRect.width / 2 - trackRect.left;
+              var trackRightX = anchorRightRect.left + anchorRightRect.width / 2 - trackRect.left;
+              var centerX = (trackLeftX + trackRightX) / 2;
+
+              var totalPct = SIDES[0].trafficPct + SIDES[1].trafficPct;
+              var rightRatio = totalPct > 0 ? SIDES[1].trafficPct / totalPct : 0.5;
+              var targetLeverX = trackLeftX + (trackRightX - trackLeftX) * rightRatio;
+
+              lever.style.left = centerX + "px";
+              tl.set(lever, { opacity: 0, left: centerX }, revealAt + 0.4);
+              tl.to(lever, { opacity: 1, duration: 0.25, ease: "power1.out" }, revealAt + 0.4);
+              tl.to(lever, { left: targetLeverX, duration: switchDur, ease: "power2.inOut" }, switchAt);
+
+              // Count-up: each side's card percentage + the ALB tg line,
+              // driven from one proxy per side so every readout of the
+              // same value stays in lockstep (never independently tweened
+              // copies that could drift apart).
+              function formatPct(n) {
+                return Math.round(n) + "%";
+              }
+              var tgProxies = {};
+              SIDES.forEach(function (side) {
+                var proxy = { v: 0 };
+                tgProxies[side.key] = proxy;
+                tl.to(
+                  proxy,
+                  {
+                    v: side.trafficPct,
+                    duration: switchDur,
+                    ease: "power2.out",
+                    onUpdate: function () {
+                      side.pctEl.textContent = formatPct(proxy.v);
+                      lbTgEl.innerHTML =
+                        '<span class="dd-tg-left">' +
+                        SIDES[0].label.toLowerCase() +
+                        "-tg <b>" +
+                        formatPct(tgProxies.left.v) +
+                        "</b></span>&nbsp;&nbsp;" +
+                        '<span class="dd-tg-right">' +
+                        SIDES[1].label.toLowerCase() +
+                        "-tg <b>" +
+                        formatPct(tgProxies.right.v) +
+                        "</b></span>";
+                    },
+                  },
+                  switchAt
+                );
+              });
+
+              // ---- Optional 5xx error-rate chart ----
+              if (showErrorChart) {
+                var chartBody = errorSvg.parentElement;
+                var chartW = chartBody.clientWidth || 400;
+                var chartH = chartBody.clientHeight || 60;
+                var rate = Math.max(0.01, props.errorRatePct);
+                var FLAT_MULT = [0.9, 1.05, 0.95, 1.1, 0.92, 1.0];
+                var RISING_MULT = [0.12, 0.28, 0.42, 0.58, 0.78, 1.0];
+                var mults = props.errorChartTrend === "rising" ? RISING_MULT : FLAT_MULT;
+                var values = mults.map(function (m) {
+                  return rate * m;
+                });
+                // Real bug found via a real end-to-end render + reference-video comparison:
+                // this axis-headroom multiplier (peak * 1.3) is a normal charting technique,
+                // but for a PERCENTAGE-based rate it can push the axis label past 100% (e.g.
+                // errorRatePct:100 rendered an axis max of "130.0%"), which reads as a real
+                // data value, not a scale tick -- percentages can't exceed 100. Capped at 100,
+                // and rounded up to a clean increment (5/10/25/50/100) the way an axis label
+                // should read, matching the reference chart's plain "20% max" style.
+                var rawMax = Math.min(100, Math.max.apply(null, values.concat([rate * 1.3, 0.5])));
+                var NICE_STEPS = [0.5, 1, 2, 5, 10, 20, 25, 50, 100];
+                var maxVal = 100;
+                for (var ni = 0; ni < NICE_STEPS.length; ni++) {
+                  if (NICE_STEPS[ni] >= rawMax) {
+                    maxVal = NICE_STEPS[ni];
+                    break;
+                  }
+                }
+
+                while (errorSvg.firstChild) errorSvg.removeChild(errorSvg.firstChild);
+                errorSvg.setAttribute("viewBox", "0 0 " + chartW + " " + chartH);
+
+                var axisMax = document.createElementNS(SVG_NS, "text");
+                axisMax.setAttribute("x", "0");
+                axisMax.setAttribute("y", "10");
+                axisMax.setAttribute("class", "dd-error-axis");
+                axisMax.textContent = (maxVal % 1 === 0 ? maxVal : maxVal.toFixed(1)) + "% max";
+                errorSvg.appendChild(axisMax);
+
+                var axisMin = document.createElementNS(SVG_NS, "text");
+                axisMin.setAttribute("x", "0");
+                axisMin.setAttribute("y", chartH - 2);
+                axisMin.setAttribute("class", "dd-error-axis");
+                axisMin.textContent = "0%";
+                errorSvg.appendChild(axisMin);
+
+                var plotLeft = 28;
+                var plotWGrid = Math.max(20, chartW - plotLeft - 4);
+                // A faint gridline pattern -- real reference-video comparison found our chart
+                // was a bare line with no visual scaffolding, reading as unfinished next to
+                // the reference's gridded, axis-labeled charts.
+                [0.5, 1].forEach(function (frac) {
+                  var gy = chartH - 4 - frac * (chartH - 14);
+                  var grid = document.createElementNS(SVG_NS, "line");
+                  grid.setAttribute("x1", plotLeft);
+                  grid.setAttribute("y1", gy);
+                  grid.setAttribute("x2", plotLeft + plotWGrid);
+                  grid.setAttribute("y2", gy);
+                  grid.setAttribute("stroke", "var(--hf-border, #2c2f36)");
+                  grid.setAttribute("stroke-width", "1");
+                  grid.setAttribute("stroke-dasharray", "2,3");
+                  errorSvg.appendChild(grid);
+                });
+                var plotW = Math.max(20, chartW - plotLeft - 4);
+                var pts = values.map(function (v, i) {
+                  var x = plotLeft + (i / (values.length - 1)) * plotW;
+                  var y = chartH - 4 - (v / maxVal) * (chartH - 14);
+                  return x + "," + y;
+                });
+
+                var poly = document.createElementNS(SVG_NS, "polyline");
+                poly.setAttribute("points", pts.join(" "));
+                poly.setAttribute("fill", "none");
+                poly.setAttribute("stroke", "var(--hf-accent-4, #ff6e6e)");
+                poly.setAttribute("stroke-width", "2.5");
+                poly.setAttribute("stroke-linejoin", "round");
+                poly.setAttribute("stroke-linecap", "round");
+                errorSvg.appendChild(poly);
+
+                var len = poly.getTotalLength ? poly.getTotalLength() : 400;
+                poly.style.strokeDasharray = len;
+                poly.style.strokeDashoffset = len;
+                tl.to(poly, { strokeDashoffset: 0, duration: 0.8, ease: "power2.out" }, revealAt + 0.1);
+                tl.fromTo(errorChart, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power1.out" }, revealAt);
+              }
+            }
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["deployment-dashboard"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<!--
+  ide-diff-panel -- HyperFrames sub-composition (software mockup)
+
+  A code diff view: an IDE-style tab bar with a filename, then a unified
+  diff body -- added/removed/context lines with +/- gutter markers and
+  green/red tint -- revealing line by line. The green/red diff tint and
+  +/- gutter glyphs are real product convention (like browser-window's
+  traffic-light dots), exempt from the accent-opt-in rule; `accent` only
+  colors the tab's active underline + caret.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("ide-diff-panel"). Every per-instance
+  difference comes through data-composition-variables, resolved via
+  lib/props.js.
+
+  Variables:
+    - filename     (string): file tab label.
+    - lines        (list): pipe-separated diff lines, each formatted
+                   "OP:code text" where OP is "+" (added), "-" (removed),
+                   or "=" (context/unchanged). e.g.
+                   "=:function total(items) {|-:  return items.length|+:  return items.reduce((a,b)=>a+b,0)|=:}".
+    - accent       (enum): tab underline + caret color. Opt-in only.
+    - reveal_at    (number, seconds): when the first line reveals.
+    - line_stagger (number, seconds): gap between successive line reveals.
+    - duration     (number, seconds): total instance length.
+
+  Registers window.__timelines["ide-diff-panel"] under the literal key.
+-->
+<html lang="en" data-composition-id="ide-diff-panel" data-composition-duration="6" data-composition-variables="[
+    { &quot;id&quot;: &quot;filename&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Filename&quot;, &quot;description&quot;: &quot;File tab label.&quot;, &quot;default&quot;: &quot;utils.ts&quot; },
+    { &quot;id&quot;: &quot;lines&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Diff lines&quot;, &quot;description&quot;: &quot;Pipe-separated lines, each \&quot;OP:code text\&quot; where OP is +, -, or = (context).&quot;, &quot;default&quot;: &quot;=:function total(items) {|-:  return items.length|+:  return items.reduce((a, b) => a + b, 0)|=:}&quot; },
+    { &quot;id&quot;: &quot;accent&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Accent&quot;, &quot;description&quot;: &quot;Tab underline + caret color. Opt-in only; default is the fixed brand accent.&quot;, &quot;default&quot;: &quot;brand&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;brand&quot;, &quot;label&quot;: &quot;Brand&quot; }, { &quot;value&quot;: &quot;accent&quot;, &quot;label&quot;: &quot;Accent&quot; }, { &quot;value&quot;: &quot;accent-2&quot;, &quot;label&quot;: &quot;Accent 2&quot; }, { &quot;value&quot;: &quot;accent-3&quot;, &quot;label&quot;: &quot;Accent 3&quot; }, { &quot;value&quot;: &quot;accent-4&quot;, &quot;label&quot;: &quot;Accent 4&quot; }] },
+    { &quot;id&quot;: &quot;reveal_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Reveal at&quot;, &quot;description&quot;: &quot;Seconds from mount when the first line reveals.&quot;, &quot;default&quot;: 0.4, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;line_stagger&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Line stagger&quot;, &quot;description&quot;: &quot;Seconds between successive line reveals.&quot;, &quot;default&quot;: 0.35, &quot;min&quot;: 0.1, &quot;max&quot;: 2, &quot;step&quot;: 0.01 },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays.&quot;, &quot;default&quot;: 6, &quot;min&quot;: 2, &quot;max&quot;: 30, &quot;step&quot;: 0.1 }
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <title>IDE Diff Panel</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="ide-diff-panel" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .idp-card {
+            width: 100%;
+            height: 100%;
+            max-width: 118cqh;
+            border-radius: calc(var(--hf-radius, 16px) * 1.25);
+            overflow: hidden;
+            background: var(--hf-surface, #16181c);
+            box-shadow: 0 4cqh 10cqh rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+          }
+          .idp-tab {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            gap: 1.6cqmin;
+            padding: 3cqmin 4cqmin 2cqmin;
+            background: var(--hf-surface-2, #1e2126);
+            border-bottom: 1px solid var(--hf-border, #2c2f36);
+          }
+          .idp-tab-icon {
+            width: 2.6cqmin;
+            height: 2.6cqmin;
+            border-radius: 0.6cqmin;
+            background: var(--idp-accent, var(--hf-brand, #6ea8fe));
+            flex: 0 0 auto;
+            opacity: 0;
+          }
+          /* Blinking cursor after the last revealed line -- a real code-editor
+             convention (same exempt-from-"ban on idle wobble" class as
+             browser-window's traffic-light dots), signalling "this file is
+             live/active" rather than decorative idle motion. */
+          .idp-cursor {
+            width: 0.55cqmin;
+            align-self: stretch;
+            margin-left: 0.8cqmin;
+            background: var(--idp-accent, var(--hf-brand, #6ea8fe));
+            opacity: 0;
+            flex: 0 0 auto;
+          }
+          .idp-tab-name {
+            font-family: var(--hf-font-mono, monospace);
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            min-width: 0;
+            border-bottom: 0.4cqmin solid var(--idp-accent, var(--hf-brand, #6ea8fe));
+            padding-bottom: 0.8cqmin;
+          }
+          .idp-body {
+            flex: 1;
+            min-height: 0;
+            padding: 3cqmin 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            overflow: hidden;
+            background: var(--hf-bg, #0b0d10);
+          }
+          .idp-line {
+            display: flex;
+            align-items: center;
+            padding: 0.6cqmin 4cqmin;
+            opacity: 0;
+            transform: translateX(-2cqmin);
+            font-family: var(--hf-font-mono, monospace);
+            white-space: nowrap;
+          }
+          .idp-line.op-plus {
+            background: rgba(40, 200, 90, 0.16);
+          }
+          .idp-line.op-minus {
+            background: rgba(255, 90, 90, 0.14);
+          }
+          .idp-gutter {
+            flex: 0 0 auto;
+            width: 5cqmin;
+            font-weight: 700;
+            text-align: center;
+          }
+          .idp-line.op-plus .idp-gutter {
+            color: #4fd87b;
+          }
+          .idp-line.op-minus .idp-gutter {
+            color: #ff6e6e;
+          }
+          .idp-text {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .idp-line.op-equal .idp-text {
+            color: var(--hf-muted, #9aa1ad);
+          }
+        </style>
+
+        <div class="idp-card" id="idp-card">
+          <div class="idp-tab">
+            <div class="idp-tab-icon" id="idp-tab-icon" aria-hidden="true"></div>
+            <span class="idp-tab-name" id="idp-tab-name"></span>
+          </div>
+          <div class="idp-body" id="idp-body"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "ide-diff-panel: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              filename: { type: "string", default: "utils.ts", maxLength: 60 },
+              lines: {
+                type: "list",
+                default: [
+                  "=:function total(items) {",
+                  "-:  return items.length",
+                  "+:  return items.reduce((a, b) => a + b, 0)",
+                  "=:}",
+                ],
+                max: 10,
+                delimiter: "|",
+              },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              line_stagger: { type: "number", default: 0.35, min: 0.1, max: 2 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var card = document.getElementById("idp-card");
+            var tabIcon = document.getElementById("idp-tab-icon");
+            var tabName = document.getElementById("idp-tab-name");
+            var body = document.getElementById("idp-body");
+
+            root.style.setProperty("--idp-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Parse each "OP:code" line into { op, text }. Only the FIRST
+            // colon is a delimiter -- code itself commonly contains ':'
+            // (TS types, object literals), so splitting further would
+            // corrupt the source text.
+            var parsed = props.lines.map(function (raw) {
+              var idx = raw.indexOf(":");
+              var op = "=";
+              var text = raw;
+              if (idx > -1 && idx <= 1) {
+                var candidate = raw.slice(0, idx);
+                if (candidate === "+" || candidate === "-" || candidate === "=") {
+                  op = candidate;
+                  text = raw.slice(idx + 1);
+                }
+              }
+              return { op: op, text: text };
+            });
+
+            // HFTextFit.fitOrTruncate's shrink step (fitFontToBox -> countWrappedLines)
+            // decides whether text fits by simulating word-wrap at whitespace boundaries.
+            // A filename/path (e.g. "migrations/20241025_rename_user_column.sql") has NO
+            // whitespace at all, so it is one single "word": countWrappedLines's loop never
+            // even reaches its own `measure(...) > maxWidth` check (that branch requires a
+            // non-empty `current` already accumulated from a PRIOR word), so it always
+            // reports `lines: 1` regardless of how wide that one word actually renders --
+            // the shrink loop below it then never triggers, and fitOrTruncate renders the
+            // full untruncated text at the untouched baseSize. Confirmed as a real bug via
+            // a real end-to-end render + hyperframes check (this exact filename rendered at
+            // ~77px and overflowed the canvas by ~1000px). deployment-dashboard.html hit
+            // the identical class of bug for single-token labels/versions/ids and fixed it
+            // with this same measure-and-truncate-directly approach (never going through
+            // fitFontToBox's wrap simulation) -- mirrored here rather than reinvented.
+            function fitNoWrapToken(el, text, opts) {
+              text = String(text == null ? "" : text);
+              var family = opts.family;
+              var weight = opts.weight;
+              var maxWidth = opts.maxWidth;
+              var minSize = opts.minSize;
+              var size = opts.baseSize;
+              while (size > minSize && HFTextFit.measure(text, weight, size, family) > maxWidth) {
+                size -= 1;
+              }
+              var fitText = text;
+              if (HFTextFit.measure(text, weight, size, family) > maxWidth) {
+                fitText = HFTextFit.truncateToWidth(text, weight, size, family, maxWidth);
+              }
+              el.style.fontSize = size + "px";
+              el.textContent = fitText;
+            }
+
+            function fitTabName() {
+              // maxWidth measured for real (not a flat `* 0.7` guess): the icon+gap+padding
+              // eat a FIXED amount of space, not a fixed percentage of it -- see the cqmin
+              // constants below, which mirror this component's own CSS.
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var tab = tabName.parentElement;
+              var tabPaddingPx = 8 * rootMin; // matches .idp-tab's 4cqmin left + 4cqmin right
+              var iconWidthPx = 2.6 * rootMin; // matches .idp-tab-icon's width
+              var tabGapPx = 1.6 * rootMin; // matches .idp-tab's gap
+              var boxWidth = Math.max(
+                40,
+                tab.getBoundingClientRect().width - tabPaddingPx - iconWidthPx - tabGapPx
+              );
+              fitNoWrapToken(tabName, props.filename, {
+                family: "monospace",
+                weight: 600,
+                maxWidth: boxWidth,
+                baseSize: Math.max(16, boxWidth * 0.09),
+                minSize: 13,
+              });
+            }
+
+            // Frame-filling: fewer diff lines -> bigger monospace type and
+            // more per-line breathing room (README hard rule).
+            var count = Math.max(1, parsed.length);
+            var lineFontCqmin = count <= 4 ? 3.4 : count <= 7 ? 2.7 : 2.2;
+            var linePadCqmin = count <= 4 ? 1.4 : count <= 7 ? 0.9 : 0.6;
+
+            var lineEls = [];
+            var cursorEl = null;
+            HFProps.rebuild(body, function (container) {
+              lineEls = [];
+              parsed.forEach(function (line, i) {
+                var row = document.createElement("div");
+                row.className = "idp-line op-" + (line.op === "+" ? "plus" : line.op === "-" ? "minus" : "equal");
+                row.style.fontSize = lineFontCqmin + "cqmin";
+                row.style.paddingTop = linePadCqmin + "cqmin";
+                row.style.paddingBottom = linePadCqmin + "cqmin";
+                var gutter = document.createElement("span");
+                gutter.className = "idp-gutter";
+                // Context rows get no gutter glyph at all -- an invisible
+                // (color: transparent) glyph would still "paint" an empty
+                // fill and trip the contrast/paint checker, so we simply
+                // never give it text instead of hiding it with color.
+                gutter.textContent = line.op === "+" ? "+" : line.op === "-" ? "−" : "";
+                var textEl = document.createElement("span");
+                textEl.className = "idp-text";
+                row.appendChild(gutter);
+                row.appendChild(textEl);
+                if (i === parsed.length - 1) {
+                  cursorEl = document.createElement("span");
+                  cursorEl.className = "idp-cursor";
+                  row.appendChild(cursorEl);
+                }
+                container.appendChild(row);
+                lineEls.push({ el: row, text: textEl, gutter: gutter, op: line.op, src: line.text });
+              });
+            });
+
+            function layout() {
+              fitTabName();
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var sizePx = lineFontCqmin * rootMin;
+              lineEls.forEach(function (line) {
+                // .idp-text is `flex: 1; min-width: 0` inside a row whose
+                // gutter is `flex: 0 0 auto` -- its rendered box already
+                // IS the real available width for the code text, so
+                // measuring it directly (rather than re-deriving it from
+                // the row's own width minus assumed paddings) can't drift
+                // out of sync with the actual flex layout.
+                var boxWidth = line.text.getBoundingClientRect().width || 200;
+                HFTextFit.fitOrTruncate(line.text, line.src, {
+                  family: "monospace",
+                  weight: 400,
+                  maxWidth: boxWidth,
+                  maxHeight: 1000,
+                  baseSize: sizePx,
+                  minSize: 11,
+                  maxLines: 1,
+                });
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.3));
+            var stagger = props.line_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power2.out" }, 0);
+            // Tab icon pop -- "this file just opened/became active" cue, distinct from the
+            // card's own plain fade.
+            tl.fromTo(
+              tabIcon,
+              { opacity: 0, scale: 0.5 },
+              { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2.5)" },
+              Math.min(0.1, Math.max(0, duration - 0.1))
+            );
+            var lastRevealAt = revealAt;
+            lineEls.forEach(function (line, i) {
+              var at = Math.min(revealAt + i * stagger, Math.max(0, duration - 0.15));
+              lastRevealAt = at;
+              tl.fromTo(
+                line.el,
+                { opacity: 0, x: -12 },
+                { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" },
+                at
+              );
+              // +/- gutter glyphs get their own bounce-in, slightly after the row's own
+              // fade starts, so an added/removed line reads as a distinct real event
+              // rather than just sliding in with the rest of the row.
+              if (line.op !== "=") {
+                tl.fromTo(
+                  line.gutter,
+                  { scale: 0, opacity: 0 },
+                  { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(3)" },
+                  at + 0.08
+                );
+              }
+            });
+
+            // Blinking cursor after the last revealed line -- see .idp-cursor CSS comment.
+            // A FINITE repeat count, never repeat:-1: an infinite-repeat tween makes GSAP
+            // report this timeline's own .duration() as effectively infinite, which broke
+            // the "pad tl.duration() to the authored duration prop" line below (confirmed
+            // via a real hyperframes snapshot picking an end-of-timeline frame at
+            // ~9.7e9 seconds instead of this component's real ~6s duration). Repeating
+            // exactly enough times to cover the remaining scene duration blinks correctly
+            // without corrupting the timeline's own length.
+            if (cursorEl) {
+              var cursorStart = Math.min(lastRevealAt + 0.4, Math.max(0, duration - 0.6));
+              var blinkReps = Math.max(1, Math.ceil((duration - cursorStart) / 0.5) + 1);
+              tl.set(cursorEl, { opacity: 1 }, cursorStart);
+              tl.to(cursorEl, { opacity: 0, duration: 0.5, repeat: blinkReps, yoyo: true, ease: "steps(1)" }, cursorStart);
+            }
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["ide-diff-panel"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

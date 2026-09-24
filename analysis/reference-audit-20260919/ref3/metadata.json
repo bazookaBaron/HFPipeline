@@ -1,0 +1,44 @@
+{
+  "status": "complete",
+  "source": "C:\\Users\\debna\\Downloads\\igexport-DdSc-I9IqNC.mp4",
+  "source_size_bytes": 4504980,
+  "width": 720,
+  "height": 1280,
+  "duration_seconds": 134.654708,
+  "stream_duration_seconds": "134.533333",
+  "avg_frame_rate": "30/1",
+  "time_base": "1/15360",
+  "probed_frame_count": 4036,
+  "first_pts_ms": 0.0,
+  "last_pts_ms": 134500.0,
+  "roi_normalized_xyxy": [
+    0.05,
+    0.15,
+    0.95,
+    0.85
+  ],
+  "roi_pixels_xyxy": [
+    36,
+    192,
+    684,
+    1088
+  ],
+  "roi_caveat": "Operational central content proxy, not a detected content mask; may include captions or omit content.",
+  "metrics": "Every decoded native frame at original raster resolution, RGB24. Consecutive-frame mean absolute RGB channel difference /255 and fraction of pixels whose maximum channel difference exceeds 16/255. First frame differences undefined.",
+  "timestamps": "ffprobe per-frame pts_time; best_effort_timestamp_time only if pts_time absent. Index is zero-based display order. elapsed_ms subtracts first PTS.",
+  "dense_sampling": "8Hz grid from first PTS; nearest native frame to each target, no interpolation; manifest retains target and actual PTS.",
+  "scene_threshold": 0.15,
+  "scene_algorithm": "FFmpeg select scene, all scores retained at native resolution",
+  "thumbnail_width": 240,
+  "sheet_grid": [
+    8,
+    6
+  ],
+  "hue_analysis": "not performed",
+  "audio_analysis": "not performed",
+  "rotation": "autorotate disabled; stored raster orientation",
+  "decoded_frame_count": 4036,
+  "dense_image_count": 1077,
+  "contact_sheet_count": 23,
+  "scene_candidate_count": 0
+}

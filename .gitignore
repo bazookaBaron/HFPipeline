@@ -1,0 +1,30 @@
+# dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+
+# secrets
+.env
+.env.*
+!.env.example
+control-panel/data/oauth/
+
+# generated media / render outputs (large, reproducible)
+*.mp4
+*.mov
+*.webm
+*.wav
+video-engine/renders/
+video-engine/snapshots/
+video-engine/generated/
+video-engine/assets/generated/
+control-panel/data/renders/
+control-panel/data/uploads/
+orchestrator/output/
+voice-pipeline/test_out/
+analysis/**/sheets/
+analysis/**/dense/
+analysis/**/design/crops/
+.hyperframes/
+*.log

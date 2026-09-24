@@ -1,0 +1,307 @@
+<!doctype html>
+<!--
+  failure-recovery -- HyperFrames sub-composition (Architecture)
+
+  A single node illustrating a retry/circuit-breaker pattern: starts
+  healthy, fails (red, shake, broken icon), then works through N retry
+  attempt dots (amber, staggered) while a spinner icon rotates, and
+  finally recovers (green, checkmark, settle pulse). Status label and
+  attempt dots are cleared/rebuilt from `retry_attempts` via
+  HFProps.rebuild before the GSAP timeline captures references, matching
+  this library's own build/measure-before-animate ordering rule.
+
+  Colors here are fixed SEMANTIC state coding (red = failed, amber =
+  retrying, green = recovered) -- the same documented exemption
+  kpi-cluster.html's trend arrows and problem-solution-pair's red/green
+  use; there is no opt-in `accent` variable because there is nothing here
+  to distinguish as content, only one real-world status to depict.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("failure-recovery"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="failure-recovery"
+  data-composition-duration="7"
+  data-composition-variables='[
+    { "id": "node_label", "type": "string", "role": "content", "label": "Node label", "description": "Name of the service/node.", "default": "Payment Service" },
+    { "id": "retry_attempts", "type": "number", "role": "content", "label": "Retry attempts", "description": "Number of retry-attempt dots shown.", "default": 3, "min": 1, "max": 4, "step": 1 },
+    { "id": "fail_at", "type": "number", "role": "timing", "label": "Fail at", "description": "Seconds from mount when the node fails.", "default": 0.8, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "retry_at", "type": "number", "role": "timing", "label": "Retry at", "description": "Seconds from mount when retry attempts begin.", "default": 2, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "recover_at", "type": "number", "role": "timing", "label": "Recover at", "description": "Seconds from mount when the node recovers.", "default": 4.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 7, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Failure Recovery</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="failure-recovery" data-duration="7" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .fr-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5cqmin;
+          }
+          .fr-node {
+            position: relative;
+            width: 42cqmin;
+            height: 42cqmin;
+            min-width: 140px;
+            min-height: 140px;
+            border-radius: 3cqmin;
+            border: 0.34cqmin solid var(--hf-border, #2c2f36);
+            background: var(--hf-surface, #16181c);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2.4cqmin;
+            opacity: 0;
+            transform: translateY(1.8cqmin) scale(0.96);
+            transition: border-color 0.25s, box-shadow 0.25s;
+          }
+          .fr-node.fr-failed {
+            border-color: var(--hf-accent-4, #ff6e6e);
+            box-shadow: 0 0 4cqmin rgba(255, 110, 110, 0.25);
+          }
+          .fr-node.fr-retrying {
+            border-color: var(--hf-accent-3, #ffb84d);
+            box-shadow: 0 0 4cqmin rgba(255, 184, 77, 0.22);
+          }
+          .fr-node.fr-recovered {
+            border-color: var(--hf-accent, #71f5a7);
+            box-shadow: 0 0 4cqmin rgba(113, 245, 167, 0.25);
+          }
+          .fr-icon-wrap {
+            width: 12cqmin;
+            height: 12cqmin;
+            min-width: 40px;
+            min-height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--hf-surface-2, #1e2126);
+          }
+          .fr-icon-wrap svg {
+            width: 60%;
+            height: 60%;
+          }
+          .fr-node-label {
+            font-weight: 800;
+            font-size: 3.2cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 36cqmin;
+          }
+          .fr-status {
+            font-weight: 700;
+            font-size: 2.6cqmin;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 36cqmin;
+          }
+          .fr-node.fr-failed .fr-status {
+            color: var(--hf-accent-4, #ff6e6e);
+          }
+          .fr-node.fr-retrying .fr-status {
+            color: var(--hf-accent-3, #ffb84d);
+          }
+          .fr-node.fr-recovered .fr-status {
+            color: var(--hf-accent, #71f5a7);
+          }
+          .fr-dots {
+            display: flex;
+            gap: 2cqmin;
+          }
+          .fr-dot {
+            width: 2.6cqmin;
+            height: 2.6cqmin;
+            min-width: 9px;
+            min-height: 9px;
+            border-radius: 50%;
+            background: var(--hf-border, #2c2f36);
+            transition: background 0.15s;
+          }
+          .fr-dot.fr-dot-lit {
+            background: var(--hf-accent-3, #ffb84d);
+          }
+          .fr-dot.fr-dot-done {
+            background: var(--hf-accent, #71f5a7);
+          }
+        </style>
+
+        <div class="fr-stage" id="fr-stage">
+          <div class="fr-node" id="fr-node">
+            <div class="fr-icon-wrap" id="fr-icon-wrap">
+              <svg id="fr-icon-check" viewBox="0 0 24 24" fill="none" stroke="var(--hf-muted, #9aa1ad)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12l5 5L20 6"></path>
+              </svg>
+              <svg id="fr-icon-x" viewBox="0 0 24 24" fill="none" stroke="var(--hf-accent-4, #ff6e6e)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="display: none">
+                <path d="M6 6l12 12M18 6L6 18"></path>
+              </svg>
+              <svg id="fr-icon-retry" viewBox="0 0 24 24" fill="none" stroke="var(--hf-accent-3, #ffb84d)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="display: none">
+                <path d="M4 4v6h6"></path>
+                <path d="M4.5 15a8 8 0 1 0 2-8.5L4 10"></path>
+              </svg>
+              <svg id="fr-icon-ok" viewBox="0 0 24 24" fill="none" stroke="var(--hf-accent, #71f5a7)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" style="display: none">
+                <path d="M4 12l5 5L20 6"></path>
+              </svg>
+            </div>
+            <div class="fr-node-label" id="fr-node-label"></div>
+            <div class="fr-status" id="fr-status">Healthy</div>
+            <div class="fr-dots" id="fr-dots"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "failure-recovery: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              node_label: { type: "string", default: "Payment Service", maxLength: 30 },
+              retry_attempts: { type: "number", default: 3, min: 1, max: 4 },
+              fail_at: { type: "number", default: 0.8, min: 0, max: 30 },
+              retry_at: { type: "number", default: 2, min: 0, max: 30 },
+              recover_at: { type: "number", default: 4.4, min: 0, max: 30 },
+              duration: { type: "number", default: 7, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var node = document.getElementById("fr-node");
+            var labelEl = document.getElementById("fr-node-label");
+            var statusEl = document.getElementById("fr-status");
+            var dotsWrap = document.getElementById("fr-dots");
+            var iconCheck = document.getElementById("fr-icon-check");
+            var iconX = document.getElementById("fr-icon-x");
+            var iconRetry = document.getElementById("fr-icon-retry");
+            var iconOk = document.getElementById("fr-icon-ok");
+
+            var attempts = Math.round(props.retry_attempts);
+            var dotEls = [];
+            HFProps.rebuild(dotsWrap, function (container) {
+              dotEls = [];
+              for (var i = 0; i < attempts; i++) {
+                var dot = document.createElement("div");
+                dot.className = "fr-dot";
+                container.appendChild(dot);
+                dotEls.push(dot);
+              }
+            });
+
+            function fitAll() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(labelEl, props.node_label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: 36 * rootMin,
+                maxHeight: 1000,
+                baseSize: 3.2 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+            fitAll();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(fitAll);
+            }
+
+            var duration = props.duration;
+            var failAt = Math.min(Math.max(props.fail_at, 0.3), Math.max(0, duration - 2));
+            var retryAt = Math.min(Math.max(props.retry_at, failAt + 0.4), Math.max(0, duration - 1.2));
+            var recoverAt = Math.min(Math.max(props.recover_at, retryAt + 0.6), Math.max(0, duration - 0.4));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(node, { opacity: 0, y: 18, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" }, 0.15);
+
+            // Every icon/status swap below uses tl.set (a real property
+            // render), never tl.call/onComplete -- the renderer seeks this
+            // timeline frame-by-frame to arbitrary times, and GSAP only
+            // guarantees callback-based side effects (call, onComplete) fire
+            // when suppressEvents is false; tl.set's property assignment
+            // (including plain DOM properties like style.display/
+            // textContent/className) is rendered unconditionally on every
+            // seek, matching every other discrete-state-swap in this
+            // library (browser-window.html, etl-pipeline.html).
+
+            // Fail: shake + red state + X icon + status text.
+            tl.set(node, { className: "fr-node fr-failed" }, failAt);
+            tl.set(iconCheck, { display: "none" }, failAt);
+            tl.set(iconX, { display: "block" }, failAt);
+            tl.set(statusEl, { textContent: "Connection Failed" }, failAt);
+            tl.to(node, { x: -8, duration: 0.06, ease: "power1.inOut" }, failAt + 0.02);
+            tl.to(node, { x: 8, duration: 0.06, ease: "power1.inOut" }, failAt + 0.08);
+            tl.to(node, { x: -6, duration: 0.06, ease: "power1.inOut" }, failAt + 0.14);
+            tl.to(node, { x: 0, duration: 0.08, ease: "power1.out" }, failAt + 0.2);
+
+            // Retry: amber state + spinning retry icon + attempt dots
+            // lighting up in sequence.
+            tl.set(node, { className: "fr-node fr-retrying" }, retryAt);
+            tl.set(iconX, { display: "none" }, retryAt);
+            tl.set(iconRetry, { display: "block" }, retryAt);
+            tl.set(statusEl, { textContent: "Retrying…" }, retryAt);
+            tl.to(iconRetry, { rotate: 360, transformOrigin: "50% 50%", duration: Math.max(0.4, recoverAt - retryAt), ease: "none" }, retryAt);
+
+            var attemptWindow = Math.max(0.3, recoverAt - retryAt - 0.2);
+            dotEls.forEach(function (dot, i) {
+              var at = retryAt + 0.1 + (i / Math.max(1, attempts)) * attemptWindow;
+              tl.set(dot, { className: "fr-dot fr-dot-lit" }, at);
+            });
+
+            // Recover: green state + checkmark + all dots complete + settle
+            // pulse.
+            tl.set(node, { className: "fr-node fr-recovered" }, recoverAt);
+            tl.set(iconRetry, { display: "none" }, recoverAt);
+            tl.set(iconOk, { display: "block" }, recoverAt);
+            tl.set(statusEl, { textContent: "Recovered" }, recoverAt);
+            dotEls.forEach(function (dot) {
+              tl.set(dot, { className: "fr-dot fr-dot-done" }, recoverAt);
+            });
+            tl.to(node, { scale: 1.05, duration: 0.16, ease: "power1.out" }, recoverAt);
+            tl.to(node, { scale: 1, duration: 0.22, ease: "power1.in" }, recoverAt + 0.16);
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["failure-recovery"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

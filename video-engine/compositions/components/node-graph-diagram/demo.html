@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Demo: node-graph-diagram</title>
+    <script src="../lib/text-fit.js"></script>
+    <script src="../lib/props.js"></script>
+    <script src="../lib/demo-runtime.js"></script>
+    <style>
+      body {
+        margin: 0;
+        background: #05060a;
+        color: #f4f5f7;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      p {
+        margin: 0;
+        color: #9aa1ad;
+        font-size: 13px;
+        max-width: 640px;
+        text-align: center;
+      }
+      #stage-wrap {
+        border: 1px solid #2c2f36;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>node-graph-diagram</h1>
+    <p>
+      Branch layout: an upload API fanning out to a permissions check, Postgres, and S3 --
+      proving auto-positioning, per-node icons/subtitles/status color, labeled edges, and a
+      traveling pulse dot all together.
+    </p>
+    <div id="stage-wrap">
+      <div id="stage" style="transform: scale(0.42); transform-origin: top left"></div>
+    </div>
+    <div id="controls"></div>
+
+    <script>
+      var STAGE_SCALE = 0.42;
+      var stageWrap = document.getElementById("stage-wrap");
+      HFDemoRuntime.mount({
+        src: "./node-graph-diagram.html",
+        mountEl: document.getElementById("stage"),
+        compositionId: "node-graph-diagram",
+        width: 1080,
+        height: 1920,
+        variables: {
+          nodes: [
+            { id: "browser", title: "Browser", subtitle: "", icon: "none", statusColor: "none" },
+            { id: "api", title: "Upload API", subtitle: "Access control", icon: "doc", statusColor: "brand" },
+            { id: "pg", title: "Postgres", subtitle: "Metadata store", icon: "db", statusColor: "none" },
+            { id: "s3", title: "S3", subtitle: "Object storage", icon: "cube", statusColor: "none" },
+          ],
+          edges: [
+            { from: "browser", to: "api", label: "POST /upload", color: "brand", direction: "forward" },
+            { from: "api", to: "pg", label: "read permissions", color: "accent-3", direction: "both" },
+            { from: "api", to: "s3", label: "PUT · file bytes", color: "accent", direction: "forward" },
+          ],
+          layout: "branch",
+          pulses: [
+            { edgeIndex: 0, at: 1.9 },
+            { edgeIndex: 2, at: 3.0 },
+          ],
+          accent: "brand",
+          reveal_at: 0.3,
+          edge_stagger: 0.28,
+          duration: 9,
+        },
+      }).then(function (handle) {
+        stageWrap.style.width = 1080 * STAGE_SCALE + "px";
+        stageWrap.style.height = 1920 * STAGE_SCALE + "px";
+        HFDemoRuntime.attachScrubber(handle, document.getElementById("controls"));
+      }).catch(function (err) {
+        document.getElementById("stage").textContent = String(err);
+        console.error(err);
+      });
+    </script>
+  </body>
+</html>

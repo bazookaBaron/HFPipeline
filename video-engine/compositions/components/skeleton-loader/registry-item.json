@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "skeleton-loader",
+  "type": "hyperframes:component",
+  "title": "Skeleton Loader",
+  "description": "Loading-skeleton rows (avatar + shimmering bars) that pulse via a timeline-nested repeating GSAP tween, then resolve into real title/subtitle content, staggered per row.",
+  "tags": ["software-mockup", "loading", "skeleton", "shimmer", "ui"],
+  "category": "software-mockup",
+  "files": [
+    {
+      "path": "skeleton-loader.html",
+      "target": "compositions/components/skeleton-loader/skeleton-loader.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "items", "type": "string", "default": "Ada Lovelace~Senior Engineer|Grace Hopper~Product Design|Alan Turing~Data Platform" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "resolve_at", "type": "number", "default": 1.6 },
+    { "id": "resolve_stagger", "type": "number", "default": 0.4 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

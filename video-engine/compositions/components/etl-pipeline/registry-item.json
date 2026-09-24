@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "etl-pipeline",
+  "type": "hyperframes:component",
+  "title": "ETL Pipeline",
+  "description": "A horizontal Extract -> Transform -> Load pipeline with a data block traveling through and each stage highlighting while it's active.",
+  "tags": ["architecture", "systems", "pipeline", "data-engineering", "etl"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "etl-pipeline.html",
+      "target": "compositions/components/etl-pipeline/etl-pipeline.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "extract_label", "type": "string", "default": "Extract" },
+    { "id": "transform_label", "type": "string", "default": "Transform" },
+    { "id": "load_label", "type": "string", "default": "Load" },
+    { "id": "data_label", "type": "string", "default": "raw.csv" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "start_at", "type": "number", "default": 0.6 },
+    { "id": "stage_duration", "type": "number", "default": 1.5 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

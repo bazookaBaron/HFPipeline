@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "acronym-expander",
+  "type": "hyperframes:component",
+  "title": "Acronym Expander",
+  "description": "A big acronym that expands letter-by-letter into its full meaning, each expansion row's letter matching and highlighting the corresponding acronym letter in sync.",
+  "tags": ["narrative", "acronym", "text", "reveal"],
+  "category": "narrative",
+  "files": [
+    {
+      "path": "acronym-expander.html",
+      "target": "compositions/components/acronym-expander/acronym-expander.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "acronym", "type": "string", "default": "API" },
+    { "id": "expansion", "type": "string", "default": "Application|Programming|Interface" },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "expand_at", "type": "number", "default": 1 },
+    { "id": "letter_stagger", "type": "number", "default": 0.45 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

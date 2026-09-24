@@ -1,0 +1,28 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "gauge-meter",
+  "type": "hyperframes:component",
+  "title": "Gauge Meter",
+  "description": "A semicircular speedometer-style gauge: a fill arc and needle sweeping from min to a target value across a real measured arc length, with a synced count-up value and label.",
+  "tags": ["data-metrics", "chart", "gauge", "speedometer", "needle", "count-up"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "gauge-meter.html",
+      "target": "compositions/components/gauge-meter/gauge-meter.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "label", "type": "string", "default": "CPU Load" },
+    { "id": "min_value", "type": "number", "default": 0 },
+    { "id": "max_value", "type": "number", "default": 100 },
+    { "id": "target_value", "type": "number", "default": 78 },
+    { "id": "unit", "type": "string", "default": "%" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.4 },
+    { "id": "sweep_duration", "type": "number", "default": 1.6 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

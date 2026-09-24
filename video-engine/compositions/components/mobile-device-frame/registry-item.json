@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "mobile-device-frame",
+  "type": "hyperframes:component",
+  "title": "Mobile Device Frame",
+  "description": "Phone device chrome (rounded bezel, notch/status bar, home indicator) around simple app content, for a mobile-app narration beat.",
+  "tags": ["software-mockup", "mobile", "device", "app", "chrome"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "mobile-device-frame.html",
+      "target": "compositions/components/mobile-device-frame/mobile-device-frame.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "app_name", "type": "string", "default": "Orbit" },
+    { "id": "status_time", "type": "string", "default": "9:41" },
+    { "id": "notch_style", "type": "enum", "default": "notch", "options": ["notch", "punch-hole", "none"] },
+    { "id": "row_count", "type": "number", "default": 3 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "content_at", "type": "number", "default": 0.4 },
+    { "id": "row_stagger", "type": "number", "default": 0.18 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

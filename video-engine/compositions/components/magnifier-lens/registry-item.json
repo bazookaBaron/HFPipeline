@@ -1,0 +1,31 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "magnifier-lens",
+  "type": "hyperframes:component",
+  "title": "Magnifier Lens",
+  "description": "A circular magnifier lens over a generic mock settings/detail panel, revealing a zoomed-in copy of one row -- for highlighting fine detail within a larger mockup.",
+  "tags": ["software-mockup", "magnifier", "lens", "zoom", "foundation-adjacent"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "magnifier-lens.html",
+      "target": "compositions/components/magnifier-lens/magnifier-lens.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "Settings" },
+    { "id": "detail_lines", "type": "string", "default": "Two-factor authentication|Recovery email|API access tokens|Session timeout" },
+    { "id": "lens_offset_x_pct", "type": "number", "default": 0, "min": -40, "max": 40 },
+    { "id": "lens_offset_y_pct", "type": "number", "default": 0, "min": -40, "max": 40 },
+    { "id": "lens_size_pct", "type": "number", "default": 38, "min": 5, "max": 60 },
+    { "id": "zoom", "type": "number", "default": 2.2, "min": 1.2, "max": 4 },
+    { "id": "label", "type": "string", "default": "Zoomed in" },
+    { "id": "show_label", "type": "boolean", "default": true },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "lens_at", "type": "number", "default": 1.4 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

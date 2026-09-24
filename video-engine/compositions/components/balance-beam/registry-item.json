@@ -1,0 +1,26 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "balance-beam",
+  "type": "hyperframes:component",
+  "title": "Balance Beam",
+  "description": "A balance-scale beam on a fulcrum that tips toward whichever of two labeled tradeoff options has the greater resolved weight, settling with an elastic landing.",
+  "tags": ["data", "metrics", "tradeoff", "comparison", "scale", "balance"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "balance-beam.html",
+      "target": "compositions/components/balance-beam/balance-beam.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "left_label", "type": "string", "default": "Speed" },
+    { "id": "right_label", "type": "string", "default": "Accuracy" },
+    { "id": "left_weight", "type": "number", "default": 35 },
+    { "id": "right_weight", "type": "number", "default": 65 },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "tilt_at", "type": "number", "default": 1.2 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

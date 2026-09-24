@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "question-answer-pair",
+  "type": "hyperframes:component",
+  "title": "Question Answer Pair",
+  "description": "Classic Q -> A reveal: a question with a Q badge, then the answer reveals after a beat with an A badge.",
+  "tags": ["narrative", "qa", "reveal", "text"],
+  "category": "narrative",
+  "files": [
+    {
+      "path": "question-answer-pair.html",
+      "target": "compositions/components/question-answer-pair/question-answer-pair.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "question", "type": "string", "default": "What happens if two writes race?" },
+    { "id": "answer", "type": "string", "default": "The last write wins -- unless the store uses vector clocks to detect the conflict." },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "question_at", "type": "number", "default": 0.3 },
+    { "id": "answer_at", "type": "number", "default": 1.6 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

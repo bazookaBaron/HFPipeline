@@ -1,0 +1,266 @@
+<!doctype html>
+<!--
+  bracket-annotation -- HyperFrames sub-composition (annotation / Foundation)
+
+  A bracket (square caliper or curly brace) spanning a range of content
+  along one axis, with a label at the end of its center tick -- for grouping
+  or measuring a span of items elsewhere on screen. Meant to be composited
+  as an ANNOTATION LAYER on top of other visual content (a different
+  data-track-index in the host index.html); this file stays transparent
+  outside its own bracket + tick + label, never painting an opaque
+  background over whatever it spans.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("bracket-annotation"). Every
+  per-instance difference (label, span, orientation, style, timing, accent)
+  is a declared variable resolved via lib/props.js -- never a forked file.
+
+  Variables:
+    - label       (string): text shown at the end of the bracket's tick.
+    - orientation (enum: horizontal|vertical): horizontal spans left-right
+                  at a fixed vertical position; vertical spans top-bottom at
+                  a fixed horizontal position.
+    - start_pct   (number, 0-100): span start, percent along the spanning axis.
+    - end_pct     (number, 0-100): span end, percent along the spanning axis.
+    - cross_pct   (number, 0-100): position along the perpendicular axis.
+    - style       (enum: square|curly): caliper right-angles vs. a smooth brace.
+    - reveal_at   (number, seconds): when the bracket/tick/label reveal.
+    - accent      (enum): bracket stroke + label-border color. Opt-in;
+                  default is the fixed brand accent.
+    - duration    (number, seconds): total instance length.
+
+  Registers window.__timelines["bracket-annotation"] under the literal key.
+-->
+<html
+  lang="en"
+  data-composition-id="bracket-annotation"
+  data-composition-duration="5"
+  data-composition-variables='[
+    { "id": "label", "type": "string", "role": "content", "label": "Label", "description": "Text shown at the end of the bracket'"'"'s tick.", "default": "3 steps" },
+    { "id": "orientation", "type": "enum", "role": "content", "label": "Orientation", "description": "Horizontal spans left-right; vertical spans top-bottom.", "default": "horizontal", "options": [{ "value": "horizontal", "label": "Horizontal" }, { "value": "vertical", "label": "Vertical" }] },
+    { "id": "start_pct", "type": "number", "role": "content", "label": "Start %", "description": "Span start, percent along the spanning axis.", "default": 18, "min": 0, "max": 100, "step": 1 },
+    { "id": "end_pct", "type": "number", "role": "content", "label": "End %", "description": "Span end, percent along the spanning axis.", "default": 82, "min": 0, "max": 100, "step": 1 },
+    { "id": "cross_pct", "type": "number", "role": "content", "label": "Cross %", "description": "Position along the perpendicular axis.", "default": 62, "min": 0, "max": 100, "step": 1 },
+    { "id": "style", "type": "enum", "role": "style", "label": "Style", "description": "Caliper right-angles vs. a smooth brace.", "default": "curly", "options": [{ "value": "square", "label": "Square" }, { "value": "curly", "label": "Curly" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the bracket/tick/label reveal.", "default": 0.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Bracket stroke + label-border color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays. Read from props, never from static markup.", "default": 5, "min": 1.5, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Bracket Annotation</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="bracket-annotation" data-duration="5" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .ba-bracket {
+            position: absolute;
+            color: var(--ba-accent, var(--hf-brand, #6ea8fe));
+            opacity: 0;
+          }
+          .ba-bracket svg {
+            display: block;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+          }
+          .ba-chip {
+            position: absolute;
+            max-width: 40cqmin;
+            padding: 1.4cqmin 2.4cqmin;
+            border-radius: var(--hf-radius-sm, 10px);
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--ba-accent, var(--hf-brand, #6ea8fe));
+            box-shadow: 0 1.2cqmin 3cqmin rgba(0, 0, 0, 0.45);
+            color: var(--hf-fg, #f4f5f7);
+            font-weight: 600;
+            font-size: 2.5cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+          }
+        </style>
+
+        <div class="ba-bracket" id="ba-bracket">
+          <svg id="ba-svg" viewBox="0 0 100 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path
+              id="ba-path"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              vector-effect="non-scaling-stroke"
+              pathLength="1"
+            ></path>
+          </svg>
+        </div>
+        <div class="ba-chip" id="ba-chip"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "bracket-annotation: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              label: { type: "string", default: "3 steps", maxLength: 50 },
+              orientation: { type: "enum", default: "horizontal", options: ["horizontal", "vertical"] },
+              start_pct: { type: "number", default: 18, min: 0, max: 100 },
+              end_pct: { type: "number", default: 82, min: 0, max: 100 },
+              cross_pct: { type: "number", default: 62, min: 0, max: 100 },
+              style: { type: "enum", default: "curly", options: ["square", "curly"] },
+              reveal_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              duration: { type: "number", default: 5, min: 1.5, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var bracket = document.getElementById("ba-bracket");
+            var path = document.getElementById("ba-path");
+            var chip = document.getElementById("ba-chip");
+
+            root.style.setProperty("--ba-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var TICK_LEN = 9; // cqmin, the center tick extending toward the label
+            var lo = Math.min(props.start_pct, props.end_pct);
+            var hi = Math.max(props.start_pct, props.end_pct);
+            var horizontal = props.orientation === "horizontal";
+
+            function layout() {
+              var w = root.clientWidth;
+              var h = root.clientHeight;
+              var rootMin = Math.min(w, h) / 100;
+              var tickPx = TICK_LEN * rootMin;
+
+              if (horizontal) {
+                var spanX0 = (lo / 100) * w;
+                var spanX1 = (hi / 100) * w;
+                var crossY = (props.cross_pct / 100) * h;
+                var bracketH = 6 * rootMin;
+
+                bracket.style.left = spanX0 + "px";
+                bracket.style.top = crossY + "px";
+                bracket.style.width = spanX1 - spanX0 + "px";
+                bracket.style.height = bracketH + "px";
+
+                var d;
+                if (props.style === "square") {
+                  d = "M2,0 L2,50 L98,50 L98,0";
+                } else {
+                  d = "M0,0 C15,0 35,50 50,50 C65,50 85,0 100,0";
+                }
+                path.setAttribute("d", d);
+                path.setAttribute("viewBox", "0 0 100 50");
+                document.getElementById("ba-svg").setAttribute("viewBox", "0 0 100 50");
+
+                var chipX = spanX0 + (spanX1 - spanX0) / 2;
+                var chipY = crossY + bracketH + tickPx;
+                chip.style.left = chipX + "px";
+                chip.style.top = chipY + "px";
+                gsap.set(chip, { xPercent: -50, yPercent: 0 });
+
+                // Draw the center tick as a small fixed-position element
+                // rather than folding it into the scaled SVG path (a
+                // non-uniformly-scaled SVG would distort a straight tick's
+                // angle) -- see #ba-tick below.
+              } else {
+                var spanY0 = (lo / 100) * h;
+                var spanY1 = (hi / 100) * h;
+                var crossX = (props.cross_pct / 100) * w;
+                var bracketW = 6 * rootMin;
+
+                bracket.style.left = crossX + "px";
+                bracket.style.top = spanY0 + "px";
+                bracket.style.width = bracketW + "px";
+                bracket.style.height = spanY1 - spanY0 + "px";
+
+                var dv;
+                if (props.style === "square") {
+                  dv = "M0,2 L50,2 L50,98 L0,98";
+                } else {
+                  dv = "M0,0 C0,15 50,35 50,50 C50,65 0,85 0,100";
+                }
+                path.setAttribute("d", dv);
+                document.getElementById("ba-svg").setAttribute("viewBox", "0 0 50 100");
+
+                var chipX2 = crossX + bracketW + tickPx;
+                var chipY2 = spanY0 + (spanY1 - spanY0) / 2;
+                chip.style.left = chipX2 + "px";
+                chip.style.top = chipY2 + "px";
+                gsap.set(chip, { xPercent: 0, yPercent: -50 });
+              }
+
+              HFTextFit.fitOrTruncate(chip, props.label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: 40 * rootMin - 4.8 * rootMin,
+                maxHeight: 1000,
+                baseSize: 2.5 * rootMin,
+                minSize: 13,
+                maxLines: 1,
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.5));
+
+            var tl = gsap.timeline({ paused: true });
+
+            // Draw-on effect via stroke-dash, seek-safe (pathLength="1"
+            // normalizes dash units regardless of the path's real length).
+            gsap.set(path, { strokeDasharray: 1, strokeDashoffset: 1 });
+            tl.to(bracket, { opacity: 1, duration: 0.01 }, revealAt);
+            tl.to(path, { strokeDashoffset: 0, duration: 0.5, ease: "power2.inOut" }, revealAt);
+            tl.fromTo(
+              chip,
+              { opacity: 0, scale: 0.9 },
+              { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(1.6)" },
+              revealAt + 0.4
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see
+            // browser-window.html for the full rationale.
+            tl.set({}, {}, duration);
+            window.__timelines["bracket-annotation"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

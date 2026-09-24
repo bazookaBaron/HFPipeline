@@ -1,0 +1,218 @@
+<!doctype html>
+<!--
+  takeaway-banner -- HyperFrames sub-composition (Narrative)
+
+  A bold, full-width closing-statement banner for a scene's key takeaway
+  line: a sweeping accent bar draws in first, then the statement itself
+  scales/fades up, centered and large (single-item frame-filling: the
+  biggest type size in this catalog, since a banner IS one item).
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("takeaway-banner"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+
+  Animation-density pass (aesthetic-plan Batch 2): the original 2-tween
+  shape (bar sweep-in, then headline fade/scale reveal) read as flat for a
+  closing-statement beat. Three new beats were added, all on the SAME two
+  existing elements (no new DOM, no color/accent changes):
+    1. A bar "landing thump" (scaleY overshoot/settle) right as the sweep
+       finishes, so the bar visibly lands instead of just stopping cold.
+    2. A headline emphasis pulse (finite scale up-then-settle) shortly
+       after its main reveal, giving the statement a second "punch"
+       instead of holding static.
+    3. A smaller bar "echo" pulse synced to the headline's emphasis pulse,
+       tying bar + statement together as one closing beat.
+  All three reuse the checklist-progress.html checkbox-pulse idiom
+  (`fromTo(..., {scale/scaleX/scaleY: 1}, {..., yoyo: true, repeat: 1}, at)`)
+  -- finite repeat:1, never repeat:-1.
+-->
+<html
+  lang="en"
+  data-composition-id="takeaway-banner"
+  data-composition-duration="5"
+  data-composition-variables='[
+    { "id": "text", "type": "string", "role": "content", "label": "Takeaway", "description": "The closing statement.", "default": "Cache invalidation is the hard part -- not caching itself." },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Sweeping bar + rule color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "bar_at", "type": "number", "role": "timing", "label": "Bar at", "description": "Seconds from mount when the accent bar sweeps in.", "default": 0.15, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the statement reveals.", "default": 0.55, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 5, "min": 1.5, "max": 20, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Takeaway Banner</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="takeaway-banner" data-duration="5" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .tb-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4.5cqmin;
+            padding: 10cqmin;
+          }
+          .tb-bar {
+            height: 0.9cqmin;
+            min-height: 5px;
+            width: 22cqmin;
+            border-radius: 999px;
+            background: var(--tb-accent, var(--hf-brand, #6ea8fe));
+            transform: scaleX(0);
+            transform-origin: center;
+          }
+          .tb-text {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            line-height: 1.18;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(2cqmin) scale(0.94);
+          }
+        </style>
+
+        <div class="tb-stage" id="tb-stage">
+          <div class="tb-bar" id="tb-bar"></div>
+          <div class="tb-text" id="tb-text"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "takeaway-banner: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              text: {
+                type: "string",
+                default: "Cache invalidation is the hard part -- not caching itself.",
+                maxLength: 160,
+              },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              bar_at: { type: "number", default: 0.15, min: 0, max: 30 },
+              reveal_at: { type: "number", default: 0.55, min: 0, max: 30 },
+              duration: { type: "number", default: 5, min: 1.5, max: 20 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("tb-stage");
+            var bar = document.getElementById("tb-bar");
+            var textEl = document.getElementById("tb-text");
+
+            root.style.setProperty("--tb-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxWidth = stage.clientWidth - stage.clientWidth * 0.14;
+
+              HFTextFit.fitOrTruncate(textEl, props.text, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: boxWidth,
+                maxHeight: 8.4 * rootMin * 1.18 * 4,
+                baseSize: 8.4 * rootMin,
+                minSize: 26,
+                lineHeightRatio: 1.18,
+                maxLines: 4,
+              });
+              textEl.style.maxWidth = boxWidth + "px";
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var barAt = Math.min(props.bar_at, Math.max(0, duration - 0.4));
+            var revealAt = Math.min(Math.max(props.reveal_at, barAt + 0.2), Math.max(0, duration - 0.2));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.to(bar, { scaleX: 1, duration: 0.45, ease: "power2.out" }, barAt);
+            tl.fromTo(
+              textEl,
+              { opacity: 0, y: 22, scale: 0.94 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.6, ease: "back.out(1.4)" },
+              revealAt
+            );
+
+            // New beat: the accent bar "lands" with a brief thickening thump
+            // right as its sweep-in finishes, instead of just stopping cold --
+            // an overshoot/settle beat on the same element (checklist-progress
+            // checkbox-pulse idiom, applied to scaleY). Finite repeat:1, never
+            // repeat:-1.
+            var barSweepEnd = barAt + 0.45;
+            var barThumpAt = Math.min(barSweepEnd, Math.max(0, duration - 0.3));
+            tl.fromTo(
+              bar,
+              { scaleY: 1 },
+              { scaleY: 2.4, duration: 0.14, yoyo: true, repeat: 1, ease: "power1.out" },
+              barThumpAt
+            );
+
+            // New beat: a secondary emphasis pulse on the headline shortly
+            // after its main reveal lands -- a finite scale up-then-settle
+            // flourish giving the statement a second "punch" rather than
+            // holding static once revealed.
+            var textRevealEnd = revealAt + 0.6;
+            var textPulseAt = Math.min(textRevealEnd + 0.15, Math.max(0, duration - 0.35));
+            tl.fromTo(
+              textEl,
+              { scale: 1 },
+              { scale: 1.045, duration: 0.16, yoyo: true, repeat: 1, ease: "power1.out" },
+              textPulseAt
+            );
+
+            // New beat: the accent bar echoes that same emphasis moment with
+            // its own smaller pulse, synced to the headline's pulse -- ties
+            // bar + statement together as one closing beat rather than two
+            // independent elements.
+            tl.fromTo(
+              bar,
+              { scaleX: 1 },
+              { scaleX: 1.08, duration: 0.16, yoyo: true, repeat: 1, ease: "power1.out" },
+              textPulseAt
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["takeaway-banner"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

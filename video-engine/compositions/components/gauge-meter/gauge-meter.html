@@ -1,0 +1,253 @@
+<!doctype html>
+<!--
+  gauge-meter -- HyperFrames sub-composition (Data / metrics)
+
+  A semicircular speedometer-style gauge: a muted track arc, a brand-accent
+  fill arc animating up to the target value's fraction of the min/max
+  range, and a needle (an SVG <g> rotated via GSAP around the arc's real
+  pivot point) sweeping from the left (min) through the top (mid) to the
+  right (max). The value number counts up underneath in sync, with a unit
+  suffix and a label.
+
+  Both the track/fill arc's real length (path.getTotalLength()) and the
+  needle's pivot coordinates are taken directly from the SVG's own
+  authored geometry (cx/cy/r constants declared once in the script) --
+  never independently guessed -- matching progress-donut.html's
+  "measure the real geometry, never assume a constant" rule for circular
+  visuals (see README "For circular/donut/gauge visuals").
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("gauge-meter"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="gauge-meter"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "label", "type": "string", "role": "content", "label": "Label", "description": "Text under the value.", "default": "CPU Load" },
+    { "id": "min_value", "type": "number", "role": "content", "label": "Min value", "description": "Value at the left end of the gauge.", "default": 0, "min": -1000000, "max": 1000000, "step": 0.1 },
+    { "id": "max_value", "type": "number", "role": "content", "label": "Max value", "description": "Value at the right end of the gauge.", "default": 100, "min": -1000000, "max": 1000000, "step": 0.1 },
+    { "id": "target_value", "type": "number", "role": "content", "label": "Target value", "description": "Value the needle sweeps to.", "default": 78, "min": -1000000, "max": 1000000, "step": 0.1 },
+    { "id": "unit", "type": "string", "role": "content", "label": "Unit", "description": "Suffix appended after the value, e.g. \"%\" or \"km/h\".", "default": "%" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Fill-arc + needle + value color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the needle sweeps and the number counts up.", "default": 0.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "sweep_duration", "type": "number", "role": "timing", "label": "Sweep duration", "description": "Seconds the needle sweep + count-up takes.", "default": 1.6, "min": 0.4, "max": 5, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gauge Meter</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="gauge-meter" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .gm-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.4cqmin;
+            padding: 6cqmin;
+          }
+          .gm-gauge-wrap {
+            position: relative;
+            width: 80cqmin;
+            height: 50cqmin;
+            min-width: 220px;
+            min-height: 140px;
+            opacity: 0;
+            transform: translateY(1.6cqmin) scale(0.96);
+          }
+          .gm-gauge-wrap svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+          }
+          .gm-value-block {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 4%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          }
+          .gm-value {
+            font-weight: 800;
+            font-size: 9cqmin;
+            color: var(--gm-accent, var(--hf-brand, #6ea8fe));
+            letter-spacing: -0.01em;
+          }
+          .gm-label {
+            font-weight: 600;
+            font-size: 3cqmin;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 78cqmin;
+            opacity: 0;
+          }
+        </style>
+
+        <div class="gm-stage" id="gm-stage">
+          <div class="gm-gauge-wrap" id="gm-gauge-wrap">
+            <svg viewBox="0 0 100 60">
+              <path id="gm-track" d="M 6 54 A 44 44 0 0 1 94 54" fill="none" stroke="var(--hf-surface-2, #1e2126)" stroke-width="8" stroke-linecap="round"></path>
+              <path
+                id="gm-fill"
+                d="M 6 54 A 44 44 0 0 1 94 54"
+                fill="none"
+                stroke="var(--gm-accent, var(--hf-brand, #6ea8fe))"
+                stroke-width="8"
+                stroke-linecap="round"
+              ></path>
+              <g id="gm-needle-group">
+                <line id="gm-needle" x1="50" y1="54" x2="50" y2="16" stroke="var(--hf-fg, #f4f5f7)" stroke-width="2.6" stroke-linecap="round"></line>
+                <circle cx="50" cy="54" r="4.4" fill="var(--hf-fg, #f4f5f7)"></circle>
+              </g>
+            </svg>
+            <div class="gm-value-block">
+              <div class="gm-value" id="gm-value">0%</div>
+            </div>
+          </div>
+          <div class="gm-label" id="gm-label"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "gauge-meter: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              label: { type: "string", default: "CPU Load", maxLength: 40 },
+              min_value: { type: "number", default: 0, min: -1000000, max: 1000000 },
+              max_value: { type: "number", default: 100, min: -1000000, max: 1000000 },
+              target_value: { type: "number", default: 78, min: -1000000, max: 1000000 },
+              unit: { type: "string", default: "%" },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              sweep_duration: { type: "number", default: 1.6, min: 0.4, max: 5 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var gaugeWrap = document.getElementById("gm-gauge-wrap");
+            var fillArc = document.getElementById("gm-fill");
+            var needleGroup = document.getElementById("gm-needle-group");
+            var valueEl = document.getElementById("gm-value");
+            var labelEl = document.getElementById("gm-label");
+
+            root.style.setProperty("--gm-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Real measured arc length from the path's own authored
+            // geometry -- never a guessed/hardcoded constant.
+            var arcLength = fillArc.getTotalLength();
+            fillArc.style.strokeDasharray = arcLength;
+            fillArc.style.strokeDashoffset = arcLength;
+
+            // Pivot point matches the authored SVG geometry (needle base at
+            // 50,54 -- the same point both arc endpoints share the radius
+            // from). GSAP's svgOrigin rotates the needle group around this
+            // exact SVG user-space coordinate, independent of the element's
+            // own bounding box (the correct tool for an SVG pivot, per
+            // GSAP's own SVG-transform docs).
+            var PIVOT = "50 54";
+            gsap.set(needleGroup, { svgOrigin: PIVOT, rotation: -90 });
+
+            var minV = props.min_value;
+            var maxV = props.max_value === minV ? minV + 1 : props.max_value;
+            var targetV = Math.min(Math.max(props.target_value, Math.min(minV, maxV)), Math.max(minV, maxV));
+            var fraction = (targetV - minV) / (maxV - minV);
+            fraction = Math.min(1, Math.max(0, fraction));
+
+            function formatNumber(n) {
+              var decimals = Math.abs(n - Math.round(n)) > 0.001 ? 1 : 0;
+              return decimals > 0 ? n.toFixed(1) : String(Math.round(n));
+            }
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(labelEl, props.label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: 78 * rootMin,
+                maxHeight: 1000,
+                baseSize: 3 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.6));
+            var sweepDur = Math.min(props.sweep_duration, Math.max(0.3, duration - revealAt - 0.2));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(gaugeWrap, { opacity: 0, y: 16, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" }, revealAt);
+            tl.fromTo(labelEl, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, revealAt + 0.15);
+
+            var proxy = { f: 0, v: minV };
+            tl.to(
+              proxy,
+              {
+                f: fraction,
+                v: targetV,
+                duration: sweepDur,
+                ease: "power2.out",
+                onUpdate: function () {
+                  fillArc.style.strokeDashoffset = arcLength * (1 - proxy.f);
+                  gsap.set(needleGroup, { rotation: -90 + proxy.f * 180, svgOrigin: PIVOT });
+                  valueEl.textContent = formatNumber(proxy.v) + props.unit;
+                },
+              },
+              revealAt + 0.15
+            );
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["gauge-meter"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

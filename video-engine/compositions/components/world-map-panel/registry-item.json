@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "world-map-panel",
+  "type": "hyperframes:component",
+  "title": "World Map Panel",
+  "description": "A simplified, stylized world map (graticule grid + abstract continent blobs) with N highlighted points revealed one at a time with a pulse ring and label, e.g. server locations.",
+  "tags": ["data", "metrics", "map", "geo", "world", "locations"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "world-map-panel.html",
+      "target": "compositions/components/world-map-panel/world-map-panel.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "Global edge network" },
+    { "id": "points", "type": "string", "default": "[{\"label\":\"Virginia\",\"x\":28,\"y\":38},{\"label\":\"London\",\"x\":47,\"y\":30},{\"label\":\"Frankfurt\",\"x\":58,\"y\":40},{\"label\":\"Singapore\",\"x\":78,\"y\":58},{\"label\":\"Sydney\",\"x\":86,\"y\":78},{\"label\":\"Tokyo\",\"x\":83,\"y\":38}]" },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "point_stagger", "type": "number", "default": 0.4 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

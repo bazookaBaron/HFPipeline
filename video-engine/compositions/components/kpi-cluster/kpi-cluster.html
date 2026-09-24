@@ -1,0 +1,366 @@
+<!doctype html>
+<!--
+  kpi-cluster -- HyperFrames sub-composition (Data / metrics)
+
+  2-4 KPI cards (big count-up number + label + trend arrow) in a row,
+  proving the multi-instance pattern generalizes to a metrics/data
+  category. Frame-filling: fewer cards means bigger type + more room per
+  card (content-panel.html's count<=2 branch, same idea applied to a grid
+  instead of a list).
+
+  Cards are built ONCE from the resolved `kpis` list via HFProps.rebuild
+  before the GSAP timeline captures references to each card's number
+  span -- never rebuilt afterward (see keyword-highlighter.html's header
+  comment for the bug class this avoids). The count-up itself is a
+  GSAP-tweened proxy object read via onUpdate -- deterministic under
+  seek/scrub because it only depends on the tween's own time position,
+  never Date.now() or a real-time interval.
+
+  Trend arrow color (up/down/flat) is fixed semantic coding, like
+  problem-solution-pair's red/green -- not the opt-in --hf-accent*
+  content rotation.
+
+  Per-card color rotation (added in the aesthetic-plan pass): each card's big
+  number + top rule automatically cycles through --hf-accent, -2, -3, -4,
+  then --hf-brand by card index -- exactly mini-legend.html's/folder-tree.html's
+  established "N simultaneous content items" pattern (README "Color
+  discipline": accent-2/3/4 exist ONLY to distinguish content items, always
+  opt-in-by-default for that purpose). This REPLACES the earlier single
+  `accent` prop, which forced one flat color across every card regardless of
+  count -- removed from this component's schema entirely rather than left as
+  a vestigial no-op prop.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("kpi-cluster"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="kpi-cluster"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "kpis", "type": "string", "role": "content", "label": "KPIs", "description": "JSON array of {label, value, suffix, decimals, trend} objects, 2-4 items. trend is one of up|down|flat.", "default": "[{\"label\":\"Active Users\",\"value\":128000,\"suffix\":\"+\",\"decimals\":0,\"trend\":\"up\"},{\"label\":\"Uptime\",\"value\":99.95,\"suffix\":\"%\",\"decimals\":2,\"trend\":\"flat\"},{\"label\":\"P95 Latency\",\"value\":42,\"suffix\":\"ms\",\"decimals\":0,\"trend\":\"down\"}]" },
+    { "id": "title", "type": "string", "role": "content", "label": "Title", "description": "Short headline above the KPI cards, e.g. 'The numbers after the switch'. Keeps the frame from reading as bare floating cards.", "default": "The numbers", "maxLength": 60 },
+    { "id": "title_reveal_at", "type": "number", "role": "timing", "label": "Title reveal at", "description": "Seconds from mount when the title reveals, before the cards.", "default": 0, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the cards start revealing.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "card_stagger", "type": "number", "role": "timing", "label": "Card stagger", "description": "Seconds between successive card reveals.", "default": 0.25, "min": 0.05, "max": 2, "step": 0.05 },
+    { "id": "count_duration", "type": "number", "role": "timing", "label": "Count-up duration", "description": "Seconds each card's number takes to count up.", "default": 1.1, "min": 0.3, "max": 4, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>KPI Cluster</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="kpi-cluster" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .kc-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6cqmin;
+            gap: 5cqmin;
+          }
+          /* A title above the cards -- real bug found via a real end-to-end render + a
+             frame-by-frame reference-video comparison: 2-3 small cards centered alone in a
+             1920-tall frame with nothing else left the top ~40% of the canvas pure black.
+             The title fills that space and gives the beat its own headline, matching every
+             reference video's stat moments (never bare floating numbers). */
+          .kc-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            text-align: center;
+            color: var(--hf-fg, #f4f5f7);
+            opacity: 0;
+            transform: translateY(1.2cqmin);
+          }
+          .kc-grid {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 3.4cqmin;
+          }
+          .kc-card {
+            position: relative;
+            flex: 1 1 0;
+            min-width: 30cqmin;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            border-radius: 2cqmin;
+            padding: 4.4cqmin 3.4cqmin;
+            display: flex;
+            flex-direction: column;
+            gap: 1.6cqmin;
+            opacity: 0;
+            transform: translateY(2cqmin) scale(0.96);
+            overflow: hidden;
+          }
+          .kc-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 0.5cqmin;
+            min-height: 3px;
+            background: var(--kc-accent, var(--hf-brand, #6ea8fe));
+          }
+          .kc-number-row {
+            display: flex;
+            align-items: baseline;
+            gap: 1cqmin;
+          }
+          .kc-number {
+            font-weight: 800;
+            color: var(--kc-accent, var(--hf-brand, #6ea8fe));
+            white-space: nowrap;
+            letter-spacing: -0.01em;
+          }
+          .kc-trend {
+            font-weight: 800;
+            font-size: 3cqmin;
+          }
+          .kc-trend--up {
+            color: var(--hf-accent, #71f5a7);
+          }
+          .kc-trend--down {
+            color: var(--hf-accent-4, #ff6e6e);
+          }
+          .kc-trend--flat {
+            color: var(--hf-muted, #9aa1ad);
+          }
+          .kc-label {
+            font-weight: 600;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+        </style>
+
+        <div class="kc-stage" id="kc-stage">
+          <div class="kc-title" id="kc-title"></div>
+          <div class="kc-grid" id="kc-grid"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "kpi-cluster: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var DEFAULT_KPIS = [
+              { label: "Active Users", value: 128000, suffix: "+", decimals: 0, trend: "up" },
+              { label: "Uptime", value: 99.95, suffix: "%", decimals: 2, trend: "flat" },
+              { label: "P95 Latency", value: 42, suffix: "ms", decimals: 0, trend: "down" },
+            ];
+
+            // Per-card rotation, matching mini-legend.html/folder-tree.html exactly --
+            // real hex fallbacks (not bare var() refs) so this still renders correctly
+            // in isolation (a demo harness, or any context that never loaded
+            // composeHtml.js's :root overrides).
+            var ACCENT_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            var SCHEMA = {
+              kpis: { type: "list", default: DEFAULT_KPIS, max: 4, delimiter: "|" },
+              title: { type: "string", default: "The numbers", maxLength: 60 },
+              title_reveal_at: { type: "number", default: 0, min: 0, max: 30 },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              card_stagger: { type: "number", default: 0.25, min: 0.05, max: 2 },
+              count_duration: { type: "number", default: 1.1, min: 0.3, max: 4 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("kc-stage");
+            var grid = document.getElementById("kc-grid");
+            var titleEl = document.getElementById("kc-title");
+
+            // Normalize every kpi entry independently -- never a silent
+            // partial object (matches HFProps.resolve's own "every field
+            // falls back to its own default" discipline, applied one
+            // level deeper for this list-of-objects field).
+            var TREND_VALUES = { up: 1, down: 1, flat: 1 };
+            function normalizeKpi(raw, i) {
+              raw = raw && typeof raw === "object" ? raw : {};
+              var fallback = DEFAULT_KPIS[i % DEFAULT_KPIS.length];
+              var label = typeof raw.label === "string" && raw.label.trim() ? raw.label.trim() : fallback.label;
+              var value = typeof raw.value === "number" && isFinite(raw.value) ? raw.value : fallback.value;
+              var suffix = typeof raw.suffix === "string" ? raw.suffix : fallback.suffix;
+              var decimals =
+                typeof raw.decimals === "number" && raw.decimals >= 0 && raw.decimals <= 4
+                  ? Math.round(raw.decimals)
+                  : fallback.decimals;
+              var trend = TREND_VALUES[raw.trend] ? raw.trend : fallback.trend;
+              return { label: label, value: value, suffix: suffix, decimals: decimals, trend: trend };
+            }
+
+            var kpis = props.kpis.slice(0, 4).map(normalizeKpi);
+            if (kpis.length < 2) {
+              // Never render a single orphan card from a malformed list --
+              // fall back to the full default set (every field still
+              // resolved through normalizeKpi above).
+              kpis = DEFAULT_KPIS.map(normalizeKpi);
+            }
+
+            function formatNumber(n, decimals) {
+              var fixed = decimals > 0 ? n.toFixed(decimals) : String(Math.round(n));
+              var parts = fixed.split(".");
+              parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+              return parts.join(".");
+            }
+
+            var TREND_GLYPH = { up: "▲", down: "▼", flat: "—" };
+
+            // Frame-filling: fewer cards -> bigger type + more padding.
+            var count = kpis.length;
+            var numberSizeCqmin = count <= 2 ? 11 : count === 3 ? 9 : 7.4;
+            var labelSizeCqmin = count <= 2 ? 3.4 : count === 3 ? 2.9 : 2.5;
+
+            // Build ONCE, before the timeline below captures references.
+            var cardEls = [];
+            HFProps.rebuild(grid, function (container) {
+              cardEls = [];
+              kpis.forEach(function (kpi, i) {
+                var card = document.createElement("div");
+                card.className = "kc-card";
+                card.style.setProperty("--kc-accent", ACCENT_ROTATION[i % ACCENT_ROTATION.length]);
+
+                var numberRow = document.createElement("div");
+                numberRow.className = "kc-number-row";
+                var numberEl = document.createElement("span");
+                numberEl.className = "kc-number";
+                numberEl.style.fontSize = numberSizeCqmin + "cqmin";
+                numberEl.textContent = formatNumber(0, kpi.decimals) + kpi.suffix;
+                var trendEl = document.createElement("span");
+                trendEl.className = "kc-trend kc-trend--" + kpi.trend;
+                trendEl.textContent = TREND_GLYPH[kpi.trend];
+                numberRow.appendChild(numberEl);
+                numberRow.appendChild(trendEl);
+
+                var labelEl = document.createElement("div");
+                labelEl.className = "kc-label";
+                labelEl.style.fontSize = labelSizeCqmin + "cqmin";
+
+                card.appendChild(numberRow);
+                card.appendChild(labelEl);
+                container.appendChild(card);
+
+                cardEls.push({ el: card, numberEl: numberEl, labelEl: labelEl, kpi: kpi });
+              });
+            });
+
+            function fitLabels() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(titleEl, props.title, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: root.clientWidth * 0.88 || 800,
+                maxHeight: 1000,
+                baseSize: 5.4 * rootMin,
+                minSize: 22,
+                maxLines: 2,
+              });
+              cardEls.forEach(function (card) {
+                HFTextFit.fitOrTruncate(card.labelEl, card.kpi.label, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 600,
+                  maxWidth: card.el.clientWidth - 6 * rootMin || 200,
+                  maxHeight: 1000,
+                  baseSize: labelSizeCqmin * rootMin,
+                  minSize: 12,
+                  maxLines: 1,
+                });
+              });
+            }
+
+            fitLabels();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(fitLabels);
+            }
+
+            var duration = props.duration;
+            var titleRevealAt = Math.min(props.title_reveal_at, Math.max(0, duration - 0.6));
+            var revealAt = Math.min(Math.max(props.reveal_at, titleRevealAt), Math.max(0, duration - 0.5));
+            var stagger = props.card_stagger;
+            var countDur = props.count_duration;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(
+              titleEl,
+              { opacity: 0, y: 14 },
+              { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+              titleRevealAt
+            );
+            cardEls.forEach(function (card, i) {
+              var at = Math.min(revealAt + i * stagger, Math.max(0, duration - 0.4));
+              tl.fromTo(
+                card.el,
+                { opacity: 0, y: 20, scale: 0.96 },
+                { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power2.out" },
+                at
+              );
+              var proxy = { v: 0 };
+              var targetValue = card.kpi.value;
+              var decimals = card.kpi.decimals;
+              var suffix = card.kpi.suffix;
+              var numberEl = card.numberEl;
+              tl.to(
+                proxy,
+                {
+                  v: targetValue,
+                  duration: Math.min(countDur, Math.max(0.2, duration - at - 0.1)),
+                  ease: "power2.out",
+                  onUpdate: function () {
+                    numberEl.textContent = formatNumber(proxy.v, decimals) + suffix;
+                  },
+                },
+                at + 0.1
+              );
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["kpi-cluster"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

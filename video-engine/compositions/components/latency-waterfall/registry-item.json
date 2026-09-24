@@ -1,0 +1,24 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "latency-waterfall",
+  "type": "hyperframes:component",
+  "title": "Latency Waterfall",
+  "description": "Horizontal waterfall chart: sequential timing phases (DNS/Connect/TLS/Wait/Download) stacked in one bar, each segment's width proportional to duration, revealing left-to-right with a running total.",
+  "tags": ["data", "metrics", "chart", "waterfall", "latency", "network"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "latency-waterfall.html",
+      "target": "compositions/components/latency-waterfall/latency-waterfall.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "Request waterfall" },
+    { "id": "phases", "type": "string", "default": "[{\"label\":\"DNS\",\"ms\":24},{\"label\":\"Connect\",\"ms\":38},{\"label\":\"TLS\",\"ms\":62},{\"label\":\"Wait\",\"ms\":145},{\"label\":\"Download\",\"ms\":210}]" },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "phase_duration", "type": "number", "default": 0.45 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

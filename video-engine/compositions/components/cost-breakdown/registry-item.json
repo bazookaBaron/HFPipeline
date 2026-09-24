@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "cost-breakdown",
+  "type": "hyperframes:component",
+  "title": "Cost Breakdown",
+  "description": "Donut chart cost breakdown: N category arcs draw in beside a fading-in legend, staggered, with a count-up total in the center.",
+  "tags": ["data", "metrics", "chart", "cost", "donut", "breakdown"],
+  "category": "data-metrics",
+  "files": [
+    {
+      "path": "cost-breakdown.html",
+      "target": "compositions/components/cost-breakdown/cost-breakdown.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "title", "type": "string", "default": "Monthly cost breakdown" },
+    { "id": "categories", "type": "string", "default": "[{\"label\":\"Compute\",\"value\":420},{\"label\":\"Storage\",\"value\":180},{\"label\":\"Network\",\"value\":90},{\"label\":\"Other\",\"value\":60}]" },
+    { "id": "currency", "type": "string", "default": "$" },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "segment_stagger", "type": "number", "default": 0.35 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

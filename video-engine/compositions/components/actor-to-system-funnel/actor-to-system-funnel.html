@@ -1,0 +1,345 @@
+<!doctype html>
+<!--
+  actor-to-system-funnel -- HyperFrames sub-composition (Architecture)
+
+  N actor/user nodes across the top, converging lines into a single system
+  box at the bottom -- "many clients, one system" read at a glance. Actor
+  and system node positions are measured ONCE via getBoundingClientRect
+  after layout (relative to the SVG overlay's own bounding box), the same
+  "measure once from real layout, bake into the timeline, never recompute
+  during playback" discipline as client-server-exchange.html's packet
+  travel positions. Connector lines are plain SVG <line>s animated by
+  stroke-dashoffset (draw-on), plus small dots that travel actor -> system
+  by linear interpolation of cx/cy -- no external motionPath plugin
+  needed for two fixed endpoints.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("actor-to-system-funnel");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="actor-to-system-funnel"
+  data-composition-duration="7"
+  data-composition-variables='[
+    { "id": "actor_count", "type": "number", "role": "content", "label": "Actor count", "description": "Number of actor/user nodes narrowing into the system.", "default": 5, "min": 3, "max": 7, "step": 1 },
+    { "id": "actor_label", "type": "string", "role": "content", "label": "Actor label", "description": "Label under each actor node.", "default": "User" },
+    { "id": "system_label", "type": "string", "role": "content", "label": "System label", "description": "Label inside the single destination box.", "default": "API Gateway" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Connector/dot/system color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when actor nodes fade in.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "converge_at", "type": "number", "role": "timing", "label": "Converge at", "description": "Seconds from mount when connector lines draw and flow dots begin traveling into the system.", "default": 1.6, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 7, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Actor To System Funnel</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="actor-to-system-funnel" data-duration="7" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .atf-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+          }
+          .atf-actors {
+            position: absolute;
+            left: 6cqw;
+            right: 6cqw;
+            top: 12cqh;
+            display: flex;
+            justify-content: space-between;
+          }
+          .atf-actor {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1.6cqmin;
+            opacity: 0;
+            transform: translateY(-1.4cqmin);
+          }
+          .atf-actor-icon {
+            width: 9cqmin;
+            height: 9cqmin;
+            min-width: 30px;
+            min-height: 30px;
+            border-radius: 50%;
+            border: 0.32cqmin solid var(--atf-accent, var(--hf-brand, #6ea8fe));
+            background: var(--hf-surface, #16181c);
+          }
+          .atf-actor-label {
+            font-size: 2.4cqmin;
+            font-weight: 700;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+          }
+          .atf-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+          }
+          .atf-system {
+            position: absolute;
+            left: 50%;
+            bottom: 14cqh;
+            transform: translate(-50%, 0);
+            width: 34cqmin;
+            height: 20cqmin;
+            min-width: 130px;
+            min-height: 80px;
+            border-radius: 3cqmin;
+            border: 0.36cqmin solid var(--atf-accent, var(--hf-brand, #6ea8fe));
+            background: var(--hf-surface, #16181c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2cqmin;
+            opacity: 0;
+          }
+          .atf-system-label {
+            font-weight: 800;
+            font-size: 3.6cqmin;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 30cqmin;
+          }
+        </style>
+
+        <div class="atf-stage" id="atf-stage">
+          <svg class="atf-svg" id="atf-svg" preserveAspectRatio="none"></svg>
+          <div class="atf-actors" id="atf-actors"></div>
+          <div class="atf-system" id="atf-system">
+            <div class="atf-system-label" id="atf-system-label"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "actor-to-system-funnel: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SVG_NS = "http://www.w3.org/2000/svg";
+
+            var SCHEMA = {
+              actor_count: { type: "number", default: 5, min: 3, max: 7 },
+              actor_label: { type: "string", default: "User", maxLength: 20 },
+              system_label: { type: "string", default: "API Gateway", maxLength: 30 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              converge_at: { type: "number", default: 1.6, min: 0, max: 30 },
+              duration: { type: "number", default: 7, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("atf-stage");
+            var svg = document.getElementById("atf-svg");
+            var actorsWrap = document.getElementById("atf-actors");
+            var system = document.getElementById("atf-system");
+            var systemLabelEl = document.getElementById("atf-system-label");
+
+            root.style.setProperty("--atf-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var count = Math.round(props.actor_count);
+
+            // Per-actor accent rotation: each of the N actor nodes converging
+            // on the system is a real distinct content item, so its icon
+            // border, connector line, and traveling dot all share one color
+            // from this rotation -- the sanctioned per-item use case (see
+            // mini-legend.html's SWATCH_ROTATION). The single destination
+            // `atf-system` box stays on the existing chrome-only `accent`
+            // variable below: it is the one converging point, not a per-item
+            // element, so it keeps one fixed color.
+            var ACTOR_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            // Clear/rebuild: actor nodes are torn down and rebuilt from
+            // props every mount so a re-seek or variable change never
+            // leaves a stale node from a previous build.
+            var actorEls = [];
+            HFProps.rebuild(actorsWrap, function (container) {
+              actorEls = [];
+              for (var i = 0; i < count; i++) {
+                var actor = document.createElement("div");
+                actor.className = "atf-actor";
+                var icon = document.createElement("div");
+                icon.className = "atf-actor-icon";
+                icon.style.borderColor = ACTOR_ROTATION[i % ACTOR_ROTATION.length];
+                var label = document.createElement("div");
+                label.className = "atf-actor-label";
+                actor.appendChild(icon);
+                actor.appendChild(label);
+                container.appendChild(actor);
+                actorEls.push({ el: actor, icon: icon, label: label });
+              }
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(systemLabelEl, props.system_label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: 30 * rootMin,
+                maxHeight: 1000,
+                baseSize: 3.6 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+              actorEls.forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.label, props.actor_label, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: (actorsWrap.clientWidth / count) * 0.9,
+                  maxHeight: 1000,
+                  baseSize: 2.4 * rootMin,
+                  minSize: 11,
+                  maxLines: 1,
+                });
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function () {
+                layout();
+                buildTimeline();
+              });
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 1));
+            var convergeAt = Math.min(Math.max(props.converge_at, revealAt + 0.4), Math.max(0, duration - 0.6));
+
+            var tl = gsap.timeline({ paused: true });
+
+            function buildTimeline() {
+              tl.clear();
+              while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+              // Measure ONCE from real layout, in the stage's own local
+              // pixel coordinate space -- never recomputed during playback.
+              var stageRect = stage.getBoundingClientRect();
+              var systemRect = system.getBoundingClientRect();
+              var targetX = systemRect.left + systemRect.width / 2 - stageRect.left;
+              var targetY = systemRect.top - stageRect.top;
+
+              var lines = [];
+              var dots = [];
+              actorEls.forEach(function (item, i) {
+                var itemColor = ACTOR_ROTATION[i % ACTOR_ROTATION.length];
+                var iconRect = item.icon.getBoundingClientRect();
+                var startX = iconRect.left + iconRect.width / 2 - stageRect.left;
+                var startY = iconRect.bottom - stageRect.top;
+
+                var line = document.createElementNS(SVG_NS, "line");
+                line.setAttribute("x1", startX);
+                line.setAttribute("y1", startY);
+                line.setAttribute("x2", targetX);
+                line.setAttribute("y2", targetY);
+                line.setAttribute("stroke", itemColor);
+                line.setAttribute("stroke-width", "2");
+                line.setAttribute("opacity", "0.55");
+                svg.appendChild(line);
+                var len = Math.hypot(targetX - startX, targetY - startY) || 1;
+                line.style.strokeDasharray = len;
+                line.style.strokeDashoffset = len;
+                lines.push({ line: line, len: len });
+
+                var dot = document.createElementNS(SVG_NS, "circle");
+                dot.setAttribute("r", "5");
+                dot.setAttribute("fill", itemColor);
+                dot.setAttribute("cx", startX);
+                dot.setAttribute("cy", startY);
+                dot.setAttribute("opacity", "0");
+                svg.appendChild(dot);
+                dots.push({ dot: dot, startX: startX, startY: startY, targetX: targetX, targetY: targetY });
+              });
+
+              actorEls.forEach(function (item, i) {
+                tl.fromTo(
+                  item.el,
+                  { opacity: 0, y: -12 },
+                  { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+                  revealAt + i * 0.08
+                );
+              });
+              tl.fromTo(system, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, revealAt + 0.2);
+
+              lines.forEach(function (item, i) {
+                tl.to(item.line, { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, convergeAt + i * 0.05);
+              });
+
+              dots.forEach(function (item, i) {
+                var proxy = { t: 0 };
+                var at = convergeAt + 0.15 + i * 0.12;
+                tl.set(item.dot, { attr: { opacity: 1 } }, at);
+                tl.to(
+                  proxy,
+                  {
+                    t: 1,
+                    duration: 0.55,
+                    ease: "power1.in",
+                    onUpdate: function () {
+                      item.dot.setAttribute("cx", item.startX + (item.targetX - item.startX) * proxy.t);
+                      item.dot.setAttribute("cy", item.startY + (item.targetY - item.startY) * proxy.t);
+                    },
+                  },
+                  at
+                );
+                tl.to(item.dot, { attr: { opacity: 0 }, duration: 0.15 }, at + 0.5);
+              });
+
+              tl.to(system, { scale: 1.05, duration: 0.15, ease: "power1.out" }, convergeAt + 0.75);
+              tl.to(system, { scale: 1, duration: 0.2, ease: "power1.in" }, convergeAt + 0.9);
+
+              // Pad tl.duration() to the authored `duration` prop -- see the
+              // matching comment in browser-window.html for why.
+              tl.set({}, {}, duration);
+              tl.seek(0, false);
+            }
+
+            buildTimeline();
+            window.__timelines["actor-to-system-funnel"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

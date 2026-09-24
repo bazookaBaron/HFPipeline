@@ -1,0 +1,29 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "focus-spotlight",
+  "type": "hyperframes:component",
+  "title": "Focus Spotlight",
+  "description": "A darkened scrim across the full frame with a circular or rectangular cutout spotlight highlighting one region, with an optional caption below it -- for drawing attention to a single point of interest.",
+  "tags": ["annotation", "spotlight", "focus", "scrim", "foundation"],
+  "category": "annotation",
+  "files": [
+    {
+      "path": "focus-spotlight.html",
+      "target": "compositions/components/focus-spotlight/focus-spotlight.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "shape", "type": "enum", "default": "circle", "options": ["circle", "rect"] },
+    { "id": "x_pct", "type": "number", "default": 50, "min": 0, "max": 100 },
+    { "id": "y_pct", "type": "number", "default": 42, "min": 0, "max": 100 },
+    { "id": "size_pct", "type": "number", "default": 34, "min": 5, "max": 90 },
+    { "id": "caption", "type": "string", "default": "Tap here to continue" },
+    { "id": "show_caption", "type": "boolean", "default": true },
+    { "id": "spotlight_at", "type": "number", "default": 0.4 },
+    { "id": "caption_at", "type": "number", "default": 1.1 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "duration", "type": "number", "default": 5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

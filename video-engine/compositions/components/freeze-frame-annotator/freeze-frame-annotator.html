@@ -1,0 +1,283 @@
+<!doctype html>
+<!--
+  freeze-frame-annotator -- HyperFrames sub-composition (Editing / transitions)
+
+  A freeze-frame effect wrapper: a "subject" statement plays in normally,
+  then at `freeze_at` the frame visually "freezes" (desaturate + subtle
+  vignette + a tiny scale-settle, selling a paused moment) while an
+  annotation -- a drawn circle outline, a connecting leader line, and a
+  typed-in label -- appears on top at `annotate_at`, pointing at the
+  subject like a coach's telestrator. Fourth reusable effect in the
+  Editing/transitions category alongside camera-push-transition.html,
+  match-cut-morph.html, and scanline-reveal.html.
+
+  The circle "draws on" via an SVG stroke-dashoffset tween (deterministic
+  under seek, same technique as cost-breakdown.html's donut arcs) rather
+  than a CSS animation, so scrubbing backward correctly un-draws it.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("freeze-frame-annotator");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="freeze-frame-annotator"
+  data-composition-duration="5.5"
+  data-composition-variables='[
+    { "id": "subject_title", "type": "string", "role": "content", "label": "Subject title", "description": "The statement/scene being frozen.", "default": "This request" },
+    { "id": "subject_subtitle", "type": "string", "role": "content", "label": "Subject subtitle", "description": "Optional smaller line under the subject title.", "default": "hangs waiting on the database" },
+    { "id": "annotation_label", "type": "string", "role": "content", "label": "Annotation label", "description": "The callout label drawn over the frozen frame.", "default": "Blocking call" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Annotation circle/line/label color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "freeze_at", "type": "number", "role": "timing", "label": "Freeze at", "description": "Seconds from mount when the frame desaturates and vignettes.", "default": 1.2, "min": 0.3, "max": 30, "step": 0.05 },
+    { "id": "annotate_at", "type": "number", "role": "timing", "label": "Annotate at", "description": "Seconds from mount when the annotation circle + label draw on.", "default": 1.7, "min": 0.3, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 5.5, "min": 2, "max": 20, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Freeze Frame Annotator</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="freeze-frame-annotator" data-duration="5.5" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+            overflow: hidden;
+          }
+          .ff-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+          }
+          .ff-subject {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2.6cqmin;
+            padding: 12cqmin;
+            filter: saturate(1) brightness(1);
+          }
+          .ff-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            line-height: 1.16;
+            text-align: center;
+          }
+          .ff-subtitle {
+            font-weight: 500;
+            line-height: 1.3;
+            text-align: center;
+            color: var(--hf-muted, #9aa1ad);
+          }
+          .ff-vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 45%, rgba(0, 0, 0, 0.68) 100%);
+            opacity: 0;
+            pointer-events: none;
+          }
+          .ff-annot-wrap {
+            position: absolute;
+            left: 50%;
+            top: 30%;
+            width: 30cqmin;
+            height: 30cqmin;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+          }
+          .ff-annot-wrap svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+          }
+          .ff-annot-circle {
+            fill: none;
+            stroke: var(--ff-accent, var(--hf-brand, #6ea8fe));
+            stroke-width: 3;
+          }
+          .ff-annot-line {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            width: 12cqmin;
+            height: 0.35cqmin;
+            min-height: 2px;
+            background: var(--ff-accent, var(--hf-brand, #6ea8fe));
+            transform-origin: left center;
+            transform: scaleX(0);
+          }
+          .ff-annot-label {
+            position: absolute;
+            left: calc(100% + 12cqmin);
+            top: 50%;
+            transform: translateY(-50%);
+            font-weight: 700;
+            font-size: 3cqmin;
+            white-space: nowrap;
+            color: var(--ff-accent, var(--hf-brand, #6ea8fe));
+            background: rgba(11, 13, 16, 0.78);
+            border: 1px solid var(--ff-accent, var(--hf-brand, #6ea8fe));
+            border-radius: 999px;
+            padding: 0.8cqmin 2.2cqmin;
+            opacity: 0;
+          }
+        </style>
+
+        <div class="ff-stage" id="ff-stage">
+          <div class="ff-subject" id="ff-subject">
+            <div class="ff-title" id="ff-title" data-layout-allow-occlusion></div>
+            <div class="ff-subtitle" id="ff-subtitle" data-layout-allow-occlusion></div>
+          </div>
+          <div class="ff-vignette" id="ff-vignette"></div>
+          <div class="ff-annot-wrap" id="ff-annot-wrap">
+            <svg viewBox="0 0 100 100">
+              <circle class="ff-annot-circle" id="ff-annot-circle" cx="50" cy="50" r="42"></circle>
+            </svg>
+            <div class="ff-annot-line" id="ff-annot-line"></div>
+            <div class="ff-annot-label" id="ff-annot-label" data-layout-allow-overflow></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "freeze-frame-annotator: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              subject_title: { type: "string", default: "This request", maxLength: 90 },
+              subject_subtitle: { type: "string", default: "hangs waiting on the database", maxLength: 140 },
+              annotation_label: { type: "string", default: "Blocking call", maxLength: 40 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              freeze_at: { type: "number", default: 1.2, min: 0.3, max: 30 },
+              annotate_at: { type: "number", default: 1.7, min: 0.3, max: 30 },
+              duration: { type: "number", default: 5.5, min: 2, max: 20 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("ff-stage");
+            var subject = document.getElementById("ff-subject");
+            var vignette = document.getElementById("ff-vignette");
+            var titleEl = document.getElementById("ff-title");
+            var subtitleEl = document.getElementById("ff-subtitle");
+            var annotWrap = document.getElementById("ff-annot-wrap");
+            var circle = document.getElementById("ff-annot-circle");
+            var line = document.getElementById("ff-annot-line");
+            var labelEl = document.getElementById("ff-annot-label");
+
+            root.style.setProperty("--ff-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var CIRC = 2 * Math.PI * 42;
+            circle.setAttribute("stroke-dasharray", CIRC + " " + CIRC);
+            circle.setAttribute("stroke-dashoffset", CIRC);
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxWidth = stage.clientWidth - stage.clientWidth * 0.24;
+
+              HFTextFit.fitOrTruncate(titleEl, props.subject_title, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: boxWidth,
+                maxHeight: 7 * rootMin * 1.16 * 3,
+                baseSize: 7 * rootMin,
+                minSize: 22,
+                lineHeightRatio: 1.16,
+                maxLines: 3,
+              });
+              HFTextFit.fitOrTruncate(subtitleEl, props.subject_subtitle, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 500,
+                maxWidth: boxWidth * 0.85,
+                maxHeight: 3.6 * rootMin * 1.3 * 2,
+                baseSize: 3.6 * rootMin,
+                minSize: 15,
+                lineHeightRatio: 1.3,
+                maxLines: 2,
+              });
+              HFTextFit.fitOrTruncate(labelEl, props.annotation_label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: Math.max(120, stage.clientWidth * 0.4),
+                maxHeight: 1000,
+                baseSize: 3 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var freezeAt = Math.min(Math.max(props.freeze_at, 0.4), Math.max(0.4, duration - 1.2));
+            var annotateAt = Math.min(Math.max(props.annotate_at, freezeAt + 0.2), Math.max(freezeAt + 0.2, duration - 0.5));
+
+            var tl = gsap.timeline({ paused: true });
+
+            tl.fromTo(subject, { opacity: 0, scale: 0.97 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }, 0.1);
+
+            // Freeze: desaturate + dim + a tiny settle-scale sells "paused."
+            tl.to(subject, { filter: "saturate(0.15) brightness(0.7)", scale: 1.015, duration: 0.4, ease: "power2.out" }, freezeAt);
+            tl.to(vignette, { opacity: 1, duration: 0.4, ease: "power2.out" }, freezeAt);
+
+            // Annotation: circle draws on, leader line extends, label fades in.
+            var proxy = { off: CIRC };
+            tl.fromTo(annotWrap, { opacity: 0 }, { opacity: 1, duration: 0.2, ease: "power1.out" }, annotateAt);
+            tl.to(
+              proxy,
+              {
+                off: 0,
+                duration: 0.5,
+                ease: "power2.out",
+                onUpdate: function () {
+                  circle.setAttribute("stroke-dashoffset", proxy.off);
+                },
+              },
+              annotateAt
+            );
+            tl.to(line, { scaleX: 1, duration: 0.3, ease: "power2.out" }, annotateAt + 0.35);
+            tl.fromTo(labelEl, { opacity: 0, x: -8 }, { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" }, annotateAt + 0.55);
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["freeze-frame-annotator"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

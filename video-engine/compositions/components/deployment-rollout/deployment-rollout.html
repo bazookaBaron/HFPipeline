@@ -1,0 +1,262 @@
+<!doctype html>
+<!--
+  deployment-rollout -- HyperFrames sub-composition (Architecture)
+
+  A row of server boxes progressively flipping from an old version label
+  to a new version label, one at a time, canary/rolling-deploy style. Each
+  box does a quick flip (scaleY squash) at its own staggered moment, its
+  border and version chip swapping from muted "old" styling to an
+  "updated" styling mid-flip.
+
+  Color discipline: each server box is a real per-item content element
+  (the thing progressively flipping), so its "updated" color rotates
+  through the CONTENT-distinguishing accent tokens (--hf-accent, -2, -3,
+  -4, then --hf-brand) assigned once per box at build time -- the
+  sanctioned per-item use case (see ../README.md "Color discipline"). The
+  old single `accent` prop drove this SAME per-box color and nothing else,
+  so it has been removed entirely rather than kept alongside a rotation.
+
+  Server boxes are built ONCE via HFProps.rebuild from `server_count`
+  before the GSAP timeline captures references to each box's label span --
+  matching kpi-cluster.html's own documented ordering rule (build/measure
+  before the timeline exists).
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("deployment-rollout");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="deployment-rollout"
+  data-composition-duration="7"
+  data-composition-variables='[
+    { "id": "server_count", "type": "number", "role": "content", "label": "Server count", "description": "Number of server boxes in the rollout row.", "default": 5, "min": 3, "max": 6, "step": 1 },
+    { "id": "old_version", "type": "string", "role": "content", "label": "Old version", "description": "Version chip label before rollout.", "default": "v1.2" },
+    { "id": "new_version", "type": "string", "role": "content", "label": "New version", "description": "Version chip label after rollout.", "default": "v1.3" },
+    { "id": "rollout_at", "type": "number", "role": "timing", "label": "Rollout at", "description": "Seconds from mount when the first server flips.", "default": 1, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "server_stagger", "type": "number", "role": "timing", "label": "Server stagger", "description": "Seconds between successive server flips.", "default": 0.7, "min": 0.15, "max": 3, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 7, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Deployment Rollout</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="deployment-rollout" data-duration="7" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .dr-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6cqmin;
+            padding: 6cqmin;
+          }
+          .dr-heading {
+            font-weight: 700;
+            font-size: 3.2cqmin;
+            color: var(--hf-muted, #9aa1ad);
+            opacity: 0;
+          }
+          .dr-row {
+            display: flex;
+            justify-content: center;
+            gap: 3cqmin;
+            flex-wrap: wrap;
+          }
+          .dr-box {
+            position: relative;
+            flex: 1 1 0;
+            max-width: 24cqmin;
+            min-width: 16cqmin;
+            height: 34cqmin;
+            border-radius: 2cqmin;
+            border: 0.3cqmin solid var(--hf-border, #2c2f36);
+            background: var(--hf-surface, #16181c);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2cqmin;
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+            transition: border-color 0.2s;
+          }
+          .dr-box-icon {
+            width: 8cqmin;
+            height: 8cqmin;
+            min-width: 26px;
+            min-height: 26px;
+            border-radius: 1.4cqmin;
+            background: var(--hf-border, #2c2f36);
+          }
+          .dr-chip {
+            padding: 1cqmin 2.2cqmin;
+            border-radius: 999px;
+            background: var(--hf-surface-2, #1e2126);
+            color: var(--hf-muted, #9aa1ad);
+            font-weight: 700;
+            font-size: 2.4cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 20cqmin;
+          }
+          .dr-box.dr-updated {
+            border-color: var(--dr-box-accent, var(--hf-brand, #6ea8fe));
+          }
+          .dr-box.dr-updated .dr-chip {
+            background: var(--dr-box-accent, var(--hf-brand, #6ea8fe));
+            color: var(--hf-bg, #0b0d10);
+          }
+        </style>
+
+        <div class="dr-stage" id="dr-stage">
+          <div class="dr-heading" id="dr-heading">Rolling update</div>
+          <div class="dr-row" id="dr-row"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "deployment-rollout: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              server_count: { type: "number", default: 5, min: 3, max: 6 },
+              old_version: { type: "string", default: "v1.2", maxLength: 16 },
+              new_version: { type: "string", default: "v1.3", maxLength: 16 },
+              rollout_at: { type: "number", default: 1, min: 0, max: 30 },
+              server_stagger: { type: "number", default: 0.7, min: 0.15, max: 3 },
+              duration: { type: "number", default: 7, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var heading = document.getElementById("dr-heading");
+            var row = document.getElementById("dr-row");
+
+            // Per-box accent rotation -- each server box is a real per-item
+            // content element (see file header "Color discipline"). Accent
+            // first, brand last, matching the sanctioned rotation order.
+            var ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            var count = Math.round(props.server_count);
+            var boxEls = [];
+            HFProps.rebuild(row, function (container) {
+              boxEls = [];
+              for (var i = 0; i < count; i++) {
+                var box = document.createElement("div");
+                box.className = "dr-box";
+                box.style.setProperty("--dr-box-accent", ROTATION[i % ROTATION.length]);
+                var icon = document.createElement("div");
+                icon.className = "dr-box-icon";
+                var chip = document.createElement("div");
+                chip.className = "dr-chip";
+                chip.textContent = props.old_version;
+                box.appendChild(icon);
+                box.appendChild(chip);
+                container.appendChild(box);
+                boxEls.push({ el: box, chip: chip });
+              }
+            });
+
+            function fitAll() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(heading, "Rolling update", {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: 80 * rootMin,
+                maxHeight: 1000,
+                baseSize: 3.2 * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+              boxEls.forEach(function (box) {
+                HFTextFit.fitOrTruncate(box.chip, box.chip.dataset.src || box.chip.textContent, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: 20 * rootMin - 6,
+                  maxHeight: 1000,
+                  baseSize: 2.4 * rootMin,
+                  minSize: 11,
+                  maxLines: 1,
+                });
+              });
+            }
+            boxEls.forEach(function (box) {
+              box.chip.dataset.src = props.old_version;
+            });
+
+            fitAll();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(fitAll);
+            }
+
+            var duration = props.duration;
+            var rolloutAt = Math.min(props.rollout_at, Math.max(0, duration - 1));
+            var stagger = Math.min(props.server_stagger, Math.max(0.1, (duration - rolloutAt - 0.4) / Math.max(1, count - 1)));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(heading, { opacity: 0 }, { opacity: 1, duration: 0.4, ease: "power1.out" }, 0.1);
+            boxEls.forEach(function (box, i) {
+              tl.fromTo(box.el, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, 0.25 + i * 0.06);
+            });
+
+            boxEls.forEach(function (box, i) {
+              var flipAt = Math.min(rolloutAt + i * stagger, Math.max(0, duration - 0.5));
+              tl.to(box.el, { scaleY: 0.05, duration: 0.14, ease: "power1.in" }, flipAt);
+              // Discrete mid-flip swap via tl.set (not tl.call): the
+              // renderer seeks this timeline frame-by-frame, and GSAP's
+              // callback-based .call() is not guaranteed to fire on an
+              // arbitrary direct seek the way a genuine property tween
+              // render (tl.set) is -- matches browser-window.html's own
+              // className-swap pattern (tl.set, never tl.call, for a
+              // discrete state change at a single instant).
+              tl.set(box.chip, { textContent: props.new_version }, flipAt + 0.14);
+              tl.set(box.el, { className: "dr-box dr-updated" }, flipAt + 0.14);
+              tl.to(box.el, { scaleY: 1, duration: 0.18, ease: "back.out(2)" }, flipAt + 0.14);
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["deployment-rollout"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

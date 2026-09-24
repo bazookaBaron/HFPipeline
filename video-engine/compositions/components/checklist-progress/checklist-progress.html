@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<!--
+  checklist-progress -- HyperFrames sub-composition (Narrative / software mockup)
+
+  A checklist where items appear unchecked, then check off one by one (an
+  SVG checkmark draws via stroke-dashoffset, box fills with the accent) in
+  sync with narration. Same title + clear-and-rebuild list shape as
+  content-panel, specialized with a per-item checkbox and a second timing
+  phase for the "checking" pass.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("checklist-progress"). Every
+  per-instance difference comes through data-composition-variables,
+  resolved via lib/props.js.
+
+  Variables:
+    - title           (string): panel headline.
+    - items           (list): pipe-separated checklist item texts.
+    - reveal_at       (number, seconds): when the title + unchecked items appear.
+    - first_check_at  (number, seconds): when the FIRST item checks off.
+    - check_stagger   (number, seconds): gap between successive item checks.
+    - duration        (number, seconds): total instance length.
+
+  Registers window.__timelines["checklist-progress"] under the literal key.
+
+  Per-item color rotation (aesthetic-plan pass): each item's checked-box
+  fill + checkmark now cycles through --hf-accent, -2, -3, -4, then
+  --hf-brand by index -- mini-legend.html's/folder-tree.html's established
+  "N simultaneous content items" pattern. Replaces the earlier single
+  `accent` prop, which forced one flat color across every checked box --
+  removed from this component's schema entirely rather than left as a
+  vestigial no-op prop.
+-->
+<html lang="en" data-composition-id="checklist-progress" data-composition-duration="7" data-composition-variables="[
+    { &quot;id&quot;: &quot;title&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Title&quot;, &quot;description&quot;: &quot;Panel headline.&quot;, &quot;default&quot;: &quot;Pre-launch checklist&quot; },
+    { &quot;id&quot;: &quot;items&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Items&quot;, &quot;description&quot;: &quot;Pipe-separated checklist item texts.&quot;, &quot;default&quot;: &quot;Domain connected|SSL certificate issued|Billing configured|Team invited&quot; },
+    { &quot;id&quot;: &quot;reveal_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Reveal at&quot;, &quot;description&quot;: &quot;Seconds from mount when the title + unchecked items appear.&quot;, &quot;default&quot;: 0.3, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;first_check_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;First check at&quot;, &quot;description&quot;: &quot;Seconds from mount when the first item checks off.&quot;, &quot;default&quot;: 1.4, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;check_stagger&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Check stagger&quot;, &quot;description&quot;: &quot;Seconds between successive item checks.&quot;, &quot;default&quot;: 0.7, &quot;min&quot;: 0.2, &quot;max&quot;: 3, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays.&quot;, &quot;default&quot;: 7, &quot;min&quot;: 2, &quot;max&quot;: 30, &quot;step&quot;: 0.1 }
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <title>Checklist Progress</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="checklist-progress" data-duration="7" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .cl-panel {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4cqmin;
+            padding: 8cqmin;
+          }
+          .cl-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            opacity: 0;
+            transform: translateY(1.4cqmin);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .cl-items {
+            display: flex;
+            flex-direction: column;
+          }
+          .cl-item {
+            display: flex;
+            align-items: flex-start;
+            opacity: 0;
+            transform: translateY(1.4cqmin);
+          }
+          .cl-box {
+            flex: 0 0 auto;
+            border: 0.4cqmin solid var(--hf-border, #2c2f36);
+            border-radius: 0.9cqmin;
+            background: var(--hf-surface, #16181c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.25s, border-color 0.25s;
+          }
+          .cl-box.cl-checked {
+            background: var(--cl-accent, var(--hf-brand, #6ea8fe));
+            border-color: var(--cl-accent, var(--hf-brand, #6ea8fe));
+          }
+          .cl-box svg {
+            width: 62%;
+            height: 62%;
+            overflow: visible;
+          }
+          .cl-box path {
+            fill: none;
+            stroke: #0b0d10;
+            stroke-width: 2.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+          }
+          .cl-item-text {
+            flex: 1;
+            min-width: 0;
+            font-weight: 500;
+            line-height: 1.28;
+            color: var(--hf-fg, #f4f5f7);
+          }
+        </style>
+
+        <div class="cl-panel" id="cl-panel">
+          <div class="cl-title" id="cl-title"></div>
+          <div class="cl-items" id="cl-items"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "checklist-progress: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              title: { type: "string", default: "Pre-launch checklist", maxLength: 80 },
+              items: {
+                type: "list",
+                default: ["Domain connected", "SSL certificate issued", "Billing configured", "Team invited"],
+                max: 6,
+                delimiter: "|",
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              first_check_at: { type: "number", default: 1.4, min: 0, max: 30 },
+              check_stagger: { type: "number", default: 0.7, min: 0.2, max: 3 },
+              duration: { type: "number", default: 7, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var panel = document.getElementById("cl-panel");
+            var titleEl = document.getElementById("cl-title");
+            var itemsWrap = document.getElementById("cl-items");
+
+            // Per-item rotation, matching mini-legend.html/folder-tree.html exactly --
+            // real hex fallbacks so this still renders correctly in isolation.
+            var ACCENT_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            // Frame-filling: fewer items -> larger type + more room per
+            // item (README hard rule), same pattern as content-panel. Sizes
+            // bumped up from an earlier pass that left ~40% of a 1920-tall
+            // frame empty above/below a short 3-4 item list (found via a
+            // real end-to-end render + reference-video frame comparison).
+            var count = Math.max(1, props.items.length);
+            var itemFontCqmin = count <= 2 ? 6.2 : count <= 4 ? 4.8 : 3.6;
+            var itemGapCqmin = count <= 2 ? 7 : count <= 4 ? 5.4 : 3.6;
+            var titleFontCqmin = count <= 2 ? 8.6 : 7.6;
+            itemsWrap.style.gap = itemGapCqmin + "cqmin";
+
+            var SVG_NS = "http://www.w3.org/2000/svg";
+            var itemEls = [];
+            HFProps.rebuild(itemsWrap, function (container) {
+              itemEls = [];
+              props.items.forEach(function (text, i) {
+                var item = document.createElement("div");
+                item.className = "cl-item";
+                var box = document.createElement("span");
+                box.className = "cl-box";
+                box.style.setProperty("--cl-accent", ACCENT_ROTATION[i % ACCENT_ROTATION.length]);
+                var svg = document.createElementNS(SVG_NS, "svg");
+                svg.setAttribute("viewBox", "0 0 24 24");
+                var path = document.createElementNS(SVG_NS, "path");
+                path.setAttribute("d", "M4 12.5 L9.5 18 L20 5.5");
+                svg.appendChild(path);
+                box.appendChild(svg);
+                var textEl = document.createElement("span");
+                textEl.className = "cl-item-text";
+                item.appendChild(box);
+                item.appendChild(textEl);
+                container.appendChild(item);
+                itemEls.push({ el: item, box: box, path: path, text: textEl, src: text });
+              });
+            });
+
+            function layout() {
+              var boxWidth = panel.clientWidth - panel.clientWidth * 0.16;
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxSize = itemFontCqmin * rootMin * 1.3;
+
+              HFTextFit.fitOrTruncate(titleEl, props.title, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: boxWidth,
+                maxHeight: 1000,
+                baseSize: titleFontCqmin * rootMin,
+                minSize: 18,
+                maxLines: 1,
+              });
+
+              itemEls.forEach(function (item) {
+                item.box.style.width = boxSize + "px";
+                item.box.style.height = boxSize + "px";
+                item.box.style.marginRight = rootMin * 2.4 + "px";
+                item.box.style.marginTop = rootMin * 0.4 + "px";
+                var len = item.path.getTotalLength();
+                item.path.style.strokeDasharray = len;
+                item.path.style.strokeDashoffset = len;
+                item.pathLength = len;
+
+                HFTextFit.fitOrTruncate(item.text, item.src, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 500,
+                  maxWidth: item.text.getBoundingClientRect().width || boxWidth - boxSize,
+                  maxHeight: itemFontCqmin * rootMin * 1.28 * 2,
+                  baseSize: itemFontCqmin * rootMin,
+                  minSize: 14,
+                  maxLines: 2,
+                });
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.5));
+            var firstCheckAt = Math.max(props.first_check_at, revealAt + 0.4);
+            var stagger = props.check_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(titleEl, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" }, revealAt);
+            itemEls.forEach(function (item, i) {
+              var revealTime = Math.min(revealAt + 0.35 + i * 0.15, Math.max(0, duration - 0.3));
+              tl.fromTo(
+                item.el,
+                { opacity: 0, y: 14 },
+                { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" },
+                revealTime
+              );
+            });
+            itemEls.forEach(function (item, i) {
+              var checkAt = Math.min(firstCheckAt + i * stagger, Math.max(0, duration - 0.1));
+              tl.set(item.box, { className: "cl-box cl-checked" }, checkAt);
+              tl.fromTo(
+                item.path,
+                { strokeDashoffset: function () { return item.pathLength; } },
+                { strokeDashoffset: 0, duration: 0.35, ease: "power2.out" },
+                checkAt
+              );
+              tl.fromTo(item.box, { scale: 1 }, { scale: 1.12, duration: 0.14, yoyo: true, repeat: 1, ease: "power1.out" }, checkAt);
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["checklist-progress"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

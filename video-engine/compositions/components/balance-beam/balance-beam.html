@@ -1,0 +1,320 @@
+<!doctype html>
+<!--
+  balance-beam -- HyperFrames sub-composition (Data / metrics)
+
+  A visual balance scale: a beam pivoting on a fulcrum triangle, with a
+  labeled pan hanging from each end. The beam tilts toward whichever side
+  has the greater resolved weight, settling into its final angle at
+  `tilt_at`. Left and right are a real semantic PAIR -- exactly 2
+  conceptual tradeoff options, not N identical items -- so each side
+  gets its own fixed accent color (left: accent-2, right: accent-3, see
+  --bb-left-accent/--bb-right-accent below), mirroring trust-boundary's
+  outside/inside pair. Both sides show their color continuously; the
+  heavier (winning) side is emphasized to full opacity + a colored pan
+  border while the lighter side stays at reduced opacity, still in its
+  own hue rather than going fully gray. The former single opt-in
+  `accent` prop (which drove only this same winner highlight and nothing
+  else) has been removed since the per-side pair now covers that role
+  entirely.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("balance-beam"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="balance-beam"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "left_label", "type": "string", "role": "content", "label": "Left label", "description": "Label for the left pan.", "default": "Speed" },
+    { "id": "right_label", "type": "string", "role": "content", "label": "Right label", "description": "Label for the right pan.", "default": "Accuracy" },
+    { "id": "left_weight", "type": "number", "role": "content", "label": "Left weight", "description": "Relative weight (0-100) of the left side.", "default": 35, "min": 0, "max": 100, "step": 1 },
+    { "id": "right_weight", "type": "number", "role": "content", "label": "Right weight", "description": "Relative weight (0-100) of the right side.", "default": 65, "min": 0, "max": 100, "step": 1 },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the beam appears level.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "tilt_at", "type": "number", "role": "timing", "label": "Tilt at", "description": "Seconds from mount when the beam tips toward the heavier side.", "default": 1.2, "min": 0.3, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Balance Beam</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="balance-beam" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .bb-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8cqmin;
+          }
+          .bb-wrap {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 130cqh;
+            opacity: 0;
+          }
+          .bb-post {
+            position: absolute;
+            left: 50%;
+            top: 46%;
+            bottom: 8cqmin;
+            width: 2cqmin;
+            min-width: 6px;
+            transform: translateX(-50%);
+            background: var(--hf-surface-2, #1e2126);
+            border-radius: 999px;
+          }
+          .bb-fulcrum {
+            position: absolute;
+            left: 50%;
+            top: 46%;
+            width: 0;
+            height: 0;
+            transform: translateX(-50%);
+            border-left: 4cqmin solid transparent;
+            border-right: 4cqmin solid transparent;
+            border-bottom: 6cqmin solid var(--hf-surface-2, #1e2126);
+          }
+          .bb-beam-pivot {
+            position: absolute;
+            left: 50%;
+            top: 46%;
+            width: 68cqmin;
+            transform: translate(-50%, -50%) rotate(0deg);
+          }
+          .bb-beam {
+            position: relative;
+            width: 100%;
+            height: 1cqmin;
+            min-height: 5px;
+            background: var(--hf-fg, #f4f5f7);
+            border-radius: 999px;
+          }
+          .bb-hook {
+            position: absolute;
+            top: 0;
+            width: 0.4cqmin;
+            min-width: 2px;
+            height: 12cqmin;
+            background: var(--hf-muted, #9aa1ad);
+          }
+          .bb-hook.left {
+            left: 4%;
+          }
+          .bb-hook.right {
+            right: 4%;
+          }
+          .bb-pan {
+            position: absolute;
+            top: 12cqmin;
+            width: 20cqmin;
+            height: 10cqmin;
+            border-radius: 0 0 10cqmin 10cqmin;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            border-top: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: translateX(-50%);
+          }
+          .bb-pan.left {
+            left: 4%;
+            /* Per-side accent pair: left/right are the two real content
+               items here (mirrors trust-boundary's outside/inside pair),
+               fixed rather than user-selectable via the removed `accent`
+               prop. */
+            --bb-side-accent: var(--bb-left-accent, var(--hf-accent-2, #c5a3ff));
+          }
+          .bb-pan.right {
+            left: 96%;
+            --bb-side-accent: var(--bb-right-accent, var(--hf-accent-3, #ffb84d));
+          }
+          .bb-pan-label {
+            font-weight: 700;
+            padding: 0 1.4cqmin;
+            white-space: nowrap;
+            color: var(--bb-side-accent, var(--hf-muted, #9aa1ad));
+            opacity: 0.75;
+          }
+          #bb-label-left {
+            --bb-side-accent: var(--bb-left-accent, var(--hf-accent-2, #c5a3ff));
+          }
+          #bb-label-right {
+            --bb-side-accent: var(--bb-right-accent, var(--hf-accent-3, #ffb84d));
+          }
+          .bb-pan-label.bb-winner {
+            opacity: 1;
+          }
+          .bb-pan.bb-winner-pan {
+            border-color: var(--bb-side-accent, var(--hf-brand, #6ea8fe));
+          }
+          .bb-base {
+            position: absolute;
+            left: 50%;
+            bottom: 6cqmin;
+            width: 22cqmin;
+            height: 2.2cqmin;
+            min-height: 8px;
+            transform: translateX(-50%);
+            background: var(--hf-surface-2, #1e2126);
+            border-radius: 999px;
+          }
+        </style>
+
+        <div class="bb-stage" id="bb-stage">
+          <div class="bb-wrap" id="bb-wrap">
+            <div class="bb-base"></div>
+            <div class="bb-post"></div>
+            <div class="bb-fulcrum"></div>
+            <div class="bb-beam-pivot" id="bb-pivot">
+              <div class="bb-beam"></div>
+              <div class="bb-hook left" data-layout-allow-overflow></div>
+              <div class="bb-hook right" data-layout-allow-overflow></div>
+              <div class="bb-pan left" id="bb-pan-left" data-layout-allow-overflow>
+                <div class="bb-pan-label" id="bb-label-left"></div>
+              </div>
+              <div class="bb-pan right" id="bb-pan-right" data-layout-allow-overflow>
+                <div class="bb-pan-label" id="bb-label-right"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "balance-beam: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              left_label: { type: "string", default: "Speed", maxLength: 40 },
+              right_label: { type: "string", default: "Accuracy", maxLength: 40 },
+              left_weight: { type: "number", default: 35, min: 0, max: 100 },
+              right_weight: { type: "number", default: 65, min: 0, max: 100 },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              tilt_at: { type: "number", default: 1.2, min: 0.3, max: 30 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("bb-stage");
+            var wrap = document.getElementById("bb-wrap");
+            var pivot = document.getElementById("bb-pivot");
+            var panLeft = document.getElementById("bb-pan-left");
+            var panRight = document.getElementById("bb-pan-right");
+            var labelLeft = document.getElementById("bb-label-left");
+            var labelRight = document.getElementById("bb-label-right");
+
+            // Per-side accent pair -- left/right are the two real content
+            // items here (a real semantic pair, not a full rotation),
+            // fixed rather than user-selectable, mirroring
+            // trust-boundary's outside/inside pair.
+            root.style.setProperty("--bb-left-accent", "var(--hf-accent-2, #c5a3ff)");
+            root.style.setProperty("--bb-right-accent", "var(--hf-accent-3, #ffb84d)");
+
+            var leftWeight = Math.max(0, props.left_weight);
+            var rightWeight = Math.max(0, props.right_weight);
+            if (leftWeight === 0 && rightWeight === 0) {
+              leftWeight = 50;
+              rightWeight = 50;
+            }
+            var diff = rightWeight - leftWeight; // positive => right heavier
+            var totalWeight = leftWeight + rightWeight || 1;
+            var normalizedDiff = diff / totalWeight; // -1..1
+            var MAX_TILT_DEG = 14;
+            var tiltAngle = normalizedDiff * MAX_TILT_DEG;
+
+            if (rightWeight > leftWeight) {
+              labelRight.classList.add("bb-winner");
+              panRight.classList.add("bb-winner-pan");
+            } else if (leftWeight > rightWeight) {
+              labelLeft.classList.add("bb-winner");
+              panLeft.classList.add("bb-winner-pan");
+            }
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var panWidth = panLeft.clientWidth - 3 * rootMin || 160;
+
+              HFTextFit.fitOrTruncate(labelLeft, props.left_label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: panWidth,
+                maxHeight: 1000,
+                baseSize: 3 * rootMin,
+                minSize: 13,
+                maxLines: 1,
+              });
+              HFTextFit.fitOrTruncate(labelRight, props.right_label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: panWidth,
+                maxHeight: 1000,
+                baseSize: 3 * rootMin,
+                minSize: 13,
+                maxLines: 1,
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.6));
+            var tiltAt = Math.min(Math.max(props.tilt_at, revealAt + 0.4), Math.max(revealAt + 0.4, duration - 0.4));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(wrap, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.5, ease: "power2.out" }, revealAt);
+            tl.fromTo(
+              [panLeft, panRight],
+              { opacity: 0, y: -10 },
+              { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.08 },
+              revealAt + 0.1
+            );
+            tl.to(pivot, { rotation: tiltAngle, duration: 0.9, ease: "elastic.out(1, 0.55)", transformOrigin: "50% 50%" }, tiltAt);
+            // Counter-rotate the pans/labels so hooks + text stay visually
+            // upright relative to gravity even though the parent beam tilts.
+            tl.to([panLeft, panRight], { rotation: -tiltAngle, duration: 0.9, ease: "elastic.out(1, 0.55)" }, tiltAt);
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["balance-beam"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

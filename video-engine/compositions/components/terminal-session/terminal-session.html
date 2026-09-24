@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<!--
+  terminal-session -- HyperFrames sub-composition (software mockup / Foundation)
+
+  A dark terminal window: rounded card, muted title bar with 3 plain dots
+  (no traffic-light colors -- this isn't a browser, so the dots stay
+  token-muted) and a small `title` label instead of a URL bar. The body
+  types out `command` character-by-character after a blinking-cursor
+  prompt, then reveals `output_lines` (a LIST prop) below it with a short
+  stagger.
+
+  Blinking cursor exception: motion-doctrine's anti-idle-wobble rule bans
+  motion that merely "breathes" instead of performing. A blinking cursor in
+  a code/terminal typing scene is the named idiomatic exception -- it reads
+  as the terminal still being "live", not as decorative idle motion. It is
+  implemented as discrete tl.set opacity toggles at a fixed interval (see
+  addBlink below), never a CSS animation, so every frame is seek-safe and
+  deterministic (a paused re-seek always lands the same cursor state).
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("terminal-session"). Every per-instance
+  difference (title, prompt, command, output, timing, accent) is a declared
+  variable resolved via lib/props.js -- never a forked file.
+
+  Variables:
+    - title         (string): small label in the muted title bar.
+    - prompt        (string): prompt glyph typed before the command, e.g. "$".
+    - command       (string): text typed character-by-character.
+    - output_lines  (list): lines revealed below the command, staggered.
+    - type_at       (number, seconds): when command typing starts.
+    - output_at     (number, seconds): when output lines start revealing
+                    (clamped to after typing finishes).
+    - line_stagger  (number, seconds): gap between successive output lines.
+    - accent        (enum): cursor + prompt-glyph color. Opt-in; default is
+                    the fixed brand accent.
+    - duration      (number, seconds): total instance length.
+
+  Registers window.__timelines["terminal-session"] under the literal key.
+-->
+<html lang="en" data-composition-id="terminal-session" data-composition-duration="6" data-composition-variables="[
+    { &quot;id&quot;: &quot;title&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Title&quot;, &quot;description&quot;: &quot;Small label shown in the muted title bar.&quot;, &quot;default&quot;: &quot;session&quot; },
+    { &quot;id&quot;: &quot;prompt&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Prompt&quot;, &quot;description&quot;: &quot;Prompt glyph typed before the command.&quot;, &quot;default&quot;: &quot;$&quot; },
+    { &quot;id&quot;: &quot;command&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Command&quot;, &quot;description&quot;: &quot;Text typed character-by-character after the prompt.&quot;, &quot;default&quot;: &quot;npm run build&quot; },
+    { &quot;id&quot;: &quot;output_lines&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Output lines&quot;, &quot;description&quot;: &quot;Pipe-separated output lines revealed below the command, e.g. \&quot;Compiling...|Build succeeded\&quot;. Also accepts a JSON array string.&quot;, &quot;default&quot;: &quot;Compiling 42 modules...|Build succeeded in 1.8s|Output: dist/bundle.js (128 kb)&quot; },
+    { &quot;id&quot;: &quot;type_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Type at&quot;, &quot;description&quot;: &quot;Seconds from mount when command typing starts.&quot;, &quot;default&quot;: 0.4, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;output_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Output at&quot;, &quot;description&quot;: &quot;Seconds from mount when output lines start revealing (clamped after typing finishes).&quot;, &quot;default&quot;: 2.6, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;line_stagger&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Line stagger&quot;, &quot;description&quot;: &quot;Seconds between successive output-line reveals.&quot;, &quot;default&quot;: 0.35, &quot;min&quot;: 0.05, &quot;max&quot;: 2, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;accent&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Accent&quot;, &quot;description&quot;: &quot;Cursor + prompt-glyph color. Opt-in only; default is the fixed brand accent.&quot;, &quot;default&quot;: &quot;brand&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;brand&quot;, &quot;label&quot;: &quot;Brand&quot; }, { &quot;value&quot;: &quot;accent&quot;, &quot;label&quot;: &quot;Accent&quot; }, { &quot;value&quot;: &quot;accent-2&quot;, &quot;label&quot;: &quot;Accent 2&quot; }, { &quot;value&quot;: &quot;accent-3&quot;, &quot;label&quot;: &quot;Accent 3&quot; }, { &quot;value&quot;: &quot;accent-4&quot;, &quot;label&quot;: &quot;Accent 4&quot; }] },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays. Read from props, never from static markup.&quot;, &quot;default&quot;: 6, &quot;min&quot;: 2, &quot;max&quot;: 30, &quot;step&quot;: 0.1 }
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <title>Terminal Session</title>
+  </head>
+  <body>
+    <template>
+      <div data-hf-id="hf-ovn2" id="root" data-composition-id="terminal-session" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          /* Small/low-element-count component: expand to fill the frame
+             rather than sitting in a small fixed box (README hard rule). */
+          .ts-card {
+            width: 100%;
+            height: 100%;
+            max-width: 118cqh;
+            border-radius: calc(var(--hf-radius, 16px) * 1.25);
+            overflow: hidden;
+            background: var(--hf-surface, #16181c);
+            box-shadow: 0 4cqh 10cqh rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+          }
+          .ts-titlebar {
+            display: flex;
+            align-items: center;
+            gap: 2.6cqmin;
+            padding: 2.6cqmin 3.2cqmin;
+            background: var(--hf-surface-2, #1e2126);
+            border-bottom: 1px solid var(--hf-border, #2c2f36);
+            flex: 0 0 auto;
+          }
+          .ts-dots {
+            display: flex;
+            gap: 1.2cqmin;
+            flex-shrink: 0;
+          }
+          .ts-dot {
+            width: 1.7cqmin;
+            height: 1.7cqmin;
+            border-radius: 50%;
+            background: var(--hf-border, #2c2f36);
+          }
+          .ts-title {
+            color: var(--hf-muted, #9aa1ad);
+            font-size: 2.4cqmin;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .ts-body {
+            flex: 1;
+            min-height: 0;
+            padding: 4.4cqmin;
+            background: var(--hf-bg, #0b0d10);
+            /* A faint dot-grid so the body never reads as a rendering void before typing
+               starts or after it finishes -- a real end-to-end render + reference-video
+               comparison found a bare `$` cursor on solid black looking broken/empty for
+               most of this component's full-frame duration. Texture only, never content. */
+            background-image: radial-gradient(var(--hf-border, #2c2f36) 1px, transparent 1px);
+            background-size: 5cqmin 5cqmin;
+            background-position: 2.2cqmin 2.2cqmin;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            font-family: var(--hf-font-mono, ui-monospace, monospace);
+          }
+          .ts-command-line {
+            display: flex;
+            align-items: baseline;
+            white-space: nowrap;
+            overflow: hidden;
+            flex: 0 0 auto;
+          }
+          .ts-prompt {
+            color: var(--ts-accent, var(--hf-brand, #6ea8fe));
+            font-weight: 700;
+            margin-right: 1cqmin;
+            flex: 0 0 auto;
+          }
+          .ts-command-text {
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .ts-cursor {
+            display: inline-block;
+            width: 0.9cqmin;
+            height: 1em;
+            margin-left: 0.4cqmin;
+            background: var(--ts-accent, var(--hf-brand, #6ea8fe));
+            vertical-align: -0.12em;
+            flex: 0 0 auto;
+          }
+          #ts-output {
+            display: flex;
+            flex-direction: column;
+          }
+          .ts-output-line {
+            color: var(--hf-muted, #9aa1ad);
+            opacity: 0;
+            transform: translateY(1.4cqmin);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+        </style>
+
+        <div data-hf-id="hf-vdxe" class="ts-card" id="ts-card">
+          <div data-hf-id="hf-bg5p" class="ts-titlebar">
+            <div data-hf-id="hf-yiuz" class="ts-dots" aria-hidden="true">
+              <div data-hf-id="hf-jqdx" class="ts-dot"></div>
+              <div data-hf-id="hf-l9xl" class="ts-dot"></div>
+              <div data-hf-id="hf-mguo" class="ts-dot"></div>
+            </div>
+            <div data-hf-id="hf-fz2q" class="ts-title" id="ts-title"></div>
+          </div>
+          <div data-hf-id="hf-qk44" class="ts-body">
+            <div data-hf-id="hf-j63m" class="ts-command-line" id="ts-command-line">
+              <span data-hf-id="hf-sg7r" class="ts-prompt" id="ts-prompt"></span>
+              <span data-hf-id="hf-0aed" class="ts-command-text" id="ts-command-text"></span>
+              <span data-hf-id="hf-l9zv" class="ts-cursor" id="ts-cursor"></span>
+            </div>
+            <div data-hf-id="hf-aew0" id="ts-output"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            // HFTextFit / HFProps are shared globals from
+            // compositions/components/lib/{text-fit,props}.js. See
+            // ../README.md "Shared library contract" -- never a relative
+            // <script src> inside this template.
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "terminal-session: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              title: { type: "string", default: "session", maxLength: 40 },
+              prompt: { type: "string", default: "$", maxLength: 6 },
+              command: { type: "string", default: "npm run build", maxLength: 140 },
+              output_lines: {
+                type: "list",
+                default: [
+                  "Compiling 42 modules...",
+                  "Build succeeded in 1.8s",
+                  "Output: dist/bundle.js (128 kb)",
+                ],
+                max: 6,
+                delimiter: "|",
+              },
+              type_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              output_at: { type: "number", default: 2.6, min: 0, max: 30 },
+              line_stagger: { type: "number", default: 0.35, min: 0.05, max: 2 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var card = document.getElementById("ts-card");
+            var titleEl = document.getElementById("ts-title");
+            var promptEl = document.getElementById("ts-prompt");
+            var commandLine = document.getElementById("ts-command-line");
+            var commandText = document.getElementById("ts-command-text");
+            var cursor = document.getElementById("ts-cursor");
+            var outputWrap = document.getElementById("ts-output");
+
+            root.style.setProperty("--ts-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            promptEl.textContent = props.prompt;
+
+            // Frame-filling for a low element count: fewer output lines ->
+            // larger monospace type + more room per line (content-panel's
+            // count <= 2 ? largerFont : ... pattern).
+            var count = Math.max(1, props.output_lines.length);
+            var bodyFontCqmin = count <= 1 ? 4.2 : count <= 3 ? 3.4 : 2.7;
+            var lineGapCqmin = count <= 1 ? 2.6 : count <= 3 ? 2 : 1.5;
+            outputWrap.style.gap = lineGapCqmin + "cqmin";
+            outputWrap.style.marginTop = lineGapCqmin + "cqmin";
+            commandLine.style.marginBottom = lineGapCqmin * 0.6 + "cqmin";
+
+            // Clear/rebuild the output-line list from props every mount so
+            // a re-seek or a variable change never leaves stale lines
+            // sitting alongside new ones.
+            var lineEls = [];
+            HFProps.rebuild(outputWrap, function (container) {
+              lineEls = [];
+              props.output_lines.forEach(function (text) {
+                var line = document.createElement("div");
+                line.className = "ts-output-line";
+                container.appendChild(line);
+                lineEls.push({ el: line, text: text });
+              });
+            });
+
+            // displayCommand is resolved once layout() runs (may be
+            // truncated to fit the card width) and is what actually gets
+            // typed -- never the raw untruncated string, so the terminal
+            // never types text past its own visible edge.
+            var displayCommand = props.command;
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var boxWidth = card.clientWidth - card.clientWidth * 0.088 * 2;
+
+              HFTextFit.fitOrTruncate(titleEl, props.title, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: boxWidth * 0.6,
+                maxHeight: 1000,
+                baseSize: 2.4 * rootMin,
+                minSize: 12,
+                maxLines: 1,
+              });
+
+              // Command: real canvas measurement determines the font size
+              // AND whether the authored command must be truncated to fit
+              // -- the typed text is always the string that will actually
+              // be displayed, never the pre-truncation source.
+              var promptWidth = HFTextFit.measure(
+                props.prompt + " ",
+                700,
+                bodyFontCqmin * rootMin,
+                "ui-monospace, 'SF Mono', Menlo, Consolas, monospace"
+              );
+              var cmdMaxWidth = Math.max(40, boxWidth - promptWidth - 4 * rootMin);
+              var cmdReport = HFTextFit.fitFontToBox(props.command, {
+                family: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+                weight: 400,
+                maxWidth: cmdMaxWidth,
+                maxHeight: 1000,
+                baseSize: bodyFontCqmin * rootMin,
+                minSize: 14,
+                maxLines: 1,
+              });
+              commandLine.style.fontSize = cmdReport.fontSize + "px";
+              displayCommand = cmdReport.fits
+                ? props.command
+                : HFTextFit.truncateToWidth(
+                    props.command,
+                    400,
+                    cmdReport.fontSize,
+                    "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+                    cmdMaxWidth
+                  );
+
+              lineEls.forEach(function (line) {
+                HFTextFit.fitOrTruncate(line.el, line.text, {
+                  family: "ui-monospace, 'SF Mono', Menlo, Consolas, monospace",
+                  weight: 400,
+                  maxWidth: boxWidth,
+                  maxHeight: 1000,
+                  baseSize: bodyFontCqmin * rootMin * 0.86,
+                  minSize: 12,
+                  maxLines: 1,
+                });
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var typeStart = Math.min(props.type_at, Math.max(0, duration - 0.3));
+            var CHARS_PER_SEC = 20;
+            var typeDur = Math.max(
+              0.3,
+              Math.min(displayCommand.length / CHARS_PER_SEC, Math.max(0.3, duration - typeStart - 0.3))
+            );
+            var typeEnd = typeStart + typeDur;
+            var outputAt = Math.min(Math.max(props.output_at, typeEnd + 0.2), Math.max(0, duration - 0.15));
+            var stagger = props.line_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+
+            tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
+
+            var proxy = { i: 0 };
+            tl.to(
+              proxy,
+              {
+                i: displayCommand.length,
+                duration: typeDur,
+                ease: "none",
+                onUpdate: function () {
+                  commandText.textContent = displayCommand.slice(0, Math.round(proxy.i));
+                },
+              },
+              typeStart
+            );
+
+            // Blinking cursor -- discrete tl.set opacity toggles at a fixed
+            // interval, never a CSS animation, so any seek lands an exact,
+            // reproducible on/off state. Solid (always on) while actively
+            // typing; resumes blinking before typing starts and again once
+            // it finishes, so the terminal keeps "performing" for the rest
+            // of the clip (the named idle-wobble exception for a code
+            // scene -- see file header).
+            var BLINK_INTERVAL = 0.5;
+            function addBlink(from, to) {
+              var state = 1;
+              for (var t = from; t < to; t += BLINK_INTERVAL) {
+                tl.set(cursor, { opacity: state }, t);
+                state = state ? 0 : 1;
+              }
+            }
+            gsap.set(cursor, { opacity: 1 });
+            addBlink(0, typeStart);
+            tl.set(cursor, { opacity: 1 }, typeStart);
+            addBlink(typeEnd, duration);
+
+            lineEls.forEach(function (line, i) {
+              var at = Math.min(outputAt + i * stagger, Math.max(0, duration - 0.15));
+              tl.fromTo(
+                line.el,
+                { opacity: 0, y: 14 },
+                { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+                at
+              );
+            });
+
+            window.__timelines["terminal-session"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

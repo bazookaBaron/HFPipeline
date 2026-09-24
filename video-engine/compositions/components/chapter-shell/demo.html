@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Demo: chapter-shell</title>
+    <script src="../lib/text-fit.js"></script>
+    <script src="../lib/props.js"></script>
+    <script src="../lib/demo-runtime.js"></script>
+    <style>
+      body {
+        margin: 0;
+        background: #05060a;
+        color: #f4f5f7;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      p {
+        margin: 0;
+        color: #9aa1ad;
+        font-size: 13px;
+        max-width: 640px;
+        text-align: center;
+      }
+      #stage-wrap {
+        border: 1px solid #2c2f36;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      .note {
+        max-width: 640px;
+        color: #ffb84d;
+        font-size: 12px;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>chapter-shell</h1>
+    <p>
+      Foundation/architecture primitive: a light-editorial scene chrome (breadcrumb + step
+      dots + headline/subtitle + a fixed-rect decorative content-card frame). Draws chrome
+      only -- a real deployment places the actual content as a separate, statically-authored
+      sibling scene positioned to the fixed rect documented in this component's header
+      comment, never a nested mount (this preview shows only the chrome + empty card, which
+      is the correct/expected standalone appearance).
+    </p>
+    <div id="stage-wrap">
+      <div id="stage" style="transform: scale(0.42); transform-origin: top left"></div>
+    </div>
+    <div id="controls"></div>
+
+    <script>
+      var STAGE_SCALE = 0.42;
+      var stageWrap = document.getElementById("stage-wrap");
+      HFDemoRuntime.mount({
+        src: "./chapter-shell.html",
+        mountEl: document.getElementById("stage"),
+        compositionId: "chapter-shell",
+        width: 1080,
+        height: 1920,
+        variables: {
+          breadcrumb: "SYSTEM DESIGN / FILE SERVICES",
+          currentStep: 2,
+          totalSteps: 3,
+          headline: "How the cache decides",
+          subtitle: "A quick look at read-through caching",
+          reveal_at: 0.3,
+          content_at: 1.8,
+          duration: 8,
+        },
+      }).then(function (handle) {
+        stageWrap.style.width = 1080 * STAGE_SCALE + "px";
+        stageWrap.style.height = 1920 * STAGE_SCALE + "px";
+        HFDemoRuntime.attachScrubber(handle, document.getElementById("controls"));
+      }).catch(function (err) {
+        document.getElementById("stage").textContent = String(err);
+        console.error(err);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "big-stat-callout",
+  "type": "hyperframes:component",
+  "title": "Big Stat Callout",
+  "description": "A single standalone giant number + short context/caption lines, no card chrome -- for a beat where ONE number carries the whole moment (a data size, a request count, a latency figure).",
+  "tags": ["data", "metrics", "stat", "number", "callout"],
+  "category": "data",
+  "files": [
+    {
+      "path": "big-stat-callout.html",
+      "target": "compositions/components/big-stat-callout/big-stat-callout.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "context", "type": "string", "default": "A single upload sends" },
+    { "id": "value", "type": "string", "default": "5 GB" },
+    { "id": "caption", "type": "string", "default": "into the API" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "context_at", "type": "number", "default": 0.2 },
+    { "id": "reveal_at", "type": "number", "default": 0.5 },
+    { "id": "caption_at", "type": "number", "default": 0.85 },
+    { "id": "duration", "type": "number", "default": 5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

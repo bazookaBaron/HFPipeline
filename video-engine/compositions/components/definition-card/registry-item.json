@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "definition-card",
+  "type": "hyperframes:component",
+  "title": "Definition Card",
+  "description": "A term + its definition, card-styled: the term reveals first with a brand-accent underline rule, then the definition reveals below a divider.",
+  "tags": ["narrative", "card", "definition", "glossary"],
+  "category": "narrative",
+  "files": [
+    {
+      "path": "definition-card.html",
+      "target": "compositions/components/definition-card/definition-card.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "term", "type": "string", "default": "Idempotent" },
+    { "id": "definition", "type": "string", "default": "Calling it once or calling it many times leaves the system in exactly the same state." },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "term_at", "type": "number", "default": 0.3 },
+    { "id": "definition_at", "type": "number", "default": 1.3 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

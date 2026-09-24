@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "node-graph-diagram",
+  "type": "hyperframes:component",
+  "title": "Node Graph Diagram",
+  "description": "Generic node-graph engine: 2-6 labeled boxes connected by labeled/animated lines, auto-positioned by a row/branch layout + node count -- one primitive that covers client/server chains, permission-check fan-outs, and small system diagrams without a bespoke component per shape.",
+  "tags": ["architecture", "diagram", "node-graph", "network", "fan-out", "generic"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "node-graph-diagram.html",
+      "target": "compositions/components/node-graph-diagram/node-graph-diagram.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "nodes", "type": "string", "default": "[{\"id\":\"client\",\"title\":\"Browser\",\"subtitle\":\"\",\"icon\":\"none\",\"statusColor\":\"none\"},{\"id\":\"api\",\"title\":\"API\",\"subtitle\":\"\",\"icon\":\"none\",\"statusColor\":\"none\"}]" },
+    { "id": "edges", "type": "string", "default": "[{\"from\":\"client\",\"to\":\"api\",\"label\":\"Request\",\"color\":\"brand\",\"direction\":\"forward\"}]" },
+    { "id": "layout", "type": "enum", "default": "row", "options": ["row", "branch"] },
+    { "id": "pulses", "type": "string", "default": "[]" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "edge_stagger", "type": "number", "default": 0.25 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "bracket-annotation",
+  "type": "hyperframes:component",
+  "title": "Bracket Annotation",
+  "description": "A bracket (square caliper or curly brace) spanning a range of content along one axis, with a labeled tick -- for grouping or measuring a span of items elsewhere on screen. Transparent outside its own bracket/tick/label.",
+  "tags": ["annotation", "bracket", "brace", "measure", "foundation"],
+  "category": "annotation",
+  "files": [
+    {
+      "path": "bracket-annotation.html",
+      "target": "compositions/components/bracket-annotation/bracket-annotation.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "label", "type": "string", "default": "3 steps" },
+    { "id": "orientation", "type": "enum", "default": "horizontal", "options": ["horizontal", "vertical"] },
+    { "id": "start_pct", "type": "number", "default": 18, "min": 0, "max": 100 },
+    { "id": "end_pct", "type": "number", "default": 82, "min": 0, "max": 100 },
+    { "id": "cross_pct", "type": "number", "default": 62, "min": 0, "max": 100 },
+    { "id": "style", "type": "enum", "default": "curly", "options": ["square", "curly"] },
+    { "id": "reveal_at", "type": "number", "default": 0.4 },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "duration", "type": "number", "default": 5 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

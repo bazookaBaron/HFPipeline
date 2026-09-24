@@ -1,0 +1,350 @@
+<!doctype html>
+<!--
+  client-server-exchange -- HyperFrames sub-composition (Architecture)
+
+  A simple two-box diagram (client, server) connected by a dashed track,
+  with a labeled request packet traveling client -> server, then a
+  labeled response packet traveling server -> client after a beat.
+  Proves the multi-instance pattern generalizes past text/card layouts
+  into a small systems diagram.
+
+  Color pair (not a full rotation -- exactly 2 conceptual items, mirroring
+  trust-boundary.html's inside/outside pair): the request leg and the
+  response leg are the two real content items here, so the single packet
+  element switches between --hf-accent (request, outbound) and
+  --hf-accent-2 (response, return) at the same instants its text/arrow
+  already swap. The `accent` prop stays independent of that pair -- it
+  still drives the client/server box borders + icon strokes, which are
+  shared system chrome, not a per-direction content item.
+
+  Positions (the packet's travel start/end in pixels) are measured ONCE
+  from the boxes' real layout via getBoundingClientRect and baked into
+  the GSAP timeline at build time -- never recomputed later, so a
+  document.fonts.ready refit (which only touches font-size on the
+  existing label nodes, exactly like every other component here) can
+  never invalidate an already-built tween's target position.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("client-server-exchange");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="client-server-exchange"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "client_label", "type": "string", "role": "content", "label": "Client label", "description": "Left box label.", "default": "Client" },
+    { "id": "server_label", "type": "string", "role": "content", "label": "Server label", "description": "Right box label.", "default": "Server" },
+    { "id": "request_label", "type": "string", "role": "content", "label": "Request label", "description": "Text on the outbound packet.", "default": "GET /api/users" },
+    { "id": "response_label", "type": "string", "role": "content", "label": "Response label", "description": "Text on the return packet.", "default": "200 OK" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Box border + icon color (chrome). The request/response packet uses its own fixed color pair, independent of this. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "request_at", "type": "number", "role": "timing", "label": "Request at", "description": "Seconds from mount when the request packet departs.", "default": 0.6, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "response_at", "type": "number", "role": "timing", "label": "Response at", "description": "Seconds from mount when the response packet departs.", "default": 2.6, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Client Server Exchange</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="client-server-exchange" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .cse-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8cqmin;
+          }
+          .cse-box {
+            position: relative;
+            z-index: 2;
+            width: 30cqmin;
+            height: 30cqmin;
+            min-width: 100px;
+            min-height: 100px;
+            border-radius: 3cqmin;
+            border: 0.32cqmin solid var(--cse-accent, var(--hf-brand, #6ea8fe));
+            background: var(--hf-surface, #16181c);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.6cqmin;
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+          }
+          /* Real bug found via a real end-to-end render + reference-video comparison: this
+             box's tinted background used `opacity: 0.16` on the CONTAINER, which compounds
+             onto every descendant's own opacity (CSS opacity multiplies down the tree, it
+             doesn't reset) -- the icon glyph added below rendered at an invisible ~16%
+             opacity no matter what its own CSS said. Fixed by moving the tint to an
+             `rgba`-based background-color (real alpha, not element opacity) so the glyph
+             drawn on top of it can be fully opaque. */
+          .cse-box-icon {
+            width: 9cqmin;
+            height: 9cqmin;
+            min-width: 30px;
+            min-height: 30px;
+            border-radius: 1.4cqmin;
+            background: color-mix(in srgb, var(--cse-accent, var(--hf-brand, #6ea8fe)) 16%, transparent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .cse-box-icon svg {
+            width: 62%;
+            height: 62%;
+            overflow: visible;
+          }
+          .cse-box-icon path,
+          .cse-box-icon rect,
+          .cse-box-icon circle {
+            fill: none;
+            stroke: var(--cse-accent, var(--hf-brand, #6ea8fe));
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            opacity: 1;
+          }
+          .cse-box-icon circle.cse-dot {
+            fill: var(--cse-accent, var(--hf-brand, #6ea8fe));
+            stroke: none;
+          }
+          .cse-box-label {
+            font-weight: 800;
+            font-size: 4cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 26cqmin;
+          }
+          .cse-track {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            height: 0;
+            border-top: 0.28cqmin dashed var(--hf-border, #2c2f36);
+            transform: translateY(-50%);
+            z-index: 1;
+          }
+          .cse-packet {
+            position: absolute;
+            top: 50%;
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            gap: 1cqmin;
+            padding: 1.6cqmin 2.6cqmin;
+            border-radius: 999px;
+            background: var(--cse-packet-accent, var(--hf-accent, #71f5a7));
+            color: var(--hf-bg, #0b0d10);
+            font-weight: 700;
+            font-size: 2.9cqmin;
+            white-space: nowrap;
+            opacity: 0;
+            transform: translate(0, -50%);
+            box-shadow: 0 0 0 0 transparent;
+          }
+          .cse-packet-arrow {
+            font-weight: 900;
+          }
+        </style>
+
+        <div class="cse-stage" id="cse-stage">
+          <div class="cse-box" id="cse-client-box">
+            <div class="cse-box-icon">
+              <svg viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="13" rx="1.5"/><path d="M8 20.5h8M12 17v3.5"/></svg>
+            </div>
+            <div class="cse-box-label" id="cse-client-label"></div>
+          </div>
+          <div class="cse-track" id="cse-track"></div>
+          <div class="cse-packet" id="cse-packet">
+            <span class="cse-packet-arrow" id="cse-packet-arrow">&#8594;</span>
+            <span id="cse-packet-text"></span>
+          </div>
+          <div class="cse-box" id="cse-server-box">
+            <div class="cse-box-icon">
+              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="7" rx="1.3"/><rect x="3" y="14" width="18" height="7" rx="1.3"/><circle class="cse-dot" cx="7" cy="6.5" r="0.9"/><circle class="cse-dot" cx="7" cy="17.5" r="0.9"/></svg>
+            </div>
+            <div class="cse-box-label" id="cse-server-label"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "client-server-exchange: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              client_label: { type: "string", default: "Client", maxLength: 24 },
+              server_label: { type: "string", default: "Server", maxLength: 24 },
+              request_label: { type: "string", default: "GET /api/users", maxLength: 40 },
+              response_label: { type: "string", default: "200 OK", maxLength: 40 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              request_at: { type: "number", default: 0.6, min: 0, max: 30 },
+              response_at: { type: "number", default: 2.6, min: 0, max: 30 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("cse-stage");
+            var clientBox = document.getElementById("cse-client-box");
+            var serverBox = document.getElementById("cse-server-box");
+            var clientLabelEl = document.getElementById("cse-client-label");
+            var serverLabelEl = document.getElementById("cse-server-label");
+            var track = document.getElementById("cse-track");
+            var packet = document.getElementById("cse-packet");
+            var packetArrow = document.getElementById("cse-packet-arrow");
+            var packetText = document.getElementById("cse-packet-text");
+
+            root.style.setProperty("--cse-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // Request/response color pair (not a rotation -- exactly 2
+            // conceptual items, see file header "Color pair"). Independent
+            // of the `accent` prop above, which stays box-chrome-only.
+            var REQUEST_COLOR = "var(--hf-accent, #71f5a7)";
+            var RESPONSE_COLOR = "var(--hf-accent-2, #c5a3ff)";
+
+            function fitLabels() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              [
+                { el: clientLabelEl, text: props.client_label },
+                { el: serverLabelEl, text: props.server_label },
+              ].forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.el, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 800,
+                  maxWidth: 26 * rootMin,
+                  maxHeight: 1000,
+                  baseSize: 4 * rootMin,
+                  minSize: 14,
+                  maxLines: 1,
+                });
+              });
+              [
+                { el: packetText, text: props.request_label },
+              ].forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.el, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: 40 * rootMin,
+                  maxHeight: 1000,
+                  baseSize: 2.9 * rootMin,
+                  minSize: 12,
+                  maxLines: 1,
+                });
+              });
+            }
+
+            fitLabels();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(fitLabels);
+            }
+
+            // Measure travel positions ONCE from real layout, in the host's
+            // pixel frame (offset relative to #root, which is what
+            // position:absolute children of .cse-stage are placed against).
+            var rootRect = root.getBoundingClientRect();
+            var clientRect = clientBox.getBoundingClientRect();
+            var serverRect = serverBox.getBoundingClientRect();
+            var packetHalfWidth = packet.getBoundingClientRect().width / 2 || 60;
+
+            var trackLeft = clientRect.right - rootRect.left;
+            var trackRight = serverRect.left - rootRect.left;
+            track.style.left = trackLeft + "px";
+            track.style.width = Math.max(0, trackRight - trackLeft) + "px";
+
+            var travelStart = trackLeft - packetHalfWidth;
+            var travelEnd = trackRight - packetHalfWidth;
+
+            var duration = props.duration;
+            var requestAt = Math.min(props.request_at, Math.max(0, duration - 0.6));
+            var responseAt = Math.min(Math.max(props.response_at, requestAt + 0.6), Math.max(0, duration - 0.3));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(clientBox, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, 0.15);
+            tl.fromTo(serverBox, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.45, ease: "power2.out" }, 0.25);
+
+            // Outbound request packet: client -> server.
+            packet.style.left = travelStart + "px";
+            packet.style.setProperty("--cse-packet-accent", REQUEST_COLOR);
+            tl.set(packet, { left: travelStart, opacity: 0 }, Math.max(0, requestAt - 0.01));
+            // Discrete color swap via tl.set (seek-safe on a direct render
+            // seek, unlike tl.call) -- matches deployment-rollout.html's
+            // documented rationale for discrete state changes.
+            tl.set(packet, { "--cse-packet-accent": REQUEST_COLOR }, Math.max(0, requestAt - 0.01));
+            tl.call(
+              function () {
+                packetArrow.textContent = "→";
+                packetText.textContent = props.request_label;
+              },
+              null,
+              requestAt
+            );
+            tl.to(packet, { opacity: 1, duration: 0.2, ease: "power1.out" }, requestAt);
+            tl.to(packet, { left: travelEnd, duration: 0.7, ease: "power1.inOut" }, requestAt);
+            tl.to(packet, { opacity: 0, duration: 0.25, ease: "power1.in" }, requestAt + 0.7);
+            tl.to(serverBox, { scale: 1.04, duration: 0.15, ease: "power1.out" }, requestAt + 0.68);
+            tl.to(serverBox, { scale: 1, duration: 0.2, ease: "power1.in" }, requestAt + 0.83);
+
+            // Return response packet: server -> client.
+            // Discrete color swap via tl.set (seek-safe), same pattern as
+            // the request leg above.
+            tl.set(packet, { "--cse-packet-accent": RESPONSE_COLOR }, Math.max(0, responseAt - 0.01));
+            tl.call(
+              function () {
+                packetArrow.textContent = "←";
+                packetText.textContent = props.response_label;
+                packet.style.left = travelEnd + "px";
+              },
+              null,
+              Math.max(0, responseAt - 0.01)
+            );
+            tl.to(packet, { opacity: 1, duration: 0.2, ease: "power1.out" }, responseAt);
+            tl.to(packet, { left: travelStart, duration: 0.7, ease: "power1.inOut" }, responseAt);
+            tl.to(packet, { opacity: 0, duration: 0.25, ease: "power1.in" }, responseAt + 0.7);
+            tl.to(clientBox, { scale: 1.04, duration: 0.15, ease: "power1.out" }, responseAt + 0.68);
+            tl.to(clientBox, { scale: 1, duration: 0.2, ease: "power1.in" }, responseAt + 0.83);
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["client-server-exchange"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

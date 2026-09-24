@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "fan-out-fan-in",
+  "type": "hyperframes:component",
+  "title": "Fan Out Fan In",
+  "description": "One source node fans out to N parallel worker nodes via traveling dots, then the workers fan back in to a single sink node -- classic scatter/gather diagram.",
+  "tags": ["architecture", "diagram", "fan-out", "fan-in", "concurrency", "workers"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "fan-out-fan-in.html",
+      "target": "compositions/components/fan-out-fan-in/fan-out-fan-in.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "worker_count", "type": "number", "default": 4 },
+    { "id": "source_label", "type": "string", "default": "Dispatcher" },
+    { "id": "worker_label", "type": "string", "default": "Worker" },
+    { "id": "sink_label", "type": "string", "default": "Aggregator" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "fanout_at", "type": "number", "default": 0.8 },
+    { "id": "fanin_at", "type": "number", "default": 2.6 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

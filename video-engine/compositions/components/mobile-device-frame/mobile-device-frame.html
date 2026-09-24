@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<!--
+  mobile-device-frame -- HyperFrames sub-composition (software mockup)
+
+  A phone device chrome (rounded bezel, notch/status bar, home indicator)
+  around simple app content -- for showing a mobile-app beat in narration.
+  Status bar (time + signal/battery glyphs) is real product chrome, exempt
+  from the accent-opt-in rule, matching browser-window's traffic-light dots.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("mobile-device-frame"). Every
+  per-instance difference (app name, status time, row count, notch style,
+  timing) comes through data-composition-variables, resolved via
+  lib/props.js.
+
+  Variables:
+    - app_name       (string): app bar title shown inside the screen.
+    - status_time    (string): clock text shown in the status bar.
+    - notch_style    (enum: notch|punch-hole|none): cosmetic bezel cutout.
+    - row_count      (number, 0-5): skeleton content rows below the app bar.
+    - accent         (enum): app-bar underline + active-row accent. Opt-in.
+    - content_at     (number, seconds): when the app bar + rows reveal.
+    - row_stagger    (number, seconds): gap between successive row reveals.
+    - duration       (number, seconds): total instance length.
+
+  Registers window.__timelines["mobile-device-frame"] under the literal key.
+-->
+<html lang="en" data-composition-id="mobile-device-frame" data-composition-duration="6" data-composition-variables="[
+    { &quot;id&quot;: &quot;app_name&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;App name&quot;, &quot;description&quot;: &quot;App bar title shown inside the screen.&quot;, &quot;default&quot;: &quot;Orbit&quot; },
+    { &quot;id&quot;: &quot;status_time&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Status time&quot;, &quot;description&quot;: &quot;Clock text shown in the status bar.&quot;, &quot;default&quot;: &quot;9:41&quot; },
+    { &quot;id&quot;: &quot;notch_style&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Notch style&quot;, &quot;description&quot;: &quot;Cosmetic bezel cutout shape.&quot;, &quot;default&quot;: &quot;notch&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;notch&quot;, &quot;label&quot;: &quot;Notch&quot; }, { &quot;value&quot;: &quot;punch-hole&quot;, &quot;label&quot;: &quot;Punch hole&quot; }, { &quot;value&quot;: &quot;none&quot;, &quot;label&quot;: &quot;None&quot; }] },
+    { &quot;id&quot;: &quot;row_count&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Content rows&quot;, &quot;description&quot;: &quot;Number of skeleton content rows below the app bar.&quot;, &quot;default&quot;: 3, &quot;min&quot;: 0, &quot;max&quot;: 5, &quot;step&quot;: 1 },
+    { &quot;id&quot;: &quot;accent&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Accent&quot;, &quot;description&quot;: &quot;App-bar underline + active-row accent. Opt-in only; default is the fixed brand accent.&quot;, &quot;default&quot;: &quot;brand&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;brand&quot;, &quot;label&quot;: &quot;Brand&quot; }, { &quot;value&quot;: &quot;accent&quot;, &quot;label&quot;: &quot;Accent&quot; }, { &quot;value&quot;: &quot;accent-2&quot;, &quot;label&quot;: &quot;Accent 2&quot; }, { &quot;value&quot;: &quot;accent-3&quot;, &quot;label&quot;: &quot;Accent 3&quot; }, { &quot;value&quot;: &quot;accent-4&quot;, &quot;label&quot;: &quot;Accent 4&quot; }] },
+    { &quot;id&quot;: &quot;content_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Content at&quot;, &quot;description&quot;: &quot;Seconds from mount when the app bar + rows reveal.&quot;, &quot;default&quot;: 0.4, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;row_stagger&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Row stagger&quot;, &quot;description&quot;: &quot;Seconds between successive row reveals.&quot;, &quot;default&quot;: 0.18, &quot;min&quot;: 0.05, &quot;max&quot;: 2, &quot;step&quot;: 0.01 },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays.&quot;, &quot;default&quot;: 6, &quot;min&quot;: 2, &quot;max&quot;: 30, &quot;step&quot;: 0.1 }
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <title>Mobile Device Frame</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="mobile-device-frame" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .mdf-bezel {
+            width: 100%;
+            height: 100%;
+            max-width: 62cqh;
+            border-radius: 13cqmin;
+            background: #101114;
+            border: 0.9cqmin solid #23252b;
+            box-shadow: 0 4cqh 10cqh rgba(0, 0, 0, 0.55);
+            padding: 1.6cqmin;
+            display: flex;
+          }
+          .mdf-screen {
+            position: relative;
+            flex: 1;
+            border-radius: 9.5cqmin;
+            overflow: hidden;
+            background: var(--hf-bg, #0b0d10);
+            display: flex;
+            flex-direction: column;
+          }
+          .mdf-statusbar {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 2.6cqmin 5cqmin 0.6cqmin;
+            font-size: 2.6cqmin;
+            font-weight: 600;
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .mdf-glyphs {
+            display: flex;
+            align-items: center;
+            gap: 1cqmin;
+          }
+          .mdf-glyph-bar {
+            width: 0.9cqmin;
+            border-radius: 1px;
+            background: var(--hf-fg, #f4f5f7);
+          }
+          .mdf-battery {
+            width: 6cqmin;
+            height: 3cqmin;
+            border: 0.35cqmin solid var(--hf-fg, #f4f5f7);
+            border-radius: 1cqmin;
+            padding: 0.35cqmin;
+          }
+          .mdf-battery-fill {
+            width: 78%;
+            height: 100%;
+            border-radius: 0.4cqmin;
+            background: var(--hf-fg, #f4f5f7);
+          }
+          .mdf-notch {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #000;
+            z-index: 2;
+          }
+          .mdf-notch.notch {
+            width: 34cqmin;
+            height: 3.4cqmin;
+            border-radius: 0 0 3cqmin 3cqmin;
+          }
+          .mdf-notch.punch-hole {
+            top: 1.6cqmin;
+            width: 3.6cqmin;
+            height: 3.6cqmin;
+            border-radius: 50%;
+          }
+          .mdf-notch.none {
+            display: none;
+          }
+          .mdf-appbar {
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            padding: 3.6cqmin 5cqmin 2.6cqmin;
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+          }
+          .mdf-appbar-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            white-space: nowrap;
+            overflow: hidden;
+            border-bottom: 0.5cqmin solid var(--mdf-accent, var(--hf-brand, #6ea8fe));
+            padding-bottom: 1cqmin;
+          }
+          .mdf-content {
+            flex: 1;
+            min-height: 0;
+            padding: 1cqmin 5cqmin 5cqmin;
+            display: flex;
+            flex-direction: column;
+            gap: 2.6cqmin;
+          }
+          .mdf-row {
+            height: 8cqmin;
+            border-radius: 2.6cqmin;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            opacity: 0;
+            transform: translateY(1.6cqmin);
+            flex: 0 0 auto;
+            display: flex;
+            align-items: center;
+            padding: 0 3cqmin;
+            gap: 2.4cqmin;
+          }
+          .mdf-row-dot {
+            width: 3.6cqmin;
+            height: 3.6cqmin;
+            border-radius: 50%;
+            background: var(--mdf-accent, var(--hf-brand, #6ea8fe));
+            opacity: 0.85;
+            flex: 0 0 auto;
+          }
+          .mdf-row-bar {
+            flex: 1;
+            height: 1.8cqmin;
+            border-radius: 999px;
+            background: var(--hf-surface-2, #1e2126);
+          }
+          .mdf-home {
+            position: absolute;
+            bottom: 1.4cqmin;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22cqmin;
+            height: 0.8cqmin;
+            border-radius: 999px;
+            background: var(--hf-muted, #9aa1ad);
+            opacity: 0.7;
+            z-index: 2;
+          }
+        </style>
+
+        <div class="mdf-bezel" id="mdf-bezel">
+          <div class="mdf-screen" id="mdf-screen">
+            <div class="mdf-notch" id="mdf-notch"></div>
+            <div class="mdf-statusbar">
+              <span id="mdf-clock"></span>
+              <div class="mdf-glyphs" aria-hidden="true">
+                <div class="mdf-glyph-bar" style="height:1.6cqmin"></div>
+                <div class="mdf-glyph-bar" style="height:2.2cqmin"></div>
+                <div class="mdf-glyph-bar" style="height:2.8cqmin"></div>
+                <div class="mdf-battery"><div class="mdf-battery-fill"></div></div>
+              </div>
+            </div>
+            <div class="mdf-appbar" id="mdf-appbar">
+              <span class="mdf-appbar-title" id="mdf-appbar-title"></span>
+            </div>
+            <div class="mdf-content" id="mdf-rows"></div>
+            <div class="mdf-home"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "mobile-device-frame: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              app_name: { type: "string", default: "Orbit", maxLength: 40 },
+              status_time: { type: "string", default: "9:41", maxLength: 8 },
+              notch_style: { type: "enum", default: "notch", options: ["notch", "punch-hole", "none"] },
+              row_count: { type: "number", default: 3, min: 0, max: 5 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              content_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              row_stagger: { type: "number", default: 0.18, min: 0.05, max: 2 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var bezel = document.getElementById("mdf-bezel");
+            var notch = document.getElementById("mdf-notch");
+            var clock = document.getElementById("mdf-clock");
+            var appbar = document.getElementById("mdf-appbar");
+            var appbarTitle = document.getElementById("mdf-appbar-title");
+            var rowsWrap = document.getElementById("mdf-rows");
+
+            root.style.setProperty("--mdf-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+            notch.className = "mdf-notch " + props.notch_style;
+            clock.textContent = props.status_time;
+
+            function fitAppbarTitle() {
+              var cs = getComputedStyle(appbar);
+              var padL = parseFloat(cs.paddingLeft) || 0;
+              var padR = parseFloat(cs.paddingRight) || 0;
+              var boxWidth = appbar.getBoundingClientRect().width - padL - padR || 400;
+              HFTextFit.fitOrTruncate(appbarTitle, props.app_name, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: boxWidth,
+                maxHeight: 1000,
+                baseSize: Math.max(20, boxWidth * 0.11),
+                minSize: 14,
+                maxLines: 1,
+              });
+            }
+
+            // Clear-and-rebuild: content rows are torn down and rebuilt from
+            // props every mount so a re-seek never accumulates stale rows.
+            var rowBarWidths = [72, 58, 66, 48, 60];
+            var rowEls = [];
+            HFProps.rebuild(rowsWrap, function (container) {
+              rowEls = [];
+              for (var i = 0; i < props.row_count; i++) {
+                var row = document.createElement("div");
+                row.className = "mdf-row";
+                var dot = document.createElement("div");
+                dot.className = "mdf-row-dot";
+                var bar = document.createElement("div");
+                bar.className = "mdf-row-bar";
+                bar.style.width = rowBarWidths[i % rowBarWidths.length] + "%";
+                row.appendChild(dot);
+                row.appendChild(bar);
+                container.appendChild(row);
+                rowEls.push(row);
+              }
+            });
+
+            function layout() {
+              fitAppbarTitle();
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var contentAt = Math.min(props.content_at, Math.max(0, duration - 0.3));
+            var stagger = props.row_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(bezel, { opacity: 0 }, { opacity: 1, duration: 0.45, ease: "power2.out" }, 0);
+            tl.fromTo(
+              appbar,
+              { opacity: 0, y: 16 },
+              { opacity: 1, y: 0, duration: 0.5, ease: "power2.out" },
+              contentAt
+            );
+            rowEls.forEach(function (row, i) {
+              var at = Math.min(contentAt + 0.2 + i * stagger, Math.max(0, duration - 0.15));
+              tl.fromTo(row, { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, at);
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["mobile-device-frame"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1,0 +1,224 @@
+<!doctype html>
+<!--
+  focus-spotlight -- HyperFrames sub-composition (annotation / Foundation)
+
+  A darkened overlay across the full frame with a circular or rectangular
+  cutout "spotlight" highlighting one region, with an optional caption below
+  it. Meant to be composited as an ANNOTATION/DIMMING LAYER on top of other
+  visual content (a different data-track-index in the host index.html) --
+  UNLIKE callout-label/bracket-annotation, this component's whole point is
+  to paint an opaque dimming layer over everything EXCEPT the cutout, so it
+  intentionally fills the entire frame with dark scrim.
+
+  The cutout is drawn with a single "hole" element whose own oversized
+  box-shadow paints the surrounding scrim (`box-shadow: 0 0 0 9999px rgba(...)`
+  on a transparent, possibly-circular element) -- one element, one opacity
+  fade for the whole scrim+ring+cutout, deterministic and seek-safe.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("focus-spotlight"). Every per-instance
+  difference (shape, position, size, caption, timing, accent) is a declared
+  variable resolved via lib/props.js -- never a forked file.
+
+  Variables:
+    - shape         (enum: circle|rect): the cutout's shape.
+    - x_pct         (number, 0-100): cutout center, percent of frame width.
+    - y_pct         (number, 0-100): cutout center, percent of frame height.
+    - size_pct      (number, 0-100): cutout size, percent of min(frame
+                    width, frame height).
+    - caption       (string): optional caption below the cutout.
+    - show_caption  (boolean): whether the caption is shown at all.
+    - spotlight_at  (number, seconds): when the scrim + cutout reveal.
+    - caption_at    (number, seconds): when the caption reveals (clamped
+                    after spotlight_at).
+    - accent        (enum): cutout ring color. Opt-in; default is the fixed
+                    brand accent.
+    - duration      (number, seconds): total instance length.
+
+  Registers window.__timelines["focus-spotlight"] under the literal key.
+-->
+<html
+  lang="en"
+  data-composition-id="focus-spotlight"
+  data-composition-duration="5"
+  data-composition-variables='[
+    { "id": "shape", "type": "enum", "role": "content", "label": "Shape", "description": "The cutout'"'"'s shape.", "default": "circle", "options": [{ "value": "circle", "label": "Circle" }, { "value": "rect", "label": "Rectangle" }] },
+    { "id": "x_pct", "type": "number", "role": "content", "label": "Center X %", "description": "Cutout center, percent of frame width.", "default": 50, "min": 0, "max": 100, "step": 1 },
+    { "id": "y_pct", "type": "number", "role": "content", "label": "Center Y %", "description": "Cutout center, percent of frame height.", "default": 42, "min": 0, "max": 100, "step": 1 },
+    { "id": "size_pct", "type": "number", "role": "content", "label": "Size %", "description": "Cutout size, percent of min(frame width, frame height).", "default": 34, "min": 5, "max": 90, "step": 1 },
+    { "id": "caption", "type": "string", "role": "content", "label": "Caption", "description": "Optional caption below the cutout.", "default": "Tap here to continue" },
+    { "id": "show_caption", "type": "boolean", "role": "content", "label": "Show caption", "description": "Whether the caption is shown at all.", "default": true },
+    { "id": "spotlight_at", "type": "number", "role": "timing", "label": "Spotlight at", "description": "Seconds from mount when the scrim + cutout reveal.", "default": 0.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "caption_at", "type": "number", "role": "timing", "label": "Caption at", "description": "Seconds from mount when the caption reveals (clamped after spotlight_at).", "default": 1.1, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Cutout ring color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays. Read from props, never from static markup.", "default": 5, "min": 1.5, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Focus Spotlight</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="focus-spotlight" data-duration="5" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+            overflow: hidden;
+          }
+          .fs-hole {
+            position: absolute;
+            background: transparent;
+            border: 0.5cqmin solid var(--fs-accent, var(--hf-brand, #6ea8fe));
+            opacity: 0;
+            pointer-events: none;
+          }
+          .fs-caption {
+            position: absolute;
+            max-width: 70cqmin;
+            padding: 1.6cqmin 2.8cqmin;
+            border-radius: var(--hf-radius-sm, 10px);
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            box-shadow: 0 1.4cqmin 3.4cqmin rgba(0, 0, 0, 0.5);
+            color: var(--hf-fg, #f4f5f7);
+            font-weight: 600;
+            text-align: center;
+            opacity: 0;
+          }
+        </style>
+
+        <div class="fs-hole" id="fs-hole"></div>
+        <div class="fs-caption" id="fs-caption"></div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "focus-spotlight: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              shape: { type: "enum", default: "circle", options: ["circle", "rect"] },
+              x_pct: { type: "number", default: 50, min: 0, max: 100 },
+              y_pct: { type: "number", default: 42, min: 0, max: 100 },
+              size_pct: { type: "number", default: 34, min: 5, max: 90 },
+              caption: { type: "string", default: "Tap here to continue", maxLength: 70 },
+              show_caption: { type: "boolean", default: true },
+              spotlight_at: { type: "number", default: 0.4, min: 0, max: 30 },
+              caption_at: { type: "number", default: 1.1, min: 0, max: 30 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              duration: { type: "number", default: 5, min: 1.5, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var hole = document.getElementById("fs-hole");
+            var caption = document.getElementById("fs-caption");
+
+            root.style.setProperty("--fs-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            caption.style.display = props.show_caption ? "" : "none";
+
+            function layout() {
+              var w = root.clientWidth;
+              var h = root.clientHeight;
+              var rootMin = Math.min(w, h) / 100;
+              var size = (props.size_pct / 100) * Math.min(w, h);
+              var cx = (props.x_pct / 100) * w;
+              var cy = (props.y_pct / 100) * h;
+
+              hole.style.width = size + "px";
+              hole.style.height = size + "px";
+              hole.style.left = cx - size / 2 + "px";
+              hole.style.top = cy - size / 2 + "px";
+              hole.style.borderRadius = props.shape === "circle" ? "50%" : 12 * rootMin + "px";
+              // The scrim IS this box-shadow: a huge finite spread of dark
+              // color around a transparent hole. One value, one element,
+              // one opacity fade for the whole overlay.
+              hole.style.boxShadow = "0 0 0 5000px rgba(4, 5, 8, 0.74)";
+
+              var captionY = Math.min(cy + size / 2 + 3.2 * rootMin, h - 2 * rootMin);
+              // Clamp the caption's horizontal center so its own box (up
+              // to 70cqmin wide) never runs off either edge of the frame,
+              // even when the cutout itself sits near an edge.
+              var captionHalfW = 35 * rootMin;
+              var captionX = Math.min(Math.max(cx, captionHalfW), w - captionHalfW);
+              caption.style.left = captionX + "px";
+              caption.style.top = captionY + "px";
+              gsap.set(caption, { xPercent: -50, yPercent: 0 });
+
+              if (props.show_caption) {
+                HFTextFit.fitOrTruncate(caption, props.caption, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 600,
+                  maxWidth: 70 * rootMin - 5.6 * rootMin,
+                  maxHeight: 1000,
+                  baseSize: 2.8 * rootMin,
+                  minSize: 14,
+                  maxLines: 1,
+                });
+              }
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var spotlightAt = Math.min(props.spotlight_at, Math.max(0, duration - 0.4));
+            var captionAt = props.show_caption
+              ? Math.min(Math.max(props.caption_at, spotlightAt + 0.3), Math.max(0, duration - 0.15))
+              : null;
+
+            var tl = gsap.timeline({ paused: true });
+
+            tl.fromTo(
+              hole,
+              { opacity: 0, scale: 1.3 },
+              { opacity: 1, scale: 1, duration: 0.55, ease: "power2.out", transformOrigin: "50% 50%" },
+              spotlightAt
+            );
+            if (captionAt != null) {
+              tl.fromTo(
+                caption,
+                { opacity: 0, y: 10 },
+                { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" },
+                captionAt
+              );
+            }
+
+            // Pad tl.duration() to the authored `duration` prop -- see
+            // browser-window.html for the full rationale.
+            tl.set({}, {}, duration);
+            window.__timelines["focus-spotlight"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

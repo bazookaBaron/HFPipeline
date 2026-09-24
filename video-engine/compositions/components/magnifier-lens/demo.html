@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Demo: magnifier-lens</title>
+    <script src="../lib/text-fit.js"></script>
+    <script src="../lib/props.js"></script>
+    <script src="../lib/demo-runtime.js"></script>
+    <link rel="stylesheet" href="../lib/tokens.css" />
+    <style>
+      body {
+        margin: 0;
+        background: #05060a;
+        color: #f4f5f7;
+        font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 24px;
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0;
+      }
+      p {
+        margin: 0;
+        color: #9aa1ad;
+        font-size: 13px;
+        max-width: 640px;
+        text-align: center;
+      }
+      #stage-wrap {
+        transform-origin: top center;
+        border: 1px solid #2c2f36;
+        border-radius: 12px;
+        overflow: hidden;
+      }
+      #controls {
+        display: flex;
+        align-items: center;
+      }
+      button {
+        background: #6ea8fe;
+        color: #0b0d10;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 16px;
+        font-weight: 600;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>magnifier-lens</h1>
+    <p>
+      Software-mockup primitive: a circular lens always auto-centers on the actual measured position of
+      the last detail row (never a caller-guessed static percentage). This instance overrides
+      <code>zoom</code> (3.2x), nudges the lens with <code>lens_offset_x_pct</code>, and uses 5 detail
+      lines to prove the multi-instance pattern.
+    </p>
+    <div id="stage-wrap">
+      <div id="stage" style="transform: scale(0.42); transform-origin: top left"></div>
+    </div>
+    <div id="controls"></div>
+
+    <script>
+      var STAGE_SCALE = 0.42;
+      var stageWrap = document.getElementById("stage-wrap");
+      HFDemoRuntime.mount({
+        src: "./magnifier-lens.html",
+        mountEl: document.getElementById("stage"),
+        compositionId: "magnifier-lens",
+        width: 1080,
+        height: 1920,
+        variables: {
+          title: "Privacy",
+          detail_lines: "Profile visibility|Search indexing|Data export|Ad personalization|Third-party sharing",
+          lens_offset_x_pct: 8,
+          lens_offset_y_pct: 0,
+          lens_size_pct: 40,
+          zoom: 3.2,
+          label: "Third-party sharing, off",
+          accent: "accent-4",
+          reveal_at: 0.3,
+          lens_at: 1.6,
+          duration: 6.5,
+        },
+      }).then(function (handle) {
+        stageWrap.style.width = 1080 * STAGE_SCALE + "px";
+        stageWrap.style.height = 1920 * STAGE_SCALE + "px";
+        HFDemoRuntime.attachScrubber(handle, document.getElementById("controls"));
+      }).catch(function (err) {
+        document.getElementById("stage").textContent = String(err);
+        console.error(err);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,67 @@
+/*
+ * HyperFrames component library -- shared design tokens.
+ *
+ * Token names match the convention already established by HyperFrames'
+ * own hosted registry (verified against the installed reference items in
+ * ../_registry-reference/): --brand, --accent, --accent-2, --fg, --bg,
+ * --surface, --border, --muted, --radius, --space-*, --font-body/--font-mono.
+ * Reusing their names means any future upstream component we adapt drops
+ * into the same visual system with zero remapping.
+ *
+ * HARD RULE (see README.md "Color discipline"): --brand is the ONE fixed
+ * accent used for chrome (borders, focus rings, primary buttons, active
+ * indicators, carets, progress fills). --accent and --accent-2 exist only
+ * to distinguish CONTENT ITEMS within a scene (e.g. three KPI cards, a
+ * multi-series chart) and are opt-in per component instance via the
+ * `accent` variable -- never wired up by default, never used for chrome.
+ * A component must render correctly and coherently with ONLY --brand if a
+ * caller never touches the accent variable.
+ */
+:root {
+  --hf-bg: #0b0d10;
+  /* Ambient "light mesh" background -- optional, opt-in via a component's own .xxx-stage
+     reading `background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10))`. Set by the orchestrator
+     (orchestrator/lib/video/composeHtml.js's top-level :root block) for real generated
+     videos; falls back to plain --hf-bg here and in any standalone demo harness that never
+     defines it. NEVER used for a component's inner chrome surface that must stay a plain
+     solid color regardless of theme (a terminal console body, code-editor body, chat card,
+     phone screen) -- only the true full-bleed outer stage background. See composeHtml.js's
+     own comment for the exact recipe/reasoning. */
+  --hf-bg-mesh:
+    radial-gradient(ellipse 70% 50% at 15% 10%, color-mix(in srgb, var(--hf-brand, #6ea8fe) 10%, transparent), transparent 60%),
+    radial-gradient(ellipse 60% 45% at 90% 15%, color-mix(in srgb, var(--hf-accent-2, #c5a3ff) 8%, transparent), transparent 60%),
+    radial-gradient(ellipse 65% 55% at 85% 95%, color-mix(in srgb, var(--hf-accent, #71f5a7) 7%, transparent), transparent 65%),
+    radial-gradient(ellipse 55% 45% at 10% 90%, color-mix(in srgb, var(--hf-accent-3, #ffb84d) 7%, transparent), transparent 60%),
+    var(--hf-bg, #0b0d10);
+  --hf-surface: #16181c;
+  --hf-surface-2: #1e2126;
+  --hf-border: #2c2f36;
+  --hf-fg: #f4f5f7;
+  --hf-muted: #9aa1ad;
+
+  /* The one fixed brand accent -- chrome only. */
+  --hf-brand: #6ea8fe;
+
+  /* Opt-in content-distinguishing rotation -- never chrome, never default. */
+  --hf-accent: #71f5a7;
+  --hf-accent-2: #c5a3ff;
+  --hf-accent-3: #ffb84d;
+  --hf-accent-4: #ff6e6e;
+
+  --hf-radius: 16px;
+  --hf-radius-sm: 10px;
+  --hf-space-1: 8px;
+  --hf-space-2: 16px;
+  --hf-space-3: 28px;
+
+  --hf-font-body: Inter, ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --hf-font-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+/*
+ * Rotation palette lookup used by components with an opt-in `accent`
+ * enum variable ("brand" | "accent" | "accent-2" | "accent-3" | "accent-4").
+ * Components resolve the enum value to one of these custom properties in
+ * script (see lib/props.js ENUM handling + README recipe step 4) and set
+ * `--item-accent` on the individual content item, never on the root.
+ */

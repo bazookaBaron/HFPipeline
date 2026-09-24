@@ -1,0 +1,18 @@
+[   0.00-   4.76] Why@0.00 does@0.64 your@0.78 hash@0.88 table's@1.00 O1,@1.36 instant@1.68 lookup,@2.18 suddenly@2.56 crawl@2.92 at@3.14 ON,@3.32 speed@3.62 under@4.02 heavy@4.32 load?@4.54
+[   5.02-   6.44] The@5.02 culprit@5.46 is@5.62 a@5.94 hash@6.04 collision.@6.20
+[   6.86-  12.86] In@6.86 an@7.30 ideal@7.38 world,@7.60 every@8.02 string@8.50 key@8.74 passes@8.90 through@9.22 a@9.58 hash@9.72 function@9.90 that@10.12 generates@10.56 a@10.86 clean@11.02 integer@11.16 index@11.44 in@11.72 a@12.40 fixed@12.52 array.@12.66
+[  13.30-  17.42] So@13.30 what@13.74 happens@13.88 when@14.12 two@14.48 totally@14.64 different@14.92 user@15.14 IDs@15.38 produce@15.62 the@16.22 exact@16.44 same@16.64 modulo@16.88 remainder?@17.22
+[  18.22-  19.78] Both@18.22 keys@18.66 collide@18.80 in@19.10 the@19.38 same@19.44 bucket.@19.60
+[  20.46-  23.02] How@20.46 do@20.90 standard@20.98 implementations@21.28 handle@21.94 this@22.46 overflow?@22.80
+[  23.80-  27.20] Runtime@23.80 store@24.14 colliding@24.32 elements@24.72 inside@24.96 a@25.58 linked@25.86 list@26.02 attached@26.14 to@26.36 that@26.66 single@26.78 bucket.@26.96
+[  27.62-  29.58] Now,@27.62 what@28.12 does@28.44 look@28.60 up@28.78 look@28.94 like@29.06 under@29.22 the@29.36 hood?@29.46
+[  30.00-  34.08] To@30.00 retrieve@30.42 a@30.60 value,@30.70 the@31.00 hash@31.48 table@31.64 must@31.78 walk@32.04 every@32.30 single@32.92 list@33.22 node@33.52 sequentially.@33.74
+[  34.64-  38.64] When@34.64 N@35.16 items@35.30 land@35.46 in@35.64 the@35.92 exact@35.96 same@36.14 bucket,@36.34 finding@36.70 your@37.20 target@37.32 requires@37.52 N@37.86 key@38.12 comparisons.@38.30
+[  39.24-  41.76] Your@39.24 constant@39.76 lookup@40.02 has@40.30 officially@40.62 degraded@40.88 to@41.28 OSN.@41.50
+[  42.00-  48.46] But@42.00 what@42.52 happens@42.60 when@42.86 an@43.04 attacker@43.14 intentionally@43.38 crafts@43.90 thousands@44.38 of@44.90 distinct@45.10 POST@45.34 -T@46.06 keys@46.24 that@46.42 all@46.92 compute@47.12 to@47.44 identical@47.62 hash@47.88 codes?@48.20
+[  48.68-  54.92] This@48.68 exploit,@49.08 known@49.46 as@49.72 hashDOS,@49.86 pegs@50.26 server@50.60 CPU@50.76 cores@50.98 at@51.32 100@51.54 %@51.72 capacity,@51.98 just@52.44 parsing@52.78 a@53.10 single@53.18 malicious@53.36 HTTP@53.58 request@54.08 body.@54.68
+[  55.24-  57.04] How@55.24 do@55.74 modern@55.86 runtimes@56.06 fix@56.38 this@56.56 vulnerability?@56.78
+[  57.50-  62.34] Java@57.50 8@58.02 transforms@58.16 bucket@58.46 lists@58.98 into@59.18 balanced@59.60 red,@59.84 black@60.14 trees@60.66 once@60.86 chained@61.08 depth,@61.36 hits@61.64 eight@61.92 elements.@62.08
+[  62.64-  64.90] Think@62.64 of@63.08 a@63.20 hash@63.24 table@63.36 as@63.48 a@63.76 mailroom@63.84 with@64.14 slot@64.36 boxes.@64.62
+[  65.26-  67.82] Stuffing@65.26 all@65.70 mail@65.82 in@66.06 one@66.40 box@66.58 forces@66.80 a@67.20 manual@67.36 search.@67.56
+[  68.38-  69.96] Uniform@68.38 hashing@68.82 keeps@69.08 lookups@69.36 instant.@69.74

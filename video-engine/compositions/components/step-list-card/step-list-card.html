@@ -1,0 +1,263 @@
+<!doctype html>
+<!--
+  step-list-card -- HyperFrames sub-composition (Narrative / software mockup)
+
+  A small card of 2-5 numbered steps with colored numerals (no checkboxes,
+  no checking-off animation -- unlike checklist-progress, these are
+  SEQUENTIAL INSTRUCTIONS revealed once, not a progress tracker). Matches
+  the reference-video pattern of a compact numbered-step card sitting
+  alongside other chrome (a terminal, a headline) rather than being the
+  only thing on screen -- see repo-root VIDEO_AESTHETIC_PLAN.md "New
+  components needed".
+
+  Frame-filling: like content-panel/checklist-progress, fewer items means
+  bigger type + more room per item.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("step-list-card"); every
+  per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+
+  Per-step color rotation (aesthetic-plan pass): each step's numeral now
+  cycles through --hf-accent, -2, -3, -4, then --hf-brand by index --
+  mini-legend.html's/folder-tree.html's established "N simultaneous content
+  items" pattern (this component's own header already cites this exact
+  numbered-steps case). Replaces the earlier single `accent` prop, which
+  forced one flat color across every numeral -- removed from this
+  component's schema entirely rather than left as a vestigial no-op prop.
+-->
+<html
+  lang="en"
+  data-composition-id="step-list-card"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "title", "type": "string", "role": "content", "label": "Title", "description": "Optional small card title above the steps. Empty string omits it.", "default": "" },
+    { "id": "steps", "type": "string", "role": "content", "label": "Steps", "description": "Pipe-separated step texts, 2-5 items, e.g. \"stash your feature|switch to hotfix\". Numbered automatically -- do not include numbers in the text.", "default": "stash your feature|switch to hotfix|fix, commit, push|pop your stash back", "max": 5, "delimiter": "|" },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the card + first step reveal.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "step_stagger", "type": "number", "role": "timing", "label": "Step stagger", "description": "Seconds between successive step reveals.", "default": 0.3, "min": 0.1, "max": 2, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Step List Card</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="step-list-card" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .slc-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6cqmin;
+          }
+          .slc-card {
+            width: 100%;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--hf-border, #2c2f36);
+            border-radius: 2.2cqmin;
+            padding: 5cqmin 5.4cqmin;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            transform: translateY(2cqmin) scale(0.98);
+          }
+          .slc-title {
+            font-weight: 800;
+            letter-spacing: -0.01em;
+            color: var(--hf-fg, #f4f5f7);
+            white-space: nowrap;
+            overflow: hidden;
+            margin-bottom: 3cqmin;
+          }
+          .slc-items {
+            display: flex;
+            flex-direction: column;
+          }
+          .slc-item {
+            display: flex;
+            align-items: baseline;
+            gap: 2.2cqmin;
+            opacity: 0;
+            transform: translateY(1cqmin);
+          }
+          .slc-num {
+            flex: 0 0 auto;
+            font-weight: 900;
+            font-family: var(--hf-font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+            color: var(--slc-accent, var(--hf-brand, #6ea8fe));
+          }
+          .slc-item-text {
+            flex: 1;
+            min-width: 0;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--hf-fg, #f4f5f7);
+          }
+        </style>
+
+        <div class="slc-stage" id="slc-stage">
+          <div class="slc-card" id="slc-card">
+            <div class="slc-title" id="slc-title"></div>
+            <div class="slc-items" id="slc-items"></div>
+          </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "step-list-card: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              title: { type: "string", default: "", maxLength: 60 },
+              steps: {
+                type: "list",
+                default: ["stash your feature", "switch to hotfix", "fix, commit, push", "pop your stash back"],
+                max: 5,
+                delimiter: "|",
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              step_stagger: { type: "number", default: 0.3, min: 0.1, max: 2 },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var card = document.getElementById("slc-card");
+            var titleEl = document.getElementById("slc-title");
+            var itemsWrap = document.getElementById("slc-items");
+
+            // Per-step rotation, matching mini-legend.html/folder-tree.html exactly --
+            // real hex fallbacks so this still renders correctly in isolation.
+            var ACCENT_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            var hasTitle = props.title.trim().length > 0;
+            titleEl.style.display = hasTitle ? "block" : "none";
+
+            // Frame-filling: fewer steps -> larger type + more room per step
+            // (README hard rule), same pattern as content-panel/checklist-progress.
+            var count = Math.max(1, props.steps.length);
+            var itemFontCqmin = count <= 2 ? 4.4 : count <= 4 ? 3.5 : 2.9;
+            var itemGapCqmin = count <= 2 ? 4.6 : count <= 4 ? 3.2 : 2.4;
+            var numFontCqmin = itemFontCqmin * 1.05;
+            itemsWrap.style.gap = itemGapCqmin + "cqmin";
+
+            var itemEls = [];
+            HFProps.rebuild(itemsWrap, function (container) {
+              itemEls = [];
+              props.steps.forEach(function (text, i) {
+                var item = document.createElement("div");
+                item.className = "slc-item";
+                var num = document.createElement("span");
+                num.className = "slc-num";
+                num.style.fontSize = numFontCqmin + "cqmin";
+                num.style.setProperty("--slc-accent", ACCENT_ROTATION[i % ACCENT_ROTATION.length]);
+                num.textContent = String(i + 1).padStart(2, "0");
+                var textEl = document.createElement("span");
+                textEl.className = "slc-item-text";
+                item.appendChild(num);
+                item.appendChild(textEl);
+                container.appendChild(item);
+                itemEls.push({ el: item, text: textEl, src: text });
+              });
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var cardInnerWidth = card.clientWidth - card.clientWidth * 0.02;
+
+              if (hasTitle) {
+                HFTextFit.fitOrTruncate(titleEl, props.title, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 800,
+                  maxWidth: cardInnerWidth,
+                  maxHeight: 1000,
+                  baseSize: 4.4 * rootMin,
+                  minSize: 18,
+                  maxLines: 1,
+                });
+              }
+
+              itemEls.forEach(function (item) {
+                var numWidth = HFTextFit.measure("00", 900, numFontCqmin * rootMin, "ui-monospace, SFMono-Regular, Menlo, monospace");
+                var gapPx = 2.2 * rootMin;
+                HFTextFit.fitOrTruncate(item.text, item.src, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 600,
+                  maxWidth: Math.max(40, cardInnerWidth - numWidth - gapPx),
+                  maxHeight: itemFontCqmin * rootMin * 1.3 * 2,
+                  baseSize: itemFontCqmin * rootMin,
+                  minSize: 14,
+                  maxLines: 2,
+                });
+              });
+            }
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.5));
+            var stagger = props.step_stagger;
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(
+              card,
+              { opacity: 0, y: 16, scale: 0.98 },
+              { opacity: 1, y: 0, scale: 1, duration: 0.45, ease: "power2.out" },
+              revealAt
+            );
+            itemEls.forEach(function (item, i) {
+              var at = Math.min(revealAt + 0.25 + i * stagger, Math.max(0, duration - 0.2));
+              tl.fromTo(
+                item.el,
+                { opacity: 0, y: 10 },
+                { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
+                at
+              );
+            });
+
+            // Pad tl.duration() to the authored `duration` prop -- see the
+            // matching comment in browser-window.html for why.
+            tl.set({}, {}, duration);
+            window.__timelines["step-list-card"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

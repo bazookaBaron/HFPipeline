@@ -1,0 +1,14 @@
+{
+  "source": "C:\\Repos\\HFPipleine\\control-panel\\data\\renders\\cs-b9d30fa7964c0cf0.mp4",
+  "native_frames": 2107,
+  "review_frames": 562,
+  "sheets": 12,
+  "duration_seconds": 70.233333,
+  "resolution": [
+    1080,
+    1920
+  ],
+  "fps": "30/1",
+  "sampling": "8Hz nearest native presentation timestamp; no interpolation",
+  "decoded_selection_count_verified": true
+}

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<!--
+  eyebrow-headline-block -- HyperFrames sub-composition (Narrative)
+
+  A small uppercase, letter-spaced eyebrow label above a large bold headline
+  (the dominant element, text-fit protected, up to 3 lines). Single-phase
+  reveal: eyebrow first, headline a beat later. No list content, so no
+  clear/rebuild is needed -- both fields are fixed single elements re-fit
+  from props on every mount.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("eyebrow-headline-block");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+
+  Variables:
+    - eyebrow    (string): small uppercase label above the headline.
+    - headline   (string): large bold line, up to 3 lines, text-fit
+                  protected (canvas measureText shrink, then truncate).
+    - accent     (enum: brand|accent|accent-2|accent-3|accent-4): color of
+                  the small marker dot beside the eyebrow. Opt-in only --
+                  default is the fixed brand accent.
+    - reveal_at  (number, seconds): when the eyebrow starts revealing; the
+                  headline follows a fixed beat after.
+    - duration   (number, seconds): total seconds this instance plays.
+
+  Registers window.__timelines["eyebrow-headline-block"] under the literal key.
+-->
+<html lang="en" data-composition-id="eyebrow-headline-block" data-composition-duration="4" data-composition-variables="[
+    { &quot;id&quot;: &quot;eyebrow&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Eyebrow&quot;, &quot;description&quot;: &quot;Small uppercase label above the headline.&quot;, &quot;default&quot;: &quot;New feature&quot; },
+    { &quot;id&quot;: &quot;headline&quot;, &quot;type&quot;: &quot;string&quot;, &quot;role&quot;: &quot;content&quot;, &quot;label&quot;: &quot;Headline&quot;, &quot;description&quot;: &quot;Large bold headline, up to 3 lines, text-fit protected.&quot;, &quot;default&quot;: &quot;Ship faster with less risk&quot; },
+    { &quot;id&quot;: &quot;accent&quot;, &quot;type&quot;: &quot;enum&quot;, &quot;role&quot;: &quot;style&quot;, &quot;label&quot;: &quot;Accent&quot;, &quot;description&quot;: &quot;Marker dot color beside the eyebrow. Opt-in only; default is the fixed brand accent.&quot;, &quot;default&quot;: &quot;brand&quot;, &quot;options&quot;: [{ &quot;value&quot;: &quot;brand&quot;, &quot;label&quot;: &quot;Brand&quot; }, { &quot;value&quot;: &quot;accent&quot;, &quot;label&quot;: &quot;Accent&quot; }, { &quot;value&quot;: &quot;accent-2&quot;, &quot;label&quot;: &quot;Accent 2&quot; }, { &quot;value&quot;: &quot;accent-3&quot;, &quot;label&quot;: &quot;Accent 3&quot; }, { &quot;value&quot;: &quot;accent-4&quot;, &quot;label&quot;: &quot;Accent 4&quot; }] },
+    { &quot;id&quot;: &quot;reveal_at&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Reveal at&quot;, &quot;description&quot;: &quot;Seconds from mount when the eyebrow starts revealing.&quot;, &quot;default&quot;: 0.3, &quot;min&quot;: 0, &quot;max&quot;: 30, &quot;step&quot;: 0.05 },
+    { &quot;id&quot;: &quot;duration&quot;, &quot;type&quot;: &quot;number&quot;, &quot;role&quot;: &quot;timing&quot;, &quot;label&quot;: &quot;Duration&quot;, &quot;description&quot;: &quot;Total seconds this instance plays.&quot;, &quot;default&quot;: 4, &quot;min&quot;: 2, &quot;max&quot;: 30, &quot;step&quot;: 0.1 }
+  ]">
+  <head>
+    <meta charset="UTF-8">
+    <title>Eyebrow Headline Block</title>
+  </head>
+  <body>
+    <template>
+      <div data-hf-id="hf-7ftp" id="root" data-composition-id="eyebrow-headline-block" data-duration="4" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .ehb-panel {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 3cqmin;
+            padding: 9cqmin;
+          }
+          .ehb-eyebrow-row {
+            display: flex;
+            align-items: center;
+            gap: 1.6cqmin;
+            opacity: 0;
+            transform: translateY(1cqmin);
+          }
+          .ehb-dot {
+            flex: 0 0 auto;
+            width: 1.6cqmin;
+            height: 1.6cqmin;
+            border-radius: 50%;
+            background: var(--ehb-accent, var(--hf-brand, #6ea8fe));
+          }
+          .ehb-eyebrow {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.22em;
+            color: var(--hf-muted, #9aa1ad);
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .ehb-headline {
+            font-weight: 800;
+            letter-spacing: -0.015em;
+            line-height: 1.12;
+            color: var(--hf-fg, #f4f5f7);
+            opacity: 0;
+            transform: translateY(1.8cqmin);
+          }
+        </style>
+
+        <div data-hf-id="hf-vjbm" class="ehb-panel" id="ehb-panel">
+          <div data-hf-id="hf-35te" class="ehb-eyebrow-row" id="ehb-eyebrow-row">
+            <span data-hf-id="hf-ksnl" class="ehb-dot" id="ehb-dot"></span>
+            <span data-hf-id="hf-vif1" class="ehb-eyebrow" id="ehb-eyebrow"></span>
+          </div>
+          <div data-hf-id="hf-pgjq" class="ehb-headline" id="ehb-headline"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            // See browser-window.html for the full rationale: HFTextFit /
+            // HFProps are pre-loaded globals, never a relative <script src>
+            // inside this template. Host contract: ../README.md "Shared
+            // library contract".
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "eyebrow-headline-block: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SCHEMA = {
+              eyebrow: { type: "string", default: "New feature", maxLength: 40 },
+              headline: { type: "string", default: "Ship faster with less risk", maxLength: 140 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              duration: { type: "number", default: 4, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var panel = document.getElementById("ehb-panel");
+            var eyebrowRow = document.getElementById("ehb-eyebrow-row");
+            var dotEl = document.getElementById("ehb-dot");
+            var eyebrowEl = document.getElementById("ehb-eyebrow");
+            var headlineEl = document.getElementById("ehb-headline");
+
+            root.style.setProperty("--ehb-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            function layout() {
+              var boxWidth = panel.clientWidth - panel.clientWidth * 0.18;
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+
+              // Eyebrow: single line, shrink then truncate.
+              HFTextFit.fitOrTruncate(eyebrowEl, props.eyebrow, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: boxWidth - rootMin * 4,
+                maxHeight: 1000,
+                baseSize: 2.4 * rootMin,
+                minSize: 12,
+                maxLines: 1,
+              });
+
+              // Headline is THE dominant element: large baseline size, up
+              // to 3 lines, shrink then truncate -- never a character-count
+              // heuristic, real canvas measurement against the actual box.
+              HFTextFit.fitOrTruncate(headlineEl, props.headline, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 800,
+                maxWidth: boxWidth,
+                maxHeight: 9.5 * rootMin * 1.12 * 3,
+                baseSize: 9.5 * rootMin,
+                minSize: 22,
+                lineHeightRatio: 1.12,
+                maxLines: 3,
+              });
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.6));
+            var headlineAt = Math.min(revealAt + 0.35, Math.max(0, duration - 0.3));
+
+            var tl = gsap.timeline({ paused: true });
+            tl.fromTo(eyebrowRow, { opacity: 0, y: 10 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out" }, revealAt);
+
+            // Marker-dot pop -- a punchier, bouncier entrance for the small
+            // accent dot than the row's own plain slide, landing a touch
+            // after the row starts so it reads as its own distinct
+            // micro-event rather than just riding along with the row fade.
+            var dotPopAt = Math.min(revealAt + 0.1, Math.max(0, duration - 0.3));
+            tl.fromTo(
+              dotEl,
+              { scale: 0.3, opacity: 0 },
+              { scale: 1, opacity: 1, duration: 0.3, ease: "back.out(2.8)" },
+              dotPopAt
+            );
+
+            // A single "ping" pulse right after the dot lands -- a finite
+            // scale-up-then-settle flourish (repeat:1, NOT a loop),
+            // reinforcing the marker as a live status indicator.
+            var dotPulseAt = Math.min(dotPopAt + 0.3, Math.max(0, duration - 0.2));
+            tl.fromTo(
+              dotEl,
+              { scale: 1 },
+              { scale: 1.5, duration: 0.16, yoyo: true, repeat: 1, ease: "power1.out" },
+              dotPulseAt
+            );
+
+            // Eyebrow-row settle -- a tiny overshoot correction right after
+            // its main slide-in lands.
+            var rowSettleAt = Math.min(revealAt + 0.4, Math.max(0, duration - 0.15));
+            tl.fromTo(
+              eyebrowRow,
+              { y: 0 },
+              { y: -2, duration: 0.12, yoyo: true, repeat: 1, ease: "power1.out" },
+              rowSettleAt
+            );
+
+            tl.fromTo(
+              headlineEl,
+              { opacity: 0, y: 18 },
+              { opacity: 1, y: 0, duration: 0.55, ease: "power2.out" },
+              headlineAt
+            );
+
+            // Headline settle -- a small overshoot correction after the
+            // dominant element's own slide lands, for a less flat stop on
+            // the reveal's final beat.
+            var headlineSettleAt = Math.min(headlineAt + 0.55, Math.max(0, duration - 0.05));
+            tl.fromTo(
+              headlineEl,
+              { y: 0 },
+              { y: -3, duration: 0.14, yoyo: true, repeat: 1, ease: "power1.out" },
+              headlineSettleAt
+            );
+
+            window.__timelines["eyebrow-headline-block"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

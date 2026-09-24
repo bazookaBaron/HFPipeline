@@ -1,0 +1,481 @@
+<!doctype html>
+<!--
+  magnifier-lens -- HyperFrames sub-composition (annotation / Foundation)
+
+  A circular magnifier lens over a generic mock settings/detail panel,
+  revealing an enlarged, centered copy of the highlighted ("hot", last)
+  detail row. Unlike callout-label/bracket-annotation/focus-spotlight
+  (transparent annotation layers), this component owns its own base mock
+  content -- a magnifier needs something concrete to zoom into, so it ships
+  a small settings-like panel (title + detail rows built from a
+  `detail_lines` list prop) as its backdrop.
+
+  Magnification technique (deliberately simple/robust): rather than scaling
+  a single giant duplicate of the WHOLE panel and hoping the lens's tiny
+  clipped window happens to land on the right few pixels of it (fragile --
+  a huge scaled subtree clipped by a small circle is extremely sensitive to
+  any sub-pixel drift between the two copies' layouts), the lens instead
+  contains ONE small, self-contained clone of just the hot row's icon+text,
+  flex-centered inside the circle and scaled up from ITS OWN center. A
+  small, independently-centered element scaled from 50%/50% is unambiguous
+  and cannot "miss" -- there is no separate pan/offset math to keep in sync
+  with a second full-size copy of the panel.
+
+  Lens anchoring: the lens is ALWAYS centered on the actual measured
+  position of the highlighted row via getBoundingClientRect -- never a
+  caller-guessed x_pct/y_pct disconnected from real layout. Row count,
+  font-fit outcome, and container size all shift where that row actually
+  lands, so a static percentage would drift out of alignment with the very
+  thing it's supposed to magnify. `lens_offset_x_pct`/`lens_offset_y_pct`
+  let a caller nudge the lens away from dead-center on that row (percent of
+  min(frame width, height)) while keeping the guarantee that the DEFAULT
+  (0, 0) always frames real content.
+
+  MULTI-INSTANCE PATTERN (see ../README.md): one fixed literal
+  data-composition-id/timeline key ("magnifier-lens"). Every per-instance
+  difference (title, detail lines, lens offset/size/zoom, label, timing,
+  accent) is a declared variable resolved via lib/props.js -- never a
+  forked file.
+
+  Variables:
+    - title        (string): small label in the base panel's title bar.
+    - detail_lines (list): rows shown in the base panel (also what the lens
+                   magnifies -- the LAST row is always the one highlighted
+                   and magnified).
+    - lens_offset_x_pct (number, -40..40): shifts the lens away from the
+                   highlighted row's own measured center, percent of
+                   min(frame width, height). 0 centers exactly on it.
+    - lens_offset_y_pct (number, -40..40): same, vertical axis.
+    - lens_size_pct(number, 5-60): lens diameter, percent of min(frame
+                   width, frame height).
+    - zoom         (number): magnification factor applied inside the lens.
+    - label        (string): optional caption chip near the lens.
+    - show_label   (boolean): whether the caption chip is shown at all.
+    - reveal_at    (number, seconds): when the panel fades in.
+    - lens_at      (number, seconds): when the lens itself reveals (clamped
+                   after reveal_at).
+    - accent       (enum): lens ring + highlighted-row color. Opt-in;
+                   default is the fixed brand accent.
+    - duration     (number, seconds): total instance length.
+
+  Registers window.__timelines["magnifier-lens"] under the literal key.
+-->
+<html
+  lang="en"
+  data-composition-id="magnifier-lens"
+  data-composition-duration="6"
+  data-composition-variables='[
+    { "id": "title", "type": "string", "role": "content", "label": "Title", "description": "Small label in the base panel'"'"'s title bar.", "default": "Settings" },
+    { "id": "detail_lines", "type": "string", "role": "content", "label": "Detail lines", "description": "Pipe-separated rows shown in the base panel (also what the lens magnifies -- the last row is always highlighted and magnified).", "default": "Two-factor authentication|Recovery email|API access tokens|Session timeout" },
+    { "id": "lens_offset_x_pct", "type": "number", "role": "content", "label": "Lens offset X %", "description": "Shifts the lens away from the highlighted row's own measured center, percent of min(frame width, height). 0 centers exactly on it.", "default": 0, "min": -40, "max": 40, "step": 1 },
+    { "id": "lens_offset_y_pct", "type": "number", "role": "content", "label": "Lens offset Y %", "description": "Same, vertical axis.", "default": 0, "min": -40, "max": 40, "step": 1 },
+    { "id": "lens_size_pct", "type": "number", "role": "content", "label": "Lens size %", "description": "Lens diameter, percent of min(frame width, frame height).", "default": 38, "min": 5, "max": 60, "step": 1 },
+    { "id": "zoom", "type": "number", "role": "content", "label": "Zoom", "description": "Magnification factor applied inside the lens.", "default": 2.2, "min": 1.2, "max": 4, "step": 0.1 },
+    { "id": "label", "type": "string", "role": "content", "label": "Label", "description": "Optional caption chip near the lens.", "default": "Zoomed in" },
+    { "id": "show_label", "type": "boolean", "role": "content", "label": "Show label", "description": "Whether the caption chip is shown at all.", "default": true },
+    { "id": "reveal_at", "type": "number", "role": "timing", "label": "Reveal at", "description": "Seconds from mount when the base panel fades in.", "default": 0.3, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "lens_at", "type": "number", "role": "timing", "label": "Lens at", "description": "Seconds from mount when the lens itself reveals (clamped after reveal_at).", "default": 1.4, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Lens ring + highlighted-row color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays. Read from props, never from static markup.", "default": 6, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Magnifier Lens</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="magnifier-lens" data-duration="6" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6cqmin;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .mg-card {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            max-width: 118cqh;
+            border-radius: calc(var(--hf-radius, 16px) * 1.25);
+            overflow: hidden;
+            background: var(--hf-surface, #16181c);
+            box-shadow: 0 4cqh 10cqh rgba(0, 0, 0, 0.5);
+            opacity: 0;
+          }
+          .mg-chrome {
+            display: flex;
+            align-items: center;
+            gap: 2.6cqmin;
+            padding: 2.6cqmin 3.2cqmin;
+            background: var(--hf-surface-2, #1e2126);
+            border-bottom: 1px solid var(--hf-border, #2c2f36);
+          }
+          .mg-dots {
+            display: flex;
+            gap: 1.2cqmin;
+          }
+          .mg-dot {
+            width: 1.7cqmin;
+            height: 1.7cqmin;
+            border-radius: 50%;
+            background: var(--hf-border, #2c2f36);
+          }
+          .mg-title {
+            color: var(--hf-muted, #9aa1ad);
+            font-size: 2.4cqmin;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          .mg-rows {
+            padding: 4.4cqmin;
+            display: flex;
+            flex-direction: column;
+            gap: 3.2cqmin;
+            background: var(--hf-bg, #0b0d10);
+          }
+          .mg-row {
+            display: flex;
+            align-items: center;
+            gap: 2.4cqmin;
+          }
+          .mg-row-icon {
+            flex: 0 0 auto;
+            width: 3.6cqmin;
+            height: 3.6cqmin;
+            border-radius: 50%;
+            background: var(--hf-surface-2, #1e2126);
+            border: 1px solid var(--hf-border, #2c2f36);
+          }
+          .mg-row.mg-row-hot .mg-row-icon {
+            background: var(--mg-accent, var(--hf-brand, #6ea8fe));
+            border-color: transparent;
+          }
+          .mg-row-text {
+            flex: 1;
+            min-width: 0;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+          /* The lens: a clipped circular viewport. Its content is ONE
+             small, self-contained clone of the hot row (icon + text),
+             flex-centered and scaled up from its own center -- see file
+             header for why this is simpler/more robust than scaling a
+             giant duplicate of the whole panel. */
+          .mg-lens {
+            position: absolute;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 0.6cqmin solid var(--mg-accent, var(--hf-brand, #6ea8fe));
+            box-shadow: 0 1.6cqmin 4cqmin rgba(0, 0, 0, 0.55), 0 0 0 0.3cqmin rgba(255, 255, 255, 0.06) inset;
+            background: var(--hf-bg, #0b0d10);
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          }
+          .mg-lens-row {
+            display: flex;
+            align-items: center;
+            gap: 2.4cqmin;
+            white-space: nowrap;
+            flex: 0 0 auto;
+          }
+          .mg-lens-row .mg-row-icon {
+            background: var(--mg-accent, var(--hf-brand, #6ea8fe));
+            border-color: transparent;
+          }
+          .mg-chip {
+            position: absolute;
+            padding: 1.2cqmin 2.2cqmin;
+            border-radius: 999px;
+            background: var(--hf-surface, #16181c);
+            border: 1px solid var(--mg-accent, var(--hf-brand, #6ea8fe));
+            color: var(--hf-fg, #f4f5f7);
+            font-weight: 600;
+            font-size: 2.2cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            opacity: 0;
+          }
+        </style>
+
+        <div class="mg-card" id="mg-card">
+          <div class="mg-chrome">
+            <div class="mg-dots" aria-hidden="true">
+              <div class="mg-dot"></div>
+              <div class="mg-dot"></div>
+              <div class="mg-dot"></div>
+            </div>
+            <div class="mg-title" id="mg-title"></div>
+          </div>
+          <div class="mg-rows" id="mg-rows-base"></div>
+
+          <div class="mg-lens" id="mg-lens">
+            <div class="mg-lens-row" id="mg-lens-row">
+              <span class="mg-row-icon"></span>
+              <span class="mg-row-text" id="mg-lens-text"></span>
+            </div>
+          </div>
+          <div class="mg-chip" id="mg-chip"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "magnifier-lens: HFTextFit/HFProps not found on window. " +
+                  "The host page must load compositions/components/lib/text-fit.js " +
+                  "and lib/props.js before mounting this composition."
+              );
+            }
+
+            var SCHEMA = {
+              title: { type: "string", default: "Settings", maxLength: 40 },
+              detail_lines: {
+                type: "list",
+                default: [
+                  "Two-factor authentication",
+                  "Recovery email",
+                  "API access tokens",
+                  "Session timeout",
+                ],
+                max: 6,
+                delimiter: "|",
+              },
+              lens_offset_x_pct: { type: "number", default: 0, min: -40, max: 40 },
+              lens_offset_y_pct: { type: "number", default: 0, min: -40, max: 40 },
+              lens_size_pct: { type: "number", default: 38, min: 5, max: 60 },
+              zoom: { type: "number", default: 2.2, min: 1.2, max: 4 },
+              label: { type: "string", default: "Zoomed in", maxLength: 40 },
+              show_label: { type: "boolean", default: true },
+              reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
+              lens_at: { type: "number", default: 1.4, min: 0, max: 30 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              duration: { type: "number", default: 6, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var card = document.getElementById("mg-card");
+            var titleEl = document.getElementById("mg-title");
+            var rowsBase = document.getElementById("mg-rows-base");
+            var lens = document.getElementById("mg-lens");
+            var lensRow = document.getElementById("mg-lens-row");
+            var lensText = document.getElementById("mg-lens-text");
+            var chip = document.getElementById("mg-chip");
+
+            root.style.setProperty("--mg-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            // The row highlighted (accent icon) is the one the lens
+            // magnifies -- last item in the list, a deliberate, deterministic
+            // choice (not random) so the lens always frames something the
+            // caller can predict from detail_lines' own order.
+            var hotIndex = props.detail_lines.length - 1;
+            var hotText = props.detail_lines[hotIndex];
+
+            var baseHotRowEl = null;
+            var baseTextEls = [];
+            HFProps.rebuild(rowsBase, function (container) {
+              baseTextEls = [];
+              props.detail_lines.forEach(function (text, i) {
+                var row = document.createElement("div");
+                var isHot = i === hotIndex;
+                row.className = "mg-row" + (isHot ? " mg-row-hot" : "");
+                var icon = document.createElement("span");
+                icon.className = "mg-row-icon";
+                var textEl = document.createElement("span");
+                textEl.className = "mg-row-text";
+                textEl.dataset.src = text;
+                // Rows near the lens can be legitimately covered by the
+                // lens disc itself sitting on top of them (a real
+                // magnifying glass sits on top of what it's inspecting) --
+                // never an accidental full-panel occlusion bug.
+                textEl.setAttribute("data-layout-allow-occlusion", "");
+                row.appendChild(icon);
+                row.appendChild(textEl);
+                container.appendChild(row);
+                baseTextEls.push(textEl);
+                if (isHot) baseHotRowEl = row;
+              });
+            });
+
+            chip.style.display = props.show_label ? "" : "none";
+            lensText.dataset.src = hotText;
+
+            function layout() {
+              var cardRect = card.getBoundingClientRect();
+              var stageW = card.clientWidth;
+              var stageH = card.clientHeight;
+              // getBoundingClientRect() reports viewport-rendered pixels,
+              // which would silently disagree with clientWidth under any
+              // ancestor CSS transform scale (e.g. a preview harness that
+              // shrinks the whole stage for display) even though no such
+              // scale exists in a real render -- this ratio corrects for
+              // that so the hot-row measurement below always lands in the
+              // SAME unit system as stageW/stageH/rootMin.
+              var scaleCorrectionX = cardRect.width > 0 ? stageW / cardRect.width : 1;
+              var scaleCorrectionY = cardRect.height > 0 ? stageH / cardRect.height : 1;
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+
+              HFTextFit.fitOrTruncate(titleEl, props.title, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 600,
+                maxWidth: stageW * 0.6,
+                maxHeight: 1000,
+                baseSize: 2.4 * rootMin,
+                minSize: 12,
+                maxLines: 1,
+              });
+
+              var boxWidth = stageW - stageW * 0.088 * 2;
+              baseTextEls.forEach(function (el) {
+                HFTextFit.fitOrTruncate(el, el.dataset.src, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 500,
+                  maxWidth: boxWidth - 4.4 * rootMin,
+                  maxHeight: 1000,
+                  baseSize: 3.2 * rootMin,
+                  minSize: 12,
+                  maxLines: 1,
+                });
+              });
+
+              // --- Lens geometry ---
+              // Anchor on the ACTUAL measured position of the highlighted
+              // row (never a caller-guessed static percentage -- see file
+              // header). Falls back to the card's own center if, for any
+              // reason, the hot row hasn't been built yet.
+              var minDim = Math.min(stageW, stageH);
+              var anchorX = stageW / 2;
+              var anchorY = stageH / 2;
+              if (baseHotRowEl) {
+                var hotRect = baseHotRowEl.getBoundingClientRect();
+                anchorX = ((hotRect.left - cardRect.left) + hotRect.width / 2) * scaleCorrectionX;
+                anchorY = ((hotRect.top - cardRect.top) + hotRect.height / 2) * scaleCorrectionY;
+              }
+              var size = (props.lens_size_pct / 100) * minDim;
+              var cx = anchorX + (props.lens_offset_x_pct / 100) * minDim;
+              var cy = anchorY + (props.lens_offset_y_pct / 100) * minDim;
+              var r = size / 2;
+
+              lens.style.width = size + "px";
+              lens.style.height = size + "px";
+              lens.style.left = cx - r + "px";
+              lens.style.top = cy - r + "px";
+
+              // The lens ROW is a small, self-contained clone of the hot
+              // row, flex-centered inside the circle (via #mg-lens's own
+              // align-items/justify-content) and scaled up from its OWN
+              // center (transform-origin: 50% 50%, the default and least
+              // error-prone origin) -- no separate pan/offset math, no
+              // giant duplicate subtree to keep in sync pixel-for-pixel.
+              gsap.set(lensRow, { scale: props.zoom, transformOrigin: "50% 50%" });
+
+              // Text-fit the lens copy against the LENS's own inner
+              // diameter (shrunk a little for breathing room), at a base
+              // size proportional to the lens itself -- NOT the same
+              // pixel size as the base row, since this copy is scaled up
+              // by a separate CSS transform on top of whatever font-size
+              // is set here. Fitting first, then scaling, keeps the text
+              // crisp (real font rendering at the final visual size)
+              // rather than blurring a small font stretched by transform.
+              var lensInnerDiameter = size * 0.82;
+              HFTextFit.fitOrTruncate(lensText, hotText, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 500,
+                maxWidth: lensInnerDiameter,
+                maxHeight: lensInnerDiameter,
+                baseSize: 3.2 * rootMin,
+                minSize: 12,
+                maxLines: 1,
+              });
+              // Re-measure after fitting: if the fitted row is still wider
+              // than the lens can show once scaled up, shrink the GSAP
+              // scale itself (rather than truncating text a second time)
+              // so the whole row always stays inside the visible circle.
+              var rowNaturalWidth = lensRow.scrollWidth;
+              var rowNaturalHeight = lensRow.scrollHeight;
+              var maxScaleByWidth = rowNaturalWidth > 0 ? lensInnerDiameter / rowNaturalWidth : props.zoom;
+              var maxScaleByHeight = rowNaturalHeight > 0 ? lensInnerDiameter / rowNaturalHeight : props.zoom;
+              var effectiveZoom = Math.min(props.zoom, maxScaleByWidth, maxScaleByHeight);
+              gsap.set(lensRow, { scale: effectiveZoom, transformOrigin: "50% 50%" });
+
+              if (props.show_label) {
+                var chipY = Math.min(cy + r + 3 * rootMin, stageH - 2 * rootMin);
+                chip.style.left = cx + "px";
+                chip.style.top = chipY + "px";
+                gsap.set(chip, { xPercent: -50, yPercent: 0 });
+                HFTextFit.fitOrTruncate(chip, props.label, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 600,
+                  maxWidth: 50 * rootMin,
+                  maxHeight: 1000,
+                  baseSize: 2.2 * rootMin,
+                  minSize: 12,
+                  maxLines: 1,
+                });
+              }
+            }
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(layout);
+            }
+
+            var duration = props.duration;
+            var revealAt = Math.min(props.reveal_at, Math.max(0, duration - 0.6));
+            var lensAt = Math.min(Math.max(props.lens_at, revealAt + 0.4), Math.max(0, duration - 0.2));
+
+            var tl = gsap.timeline({ paused: true });
+
+            tl.fromTo(card, { opacity: 0 }, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
+            tl.fromTo(
+              lens,
+              { opacity: 0, scale: 0.7 },
+              { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.5)", transformOrigin: "50% 50%" },
+              lensAt
+            );
+            if (props.show_label) {
+              tl.fromTo(
+                chip,
+                { opacity: 0, y: 8 },
+                { opacity: 1, y: 0, duration: 0.35, ease: "power2.out" },
+                lensAt + 0.3
+              );
+            }
+
+            // Pad tl.duration() to the authored `duration` prop -- see
+            // browser-window.html for the full rationale.
+            tl.set({}, {}, duration);
+            window.__timelines["magnifier-lens"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

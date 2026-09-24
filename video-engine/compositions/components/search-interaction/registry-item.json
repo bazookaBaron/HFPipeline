@@ -1,0 +1,28 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "search-interaction",
+  "type": "hyperframes:component",
+  "title": "Search Interaction",
+  "description": "A search box that types a query character-by-character, then reveals result rows underneath, staggered.",
+  "tags": ["software-mockup", "search", "input", "results", "interaction"],
+  "category": "software-mockups",
+  "files": [
+    {
+      "path": "search-interaction.html",
+      "target": "compositions/components/search-interaction/search-interaction.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "placeholder", "type": "string", "default": "Search" },
+    { "id": "query", "type": "string", "default": "dashboard metrics" },
+    { "id": "results", "type": "string", "default": "Weekly active users|Revenue by cohort|Churn risk score" },
+    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
+    { "id": "type_at", "type": "number", "default": 0.4 },
+    { "id": "type_duration", "type": "number", "default": 1.4 },
+    { "id": "results_at", "type": "number", "default": 2.1 },
+    { "id": "result_stagger", "type": "number", "default": 0.3 },
+    { "id": "duration", "type": "number", "default": 6 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

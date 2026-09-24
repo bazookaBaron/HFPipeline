@@ -1,0 +1,27 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "chapter-shell",
+  "type": "hyperframes:component",
+  "title": "Chapter Shell",
+  "description": "Architectural scene chrome for a 'light editorial' theme: breadcrumb + step-dot indicator + bold headline/subtitle + a decorative content-card frame at a FIXED rect (top:38cqmin, left/right:6.4cqmin, bottom:5.4cqmin). Draws chrome only -- the real content goes in that rect as a separate, statically-authored sibling data-composition-src scene positioned by the caller (never a nested/dynamic mount; see chapter-shell.html's header comment for why that was tried and empirically disproven).",
+  "tags": ["foundation", "architecture", "shell", "editorial", "light-theme"],
+  "category": "foundation",
+  "files": [
+    {
+      "path": "chapter-shell.html",
+      "target": "compositions/components/chapter-shell/chapter-shell.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "breadcrumb", "type": "string", "default": "SYSTEM DESIGN / FILE SERVICES" },
+    { "id": "currentStep", "type": "number", "default": 2, "min": 1, "max": 9 },
+    { "id": "totalSteps", "type": "number", "default": 3, "min": 1, "max": 9 },
+    { "id": "headline", "type": "string", "default": "How the cache decides" },
+    { "id": "subtitle", "type": "string", "default": "A quick look at read-through caching" },
+    { "id": "reveal_at", "type": "number", "default": 0.3 },
+    { "id": "content_at", "type": "number", "default": 1.8 },
+    { "id": "duration", "type": "number", "default": 8 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

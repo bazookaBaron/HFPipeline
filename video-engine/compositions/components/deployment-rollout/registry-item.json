@@ -1,0 +1,25 @@
+{
+  "$schema": "https://hyperframes.heygen.com/schema/registry-item.json",
+  "name": "deployment-rollout",
+  "type": "hyperframes:component",
+  "title": "Deployment Rollout",
+  "description": "A row of server boxes progressively flipping from an old version to a new version, one at a time, canary/rolling-deploy style.",
+  "tags": ["architecture", "systems", "devops", "deployment", "rollout", "canary"],
+  "category": "architecture",
+  "files": [
+    {
+      "path": "deployment-rollout.html",
+      "target": "compositions/components/deployment-rollout/deployment-rollout.html",
+      "type": "hyperframes:composition"
+    }
+  ],
+  "variables": [
+    { "id": "server_count", "type": "number", "default": 5 },
+    { "id": "old_version", "type": "string", "default": "v1.2" },
+    { "id": "new_version", "type": "string", "default": "v1.3" },
+    { "id": "rollout_at", "type": "number", "default": 1 },
+    { "id": "server_stagger", "type": "number", "default": 0.7 },
+    { "id": "duration", "type": "number", "default": 7 }
+  ],
+  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+}

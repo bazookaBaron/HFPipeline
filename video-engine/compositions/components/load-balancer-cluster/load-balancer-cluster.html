@@ -1,0 +1,316 @@
+<!doctype html>
+<!--
+  load-balancer-cluster -- HyperFrames sub-composition (Architecture)
+
+  A load-balancer box on the left connected to N backend server boxes on
+  the right; traffic dots depart the LB on a fixed interval and travel to
+  a round-robin backend, which pulses on arrival. Connector lines and dot
+  travel use the same measure-once/linear-interpolation approach as
+  fan-out-fan-in.html and client-server-exchange.html.
+
+  MULTI-INSTANCE PATTERN: one fixed literal id ("load-balancer-cluster");
+  every per-instance difference arrives via data-composition-variables +
+  data-variable-values on the host clip. See ../README.md.
+-->
+<html
+  lang="en"
+  data-composition-id="load-balancer-cluster"
+  data-composition-duration="8"
+  data-composition-variables='[
+    { "id": "backend_count", "type": "number", "role": "content", "label": "Backend count", "description": "Number of backend server boxes.", "default": 4, "min": 2, "max": 5, "step": 1 },
+    { "id": "lb_label", "type": "string", "role": "content", "label": "Load balancer label", "description": "Label on the load balancer box.", "default": "Load Balancer" },
+    { "id": "backend_label", "type": "string", "role": "content", "label": "Backend label", "description": "Label prefix on each backend box (numbered automatically).", "default": "Server" },
+    { "id": "accent", "type": "enum", "role": "style", "label": "Accent", "description": "Node border + traffic-dot color. Opt-in only; default is the fixed brand accent.", "default": "brand", "options": [{ "value": "brand", "label": "Brand" }, { "value": "accent", "label": "Accent" }, { "value": "accent-2", "label": "Accent 2" }, { "value": "accent-3", "label": "Accent 3" }, { "value": "accent-4", "label": "Accent 4" }] },
+    { "id": "start_at", "type": "number", "role": "timing", "label": "Start at", "description": "Seconds from mount when nodes reveal and traffic begins departing.", "default": 0.6, "min": 0, "max": 30, "step": 0.05 },
+    { "id": "dot_interval", "type": "number", "role": "timing", "label": "Dot interval", "description": "Seconds between successive traffic dots departing the load balancer.", "default": 0.6, "min": 0.2, "max": 2, "step": 0.05 },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 8, "min": 2, "max": 30, "step": 0.1 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Load Balancer Cluster</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="load-balancer-cluster" data-duration="8" data-fps="30">
+        <style>
+          *,
+          *::before,
+          *::after {
+            box-sizing: border-box;
+          }
+          #root {
+            position: absolute;
+            inset: 0;
+            container-type: size;
+            font-family: var(--hf-font-body, Inter, ui-sans-serif, system-ui, sans-serif);
+            color: var(--hf-fg, #f4f5f7);
+          }
+          .lbc-stage {
+            position: absolute;
+            inset: 0;
+            background: var(--hf-bg-mesh, var(--hf-bg, #0b0d10));
+          }
+          .lbc-svg {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+          }
+          .lbc-node {
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 2.6cqmin;
+            border: 0.3cqmin solid var(--lbc-accent, var(--hf-brand, #6ea8fe));
+            background: var(--hf-surface, #16181c);
+            opacity: 0;
+            padding: 1.4cqmin;
+            text-align: center;
+          }
+          .lbc-node-label {
+            font-weight: 700;
+            font-size: 2.7cqmin;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: 100%;
+          }
+          .lbc-lb {
+            width: 24cqmin;
+            height: 44cqmin;
+            min-width: 96px;
+            min-height: 150px;
+            left: 6cqw;
+            top: 50%;
+            transform: translateY(-50%);
+          }
+          .lbc-backend {
+            width: 24cqmin;
+            height: 12cqmin;
+            min-width: 96px;
+            min-height: 48px;
+            right: 6cqw;
+            transform: translateY(-50%);
+          }
+        </style>
+
+        <div class="lbc-stage" id="lbc-stage">
+          <svg class="lbc-svg" id="lbc-svg" preserveAspectRatio="none"></svg>
+          <div class="lbc-node lbc-lb" id="lbc-lb">
+            <div class="lbc-node-label" id="lbc-lb-label"></div>
+          </div>
+          <div id="lbc-backends"></div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            if (!window.HFTextFit || !window.HFProps) {
+              console.error(
+                "load-balancer-cluster: HFTextFit/HFProps not found on window. The host " +
+                  "page must load compositions/components/lib/{text-fit,props}.js first."
+              );
+            }
+
+            var SVG_NS = "http://www.w3.org/2000/svg";
+
+            var SCHEMA = {
+              backend_count: { type: "number", default: 4, min: 2, max: 5 },
+              lb_label: { type: "string", default: "Load Balancer", maxLength: 26 },
+              backend_label: { type: "string", default: "Server", maxLength: 16 },
+              accent: {
+                type: "enum",
+                default: "brand",
+                options: ["brand", "accent", "accent-2", "accent-3", "accent-4"],
+              },
+              start_at: { type: "number", default: 0.6, min: 0, max: 30 },
+              dot_interval: { type: "number", default: 0.6, min: 0.2, max: 2 },
+              duration: { type: "number", default: 8, min: 2, max: 30 },
+            };
+
+            var vars =
+              window.__hyperframes && window.__hyperframes.getVariables
+                ? window.__hyperframes.getVariables()
+                : {};
+            var props = HFProps.resolve(vars, SCHEMA);
+
+            var root = document.getElementById("root");
+            var stage = document.getElementById("lbc-stage");
+            var svg = document.getElementById("lbc-svg");
+            var lb = document.getElementById("lbc-lb");
+            var lbLabelEl = document.getElementById("lbc-lb-label");
+            var backendsWrap = document.getElementById("lbc-backends");
+
+            root.style.setProperty("--lbc-accent", "var(--hf-" + props.accent + ", var(--hf-brand, #6ea8fe))");
+
+            var n = Math.round(props.backend_count);
+
+            // Per-backend accent rotation: the N backend server boxes are
+            // real distinct content items, so each gets its own border color
+            // from this rotation, and every traffic dot picks up its target
+            // backend's color so a dot's color reads as "which server this
+            // is going to." No health/draining state exists anywhere in this
+            // component today (checked: all backends render identically
+            // besides label/position), so there is no semantic color to
+            // preserve here -- the rotation is free to use the full set. The
+            // single load-balancer box keeps the existing chrome-only
+            // `accent` variable below: it is the one fixed source node, not
+            // a per-item element.
+            var BACKEND_ROTATION = [
+              "var(--hf-accent, #71f5a7)",
+              "var(--hf-accent-2, #c5a3ff)",
+              "var(--hf-accent-3, #ffb84d)",
+              "var(--hf-accent-4, #ff6e6e)",
+              "var(--hf-brand, #6ea8fe)",
+            ];
+
+            // Clear/rebuild: backend nodes are torn down and rebuilt from
+            // props every mount so a re-seek or variable change never
+            // leaves a stale node from a previous build.
+            var backendEls = [];
+            HFProps.rebuild(backendsWrap, function (container) {
+              backendEls = [];
+              for (var i = 0; i < n; i++) {
+                var backend = document.createElement("div");
+                backend.className = "lbc-node lbc-backend";
+                var top = ((i + 1) / (n + 1)) * 100;
+                backend.style.top = top + "%";
+                backend.style.borderColor = BACKEND_ROTATION[i % BACKEND_ROTATION.length];
+                var label = document.createElement("div");
+                label.className = "lbc-node-label";
+                backend.appendChild(label);
+                container.appendChild(backend);
+                backendEls.push({ el: backend, label: label, text: props.backend_label + " " + (i + 1) });
+              }
+            });
+
+            function layout() {
+              var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
+              HFTextFit.fitOrTruncate(lbLabelEl, props.lb_label, {
+                family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                weight: 700,
+                maxWidth: lb.clientWidth * 0.86,
+                maxHeight: 1000,
+                baseSize: 3 * rootMin,
+                minSize: 12,
+                maxLines: 2,
+              });
+              backendEls.forEach(function (item) {
+                HFTextFit.fitOrTruncate(item.label, item.text, {
+                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  weight: 700,
+                  maxWidth: item.el.clientWidth * 0.86,
+                  maxHeight: 1000,
+                  baseSize: 2.7 * rootMin,
+                  minSize: 11,
+                  maxLines: 1,
+                });
+              });
+            }
+
+            backendEls.forEach(function (item) {
+              item.label.dataset.src = item.text;
+            });
+
+            layout();
+            if (document.fonts && document.fonts.ready) {
+              document.fonts.ready.then(function () {
+                layout();
+                buildTimeline();
+              });
+            }
+
+            var duration = props.duration;
+            var startAt = Math.min(props.start_at, Math.max(0, duration - 1.5));
+            var interval = props.dot_interval;
+
+            var tl = gsap.timeline({ paused: true });
+
+            function point(el, stageRect, side) {
+              var r = el.getBoundingClientRect();
+              var x = side === "left" ? r.right : side === "right" ? r.left : r.left + r.width / 2;
+              var y = r.top + r.height / 2;
+              return { x: x - stageRect.left, y: y - stageRect.top };
+            }
+
+            function buildTimeline() {
+              tl.clear();
+              while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+              var stageRect = stage.getBoundingClientRect();
+              var lbPt = point(lb, stageRect, "right");
+              var backendPts = backendEls.map(function (item) {
+                return point(item.el, stageRect, "left");
+              });
+
+              backendPts.forEach(function (bp) {
+                var line = document.createElementNS(SVG_NS, "line");
+                line.setAttribute("x1", lbPt.x);
+                line.setAttribute("y1", lbPt.y);
+                line.setAttribute("x2", bp.x);
+                line.setAttribute("y2", bp.y);
+                line.setAttribute("stroke", "var(--hf-border, #2c2f36)");
+                line.setAttribute("stroke-width", "2");
+                svg.appendChild(line);
+              });
+
+              tl.fromTo(lb, { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, 0.1);
+              backendEls.forEach(function (item, i) {
+                tl.fromTo(item.el, { opacity: 0, x: 14 }, { opacity: 1, x: 0, duration: 0.35, ease: "power2.out" }, 0.25 + i * 0.08);
+              });
+
+              // Traffic: a dot departs the LB every `interval` seconds,
+              // round-robin across backends, until the instance's own
+              // window closes.
+              var m = backendPts.length || 1;
+              var maxDots = Math.max(1, Math.floor((duration - startAt - 0.4) / interval) + 1);
+              for (var i = 0; i < maxDots; i++) {
+                var at = Math.min(startAt + i * interval, Math.max(0, duration - 0.4));
+                var target = i % m;
+                (function (target, at) {
+                  var dot = document.createElementNS(SVG_NS, "circle");
+                  dot.setAttribute("r", "5");
+                  dot.setAttribute("fill", BACKEND_ROTATION[target % BACKEND_ROTATION.length]);
+                  dot.setAttribute("opacity", "0");
+                  svg.appendChild(dot);
+                  var proxy = { t: 0 };
+                  var from = lbPt;
+                  var to = backendPts[target];
+                  tl.set(dot, { attr: { opacity: 1, cx: from.x, cy: from.y } }, at);
+                  tl.to(
+                    proxy,
+                    {
+                      t: 1,
+                      duration: 0.5,
+                      ease: "power1.inOut",
+                      onUpdate: function () {
+                        dot.setAttribute("cx", from.x + (to.x - from.x) * proxy.t);
+                        dot.setAttribute("cy", from.y + (to.y - from.y) * proxy.t);
+                      },
+                    },
+                    at
+                  );
+                  tl.to(dot, { attr: { opacity: 0 }, duration: 0.15 }, at + 0.5);
+                  tl.to(backendEls[target].el, { scale: 1.06, duration: 0.12, ease: "power1.out" }, at + 0.48);
+                  tl.to(backendEls[target].el, { scale: 1, duration: 0.18, ease: "power1.in" }, at + 0.6);
+                })(target, at);
+              }
+
+              // Pad tl.duration() to the authored `duration` prop -- see the
+              // matching comment in browser-window.html for why.
+              tl.set({}, {}, duration);
+              tl.seek(0, false);
+            }
+
+            buildTimeline();
+            window.__timelines["load-balancer-cluster"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

@@ -1001,11 +1001,16 @@
               var ts = props.timeScale;
               var cqPx = Math.min(root.clientWidth, root.clientHeight) / 100;
               var enterDur = 0.15 * ts;
-              tl.fromTo(lbBlock, { opacity: 0.35, y: -0.6 * cqPx }, { opacity: 1, y: 0, duration: enterDur, ease: "power2.out" }, 0);
+              var late = HFHostEvents.lateTargets(props.events, ["reveal"]);
+              function enter(el, id, from) {
+                if (late[id]) return; // revealed later, on its word
+                tl.fromTo(el, from, { opacity: 1, x: 0, y: 0, duration: enterDur, ease: "power2.out" }, 0);
+              }
+              enter(lbBlock, "lb", { opacity: 0.35, y: -0.6 * cqPx });
               SIDES.forEach(function (side) {
-                tl.fromTo(side.cardEl, { opacity: 0.35, y: 0.8 * cqPx }, { opacity: 1, y: 0, duration: enterDur, ease: "power2.out" }, 0);
+                enter(side.cardEl, side.key, { opacity: 0.35, y: 0.8 * cqPx });
                 side.rowEls.forEach(function (row) {
-                  tl.fromTo(row.el, { opacity: 0.35, x: -0.6 * cqPx }, { opacity: 1, x: 0, duration: enterDur, ease: "power2.out" }, 0);
+                  enter(row.el, row.inst.id, { opacity: 0.35, x: -0.6 * cqPx });
                 });
               });
 

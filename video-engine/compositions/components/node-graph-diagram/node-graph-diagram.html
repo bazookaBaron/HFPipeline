@@ -134,7 +134,8 @@
             transform: translateY(1.8cqmin) scale(0.94);
             overflow: hidden;
           }
-          .ngd-card.ngd-status {
+          .ngd-card.ngd-status,
+          .ngd-card[data-connected="1"] {
             border-left-width: 0.55cqmin;
             border-left-color: var(--ngd-node-color, var(--hf-brand, #6ea8fe));
           }
@@ -278,7 +279,10 @@
               accent: { type: "enum", default: "brand", options: ACCENT_OPTIONS },
               reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
               edge_stagger: { type: "number", default: 0.25, min: 0.05, max: 2 },
-              duration: { type: "number", default: 8, min: 3, max: 30 },
+              duration: { type: "number", default: 8, min: 3, max: 120 },
+              // v2 host mode: typed events (lib/host-events.js). Empty = v1 staged reveal + pulses.
+              events: { type: "string", default: "" },
+              timeScale: { type: "number", default: 1, min: 0.25, max: 4 },
             };
 
             var vars =
@@ -286,6 +290,7 @@
                 ? window.__hyperframes.getVariables()
                 : {};
             var props = HFProps.resolve(vars, SCHEMA);
+            var hostMode = /^\s*\[/.test(props.events || "") && props.events.trim() !== "[]";
 
             var root = document.getElementById("root");
             var stage = document.getElementById("ngd-stage");
@@ -477,6 +482,7 @@
                 slot.appendChild(card);
                 container.appendChild(slot);
 
+                card.setAttribute("data-entity", node.id);
                 nodeEls.push({
                   node: node,
                   slot: slot,
@@ -567,12 +573,14 @@
               return { x: cx + dx * scale, y: cy + dy * scale };
             }
 
-            function labelText(el, text, sizeCqmin) {
+            function labelText(el, text, sizeCqmin, maxWidthPx) {
               var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
               fitLineSafe(el, text, {
                 family: "Inter, ui-sans-serif, system-ui, sans-serif",
                 weight: 700,
-                maxWidth: 26 * rootMin,
+                // Fit to the edge it labels, not a flat width: a flat 26cqmin let labels on short
+                // edges spill over the neighbouring node.
+                maxWidth: maxWidthPx || 26 * rootMin,
                 maxHeight: 1000,
                 baseSize: sizeCqmin * rootMin,
                 minSize: 10,
@@ -650,13 +658,17 @@
                 line.setAttribute("y2", p2.y);
                 line.setAttribute("stroke", colorValue);
                 line.setAttribute("stroke-width", Math.max(1.4, rootMin * 0.16));
-                line.setAttribute("opacity", "0.85");
+                // Start invisible: SVG markers (arrowheads) ignore stroke-dashoffset, so an
+                // undrawn edge would otherwise show a floating arrowhead before its line draws.
+                line.setAttribute("opacity", "0");
                 if (edge.direction === "forward" || edge.direction === "both") {
                   line.setAttribute("marker-end", "url(#" + markerEndId + ")");
                 }
                 if (edge.direction === "reverse" || edge.direction === "both") {
                   line.setAttribute("marker-start", "url(#" + markerStartId + ")");
                 }
+                var edgeId = nodes[edge.fromIdx].id + "->" + nodes[edge.toIdx].id;
+                line.setAttribute("data-entity", edgeId);
                 svg.appendChild(line);
                 var len = Math.hypot(p2.x - p1.x, p2.y - p1.y) || 1;
                 line.style.strokeDasharray = len;
@@ -687,12 +699,22 @@
                   labelEl.style.fontSize = 2.3 * rootMin + "px";
                   labelEl.style.left = lx + perpX * nudge + "px";
                   labelEl.style.top = ly + perpY * nudge + "px";
+                  labelEl.setAttribute("data-entity", edgeId + ".label");
                   labelsWrap.appendChild(labelEl);
-                  labelText(labelEl, edge.label, 2.3);
+                  labelText(labelEl, edge.label, 2.3, Math.max(40, Math.min(26 * rootMin, len - 3 * rootMin)));
                 }
 
-                return { line: line, len: len, p1: p1, p2: p2, labelEl: labelEl, edge: edge };
+                return { id: edgeId, line: line, len: len, p1: p1, p2: p2, labelEl: labelEl, edge: edge };
               });
+
+              var COMET_SIZE = 4;
+              var COMET_TRAIL_GAP = 0.09;
+              if (hostMode) {
+                buildHostTimeline(edgeGeoms, rootMin);
+                tl.set({}, {}, duration);
+                tl.seek(0, false);
+                return;
+              }
 
               // Nodes reveal first, staggered.
               nodeEls.forEach(function (item, i) {
@@ -709,6 +731,7 @@
               var edgesStart = Math.min(revealAt + nodeCount * stagger, Math.max(0, duration - 0.6));
               edgeGeoms.forEach(function (geom, i) {
                 var at = Math.min(edgesStart + i * stagger, Math.max(0, duration - 0.3));
+                tl.set(geom.line, { attr: { opacity: 0.85 } }, at);
                 tl.to(geom.line, { strokeDashoffset: 0, duration: 0.5, ease: "power1.inOut" }, at);
                 if (geom.labelEl) {
                   tl.to(geom.labelEl, { opacity: 1, duration: 0.3, ease: "power1.out" }, at + 0.35);
@@ -729,14 +752,10 @@
                 var item = nodeEls[nodeIdx];
                 if (!item) return;
                 var hex = ACCENT_HEX[colorKey] || ACCENT_HEX.brand;
-                tl.call(
-                  function () {
-                    item.card.style.setProperty("--ngd-node-color", hex);
-                    item.card.classList.add("ngd-status");
-                  },
-                  null,
-                  at
-                );
+                // Reversible set (was tl.call + classList.add, which a backward seek could not
+                // undo): the connected state is an attribute + custom property GSAP records and
+                // restores, so seeking to any time shows the correct node colour.
+                tl.set(item.card, { "--ngd-node-color": hex, attr: { "data-connected": "1" } }, at);
                 tl.fromTo(
                   item.glowRing,
                   { opacity: 0, scale: 0.985, borderColor: hex, boxShadow: "0 0 0 0px " + hex },
@@ -746,13 +765,151 @@
                 tl.to(item.glowRing, { opacity: 0.4, duration: 0.5, ease: "power1.out" }, at + 0.3);
               }
 
+              // ---- v2 HOST MODE ----
+              // Reference grammar (R4 redraws connectors on the keyword; R1/R4 route packets along
+              // live connectors; R5 lights nodes per spoken item): the graph is on screen from the
+              // host's first frames, except nodes/edges an event reveals or draws on their word.
+              function buildHostTimeline(geoms, rootMinPx) {
+                var ts = props.timeScale;
+                var enterDur = 0.15 * ts;
+                var late = HFHostEvents.lateTargets(props.events, ["reveal", "draw"]);
+                nodeEls.forEach(function (item) {
+                  if (late[item.node.id]) return;
+                  tl.fromTo(item.card, { opacity: 0.35, y: 0.6 * rootMinPx }, { opacity: 1, y: 0, duration: enterDur, ease: "power2.out" }, 0);
+                });
+                geoms.forEach(function (g) {
+                  if (late[g.id]) return;
+                  tl.set(g.line, { strokeDashoffset: 0, attr: { opacity: 0.85 } }, 0);
+                  if (g.labelEl) tl.set(g.labelEl, { opacity: 1 }, 0);
+                });
+                var byId = {};
+                geoms.forEach(function (g) {
+                  byId[g.id] = g;
+                });
+                var nodeIndex = {};
+                nodes.forEach(function (n, i) {
+                  nodeIndex[n.id] = i;
+                });
+                var hostOps = {
+                  // Edge draw on its word: line strokes in, label follows.
+                  draw: {
+                    initial: function (ctx, ev) {
+                      var g = byId[ev.target];
+                      if (!g) return;
+                      ctx.tl.set(g.line, { strokeDashoffset: g.len }, 0);
+                      if (g.labelEl) ctx.tl.set(g.labelEl, { opacity: 0 }, 0);
+                    },
+                    apply: function (ctx, ev) {
+                      var g = byId[ev.target];
+                      if (!g) return;
+                      ctx.tl.set(g.line, { attr: { opacity: 0.85 } }, ev.t);
+                      ctx.tl.to(g.line, { strokeDashoffset: 0, duration: 0.33 * ctx.ts, ease: "power1.inOut" }, ev.t);
+                      if (g.labelEl) ctx.tl.to(g.labelEl, { opacity: 1, duration: 0.12 * ctx.ts, ease: "power1.out" }, ev.t + 0.2 * ctx.ts);
+                    },
+                  },
+                  // Packet travels the edge; the destination node shows it is now connected.
+                  route: {
+                    apply: function (ctx, ev) {
+                      var g = byId[ev.target];
+                      if (!g) return;
+                      var v = ev.value && typeof ev.value === "object" ? ev.value : {};
+                      var reverse = v.reverse === true;
+                      var travel = (v.dur != null ? Number(v.dur) : 0.45) * ctx.ts;
+                      spawnPulseAt(g, ev.t, travel, reverse ? g.p2 : g.p1, reverse ? g.p1 : g.p2, v.connect === false ? null : reverse ? g.edge.fromIdx : g.edge.toIdx);
+                    },
+                  },
+                  // Edge-label text change, sized to fit its own edge (a longer corrected label
+                  // overlapped the next node in the proof when it kept the old font size).
+                  update: {
+                    apply: function (ctx, ev) {
+                      var text = String(ev.value == null ? "" : ev.value);
+                      var edgeGeom = null;
+                      geoms.forEach(function (g) {
+                        if (g.labelEl === ev.el) edgeGeom = g;
+                      });
+                      var vars = { textContent: text };
+                      // Pin the original size at t=0 so a backward seek restores it exactly
+                      // (GSAP's own revert rounded 24.84px to 25px in the live probe).
+                      if (!ev.el.hasAttribute("data-size-pinned")) {
+                        ev.el.setAttribute("data-size-pinned", "1");
+                        ctx.tl.set(ev.el, { fontSize: ev.el.style.fontSize }, 0);
+                      }
+                      if (edgeGeom) {
+                        var maxW = Math.max(40, Math.min(26 * rootMinPx, edgeGeom.len - 3 * rootMinPx));
+                        var size = 2.3 * rootMinPx;
+                        while (size > 10 && HFTextFit.measure(text, 700, size, "Inter, ui-sans-serif, system-ui, sans-serif") > maxW) size -= 1;
+                        vars.fontSize = size + "px";
+                      }
+                      if (ctx.struck.has(ev.el)) {
+                        vars["--hf-strike"] = 0;
+                        vars.opacity = 1;
+                        vars.attr = { "data-struck": "0" };
+                        ctx.struck.delete(ev.el);
+                      }
+                      ctx.tl.set(ev.el, vars, ev.t);
+                    },
+                  },
+                  // Node recolour to show a new state (value: brand | accent | accent-2..4).
+                  connect: {
+                    apply: function (ctx, ev) {
+                      var idx = nodeIndex[ev.target];
+                      if (idx === undefined) return;
+                      triggerNodeConnect(idx, typeof ev.value === "string" && ACCENT_HEX[ev.value] ? ev.value : "brand", ev.t);
+                    },
+                  },
+                };
+                var res = HFHostEvents.install({ tl: tl, root: root, events: props.events, duration: duration, timeScale: ts, ops: hostOps });
+                root.setAttribute("data-host-events", String(res.count));
+                if (res.problems.length) root.setAttribute("data-host-problems", res.problems.join(" | "));
+              }
+
+              // Shared comet renderer used by both v1 `pulses` and v2 `route` events.
+              function spawnPulseAt(geom, at, travelDur, start, end, targetNodeIdx) {
+                var hex = ACCENT_HEX[geom.edge.color] || ACCENT_HEX.brand;
+                var group = document.createElementNS(SVG_NS, "g");
+                group.setAttribute("filter", "url(#ngd-glow)");
+                group.setAttribute("opacity", "0");
+                svg.appendChild(group);
+                var circles = [];
+                for (var c = 0; c < COMET_SIZE; c++) {
+                  var circle = document.createElementNS(SVG_NS, "circle");
+                  circle.setAttribute("r", Math.max(1.2, rootMin * 0.26 * (1 - c * 0.16)));
+                  circle.setAttribute("fill", hex);
+                  circle.setAttribute("opacity", "0");
+                  circle.setAttribute("cx", start.x);
+                  circle.setAttribute("cy", start.y);
+                  group.appendChild(circle);
+                  circles.push(circle);
+                }
+                var proxy = { t: 0 };
+                tl.set(group, { attr: { opacity: 1 } }, at);
+                tl.to(
+                  proxy,
+                  {
+                    t: 1,
+                    duration: travelDur,
+                    ease: "power1.inOut",
+                    immediateRender: false,
+                    onUpdate: function () {
+                      circles.forEach(function (circle, c) {
+                        var tc = Math.max(0, proxy.t - c * COMET_TRAIL_GAP);
+                        circle.setAttribute("cx", start.x + (end.x - start.x) * tc);
+                        circle.setAttribute("cy", start.y + (end.y - start.y) * tc);
+                        circle.setAttribute("opacity", tc <= 0 && c > 0 ? "0" : String(1 - c * (0.85 / COMET_SIZE)));
+                      });
+                    },
+                  },
+                  at
+                );
+                tl.to(group, { attr: { opacity: 0 }, duration: 0.18 }, at + travelDur);
+                if (targetNodeIdx !== null) triggerNodeConnect(targetNodeIdx, geom.edge.color, at + travelDur);
+              }
+
               // Liquid pulse: a short trailing comet of glowing circles (not one bare
               // dot) traveling edgeGeoms[edgeIndex]'s own line, direction per that
               // edge's `direction`. On arrival, recolors the destination node via
               // triggerNodeConnect -- "a connection is made" becomes a real visible
               // state change on the node it reaches, not just a line animation.
-              var COMET_SIZE = 4;
-              var COMET_TRAIL_GAP = 0.09;
               pulses.forEach(function (pulse) {
                 var geom = edgeGeoms[pulse.edgeIndex];
                 if (!geom) return;

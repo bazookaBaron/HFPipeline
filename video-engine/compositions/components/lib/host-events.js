@@ -113,6 +113,7 @@
         if (ctx.struck.has(ev.el)) {
           vars["--hf-strike"] = 0;
           vars.opacity = 1;
+          vars.attr = { "data-struck": "0" };
           ctx.struck.delete(ev.el);
         }
         ctx.tl.set(ev.el, vars, ev.t);
@@ -136,6 +137,7 @@
     strike: {
       apply: function (ctx, ev) {
         ctx.struck.add(ev.el);
+        ctx.tl.set(ev.el, { attr: { "data-struck": "1" } }, ev.t);
         ctx.tl.fromTo(
           ev.el,
           { "--hf-strike": 0, opacity: 1 },
@@ -251,9 +253,15 @@
       "@property --hf-hl{syntax:'<number>';inherits:false;initial-value:0}" +
       "@property --hf-strike{syntax:'<number>';inherits:false;initial-value:0}" +
       "html [data-entity]{outline:calc(var(--hf-hl,0)*0.45cqmin) solid var(--hf-hl-color,var(--hf-brand,#6ea8fe));" +
-      "outline-offset:calc(var(--hf-hl,0)*0.35cqmin);" +
-      "background-image:linear-gradient(var(--hf-strike-color,#ff6e6e),var(--hf-strike-color,#ff6e6e));" +
-      "background-size:calc(var(--hf-strike,0)*100%) 0.35cqmin;background-position:0 55%;background-repeat:no-repeat;}";
+      "outline-offset:calc(var(--hf-hl,0)*0.35cqmin);}" +
+      // HyperFrames scopes each sub-composition's CSS with an attribute prefix, which outranks
+      // any plain selector here; a component's `background` shorthand would erase the strike
+      // (measured in the node-graph proof: --hf-strike=1 but background-image:none). Only a
+      // struck element carries data-struck="1", so !important never touches anything else.
+      "html [data-entity][data-struck=\"1\"]{" +
+      "background-image:linear-gradient(var(--hf-strike-color,#ff6e6e),var(--hf-strike-color,#ff6e6e))!important;" +
+      "background-size:calc(var(--hf-strike,0)*100%) 0.35cqmin!important;background-position:0 55%!important;" +
+      "background-repeat:no-repeat!important;}";
     document.head.appendChild(st);
   }
 
@@ -304,5 +312,34 @@
     return { count: norm.events.length, problems: norm.problems };
   }
 
-  global.HFHostEvents = { install: install, PRESETS: PRESETS, _normalize: normalize, _format: formatNumber };
+  /** Parse an events prop (array or JSON string) without validating it. */
+  function parse(raw) {
+    if (Array.isArray(raw)) return raw;
+    if (typeof raw === "string" && raw.trim()) {
+      try {
+        var v = JSON.parse(raw);
+        return Array.isArray(v) ? v : [];
+      } catch (e) {
+        return [];
+      }
+    }
+    return [];
+  }
+
+  /**
+   * Entity ids that start hidden because an event reveals/draws them later. A host's own
+   * first-frame entrance must skip these, otherwise its fade-in (running at t=0) would
+   * override the reveal's hidden initial state.
+   */
+  function lateTargets(raw, ops) {
+    var set = {};
+    parse(raw).forEach(function (ev) {
+      if (ev && ev.target && ops.indexOf(ev.op) !== -1) set[ev.target] = true;
+    });
+    return set;
+  }
+
+  global.HFHostEvents = {
+    parse: parse,
+    lateTargets: lateTargets, install: install, PRESETS: PRESETS, _normalize: normalize, _format: formatNumber };
 })(typeof window !== "undefined" ? window : globalThis);

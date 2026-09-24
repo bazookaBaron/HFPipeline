@@ -87,3 +87,27 @@ describe("storyboard v2", () => {
     expect(errors(sb).map((i) => i.check)).toContain("placeholder");
   });
 });
+
+describe("node-graph-diagram host capabilities", () => {
+  it("derives node + edge entities (template ids) and scopes ops to their group", () => {
+    const sb: any = {
+      version: "storyboard.v2", topic: "t", styleProfile: { id: "redrawn-diagram", reason: "r" }, palette: [],
+      sentences: [{ id: "s1", text: "The browser sends the file to the API, then to storage." }],
+      hosts: [{ id: "h1", component: "node-graph-diagram", enter: "cut", fromSentence: "s1", toSentence: "s1",
+        props: { layout: "row", nodes: JSON.stringify([{ id: "web", title: "Browser" }, { id: "api", title: "Upload API" }, { id: "s3", title: "Object store" }]),
+          edges: JSON.stringify([{ from: "web", to: "api", label: "PUT" }, { from: "api", to: "s3", label: "stream" }]) } }],
+      events: [
+        { id: "e1", host: "h1", sentence: "s1", anchor: { text: "browser" }, op: "reveal", target: "web" },
+        { id: "e2", host: "h1", sentence: "s1", anchor: { text: "sends" }, op: "draw", target: "web->api" },
+        { id: "e3", host: "h1", sentence: "s1", anchor: { text: "file" }, op: "route", target: "web->api", value: { dur: 0.4 } },
+        { id: "e4", host: "h1", sentence: "s1", anchor: { text: "storage." }, op: "connect", target: "s3", value: "accent" },
+      ],
+    };
+    expect(errors(sb)).toEqual([]);
+    sb.events[1].target = "web"; // a node is not an edge
+    sb.events[2].value = { dur: 0.4, reverse: "yes" };
+    const msgs = errors(sb).map((i) => i.message).join(" | ");
+    expect(msgs).toMatch(/target 'web' not allowed for op 'draw'/);
+    expect(msgs).toMatch(/reverse must be true\/false/);
+  });
+});

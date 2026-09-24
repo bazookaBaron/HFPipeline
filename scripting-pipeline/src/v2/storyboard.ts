@@ -61,7 +61,7 @@ export type StoryEvent = z.infer<typeof EventSchema>;
 
 export interface V2Capabilities {
   host: boolean;
-  entities?: { static?: string[]; fromProps?: { prop: string; key: string }[] };
+  entities?: { static?: string[]; fromProps?: { prop: string; key?: string; template?: string; group?: string }[] };
   operations: Record<string, { targets: "*" | string[] | null; value?: unknown }>;
 }
 
@@ -131,19 +131,42 @@ function parseListProp(v: unknown): unknown[] {
 }
 
 /** Entity ids a host instance really has, derived from its capability block + actual props. */
-export function hostEntities(cap: V2Capabilities, props: Record<string, unknown>): { all: Set<string>; fromProps: Set<string> } {
+/**
+ * Entity ids a host instance really has, derived from its capability block + actual props.
+ * `fromProps` entries name a list prop and either a `key` (item[key] is the id) or a `template`
+ * like "{from}->{to}" filled from the item's fields; `group` (default: the prop name) lets
+ * operations target one family via "@fromProps:<group>" (plain "@fromProps" = any of them).
+ */
+export function hostEntities(cap: V2Capabilities, props: Record<string, unknown>): { all: Set<string>; fromProps: Set<string>; groups: Map<string, Set<string>> } {
   const all = new Set<string>(cap.entities?.static ?? []);
   const fromProps = new Set<string>();
+  const groups = new Map<string, Set<string>>();
   for (const fp of cap.entities?.fromProps ?? []) {
+    const group = fp.group ?? fp.prop;
+    if (!groups.has(group)) groups.set(group, new Set());
     for (const item of parseListProp(props[fp.prop])) {
-      const id = item && typeof item === "object" ? (item as Record<string, unknown>)[fp.key] : undefined;
+      if (!item || typeof item !== "object") continue;
+      const rec = item as Record<string, unknown>;
+      let id: unknown;
+      if (fp.template) {
+        let ok = true;
+        id = fp.template.replace(/\{(\w+)\}/g, (_m, f: string) => {
+          const v = rec[f];
+          if (typeof v !== "string" || !v) ok = false;
+          return String(v);
+        });
+        if (!ok) id = undefined;
+      } else if (fp.key) {
+        id = rec[fp.key];
+      }
       if (typeof id === "string" && id) {
         all.add(id);
         fromProps.add(id);
+        groups.get(group)!.add(id);
       }
     }
   }
-  return { all, fromProps };
+  return { all, fromProps, groups };
 }
 
 const PLACEHOLDER = /\b(lorem|ipsum|placeholder|todo|tbd|xxx|sample text|example\.com\/foo)\b/i;
@@ -158,6 +181,7 @@ function checkValue(spec: unknown, value: unknown): string | null {
     return null;
   }
   if (s.type === "object") {
+    if (value === undefined && s.optional === true) return null;
     if (!value || typeof value !== "object" || Array.isArray(value)) return "value must be an object";
     const fields = (s.fields ?? {}) as Record<string, string>;
     const v = value as Record<string, unknown>;
@@ -165,6 +189,10 @@ function checkValue(spec: unknown, value: unknown): string | null {
     for (const k of Object.keys(v)) if (!known.includes(k)) return `unknown value field '${k}'`;
     for (const [k, kind] of Object.entries(fields)) {
       if (v[k] === undefined) continue;
+      if (kind === "boolean") {
+        if (typeof v[k] !== "boolean") return `value.${k} must be true/false`;
+        continue;
+      }
       if (typeof v[k] !== "number" || !isFinite(v[k] as number)) return `value.${k} must be a number`;
       if (kind === "number0-100" && ((v[k] as number) < 0 || (v[k] as number) > 100)) return `value.${k} must be 0-100`;
     }
@@ -258,7 +286,9 @@ export function validateStoryboard(raw: unknown, catalog: CatalogEntryV2[]): { s
     } else if (opSpec.targets === "*") {
       if (!ents.all.has(ev.target)) err("event", ev.id, `target '${ev.target}' is not an entity of this ${host.component}`);
     } else {
-      const ok = opSpec.targets.some((t) => (t === "@fromProps" ? ents.fromProps.has(ev.target!) : t === ev.target));
+      const ok = opSpec.targets.some((t) =>
+        t === "@fromProps" ? ents.fromProps.has(ev.target!) : t.startsWith("@fromProps:") ? !!ents.groups.get(t.slice(11))?.has(ev.target!) : t === ev.target
+      );
       if (!ok) err("event", ev.id, `target '${ev.target}' not allowed for op '${ev.op}'`);
     }
     const vErr = checkValue(opSpec.value, ev.value);

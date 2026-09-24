@@ -4,7 +4,14 @@
   "type": "hyperframes:component",
   "title": "Node Graph Diagram",
   "description": "Generic node-graph engine: 2-6 labeled boxes connected by labeled/animated lines, auto-positioned by a row/branch layout + node count -- one primitive that covers client/server chains, permission-check fan-outs, and small system diagrams without a bespoke component per shape.",
-  "tags": ["architecture", "diagram", "node-graph", "network", "fan-out", "generic"],
+  "tags": [
+    "architecture",
+    "diagram",
+    "node-graph",
+    "network",
+    "fan-out",
+    "generic"
+  ],
   "category": "architecture",
   "files": [
     {
@@ -14,14 +21,165 @@
     }
   ],
   "variables": [
-    { "id": "nodes", "type": "string", "default": "[{\"id\":\"client\",\"title\":\"Browser\",\"subtitle\":\"\",\"icon\":\"none\",\"statusColor\":\"none\"},{\"id\":\"api\",\"title\":\"API\",\"subtitle\":\"\",\"icon\":\"none\",\"statusColor\":\"none\"}]" },
-    { "id": "edges", "type": "string", "default": "[{\"from\":\"client\",\"to\":\"api\",\"label\":\"Request\",\"color\":\"brand\",\"direction\":\"forward\"}]" },
-    { "id": "layout", "type": "enum", "default": "row", "options": ["row", "branch"] },
-    { "id": "pulses", "type": "string", "default": "[]" },
-    { "id": "accent", "type": "enum", "default": "brand", "options": ["brand", "accent", "accent-2", "accent-3", "accent-4"] },
-    { "id": "reveal_at", "type": "number", "default": 0.3 },
-    { "id": "edge_stagger", "type": "number", "default": 0.25 },
-    { "id": "duration", "type": "number", "default": 8 }
+    {
+      "id": "nodes",
+      "type": "string",
+      "default": "[{\"id\":\"client\",\"title\":\"Browser\",\"subtitle\":\"\",\"icon\":\"none\",\"statusColor\":\"none\"},{\"id\":\"api\",\"title\":\"API\",\"subtitle\":\"\",\"icon\":\"none\",\"statusColor\":\"none\"}]"
+    },
+    {
+      "id": "edges",
+      "type": "string",
+      "default": "[{\"from\":\"client\",\"to\":\"api\",\"label\":\"Request\",\"color\":\"brand\",\"direction\":\"forward\"}]"
+    },
+    {
+      "id": "layout",
+      "type": "enum",
+      "default": "row",
+      "options": [
+        "row",
+        "branch"
+      ]
+    },
+    {
+      "id": "pulses",
+      "type": "string",
+      "default": "[]"
+    },
+    {
+      "id": "accent",
+      "type": "enum",
+      "default": "brand",
+      "options": [
+        "brand",
+        "accent",
+        "accent-2",
+        "accent-3",
+        "accent-4"
+      ]
+    },
+    {
+      "id": "reveal_at",
+      "type": "number",
+      "default": 0.3
+    },
+    {
+      "id": "edge_stagger",
+      "type": "number",
+      "default": 0.25
+    },
+    {
+      "id": "duration",
+      "type": "number",
+      "default": 8,
+      "max": 120
+    },
+    {
+      "id": "events",
+      "type": "string",
+      "role": "events",
+      "default": "",
+      "description": "v2 host mode: JSON array of typed events. Empty keeps the v1 staged reveal + pulses."
+    },
+    {
+      "id": "timeScale",
+      "type": "number",
+      "role": "timing",
+      "default": 1,
+      "min": 0.25,
+      "max": 4,
+      "description": "Post-render speed factor applied to event motion presets."
+    }
   ],
-  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+  "dependencies": [
+    "../lib/text-fit.js",
+    "../lib/props.js",
+    "../lib/tokens.css"
+  ],
+  "v2": {
+    "host": true,
+    "entities": {
+      "static": [],
+      "fromProps": [
+        {
+          "prop": "nodes",
+          "key": "id"
+        },
+        {
+          "prop": "edges",
+          "template": "{from}->{to}",
+          "group": "edges"
+        },
+        {
+          "prop": "edges",
+          "template": "{from}->{to}.label",
+          "group": "edgeLabels"
+        }
+      ]
+    },
+    "operations": {
+      "reveal": {
+        "targets": [
+          "@fromProps:nodes"
+        ]
+      },
+      "highlight": {
+        "targets": "*"
+      },
+      "pulse": {
+        "targets": [
+          "@fromProps:nodes"
+        ]
+      },
+      "remove": {
+        "targets": "*"
+      },
+      "strike": {
+        "targets": [
+          "@fromProps:edgeLabels"
+        ]
+      },
+      "update": {
+        "targets": [
+          "@fromProps:edgeLabels"
+        ],
+        "value": {
+          "type": "string",
+          "maxLength": 24
+        }
+      },
+      "draw": {
+        "targets": [
+          "@fromProps:edges"
+        ]
+      },
+      "route": {
+        "targets": [
+          "@fromProps:edges"
+        ],
+        "value": {
+          "type": "object",
+          "optional": true,
+          "fields": {
+            "dur": "number",
+            "reverse": "boolean",
+            "connect": "boolean"
+          }
+        }
+      },
+      "connect": {
+        "targets": [
+          "@fromProps:nodes"
+        ],
+        "value": {
+          "enum": [
+            "brand",
+            "accent",
+            "accent-2",
+            "accent-3",
+            "accent-4"
+          ]
+        }
+      }
+    }
+  }
 }

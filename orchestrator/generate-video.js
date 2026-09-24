@@ -42,6 +42,8 @@ const { resolveAnchorTimings } = require("./lib/video/narrationSync");
 const { buildComposition, deriveHudStates } = require("./lib/video/composeHtml");
 const { checkComposition, renderComposition, VIDEO_ENGINE_DIR } = require("./lib/video/hyperframesCli");
 const { speedUpVideo } = require("./lib/video/speedUp");
+const { createRunMetrics } = require("./lib/video/runMetrics");
+const { execFileSync } = require("child_process");
 
 function log(msg) {
   process.stderr.write(`[generate-video] ${msg}\n`);
@@ -68,6 +70,18 @@ function parseBool(v, dflt) {
   if (v === undefined) return dflt;
   if (typeof v === "boolean") return v;
   return String(v).trim().toLowerCase() === "true";
+}
+
+function probeDurationSeconds(file) {
+  try {
+    const out = execFileSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", file], {
+      encoding: "utf-8",
+      windowsHide: true,
+    });
+    return Number(Number(out.trim()).toFixed(3));
+  } catch (_) {
+    return null;
+  }
 }
 
 function sanitizeRunId(id) {
@@ -109,6 +123,18 @@ async function main() {
     return;
   }
 
+  const metrics = createRunMetrics({
+    runId,
+    metricsPath: `${outPath}.metrics.json`,
+    config: { topic, lengthSeconds, ttsSpeed, speed, captionsOn, sfxOn, mascotOn, theme, clonedVoice: Boolean(refAudio) },
+  });
+  // Every failure exit records its stage + failure class before exiting non-zero.
+  function die(stage, message, err) {
+    process.stderr.write(message.endsWith("\n") ? message : `${message}\n`);
+    metrics.fail(stage, err || message);
+    process.exit(1);
+  }
+
   log(
     `Run ${runId}: topic="${topic}" lengthSeconds=${lengthSeconds} accent=${accentColor} ` +
       `handle=${brandHandle} ttsSpeed=${ttsSpeed} captions=${captionsOn} sfx=${sfxOn} mascot=${mascotOn} ` +
@@ -126,6 +152,7 @@ async function main() {
   );
 
   // ---- Step 1: plan scenes + real Gemini call ----
+  metrics.start("script");
   const scenePlan = planScenes(lengthSeconds);
   log(
     `Step 1/6: planned ${scenePlan.length} scene(s): ` +
@@ -136,11 +163,17 @@ async function main() {
   try {
     const result = await generateVideoScript({ topic, scenePlan, log });
     script = result.script;
+    metrics.set("counts", { geminiAttempts: result.attempts ? result.attempts.length : null });
   } catch (err) {
-    process.stderr.write(`Step 1 (script generation) failed: ${err.message}\n`);
-    process.exit(1);
-    return;
+    return die("script", `Step 1 (script generation) failed: ${err.message}`, err);
   }
+  const plannedSeconds = scenePlan.reduce((sum, s) => sum + s.targetDurationSeconds, 0);
+  metrics.set("duration", { requestedSeconds: lengthSeconds, plannedSeconds, plannedScenes: scenePlan.length });
+  metrics.set("counts", {
+    scenes: script.scenes.length,
+    words: script.scenes.reduce((n, s) => n + s.narration.split(/\s+/).filter(Boolean).length, 0),
+  });
+  metrics.start("voice");
   log(
     `Gemini returned ${script.scenes.length} scene(s): ` +
       script.scenes.map((s) => `${s.sceneId}=${s.componentType}`).join(", ")
@@ -174,9 +207,7 @@ async function main() {
         log,
       });
     } catch (err) {
-      process.stderr.write(`Step 2 (narration synthesis) failed for ${scene.sceneId}: ${err.message}\n`);
-      process.exit(1);
-      return;
+      return die("voice", `Step 2 (narration synthesis) failed for ${scene.sceneId}: ${err.message}`, err);
     }
     log(`  ${scene.sceneId}: real durationSeconds=${synth.durationSeconds}, wordCount=${synth.wordCount}`);
 
@@ -184,9 +215,7 @@ async function main() {
     try {
       wordTimings = JSON.parse(fs.readFileSync(timingPath, "utf-8"));
     } catch (err) {
-      process.stderr.write(`Could not read/parse timing JSON for ${scene.sceneId}: ${err.message}\n`);
-      process.exit(1);
-      return;
+      return die("voice", `Could not read/parse timing JSON for ${scene.sceneId}: ${err.message}`, err);
     }
 
     const timingProps = resolveAnchorTimings(scene, wordTimings, synth.durationSeconds);
@@ -217,6 +246,11 @@ async function main() {
   }
 
   const totalDuration = cumulativeStart;
+  const leadSilences = composedScenes.map((s) => (s.words.length ? s.words[0].start : null));
+  metrics.set("duration", { authoredAudioSeconds: Number(totalDuration.toFixed(3)) });
+  metrics.set("counts", { sceneLeadSilenceSeconds: leadSilences });
+  metrics.end({ ttsCalls: composedScenes.length });
+  metrics.start("compose");
   log(
     `All ${composedScenes.length} scene(s) synthesized. Total real audio duration: ${totalDuration.toFixed(2)}s ` +
       `(requested --length-seconds ${lengthSeconds}).`
@@ -251,6 +285,7 @@ async function main() {
   });
   fs.writeFileSync(compositionPath, html, "utf-8");
   log(`Step 4/6: wrote composition -> ${compositionPath}`);
+  metrics.start("check");
 
   // ---- Step 5: validate then render ----
   log("Step 5/6: validating composition with `hyperframes check` (temporarily standing in for video-engine/index.html)...");
@@ -258,22 +293,19 @@ async function main() {
   try {
     checkOutcome = await checkComposition(compositionPath, log);
   } catch (err) {
-    process.stderr.write(`hyperframes check invocation failed: ${err.message}\n`);
-    process.exit(1);
-    return;
+    return die("check", `hyperframes check invocation failed: ${err.message}`, err);
   }
   const { code: checkCode, result: checkResult } = checkOutcome;
 
   if (checkCode !== 0 || !checkResult || checkResult.ok !== true) {
-    process.stderr.write(`hyperframes check failed (exit ${checkCode}). This is a real bug in the assembled composition.\n`);
     if (checkResult) process.stderr.write(JSON.stringify(checkResult, null, 2) + "\n");
-    process.exit(1);
-    return;
+    return die("check", `hyperframes check failed (exit ${checkCode}). This is a real bug in the assembled composition.`);
   }
 
   const sections = ["lint", "runtime", "layout", "motion", "contrast"];
   const errorSummary = sections.map((k) => `${k}=${checkResult[k] ? checkResult[k].errorCount : "?"}`).join(", ");
   log(`hyperframes check passed: 0 errors (${errorSummary}).`);
+  metrics.start("render");
 
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   const draftPath = path.join(path.dirname(outPath), `.${path.basename(outPath)}.draft-${runId}.mp4`);
@@ -283,32 +315,26 @@ async function main() {
   try {
     renderOutcome = await renderComposition({ compositionRelPath, outputPath: draftPath, quality: "draft" }, log);
   } catch (err) {
-    process.stderr.write(`hyperframes render invocation failed: ${err.message}\n`);
-    process.exit(1);
-    return;
+    return die("render", `hyperframes render invocation failed: ${err.message}`, err);
   }
 
   if (renderOutcome.code !== 0 || !fs.existsSync(draftPath)) {
-    process.stderr.write(`hyperframes render failed (exit ${renderOutcome.code}) or output missing at ${draftPath}\n`);
-    process.exit(1);
-    return;
+    return die("render", `hyperframes render failed (exit ${renderOutcome.code}) or output missing at ${draftPath}`);
   }
 
   // ---- Step 6: real post-render speed-up (see lib/video/speedUp.js header) ----
+  metrics.set("duration", { draftSeconds: probeDurationSeconds(draftPath) });
+  metrics.start("post");
   log(`Step 6/6: speeding up ${speed}x -> ${outPath} (real ffmpeg pass over the rendered draft)...`);
   let speedOutcome;
   try {
     speedOutcome = await speedUpVideo({ inputPath: draftPath, outputPath: outPath, speed }, log);
   } catch (err) {
-    process.stderr.write(`ffmpeg speed-up invocation failed: ${err.message}\n`);
-    process.exit(1);
-    return;
+    return die("post", `ffmpeg speed-up invocation failed: ${err.message}`, err);
   }
   if (speedOutcome.code !== 0 || !fs.existsSync(outPath)) {
-    process.stderr.write(`ffmpeg speed-up failed (exit ${speedOutcome.code}) or output missing at ${outPath}\n`);
     process.stderr.write(speedOutcome.stderr.slice(-4000) + "\n");
-    process.exit(1);
-    return;
+    return die("post", `ffmpeg speed-up failed (exit ${speedOutcome.code}) or output missing at ${outPath}`);
   }
   try {
     fs.unlinkSync(draftPath);
@@ -319,7 +345,26 @@ async function main() {
   const stat = fs.statSync(outPath);
   log(`Render complete: ${outPath} (${stat.size} bytes, ${speed}x speed)`);
 
-  const finalResult = { ok: true, outputPath: outPath, scenes: script.scenes.length, topic, speed };
+  const finalSeconds = probeDurationSeconds(outPath);
+  metrics.set("duration", {
+    finalSeconds,
+    finalVsRequestedRatio: finalSeconds ? Number((finalSeconds / lengthSeconds).toFixed(3)) : null,
+  });
+  metrics.succeed();
+  log(
+    `Metrics: ${outPath}.metrics.json (` +
+      metrics.data.stages.map((s) => `${s.stage}=${(s.wallMs / 1000).toFixed(1)}s`).join(", ") +
+      ")"
+  );
+
+  const finalResult = {
+    ok: true,
+    outputPath: outPath,
+    scenes: script.scenes.length,
+    topic,
+    speed,
+    metricsPath: `${outPath}.metrics.json`,
+  };
   // Exactly one final JSON line on stdout, on success only.
   process.stdout.write(JSON.stringify(finalResult) + "\n");
 }

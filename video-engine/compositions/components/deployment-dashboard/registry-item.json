@@ -4,7 +4,14 @@
   "type": "hyperframes:component",
   "title": "Deployment Dashboard",
   "description": "ALB listener line + routing-switch visual + two side-by-side BLUE/GREEN environment cards (version, LIVE/IDLE badge, instance health rows, traffic %), with an optional 5xx error-rate chart and an alternate users-funnel content mode -- one rich reusable visual for a blue-green-deployment narrative.",
-  "tags": ["architecture", "deployment", "blue-green", "load-balancer", "dashboard", "traffic-split"],
+  "tags": [
+    "architecture",
+    "deployment",
+    "blue-green",
+    "load-balancer",
+    "dashboard",
+    "traffic-split"
+  ],
   "category": "architecture",
   "files": [
     {
@@ -14,24 +21,169 @@
     }
   ],
   "variables": [
-    { "id": "leftLabel", "type": "string", "default": "BLUE" },
-    { "id": "rightLabel", "type": "string", "default": "GREEN" },
-    { "id": "leftVersion", "type": "string", "default": "v1.4.2" },
-    { "id": "rightVersion", "type": "string", "default": "v2.0.1" },
-    { "id": "leftLive", "type": "boolean", "default": true },
-    { "id": "rightLive", "type": "boolean", "default": false },
-    { "id": "leftInstances", "type": "string", "default": "[{\"id\":\"i-0a3f8c21\",\"healthy\":true},{\"id\":\"i-7b291de4\",\"healthy\":true},{\"id\":\"i-c48a02f1\",\"healthy\":true}]" },
-    { "id": "rightInstances", "type": "string", "default": "[{\"id\":\"i-9f13aa02\",\"healthy\":false},{\"id\":\"i-52dd881c\",\"healthy\":false},{\"id\":\"i-e60347bb\",\"healthy\":false}]" },
-    { "id": "leftTrafficPct", "type": "number", "default": 100 },
-    { "id": "rightTrafficPct", "type": "number", "default": 0 },
-    { "id": "showErrorChart", "type": "boolean", "default": false },
-    { "id": "errorRatePct", "type": "number", "default": 0.4 },
-    { "id": "errorChartTrend", "type": "enum", "default": "flat", "options": ["flat", "rising"] },
-    { "id": "showUsersFunnel", "type": "boolean", "default": false },
-    { "id": "listenerLabel", "type": "string", "default": "listener :443  forward" },
-    { "id": "reveal_at", "type": "number", "default": 0.3 },
-    { "id": "switch_at", "type": "number", "default": 1.4 },
-    { "id": "duration", "type": "number", "default": 8 }
+    {
+      "id": "leftLabel",
+      "type": "string",
+      "default": "BLUE"
+    },
+    {
+      "id": "rightLabel",
+      "type": "string",
+      "default": "GREEN"
+    },
+    {
+      "id": "leftVersion",
+      "type": "string",
+      "default": "v1.4.2"
+    },
+    {
+      "id": "rightVersion",
+      "type": "string",
+      "default": "v2.0.1"
+    },
+    {
+      "id": "leftLive",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "id": "rightLive",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "leftInstances",
+      "type": "string",
+      "default": "[{\"id\":\"i-0a3f8c21\",\"healthy\":true},{\"id\":\"i-7b291de4\",\"healthy\":true},{\"id\":\"i-c48a02f1\",\"healthy\":true}]"
+    },
+    {
+      "id": "rightInstances",
+      "type": "string",
+      "default": "[{\"id\":\"i-9f13aa02\",\"healthy\":false},{\"id\":\"i-52dd881c\",\"healthy\":false},{\"id\":\"i-e60347bb\",\"healthy\":false}]"
+    },
+    {
+      "id": "leftTrafficPct",
+      "type": "number",
+      "default": 100
+    },
+    {
+      "id": "rightTrafficPct",
+      "type": "number",
+      "default": 0
+    },
+    {
+      "id": "showErrorChart",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "errorRatePct",
+      "type": "number",
+      "default": 0.4
+    },
+    {
+      "id": "errorChartTrend",
+      "type": "enum",
+      "default": "flat",
+      "options": [
+        "flat",
+        "rising"
+      ]
+    },
+    {
+      "id": "showUsersFunnel",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "listenerLabel",
+      "type": "string",
+      "default": "listener :443  forward"
+    },
+    {
+      "id": "reveal_at",
+      "type": "number",
+      "default": 0.3
+    },
+    {
+      "id": "switch_at",
+      "type": "number",
+      "default": 1.4
+    },
+    {
+      "id": "duration",
+      "type": "number",
+      "default": 8,
+      "max": 120
+    },
+    {
+      "id": "events",
+      "type": "string",
+      "role": "events",
+      "default": "",
+      "description": "v2 host mode: JSON array of typed events {id,t,op,target,value}. Empty keeps the v1 reveal/switch choreography."
+    },
+    {
+      "id": "timeScale",
+      "type": "number",
+      "role": "timing",
+      "default": 1,
+      "min": 0.25,
+      "max": 4,
+      "description": "Post-render speed factor; event motion presets are multiplied by it so on-screen durations match the reference band."
+    }
   ],
-  "dependencies": ["../lib/text-fit.js", "../lib/props.js", "../lib/tokens.css"]
+  "dependencies": [
+    "../lib/text-fit.js",
+    "../lib/props.js",
+    "../lib/tokens.css"
+  ],
+  "v2": {
+    "host": true,
+    "entities": {
+      "lb": "load balancer block",
+      "switch": "routing switch",
+      "chart": "5xx error chart (when showErrorChart)",
+      "left|right": "environment card",
+      "<side>.badge": "LIVE/IDLE badge",
+      "<side>.version": "version pill",
+      "<side>.pct": "traffic % readout",
+      "<side>.label": "environment label",
+      "<instanceId>": "instance row (ids from leftInstances/rightInstances)"
+    },
+    "operations": {
+      "reveal": [
+        "*"
+      ],
+      "remove": [
+        "*"
+      ],
+      "highlight": [
+        "*"
+      ],
+      "pulse": [
+        "*"
+      ],
+      "strike": [
+        "<instanceId>",
+        "<side>.version"
+      ],
+      "update": [
+        "<side>.version",
+        "<side>.label"
+      ],
+      "traffic": {
+        "target": null,
+        "value": "{left?:0-100,right?:0-100,dur?:seconds}"
+      },
+      "health": {
+        "target": "<instanceId>",
+        "value": "healthy|idle|error|draining"
+      },
+      "badge": {
+        "target": "<side>.badge",
+        "value": "live|idle|error"
+      }
+    }
+  }
 }

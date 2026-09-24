@@ -406,6 +406,52 @@
           .dd-instance-status--idle {
             color: var(--hf-muted, #9aa1ad);
           }
+          /* v2 host mode: health/badge state is a data-state attribute that the event track
+             flips in one frame (HFHostEvents "health"/"badge" ops). Attribute selectors outrank
+             the v1 class rules above, so a flipped state always wins. */
+          .dd-instance-row[data-state="healthy"] .dd-instance-dot {
+            background: var(--hf-accent, #71f5a7);
+            box-shadow: 0 0 0.8cqmin rgba(113, 245, 167, 0.55);
+          }
+          .dd-instance-row[data-state="healthy"] .dd-instance-status {
+            color: var(--hf-accent, #71f5a7);
+          }
+          .dd-instance-row[data-state="idle"] .dd-instance-dot {
+            background: var(--hf-muted, #9aa1ad);
+            box-shadow: none;
+          }
+          .dd-instance-row[data-state="idle"] .dd-instance-status {
+            color: var(--hf-muted, #9aa1ad);
+          }
+          .dd-instance-row[data-state="error"] {
+            background: rgba(255, 110, 110, 0.12);
+          }
+          .dd-instance-row[data-state="error"] .dd-instance-dot {
+            background: var(--hf-accent-4, #ff6e6e);
+            box-shadow: 0 0 0.8cqmin rgba(255, 110, 110, 0.6);
+          }
+          .dd-instance-row[data-state="error"] .dd-instance-status {
+            color: var(--hf-accent-4, #ff6e6e);
+          }
+          .dd-instance-row[data-state="draining"] .dd-instance-dot {
+            background: var(--hf-accent-3, #ffb84d);
+            box-shadow: none;
+          }
+          .dd-instance-row[data-state="draining"] .dd-instance-status {
+            color: var(--hf-accent-3, #ffb84d);
+          }
+          .dd-card-badge[data-state="live"] {
+            color: var(--hf-accent, #71f5a7);
+            background: rgba(113, 245, 167, 0.14);
+          }
+          .dd-card-badge[data-state="idle"] {
+            color: var(--hf-muted, #9aa1ad);
+            background: var(--hf-surface-2, #1e2126);
+          }
+          .dd-card-badge[data-state="error"] {
+            color: var(--hf-accent-4, #ff6e6e);
+            background: rgba(255, 110, 110, 0.14);
+          }
           .dd-card-pct-row {
             text-align: center;
             padding-top: 1.2cqmin;
@@ -591,7 +637,11 @@
               listenerLabel: { type: "string", default: "listener :443  forward", maxLength: 40 },
               reveal_at: { type: "number", default: 0.3, min: 0, max: 30 },
               switch_at: { type: "number", default: 1.4, min: 0, max: 30 },
-              duration: { type: "number", default: 8, min: 3, max: 30 },
+              duration: { type: "number", default: 8, min: 3, max: 120 },
+              // v2 host mode: a JSON array of typed events (see lib/host-events.js). Empty = v1.
+              events: { type: "string", default: "" },
+              // Post-render speed factor, so event motion presets land at reference on-screen durations.
+              timeScale: { type: "number", default: 1, min: 0.25, max: 4 },
             };
 
             var vars =
@@ -599,6 +649,9 @@
                 ? window.__hyperframes.getVariables()
                 : {};
             var props = HFProps.resolve(vars, SCHEMA);
+            // v2: one persistent host mutated by word-timed events instead of a fixed
+            // reveal/switch choreography. Funnel mode stays v1-only.
+            var hostMode = !props.showUsersFunnel && /^\s*\[/.test(props.events || "") && props.events.trim() !== "[]";
 
             var root = document.getElementById("root");
             var stage = document.getElementById("dd-stage");
@@ -694,7 +747,19 @@
             anchorLeftLabel.textContent = props.leftLabel;
             anchorRightLabel.textContent = props.rightLabel;
 
+            lbBlock.setAttribute("data-entity", "lb");
+            switchEl.setAttribute("data-entity", "switch");
+            errorChart.setAttribute("data-entity", "chart");
             SIDES.forEach(function (side) {
+              side.cardEl.setAttribute("data-entity", side.key);
+              side.badgeEl.setAttribute("data-entity", side.key + ".badge");
+              side.versionEl.setAttribute("data-entity", side.key + ".version");
+              side.pctEl.setAttribute("data-entity", side.key + ".pct");
+              side.labelEl.setAttribute("data-entity", side.key + ".label");
+            });
+
+            SIDES.forEach(function (side) {
+              side.badgeEl.setAttribute("data-state", side.live ? "live" : "idle");
               side.badgeEl.textContent = side.live ? "LIVE" : "IDLE";
               side.badgeEl.className = "dd-card-badge " + (side.live ? "dd-card-badge--live" : "dd-card-badge--idle");
             });
@@ -732,6 +797,9 @@
                   statusEl.className = "dd-instance-status " + (inst.healthy ? "dd-instance-status--healthy" : "dd-instance-status--idle");
                   statusEl.style.fontSize = statusSizeCqmin + "cqmin";
                   statusEl.textContent = inst.healthy ? "HEALTHY" : "IDLE";
+                  // Entity id = the instance id itself, so a storyboard can say "i-9f13aa02 -> error".
+                  row.setAttribute("data-entity", inst.id);
+                  row.setAttribute("data-state", inst.healthy ? "healthy" : "idle");
                   row.appendChild(dot);
                   row.appendChild(idEl);
                   row.appendChild(statusEl);
@@ -895,7 +963,7 @@
                 var gapPx = 1.8 * rootMin;
                 side.rowEls.forEach(function (row) {
                   var statusWidthPx = HFTextFit.measure(
-                    row.statusEl.textContent,
+                    hostMode ? "DRAINING" : row.statusEl.textContent,
                     800,
                     side.statusSizeCqmin * rootMin,
                     "Inter, ui-sans-serif, system-ui, sans-serif"
@@ -925,7 +993,106 @@
 
             var tl = gsap.timeline({ paused: true });
 
-            if (showFunnel) {
+            if (hostMode) {
+              // ---- v2 HOST MODE ----
+              // Reference grammar: the scaffold is on screen from the host's first frames (R2's
+              // router/cards persist ~125 s) and then mutates at spoken words. Entrance is a short
+              // fade from a partially visible state, so frame 0 already carries content.
+              var ts = props.timeScale;
+              var cqPx = Math.min(root.clientWidth, root.clientHeight) / 100;
+              var enterDur = 0.15 * ts;
+              tl.fromTo(lbBlock, { opacity: 0.35, y: -0.6 * cqPx }, { opacity: 1, y: 0, duration: enterDur, ease: "power2.out" }, 0);
+              SIDES.forEach(function (side) {
+                tl.fromTo(side.cardEl, { opacity: 0.35, y: 0.8 * cqPx }, { opacity: 1, y: 0, duration: enterDur, ease: "power2.out" }, 0);
+                side.rowEls.forEach(function (row) {
+                  tl.fromTo(row.el, { opacity: 0.35, x: -0.6 * cqPx }, { opacity: 1, x: 0, duration: enterDur, ease: "power2.out" }, 0);
+                });
+              });
+
+              var hTrackRect = switchEl.getBoundingClientRect();
+              var hLeftRect = anchorLeft.getBoundingClientRect();
+              var hRightRect = anchorRight.getBoundingClientRect();
+              var hTrackLeftX = hLeftRect.left + hLeftRect.width / 2 - hTrackRect.left;
+              var hTrackRightX = hRightRect.left + hRightRect.width / 2 - hTrackRect.left;
+              function leverXFor(l, r) {
+                var tot = l + r;
+                var rr = tot > 0 ? r / tot : 0.5;
+                return hTrackLeftX + (hTrackRightX - hTrackLeftX) * rr;
+              }
+              function renderTraffic(l, r) {
+                SIDES[0].pctEl.textContent = Math.round(l) + "%";
+                SIDES[1].pctEl.textContent = Math.round(r) + "%";
+                lbTgEl.innerHTML =
+                  '<span class="dd-tg-left">' + SIDES[0].label.toLowerCase() + "-tg <b>" + Math.round(l) + "%</b></span>&nbsp;&nbsp;" +
+                  '<span class="dd-tg-right">' + SIDES[1].label.toLowerCase() + "-tg <b>" + Math.round(r) + "%</b></span>";
+              }
+              // Baseline state = the authored props (no count-up from 0: the host starts mid-story).
+              var traffic = { left: SIDES[0].trafficPct, right: SIDES[1].trafficPct };
+              renderTraffic(traffic.left, traffic.right);
+              lever.style.left = leverXFor(traffic.left, traffic.right) + "px";
+              tl.set(lever, { opacity: 1, left: leverXFor(traffic.left, traffic.right) }, 0);
+
+              var STATUS_LABEL = { healthy: "HEALTHY", idle: "IDLE", error: "ERROR", draining: "DRAINING" };
+              var hostOps = {
+                // value: {left?, right?, dur?} -- lever slides, both % readouts + tg line count together.
+                traffic: {
+                  noTarget: true,
+                  apply: function (ctx, ev) {
+                    var v = ev.value || {};
+                    var nl = v.left != null ? Number(v.left) : 100 - Number(v.right);
+                    var nr = v.right != null ? Number(v.right) : 100 - nl;
+                    if (!isFinite(nl) || !isFinite(nr)) return;
+                    nl = Math.max(0, Math.min(100, nl));
+                    nr = Math.max(0, Math.min(100, nr));
+                    var d = (v.dur != null ? Number(v.dur) : 0.5) * ctx.ts;
+                    var proxy = { l: traffic.left, r: traffic.right };
+                    ctx.tl.to(lever, { left: leverXFor(nl, nr), duration: d, ease: "power2.inOut" }, ev.t);
+                    ctx.tl.to(
+                      proxy,
+                      {
+                        l: nl,
+                        r: nr,
+                        duration: d,
+                        ease: "power2.inOut",
+                        immediateRender: false,
+                        onUpdate: function () {
+                          renderTraffic(proxy.l, proxy.r);
+                        },
+                      },
+                      ev.t
+                    );
+                    traffic = { left: nl, right: nr };
+                  },
+                },
+                // target: instance id; value: healthy | idle | error | draining (one-frame flip).
+                health: {
+                  apply: function (ctx, ev) {
+                    var st = STATUS_LABEL[ev.value] ? ev.value : "idle";
+                    var statusEl = ev.el.querySelector(".dd-instance-status");
+                    ctx.tl.set(ev.el, { attr: { "data-state": st } }, ev.t);
+                    if (statusEl) ctx.tl.set(statusEl, { textContent: STATUS_LABEL[st] }, ev.t);
+                  },
+                },
+                // target: "left.badge" | "right.badge"; value: live | idle | error.
+                badge: {
+                  apply: function (ctx, ev) {
+                    var st = String(ev.value || "idle").toLowerCase();
+                    ctx.tl.set(ev.el, { attr: { "data-state": st }, textContent: st.toUpperCase() }, ev.t);
+                  },
+                },
+              };
+
+              var hostResult = HFHostEvents.install({
+                tl: tl,
+                root: root,
+                events: props.events,
+                duration: duration,
+                timeScale: ts,
+                ops: hostOps,
+              });
+              root.setAttribute("data-host-events", String(hostResult.count));
+              if (hostResult.problems.length) root.setAttribute("data-host-problems", hostResult.problems.join(" | "));
+            } else if (showFunnel) {
               // ---- USERS funnel mode ----
               tl.fromTo(funnelIconEls, { opacity: 0, y: -14 }, { opacity: 1, y: 0, duration: 0.4, ease: "power2.out", stagger: 0.06 }, revealAt);
               tl.fromTo(funnelPoint, { opacity: 0, scale: 0.6 }, { opacity: 1, scale: 1, duration: 0.35, ease: "back.out(2)" }, revealAt + 0.3);

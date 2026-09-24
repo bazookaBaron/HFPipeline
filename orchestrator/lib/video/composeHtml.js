@@ -670,6 +670,7 @@ function buildComposition({
          to the video-engine/ project root, same as index.html. -->
     <script src="compositions/components/lib/text-fit.js"></script>
     <script src="compositions/components/lib/props.js"></script>
+    <script src="compositions/components/lib/host-events.js"></script>
     <style>
       * {
         margin: 0;

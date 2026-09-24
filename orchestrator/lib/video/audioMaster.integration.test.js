@@ -21,8 +21,8 @@ test("masters a real MP4 and applies matching audio/video speed", async (t) => {
   assert.equal(created.status, 0, created.stderr);
   const result = await masterVideo({ inputPath, outputPath, speed: 2 });
   assert.equal(result.code, 0);
-  assert.ok(Math.abs(result.stats.integratedLufs + 17) < 1.5, JSON.stringify(result.stats));
-  assert.ok(result.stats.loudnessRangeLu <= 2);
+  assert.ok(Math.abs(result.stats.integratedLufs + 14) < 0.5, JSON.stringify(result.stats));
+  assert.ok(result.stats.loudnessRangeLu <= 1.5);
   assert.ok(result.stats.truePeakDbtp <= -1);
   assert.ok(result.stats.silenceBelowMinus60Pct >= 0);
   const probed = spawnSync("ffprobe", ["-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", outputPath], { encoding: "utf8" });

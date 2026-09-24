@@ -5,17 +5,15 @@ Source: a byte copy of `C:\Repos\HFPipleine\control-panel\data\renders\cs-b9d30f
 | File | Speed applied here | Duration (s) | Integrated (LUFS) | LRA (LU) | True peak (dBTP) | 20 ms windows below −60 dBFS |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `source-copy.mp4` | — | 70.233 | −16.0 | 2.9 | −3.1 | 13.25% (3509 windows) |
-| `mastered-speed1.mp4` | 1.0 | 70.233 | −17.0 | 1.9 | −3.4 | 14.14% |
-| `mastered.mp4` | 1.8 | 39.067 | −16.9 | 1.7 | −3.7 | 13.03% |
+| `mastered-speed1-v3.mp4` | 1.0 | 70.233 | −14.0 | 1.5 | −1.6 | 9.20% |
 
-The direct comparison is the speed-1 row: the source is an already-delivered render. The 1.8× row exercises speed control separately. The `−1 dBTP` setting is a ceiling, so the measured peak can be lower. Loudnorm brought LRA under 2 LU and integrated loudness to about −17 LUFS. Quiet-window percentage remained high; mastering did not remove the gaps. The source measurements here differ from the earlier audit's −19 LUFS / 16.7% figures, so these numbers should be tied to this exact render copy and measurement procedure.
+The direct comparison is the speed-1 row: the source is an already-delivered render. The corrected reference target is −14 LUFS, LRA ≤1.5 LU, true peak ≤−1 dBTP. The current module reaches all three on this sample by compressing before two-pass loudnorm and requesting −1.5 dBTP before AAC to preserve headroom. Quiet-window percentage remains high; mastering does not repair upstream gaps. The source measurements here differ from the earlier audit's −19 LUFS / 16.7% figures, so these numbers are tied to this exact render copy and measurement procedure. The earlier `mastered-speed1.mp4` and `mastered.mp4` files were produced by an obsolete −17 LUFS revision and must not be used as acceptance artifacts.
 
 ## Commands
 
 ```powershell
 Copy-Item -LiteralPath 'C:\Repos\HFPipleine\control-panel\data\renders\cs-b9d30fa7964c0cf0.mp4' -Destination 'analysis\pacing-audit-20260924\design\audio-master-benchmark\source-copy.mp4'
-node -e "const {masterVideo}=require('./orchestrator/lib/video/audioMaster'); masterVideo({inputPath:'analysis/pacing-audit-20260924/design/audio-master-benchmark/source-copy.mp4',outputPath:'analysis/pacing-audit-20260924/design/audio-master-benchmark/mastered-speed1.mp4',speed:1}).then(x=>console.log(JSON.stringify(x))).catch(e=>{console.error(e);process.exitCode=1})"
-node -e "const {masterVideo}=require('./orchestrator/lib/video/audioMaster'); masterVideo({inputPath:'analysis/pacing-audit-20260924/design/audio-master-benchmark/source-copy.mp4',outputPath:'analysis/pacing-audit-20260924/design/audio-master-benchmark/mastered.mp4',speed:1.8}).then(x=>console.log(JSON.stringify(x))).catch(e=>{console.error(e);process.exitCode=1})"
+node -e "const {masterVideo}=require('./orchestrator/lib/video/audioMaster'); masterVideo({inputPath:'analysis/pacing-audit-20260924/design/audio-master-benchmark/source-copy.mp4',outputPath:'analysis/pacing-audit-20260924/design/audio-master-benchmark/mastered-speed1-v3.mp4',speed:1}).then(x=>console.log(JSON.stringify(x))).catch(e=>{console.error(e);process.exitCode=1})"
 node --test orchestrator/lib/video/audioMaster.test.js orchestrator/lib/video/audioMaster.integration.test.js
 ```
 

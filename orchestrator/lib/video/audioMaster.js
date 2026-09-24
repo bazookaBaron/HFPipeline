@@ -3,7 +3,7 @@
 const { spawn } = require("node:child_process");
 const path = require("node:path");
 
-const TARGET = Object.freeze({ I: -17, LRA: 2, TP: -1 });
+const TARGET = Object.freeze({ I: -14, LRA: 1.5, TP: -1 });
 
 function speedFilters(speed) {
   if (!Number.isFinite(speed) || speed < 0.5 || speed > 2) {
@@ -80,7 +80,7 @@ async function silencePercentage(filePath, log) {
   });
 }
 
-/** Speed the finished mix, master to -17 LUFS / 2 LU / -1 dBTP, and measure output. */
+/** Speed the finished mix, master to -14 LUFS / <=1.5 LU / -1 dBTP, and measure output. */
 async function masterVideo({ inputPath, outputPath, speed = 1, log = () => {} }) {
   if (!inputPath || !outputPath) throw new TypeError("inputPath and outputPath are required");
   if (path.resolve(inputPath).toLowerCase() === path.resolve(outputPath).toLowerCase()) {
@@ -89,12 +89,16 @@ async function masterVideo({ inputPath, outputPath, speed = 1, log = () => {} })
   const filters = speedFilters(speed);
   // A stricter loudnorm LRA request leaves room for AAC's post-encode variance.
   const lraRequest = 1;
+  // Compress peaks before normalization; loudnorm alone cannot reduce this mix's LRA enough.
+  const audioChain = `${filters.audio},acompressor=threshold=0.05:ratio=3:attack=5:release=100`;
+  // Allow headroom for AAC's post-encode true-peak overshoot.
+  const peakRequest = -1.5;
   const first = await run(["-hide_banner", "-i", inputPath, "-filter_complex",
-    `[0:a]${filters.audio},loudnorm=I=-17:LRA=${lraRequest}:TP=-1:print_format=json[a]`, "-map", "[a]", "-f", "null", "-"], log);
+    `[0:a]${audioChain},loudnorm=I=-14:LRA=${lraRequest}:TP=${peakRequest}:print_format=json[a]`, "-map", "[a]", "-f", "null", "-"], log);
   assertSuccess(first, "loudnorm analysis");
   const measured = parseLoudnorm(first.stderr);
   const videoFilter = speed === 1 ? "" : `[0:v]${filters.video}[v];`;
-  const secondFilter = `${videoFilter}[0:a]${filters.audio},loudnorm=I=-17:LRA=${lraRequest}:TP=-1:measured_I=${measured.input_i}:measured_LRA=${measured.input_lra}:measured_TP=${measured.input_tp}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true:print_format=json[a]`;
+  const secondFilter = `${videoFilter}[0:a]${audioChain},loudnorm=I=-14:LRA=${lraRequest}:TP=${peakRequest}:measured_I=${measured.input_i}:measured_LRA=${measured.input_lra}:measured_TP=${measured.input_tp}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true:print_format=json[a]`;
   const videoArgs = speed === 1 ? ["-map", "0:v:0", "-c:v", "copy"] :
     ["-map", "[v]", "-c:v", "libx264", "-crf", "18", "-preset", "medium"];
   const second = await run(["-hide_banner", "-y", "-i", inputPath, "-filter_complex", secondFilter,

@@ -16,6 +16,8 @@ export type GenerateFn = (prompt: string) => Promise<unknown>;
 export interface GeminiClientOptions {
   apiKey: string;
   model?: string;
+  /** Structured-output schema; defaults to the v1 script schema. v2 passes GEMINI_STORYBOARD_SCHEMA. */
+  responseSchema?: unknown;
 }
 
 /**
@@ -31,7 +33,7 @@ export function createGeminiGenerateFn(options: GeminiClientOptions): GenerateFn
     generationConfig: {
       responseMimeType: "application/json",
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      responseSchema: GEMINI_RESPONSE_SCHEMA as any,
+      responseSchema: (options.responseSchema ?? GEMINI_RESPONSE_SCHEMA) as any,
     },
   });
 

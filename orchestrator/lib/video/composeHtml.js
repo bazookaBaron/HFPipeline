@@ -362,7 +362,15 @@ function buildAnimationSfxTags(composedScenes) {
   let poolIndex = 0;
   const tags = [];
   composedScenes.forEach((s, sceneIdx) => {
-    const localTimes = deriveAnimationCueTimes(s.props).filter((t) => t < s.durationSeconds - 0.1);
+    // v2 hosts supply their cue times directly (one per SFX-worthy event); a host spans
+    // many sentences, so the v1 per-scene cap would starve it -- only the min-gap dedupe applies.
+    const localTimes = (Array.isArray(s.sfxCueTimes)
+      ? s.sfxCueTimes
+          .slice()
+          .sort((a, b) => a - b)
+          .filter((t, i, arr) => i === 0 || t - arr[i - 1] >= MIN_SFX_CUE_GAP)
+      : deriveAnimationCueTimes(s.props)
+    ).filter((t) => t < s.durationSeconds - 0.1);
     localTimes.forEach((localAt, i) => {
       const file = ANIMATION_SFX_POOL[poolIndex % ANIMATION_SFX_POOL.length];
       poolIndex += 1;
@@ -511,12 +519,24 @@ function buildComposition({
   hudStates,
   theme,
   topicCategory,
+  narrationRelPath,
 }) {
   const totalDuration = scenes.length ? scenes[scenes.length - 1].start + scenes[scenes.length - 1].durationSeconds : 0;
 
   const safeAccent = HEX_COLOR_RE.test(String(accentColor || "")) ? accentColor : "#6ea8fe";
 
-  const audioTags = scenes
+  // v2 passes one continuous narration track; v1 passes one clip per scene.
+  const narrationTag = narrationRelPath
+    ? `      <audio
+        id="narration-audio"
+        class="clip"
+        data-start="0"
+        data-track-index="0"
+        src="${narrationRelPath}"
+      ></audio>`
+    : "";
+  const audioTags = narrationTag + scenes
+    .filter((s) => s.audioRelPath)
     .map(
       (s, i) => `      <audio
         id="scene-${i + 1}-audio"

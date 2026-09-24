@@ -1,0 +1,49 @@
+{
+  "version": "storyboard.v2",
+  "topic": "Blue-green deployment: canary, rollback, cutover",
+  "styleProfile": { "id": "persistent-system", "reason": "R2 keeps one router + two environment cards for most of the video and mutates them at spoken words" },
+  "palette": [{ "entity": "blue environment", "accent": "brand" }, { "entity": "green environment", "accent": "accent" }],
+  "sentences": [
+    { "id": "s1", "text": "Right now, blue serves every single user." },
+    { "id": "s2", "text": "We deploy version two point one to green, while nobody is watching." },
+    { "id": "s3", "text": "Its three instances boot, pass health checks, and turn healthy." },
+    { "id": "s4", "text": "Then the load balancer shifts ten percent of traffic to green." },
+    { "id": "s5", "text": "Suddenly, one instance starts throwing errors." },
+    { "id": "s6", "text": "So we roll back instantly, and every user is on blue again." },
+    { "id": "s7", "text": "After the fix, we flip all traffic to green, and blue goes idle." }
+  ],
+  "hosts": [
+    {
+      "id": "h1", "component": "deployment-dashboard", "enter": "cut", "fromSentence": "s1", "toSentence": "s7",
+      "props": { "leftLabel": "BLUE", "rightLabel": "GREEN", "leftVersion": "v2.0.4", "rightVersion": "v2.0.4", "leftLive": true, "rightLive": false, "leftTrafficPct": 100, "rightTrafficPct": 0 }
+    }
+  ],
+  "events": [
+    { "id": "e01", "host": "h1", "sentence": "s1", "anchor": { "text": "blue" }, "op": "highlight", "target": "left", "value": 1.2 },
+    { "id": "e02", "host": "h1", "sentence": "s1", "anchor": { "text": "every" }, "op": "pulse", "target": "left.pct" },
+    { "id": "e03", "host": "h1", "sentence": "s2", "anchor": { "text": "version" }, "op": "update", "target": "right.version", "value": "v2.1.0" },
+    { "id": "e04", "host": "h1", "sentence": "s2", "anchor": { "text": "green," }, "op": "highlight", "target": "right", "value": 1.0 },
+    { "id": "e05", "host": "h1", "sentence": "s3", "anchor": { "text": "boot," }, "op": "health", "target": "i-9f13aa02", "value": "healthy" },
+    { "id": "e06", "host": "h1", "sentence": "s3", "anchor": { "text": "health" }, "op": "health", "target": "i-52dd881c", "value": "healthy" },
+    { "id": "e07", "host": "h1", "sentence": "s3", "anchor": { "text": "healthy." }, "op": "health", "target": "i-e60347bb", "value": "healthy" },
+    { "id": "e08", "host": "h1", "sentence": "s4", "anchor": { "text": "load balancer" }, "op": "highlight", "target": "lb", "value": 0.9 },
+    { "id": "e09", "host": "h1", "sentence": "s4", "anchor": { "text": "ten percent" }, "op": "traffic", "target": null, "value": { "right": 10 } },
+    { "id": "e10", "host": "h1", "sentence": "s5", "anchor": { "text": "errors." }, "op": "health", "target": "i-52dd881c", "value": "error" },
+    { "id": "e11", "host": "h1", "sentence": "s5", "anchor": { "text": "errors." }, "op": "badge", "target": "right.badge", "value": "error" },
+    { "id": "e12", "host": "h1", "sentence": "s6", "anchor": { "text": "roll back" }, "op": "traffic", "target": null, "value": { "right": 0 } },
+    { "id": "e13", "host": "h1", "sentence": "s6", "anchor": { "text": "instantly," }, "op": "strike", "target": "right.version" },
+    { "id": "e14", "host": "h1", "sentence": "s6", "anchor": { "text": "blue" }, "op": "pulse", "target": "left" },
+    { "id": "e15", "host": "h1", "sentence": "s7", "anchor": { "text": "fix," }, "op": "update", "target": "right.version", "value": "v2.1.1" },
+    { "id": "e16", "host": "h1", "sentence": "s7", "anchor": { "text": "fix," }, "op": "health", "target": "i-52dd881c", "value": "healthy" },
+    { "id": "e17", "host": "h1", "sentence": "s7", "anchor": { "text": "fix," }, "op": "badge", "target": "right.badge", "value": "idle" },
+    { "id": "e18", "host": "h1", "sentence": "s7", "anchor": { "text": "flip" }, "op": "traffic", "target": null, "value": { "right": 100, "dur": 0.6 } },
+    { "id": "e19", "host": "h1", "sentence": "s7", "anchor": { "text": "green," }, "op": "badge", "target": "right.badge", "value": "live" },
+    { "id": "e20", "host": "h1", "sentence": "s7", "anchor": { "text": "blue" }, "op": "health", "target": "i-0a3f8c21", "value": "draining" },
+    { "id": "e21", "host": "h1", "sentence": "s7", "anchor": { "text": "goes" }, "op": "health", "target": "i-7b291de4", "value": "draining" },
+    { "id": "e22", "host": "h1", "sentence": "s7", "anchor": { "text": "idle." }, "op": "badge", "target": "left.badge", "value": "idle" },
+    { "id": "e23", "host": "h1", "sentence": "s7", "anchor": { "text": "idle." }, "op": "health", "target": "i-0a3f8c21", "value": "idle" },
+    { "id": "e24", "host": "h1", "sentence": "s7", "anchor": { "text": "idle." }, "op": "health", "target": "i-7b291de4", "value": "idle" },
+    { "id": "e25", "host": "h1", "sentence": "s7", "anchor": { "text": "idle." }, "op": "health", "target": "i-c48a02f1", "value": "idle" },
+    { "id": "e26", "host": "h1", "sentence": "s3", "anchor": { "text": "three" }, "op": "highlight", "target": "right", "value": 0.8 }
+  ]
+}

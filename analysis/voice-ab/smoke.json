@@ -1,0 +1,27 @@
+[
+  {
+    "word": "A",
+    "start": 0.06,
+    "end": 0.1
+  },
+  {
+    "word": "hash",
+    "start": 0.18,
+    "end": 0.501
+  },
+  {
+    "word": "collision",
+    "start": 0.561,
+    "end": 1.022
+  },
+  {
+    "word": "slows",
+    "start": 1.183,
+    "end": 1.524
+  },
+  {
+    "word": "lookup.",
+    "start": 1.564,
+    "end": 1.965
+  }
+]

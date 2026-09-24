@@ -1,0 +1,102 @@
+[
+  {
+    "word": "How",
+    "start": 0.06,
+    "end": 0.181
+  },
+  {
+    "word": "do",
+    "start": 0.221,
+    "end": 0.381
+  },
+  {
+    "word": "standard",
+    "start": 0.421,
+    "end": 0.841
+  },
+  {
+    "word": "implementations",
+    "start": 0.901,
+    "end": 1.662
+  },
+  {
+    "word": "handle",
+    "start": 1.723,
+    "end": 2.023
+  },
+  {
+    "word": "this",
+    "start": 2.043,
+    "end": 2.183
+  },
+  {
+    "word": "overflow?",
+    "start": 2.263,
+    "end": 2.744
+  },
+  {
+    "word": "Runtimes",
+    "start": 3.445,
+    "end": 3.825
+  },
+  {
+    "word": "store",
+    "start": 3.845,
+    "end": 4.106
+  },
+  {
+    "word": "colliding",
+    "start": 4.146,
+    "end": 4.566
+  },
+  {
+    "word": "elements",
+    "start": 4.626,
+    "end": 4.987
+  },
+  {
+    "word": "inside",
+    "start": 5.147,
+    "end": 5.547
+  },
+  {
+    "word": "a",
+    "start": 5.587,
+    "end": 5.628
+  },
+  {
+    "word": "linked",
+    "start": 5.688,
+    "end": 5.928
+  },
+  {
+    "word": "list",
+    "start": 6.008,
+    "end": 6.268
+  },
+  {
+    "word": "attached",
+    "start": 6.348,
+    "end": 6.789
+  },
+  {
+    "word": "to",
+    "start": 6.889,
+    "end": 6.969
+  },
+  {
+    "word": "that",
+    "start": 7.009,
+    "end": 7.169
+  },
+  {
+    "word": "single",
+    "start": 7.27,
+    "end": 7.57
+  },
+  {
+    "word": "bucket.",
+    "start": 7.67,
+    "end": 7.971
+  }
+]

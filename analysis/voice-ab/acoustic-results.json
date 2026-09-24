@@ -1,0 +1,122 @@
+[
+  {
+    "case": "chunk-1",
+    "durationSeconds": 4.817,
+    "finalWpm": 199.3,
+    "quietBelow60dBPercent": 9.58,
+    "f0MedianHz": 116.5,
+    "acceptedF0Frames": 28
+  },
+  {
+    "case": "chunk-3",
+    "durationSeconds": 13.198,
+    "finalWpm": 200.0,
+    "quietBelow60dBPercent": 15.33,
+    "f0MedianHz": 127.0,
+    "acceptedF0Frames": 71
+  },
+  {
+    "case": "chunk-8",
+    "durationSeconds": 28.506,
+    "finalWpm": 200.0,
+    "quietBelow60dBPercent": 19.51,
+    "f0MedianHz": 128.7,
+    "acceptedF0Frames": 120
+  },
+  {
+    "case": "scene-1-speed-1.0",
+    "durationSeconds": 6.603,
+    "finalWpm": 199.9,
+    "quietBelow60dBPercent": 12.73,
+    "f0MedianHz": 128.4,
+    "acceptedF0Frames": 32
+  },
+  {
+    "case": "scene-1-speed-1.2",
+    "durationSeconds": 6.605,
+    "finalWpm": 199.9,
+    "quietBelow60dBPercent": 9.7,
+    "f0MedianHz": 126.3,
+    "acceptedF0Frames": 37
+  },
+  {
+    "case": "scene-1-speed-1.4",
+    "durationSeconds": 6.613,
+    "finalWpm": 199.6,
+    "quietBelow60dBPercent": 6.97,
+    "f0MedianHz": 139.5,
+    "acceptedF0Frames": 42
+  },
+  {
+    "case": "scene-1-speed-1.6",
+    "durationSeconds": 6.61,
+    "finalWpm": 199.7,
+    "quietBelow60dBPercent": 0.91,
+    "f0MedianHz": 131.9,
+    "acceptedF0Frames": 53
+  },
+  {
+    "case": "scene-4-speed-1.0",
+    "durationSeconds": 5.998,
+    "finalWpm": 200.1,
+    "quietBelow60dBPercent": 12.71,
+    "f0MedianHz": 134.8,
+    "acceptedF0Frames": 39
+  },
+  {
+    "case": "scene-4-speed-1.2",
+    "durationSeconds": 6.001,
+    "finalWpm": 200.0,
+    "quietBelow60dBPercent": 8.0,
+    "f0MedianHz": 143.7,
+    "acceptedF0Frames": 50
+  },
+  {
+    "case": "scene-4-speed-1.4",
+    "durationSeconds": 6.012,
+    "finalWpm": 199.6,
+    "quietBelow60dBPercent": 4.33,
+    "f0MedianHz": 131.5,
+    "acceptedF0Frames": 48
+  },
+  {
+    "case": "scene-4-speed-1.6",
+    "durationSeconds": 6.013,
+    "finalWpm": 199.6,
+    "quietBelow60dBPercent": 1.67,
+    "f0MedianHz": 123.7,
+    "acceptedF0Frames": 34
+  },
+  {
+    "case": "scene-8-speed-1.0",
+    "durationSeconds": 6.013,
+    "finalWpm": 199.6,
+    "quietBelow60dBPercent": 3.33,
+    "f0MedianHz": 157.9,
+    "acceptedF0Frames": 33
+  },
+  {
+    "case": "scene-8-speed-1.2",
+    "durationSeconds": 6.011,
+    "finalWpm": 199.6,
+    "quietBelow60dBPercent": 0.0,
+    "f0MedianHz": 140.4,
+    "acceptedF0Frames": 44
+  },
+  {
+    "case": "scene-8-speed-1.4",
+    "durationSeconds": 6.011,
+    "finalWpm": 199.6,
+    "quietBelow60dBPercent": 0.0,
+    "f0MedianHz": 123.1,
+    "acceptedF0Frames": 29
+  },
+  {
+    "case": "scene-8-speed-1.6",
+    "durationSeconds": 6.01,
+    "finalWpm": 199.7,
+    "quietBelow60dBPercent": 0.67,
+    "f0MedianHz": 118.2,
+    "acceptedF0Frames": 30
+  }
+]

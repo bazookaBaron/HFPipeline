@@ -141,48 +141,100 @@
   "v2": {
     "host": true,
     "entities": {
-      "lb": "load balancer block",
-      "switch": "routing switch",
-      "chart": "5xx error chart (when showErrorChart)",
-      "left|right": "environment card",
-      "<side>.badge": "LIVE/IDLE badge",
-      "<side>.version": "version pill",
-      "<side>.pct": "traffic % readout",
-      "<side>.label": "environment label",
-      "<instanceId>": "instance row (ids from leftInstances/rightInstances)"
+      "static": [
+        "lb",
+        "switch",
+        "chart",
+        "left",
+        "right",
+        "left.badge",
+        "right.badge",
+        "left.version",
+        "right.version",
+        "left.pct",
+        "right.pct",
+        "left.label",
+        "right.label"
+      ],
+      "fromProps": [
+        {
+          "prop": "leftInstances",
+          "key": "id"
+        },
+        {
+          "prop": "rightInstances",
+          "key": "id"
+        }
+      ]
     },
     "operations": {
-      "reveal": [
-        "*"
-      ],
-      "remove": [
-        "*"
-      ],
-      "highlight": [
-        "*"
-      ],
-      "pulse": [
-        "*"
-      ],
-      "strike": [
-        "<instanceId>",
-        "<side>.version"
-      ],
-      "update": [
-        "<side>.version",
-        "<side>.label"
-      ],
+      "reveal": {
+        "targets": "*"
+      },
+      "remove": {
+        "targets": "*"
+      },
+      "highlight": {
+        "targets": "*"
+      },
+      "pulse": {
+        "targets": "*"
+      },
+      "strike": {
+        "targets": [
+          "@fromProps",
+          "left.version",
+          "right.version"
+        ]
+      },
+      "update": {
+        "targets": [
+          "left.version",
+          "right.version",
+          "left.label",
+          "right.label"
+        ],
+        "value": {
+          "type": "string",
+          "maxLength": 20
+        }
+      },
       "traffic": {
-        "target": null,
-        "value": "{left?:0-100,right?:0-100,dur?:seconds}"
+        "targets": null,
+        "value": {
+          "type": "object",
+          "fields": {
+            "left": "number0-100",
+            "right": "number0-100",
+            "dur": "number"
+          }
+        }
       },
       "health": {
-        "target": "<instanceId>",
-        "value": "healthy|idle|error|draining"
+        "targets": [
+          "@fromProps"
+        ],
+        "value": {
+          "enum": [
+            "healthy",
+            "idle",
+            "error",
+            "draining"
+          ]
+        }
       },
       "badge": {
-        "target": "<side>.badge",
-        "value": "live|idle|error"
+        "targets": [
+          "left.badge",
+          "right.badge"
+        ],
+        "value": {
+          "enum": [
+            "live",
+            "idle",
+            "error"
+          ]
+        }
       }
     }
   }

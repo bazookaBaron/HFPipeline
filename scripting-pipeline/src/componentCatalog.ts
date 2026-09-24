@@ -63,6 +63,8 @@ export interface ComponentInfo {
   description: string;
   category: string;
   variables: ComponentVariable[];
+  /** v2 host capabilities (entities + typed operations), when the component supports host mode. */
+  v2?: import("./v2/storyboard.js").V2Capabilities;
 }
 
 const EXCLUDED_DIRS = new Set(["lib", "_registry-reference"]);
@@ -113,6 +115,7 @@ export function loadComponentCatalog(componentsDir?: string): ComponentInfo[] {
         description: typeof raw.description === "string" ? raw.description : "",
         category: typeof raw.category === "string" ? raw.category : "uncategorized",
         variables: Array.isArray(raw.variables) ? raw.variables : [],
+        ...(raw.v2 && typeof raw.v2 === "object" ? { v2: raw.v2 } : {}),
       });
     } catch (e) {
       console.error(`[componentCatalog] failed to parse ${manifestPath}: ${(e as Error).message}`);

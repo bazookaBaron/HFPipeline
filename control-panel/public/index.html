@@ -26,6 +26,14 @@
         <label>Length (seconds)
           <input type="number" name="lengthSeconds" min="10" max="600" value="60">
         </label>
+        <label>Style
+          <select name="profile">
+            <option value="auto" selected>Auto (picked per topic)</option>
+            <option value="DH">Dark dashboard (R1/R2)</option>
+            <option value="LC">Light editorial (R3/R4)</option>
+            <option value="DC">Dark chaptered (R5)</option>
+          </select>
+        </label>
         <div class="row">
           <label>Accent color
             <input type="color" name="accentColor" value="#7c5cff">
@@ -42,7 +50,7 @@
           <label class="toggle"><input type="checkbox" name="sfxOn"> SFX</label>
         </div>
         <button type="submit" class="run-btn">Run render (real)</button>
-        <p class="hint">Shells out to <code>npx hyperframes render</code> against <code>video-engine/index.html</code> (Phase 1's hardcoded composition), quality=draft. Real process, real MP4, real streamed logs.</p>
+        <p class="hint">Runs <code>orchestrator/make-video.js</code>: Gemini storyboard, voice, stage render and mastering, then the hard QA gates, with automatic repair. Pace, captions and motion follow the reference spec.</p>
       </form>
 
       <!-- Carousel pipeline -->

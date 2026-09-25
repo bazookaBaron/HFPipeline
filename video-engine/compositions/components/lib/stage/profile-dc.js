@@ -112,7 +112,8 @@
       el.classList.add("st-dchero");
       var h = c.entity("text", div("h", el, p.text || ""));
       if (p.tone) h.setAttribute("data-tone", p.tone);
-      var size = p.size || 150;
+      // fit: serif caps ~0.62 em per glyph, drawn at scaleX .82, inside the stage width
+      var size = Math.min(p.size || 150, Math.floor((parseFloat(el.style.width) || 912) / Math.max(1, String(p.text || "").length * 0.62 * 0.82)));
       h.style.fontSize = size + "px";
       h.style.height = Math.round(size * 0.95) + "px"; // explicit line box so the kicker never overlaps it
       var k = p.kicker ? c.entity("kicker", div("k", el, p.kicker)) : null;

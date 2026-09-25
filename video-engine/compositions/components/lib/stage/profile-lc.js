@@ -117,6 +117,9 @@
       el.classList.add("st-lcdisplay");
       if (p.tone) el.setAttribute("data-tone", p.tone);
       el.textContent = p.text || "";
+      // fit to the column: Inter 800 caps average ~0.64 em per glyph at -0.03 em tracking
+      var w = parseFloat(el.style.width) || 690;
+      el.style.fontSize = Math.min(105, Math.floor(w / Math.max(1, String(p.text || "").length * 0.64))) + "px";
       return {
         enter: function (at) {
           c.tl.fromTo(el, { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.2, ease: "back.out(1.4)", immediateRender: false }, at);

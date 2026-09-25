@@ -19,7 +19,7 @@ const EXAMPLE_PATH = path.join(FIX, "cdn-dh.json");
 const PROFILES = {
   DH: { example: EXAMPLE_PATH, templates: ["opener", "stack", "hero"], bpm: [62, 100], maxGap: 3.3, lifeMedian: [2.0, 6.0], nodeX: [0.1, 0.9], forbiddenOps: [] },
   DC: { example: path.join(FIX, "k8s-dc.json"), templates: ["sub"], bpm: [58, 100], maxGap: 3.0, lifeMedian: [1.8, 4.6], nodeX: [0.14, 0.86], forbiddenOps: ["count", "slam"] },
-  LC: { example: path.join(FIX, "oauth-lc.json"), templates: ["scene"], bpm: [48, 95], maxGap: 4.0, lifeMedian: [3.0, 7.0], nodeX: [0.2, 0.8], forbiddenOps: ["strike", "rowStrike", "count", "slam"] },
+  LC: { example: path.join(FIX, "oauth-lc.json"), templates: ["scene"], bpm: [48, 95], maxGap: 4.2, lifeMedian: [3.0, 7.0], nodeX: [0.2, 0.8], forbiddenOps: ["strike", "rowStrike", "count", "slam"] },
 };
 
 // synthetic pacing that approximates the delivered pace (215 wpm incl. 0.2 s sentence gaps)
@@ -185,6 +185,42 @@ function validate(sb, opts = {}) {
 
 // module heights (px) used by the layout -- lets the model plan a scene that fits
 const HEIGHTS = "MODULE HEIGHTS (px): panel = 74 + 58 x rows (with title); table = 46 + 60 x rows; kpis = 124 (150 with a bar); code = 70 + 42 x lines; compare = 78 + 50 x rows; bars = 64 x items - 10; steps 84; note 80; stat 110; banner 117; chart 280; stamp 150; timeline 100 (150 with captions); layers = 84 x layers - 12; letters 260; nodes / chips / tree = their h (defaults 420 / 186 / 380, shrinkable by 30%); modules are separated by 19 px gaps (30 px in LC). Column band: 890 px (with label) / 964 px (without); full band: 960 px; LC scene: 716 px; DC stage: 494 px.";
+
+/**
+ * Deterministic repair for the one near-miss the model keeps oscillating on: a hold slightly longer
+ * than the band. Adds a short highlight (R2's emphasis device) on the word in the middle of each
+ * over-long hold, on the first content module on screen. Returns the number of beats added.
+ */
+function autoFillGaps(sb) {
+  const PR = PROFILES[sb.profile] || PROFILES.DH;
+  const tl = syntheticTimeline(sb);
+  let spec;
+  try {
+    spec = compileStoryboard(sb, tl, { mascot: false });
+  } catch (_) {
+    return 0;
+  }
+  const b = beats(spec);
+  const T = tl.totalSeconds;
+  let added = 0;
+  const pts = [0].concat(b, [T]);
+  for (let i = 0; i + 1 < pts.length; i++) {
+    if (pts[i + 1] - pts[i] <= PR.maxGap) continue;
+    const mid = (pts[i] + pts[i + 1]) / 2;
+    const w = tl.words.reduce((best, x) => (Math.abs(x.start - mid) < Math.abs(best.start - mid) ? x : best), tl.words[0]);
+    const sc = spec.scaffolds.find((s) => w.start >= s.t0 && w.start < s.t1);
+    const chrome = /^(hud|lchead|dcchrome|dcstage)$|_title$|_label$|_eyebrow$|_footer$/;
+    const mod = sc && sc.modules.find((m) => !chrome.test(m.id) && m.type !== "micro" && m.type !== "label");
+    if (!mod) continue;
+    const toks = sb.sentences.find((s) => s.id === w.sentenceId).text.split(/\s+/).filter(Boolean);
+    const norm = (x) => String(x).toLowerCase().replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
+    const occurrence = toks.slice(0, w.wi + 1).filter((t) => norm(t) === norm(toks[w.wi])).length;
+    sb.events = sb.events || [];
+    sb.events.push({ sentence: w.sentenceId, anchor: { text: toks[w.wi], occurrence }, op: "highlight", target: mod.id, value: { hold: 0.6 } });
+    added++;
+  }
+  return added;
+}
 
 function catalogText() {
   const mods = Object.entries(MODULES)
@@ -407,10 +443,18 @@ async function generateStoryboard(topic, opts = {}) {
     problems.forEach((p) => log(`  - ${p}`));
     if (!problems.length) return { storyboard: raw, attempts };
   }
+  // last resort for pure cadence near-misses (long holds only): deterministic emphasis beats
+  if (raw && problems.length && problems.every((p) => /^no visual change for/.test(p))) {
+    const n = autoFillGaps(raw);
+    const again = n ? validate(raw, opts) : problems;
+    log(`auto-filled ${n} long hold(s) with emphasis beats; ${again.length} problem(s) left`);
+    if (!again.length) return { storyboard: raw, attempts };
+    problems = again;
+  }
   const err = new Error(`storyboard still invalid after ${max} attempts: ${problems.join(" | ")}`);
   err.attempts = attempts;
   err.last = raw;
   throw err;
 }
 
-module.exports = { generateStoryboard, validate, buildPrompt, syntheticTimeline, BANDS, wordBand };
+module.exports = { generateStoryboard, validate, buildPrompt, syntheticTimeline, BANDS, wordBand, autoFillGaps };

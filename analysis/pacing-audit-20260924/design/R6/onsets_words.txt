@@ -1,0 +1,156 @@
+0.13 c c1 | System@0.00 Design@0.44
+1.93 c c44 | People@1.76 hear@2.10
+2.83 c c6 | words@2.32 like@2.58 load@2.78 balancer,@3.02
+3.63 c c2 | cache,@3.56 queue,@3.94
+5.30 c c3 | CDN,@5.14
+6.33 c+n c6 | sharding,@5.74 and@6.22 it@6.30 sounds@6.38 like@6.58
+6.60 h+c c0 | and@6.22 it@6.30 sounds@6.38 like@6.58 a@6.72 giant@6.82
+9.20 c c13 | But@9.00 system@9.34
+10.27 n c0 | is@9.90 really@10.10 just@10.26 this.@10.46
+10.67 c c9 | really@10.10 just@10.26 this.@10.46 You@10.94
+11.07 c+h c1 | You@10.94 start@11.18 with@11.34
+11.70 c c4 | start@11.18 with@11.34 a@11.52 product@11.58 requirement,@11.82
+13.60 c c3 | to@13.04 make@13.14 it@13.28 work@13.38 reliably@13.54 when@13.92
+14.40 c c3 | when@13.92 the@14.22 number@14.34 of@14.52 users@14.64
+17.07 c c1 | from@16.70 scratch.@16.94
+17.53 c+h c2 | scratch.@16.94 Imagine@17.54 a@17.84
+18.63 c c16 | social@18.20 app.@18.48 A@18.92
+19.13 c c15 | A@18.92 user@19.18 opens@19.40
+19.53 c+h c4 | user@19.18 opens@19.40 it,@19.70
+20.03 c c0 | it,@19.70 loads@19.98 their@20.28
+20.27 c c14 | it,@19.70 loads@19.98 their@20.28 feed,@20.48
+21.63 c c3 | a@21.10 post,@21.18 uploads@21.56 a@21.76
+22.40 c c3 | photo,@22.02 sends@22.34 a@22.46 message.@22.70
+23.10 c c3 | message.@22.70 At@23.20 first@23.30
+24.47 c c2 | on@24.14 one@24.38 server.@24.62
+25.53 c c1 | One@25.12 backend,@25.42
+26.27 c c1 | one@26.00 database,@26.14
+27.07 c c2 | one@26.74 machine.@26.86
+27.87 c+h c2 | For@27.44 a@27.62 thousand@27.70 users@27.92
+28.73 c c3 | that's@28.22 completely@28.58 fine.@28.84
+29.53 c c6 | Then@29.26 traffic@29.60
+29.77 h c0 | Then@29.26 traffic@29.60 grows.@29.98
+33.50 c c2 | Instead@33.32 of@33.76
+35.37 c c1 | you@34.96 run@35.02 several.@35.20 But@35.68
+36.57 n c0 | now@35.98 users@36.08 need@36.34 somewhere@36.58 to@36.88
+37.13 c c2 | somewhere@36.58 to@36.88 enter@37.06 the@37.22 system.@37.36
+37.77 c c2 | the@37.22 system.@37.36 That's@37.72 the@37.96 load@38.08
+38.10 c+n+c c1 | That's@37.72 the@37.96 load@38.08 balancer.@38.28
+39.00 c c1 | It@38.88 receives@39.12
+40.03 c+n c2 | and@39.78 distributes@40.00
+41.20 c c1 | across@40.62 the@40.98 healthy@41.18 servers.@41.36
+42.10 c c4 | But@41.98 all@42.18 those@42.30
+42.27 c+h c1 | But@41.98 all@42.18 those@42.30 servers@42.46
+45.20 c+h c2 | So@44.98 you@45.30 reduce@45.44
+47.30 c+n+c c4 | out@46.76 of@47.08 cache@47.22 like@47.38
+48.13 c c0 | Redis.@47.74 If@48.32
+49.63 c c0 | gets@49.26 requested@49.56 10@49.94
+51.53 c+n c4 | it@51.12 from@51.28 memory@51.42 instead@51.68
+53.87 c c64 | time.@53.28 Reads@53.72 keep@54.16
+54.33 c+n+h c1 | keep@54.16 growing.@54.34
+57.47 c+n c1 | writes,@57.24 replicas@57.62
+58.30 c c0 | handle@58.14 reads.@58.38
+59.20 c c14 | Eventually@59.26
+61.77 c c2 | enough.@61.32 So@61.72 you@61.90 partition@62.02
+63.70 c c0 | in@63.14 one@63.40 range@63.56 go@63.84 to@64.00
+64.97 c c0 | Others@64.80 go@65.02 elsewhere.@65.22
+65.93 c+n c56 | That's@65.82 sharding.@66.22
+66.93 c c1 | Now@66.74 files.@67.08
+68.47 c c4 | don't@67.92 want@68.12 profile@68.24 pictures@68.54
+68.87 c c0 | pictures@68.54 and@68.90 videos@69.14
+69.63 c c1 | videos@69.14 inside@69.38 your@69.70 relational@69.92
+70.50 c c7 | relational@69.92 database.@70.26
+71.07 c c47 | Put@70.92 them@71.20 in@71.30 object@71.40
+71.53 c+n+c c1 | them@71.20 in@71.30 object@71.40 storage@71.68
+72.43 c c1 | like@72.04 C3@72.34 or@72.62
+73.23 c c1 | R2.@72.94
+74.00 c+n c61 | Then@73.72 use@74.24
+76.10 c c1 | files@75.64 closer@75.94 to@76.26
+77.17 c c0 | around@76.68 the@76.94 world.@77.12
+78.90 c c6 | a@78.52 video.@78.68 Should@79.16
+79.87 c+n c0 | the@79.48 user@79.60 wait@79.78 while@80.04
+81.30 c c4 | thumbnails,@81.08
+81.93 c c4 | notifications,@81.74
+82.50 c c4 | analytics@82.42 and@82.72
+83.13 c c4 | and@82.72 transcoding?@83.06
+84.03 c c11 | No.@83.72 So@84.20
+84.67 c c1 | So@84.20 you@84.60 introduce@84.76
+85.37 c+n+c c1 | a@85.16 queue.@85.30 The@85.70
+86.73 c c1 | finishes@86.28 quickly.@86.60 And@87.06
+87.63 c+n c1 | And@87.06 background@87.18 workers@87.42 process@87.70
+88.33 c c1 | the@88.18 slow@88.40 jobs.@88.58
+88.70 c c0 | the@88.18 slow@88.40 jobs.@88.58 Next@88.86
+89.87 c+h c3 | problem.@89.78
+90.17 n c0 | problem.@89.78 What@90.44
+91.87 c c1 | service@91.32 crashes?@91.64
+92.50 c c62 | One@92.34 database@92.64
+93.47 c c10 | goes@92.98 down.@93.28 One@93.68
+94.10 c+n c10 | One@93.68 region@93.98 disappears.@94.26
+95.13 c c57 | This@95.02 is@95.30 where@95.42
+95.60 c+c c1 | This@95.02 is@95.30 where@95.42 redundancy@95.58
+96.60 c c0 | matters.@96.08 Multiple@96.68
+96.80 c c61 | Multiple@96.68 servers,@96.96
+97.60 c c3 | replicated@97.56 data,@97.86
+98.50 c c3 | health@98.44 checks,@98.60
+99.07 c c3 | checks,@98.60 retries,@99.00
+99.60 c c2 | retries,@99.00 failover.@99.50
+100.40 c+n c67 | The@100.08 system@100.50
+101.07 c c9 | system@100.50 should@100.80 expect@100.94 parts@101.16
+101.87 c c11 | to@101.54 break.@101.72 The@102.14
+102.27 c c38 | break.@101.72 The@102.14 goal@102.34 isn't@102.52
+103.87 c+n c3 | fails.@103.30 It's@103.76 failure@103.92
+104.73 c c2 | in@104.22 one@104.44 part@104.62 doesn't@104.84
+105.30 c c0 | doesn't@104.84 destroy@105.14 everything.@105.42
+105.83 c c1 | everything.@105.42 Now@106.06
+106.80 c c0 | add@106.44 observability.@106.62
+107.57 c c1 | Logs@107.58
+108.97 c+n c3 | happened.@108.42 Metrics@108.88 tell@109.16
+110.90 c+n c4 | Tracing@110.72 tells@111.24
+111.50 c c0 | tells@111.24 you@111.44 how@111.64 one@111.76
+112.27 c c1 | one@111.76 request@111.98 moved@112.26 across@112.52
+113.07 c c0 | across@112.52 services.@112.76
+113.77 n c0 | Without@113.56 those,@114.00
+114.43 c c0 | those,@114.00 debugging@114.34 a@114.66
+116.57 c+h c84 | And@116.48 here's@116.68 where@116.88
+117.57 c c2 | beginners@117.02 make@117.32 a@117.56 mistake.@117.68 They@117.90
+118.27 c c10 | mistake.@117.68 They@117.90 think@118.28 system@118.52
+119.33 c c2 | design@118.82 means@119.08 adding@119.36 as@119.62
+120.93 c c0 | as@120.52 possible.@120.84
+121.33 c c45 | possible.@120.84 Microservices,@121.42
+122.13 c c3 | Kafka,@122.10
+122.70 c c5 | Kubernetes,@122.56
+123.57 c c4 | 10@123.28 databases.@123.60
+124.50 c c3 | That's@124.36 not@124.58 good@124.70
+125.97 c c23 | Every@125.80 component@126.14
+127.90 c c55 | A@127.70 cache@128.02 can@128.24
+128.77 c c0 | can@128.24 go@128.50 stale.@128.68
+129.50 c c4 | A@129.20 queue@129.42 can@129.58 deliver@129.78
+130.30 c c1 | deliver@129.78 twice.@130.04 Replicas@130.64
+130.70 c c3 | Replicas@130.64
+131.50 c c0 | can@131.16 lag.@131.34 Sharding@131.84
+131.70 c c0 | can@131.16 lag.@131.34 Sharding@131.84
+131.90 c c81 | lag.@131.34 Sharding@131.84
+133.10 c c1 | harder.@132.78
+133.50 c c4 | Microservices@133.62
+135.17 c c1 | failures.@134.84 So@135.50
+135.67 c+h c82 | So@135.50 you@135.78 only@135.88
+136.07 c+n c6 | So@135.50 you@135.78 only@135.88 add@136.08 complexity@136.28
+137.67 c c8 | it@137.08 solves@137.20 a@137.42 real@137.58 bottleneck.@137.74
+138.47 c c11 | That's@138.34 the@138.56 core@138.66
+139.97 c c25 | Start@139.86 simple.@140.14
+140.70 c c3 | simple.@140.14 Find@140.62 the@140.84 bottleneck.@140.96
+141.90 c c3 | Introduce@141.82
+143.90 c+n c2 | it.@143.48 Repeat@143.82 as@144.08
+145.10 c c67 | grows.@144.66 So@145.08 when@145.34 you@145.44
+145.50 c c0 | So@145.08 when@145.34 you@145.44 hear@145.50 load@145.66 balancer,@145.84
+146.47 c c1 | cache,@146.32 queue,@146.72
+146.77 c c1 | cache,@146.32 queue,@146.72 CDN,@146.96
+147.10 c c1 | queue,@146.72 CDN,@146.96
+147.50 c c1 | CDN,@146.96 replicas.@147.48
+147.97 c c1 | replicas.@147.48 Shard.@147.90 Don't@148.24
+148.53 c c0 | Don't@148.24 memorize@148.68 them@148.84
+150.87 n c0 | one@150.56 question.@150.74
+151.67 c c1 | What@151.22 problem@151.50 appeared@151.80
+153.27 c c3 | to@152.76 add@152.88 this@153.00 component?@153.14 That's@153.60
+153.67 c+n c48 | component?@153.14 That's@153.60 system@153.82
+154.53 c c3 | design@154.04 101.@154.36

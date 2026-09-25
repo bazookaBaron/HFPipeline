@@ -1,0 +1,87 @@
+[   0.00-   2.14]  How do NPCs in video games actually work?
+[   2.42-   4.74]  Because when an enemy spots you, runs behind cover,
+[   5.06-   7.04]  reloads, blanks you, and then starts shooting again,
+[   7.26-   8.86]  it can feel like it is actually thinking,
+[   9.04-  11.78]  but most of the time it isn't using AI like chat GPT.
+[  12.20-  14.38]  It is following a carefully designed decision system.
+[  14.70-  15.46]  Let's break that down.
+[  15.78-  18.08]  First, the NPC needs to know what is happening around it.
+[  18.22-  18.94]  Can it see the player?
+[  19.26-  20.12]  Can it hear a gunshot?
+[  20.34-  21.64]  How far away is the nearest enemy?
+[  21.92-  22.58]  Is its health low?
+[  22.88-  23.60]  Is there cover nearby?
+[  24.18-  25.80]  The game constantly updates these signals.
+[  26.12-  27.92]  Now the NPC needs to decide what to do.
+[  27.92-  30.56]  One of the simplest systems is called a finite state machine.
+[  30.90-  32.32]  Imagine an enemy has a few states.
+[  32.70-  34.88]  Patrol, chase, attack, hide, search.
+[  35.22-  37.22]  Normally it is patrolling, then it sees you.
+[  37.50-  38.12]  Switch to chase.
+[  38.62-  39.40]  You get close enough.
+[  39.54-  40.26]  Switch to attack.
+[  40.52-  41.28]  Its health gets low.
+[  41.54-  42.26]  Switch to hide.
+[  42.52-  42.92]  You disappear.
+[  43.40-  44.18]  Switch to search.
+[  44.32-  47.20]  That is already enough to make an NPC look surprisingly intelligent.
+[  47.36-  49.84]  But as games get more complex, state machines can become messy.
+[  50.12-  51.88]  So many games use things like behavior trees.
+[  52.32-  54.02]  Think of a behavior tree like a flowchart.
+[  54.20-  56.14]  The NPC checks conditions from top to bottom.
+[  56.34-  56.76]  Am I dead?
+[  56.76-  58.16]  If no, is the player visible?
+[  58.46-  59.90]  If yes, am I close enough to attack?
+[  60.16-  61.58]  If no, move toward the player.
+[  61.82-  63.08]  If health is low, find cover.
+[  63.38-  64.56]  If nothing is happening, patrol.
+[  65.06-  66.54]  The game designer builds the logic,
+[  66.80-  69.58]  and the NPC repeatedly walks through that tree to choose an action.
+[  69.78-  70.92]  Now we have another problem.
+[  71.12-  72.94]  How does the NPC actually move through the world?
+[  73.12-  75.10]  It cannot just walk in a straight line through walls.
+[  75.30-  77.14]  So the game creates a navigation map.
+[  77.42-  78.60]  Often called a nav mesh.
+[  78.84-  80.20]  A nav mesh tells the NPC.
+[  80.56-  81.66]  These areas are walkable.
+[  81.80-  82.36]  These are blocked.
+[  82.60-  83.90]  These stairs connect these floors.
+[  84.18-  85.66]  This doorway leads into that room.
+[  85.66-  88.36]  Then a path finding algorithm, often something like a star,
+[  88.66-  90.80]  calculates a route from the NPC to its target.
+[  91.12-  92.58]  So if an enemy wants to reach you,
+[  92.76-  94.68]  it does not understand the building like a human.
+[  94.90-  97.44]  It finds a path across this invisible navigation graph.
+[  97.76-  99.08]  Now what about aiming and reactions?
+[  99.46- 101.46]  Those are usually controlled by game systems too.
+[ 101.70- 103.20]  Accuracy can depend on difficulty.
+[ 103.76- 105.70]  Reaction time can have an artificial delay.
+[ 106.00- 107.96]  The NPC may deliberately miss some shots,
+[ 108.14- 110.14]  because perfectly accurate enemies are not fun.
+[ 110.34- 113.14]  Good game AI is not trying to create the smartest possible opponent.
+[ 113.14- 115.78]  It is trying to create an opponent that feels intelligent,
+[ 115.96- 117.66]  while still being fair and entertaining.
+[ 117.92- 119.40]  And then there are large open world games.
+[ 119.62- 121.78]  Imagine a city with thousands of NPCs.
+[ 121.86- 124.58]  You cannot run complex decision logic for every character
+[ 124.58- 125.96]  at full quality all the time.
+[ 126.16- 127.60]  So games use levels of simulation.
+[ 128.04- 130.28]  NPCs close to the player get detailed behavior.
+[ 130.64- 132.88]  They walk around, react to traffic, talk, fight.
+[ 133.18- 135.40]  NPCs far away might be reduced to simple data.
+[ 135.64- 138.16]  Maybe the game only remembers this person as it work right now.
+[ 138.32- 140.66]  When you get close again, the full character is simulated.
+[ 140.88- 143.00]  And modern games can add more advanced techniques too.
+[ 143.00- 146.46]  Utility systems can score possible actions and choose the best one.
+[ 146.74- 148.82]  Machine learning can be used for specific behaviors,
+[ 149.06- 151.22]  and generative AI is starting to appear in experiments
+[ 151.22- 153.10]  for dialogue and dynamic characters.
+[ 153.60- 156.54]  But most game NPCs still rely heavily on traditional systems
+[ 156.54- 159.74]  because they are predictable, fast and easy for developers to control.
+[ 160.06- 162.36]  So the easiest way to think about an NPC is this.
+[ 162.70- 163.96]  Sensors tell it what is happening.
+[ 164.18- 165.70]  Decision logic chooses what to do.
+[ 165.92- 167.58]  Pathfinding figures out how to get there.
+[ 168.02- 169.68]  An animation makes the decision visible.
+[ 169.96- 171.82]  The NPC is not really thinking like a person.
+[ 171.82- 174.62]  The game is just extremely good at creating the illusion that it is.

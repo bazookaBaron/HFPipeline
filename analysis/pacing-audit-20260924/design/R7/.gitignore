@@ -1,0 +1,13 @@
+# scratch (regenerable): keep scripts, R7.asr.json, AUDIT.md and ev_* evidence frames
+f1/
+sc/
+d10/
+fr_*.png
+*.npy
+sweep.json
+masc.json
+cap.json
+capev.json
+beats.json
+whisp.log
+__pycache__/

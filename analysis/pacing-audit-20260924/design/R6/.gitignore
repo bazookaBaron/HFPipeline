@@ -1,0 +1,14 @@
+# scratch (regenerable from the reel with the scripts here)
+dense/
+scn/
+fr/
+*.wav
+_*.png
+_*.jpg
+diffs.json
+capflip.json
+masc.npy
+scene.txt
+ebur.txt
+whisp.log
+__pycache__/

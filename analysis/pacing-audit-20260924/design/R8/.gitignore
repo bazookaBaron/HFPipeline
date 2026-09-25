@@ -1,0 +1,13 @@
+# scratch (regenerable from the source mp4 with the scripts in this folder)
+f10/
+f30/
+nat/
+s1/
+*.wav
+*.npy
+_*.png
+fr_*.png
+sheet_*.png
+whisper.err
+# keep: AUDIT.md, *.py, *.txt, *.json, ev_*.png (named evidence frames)
+__pycache__/

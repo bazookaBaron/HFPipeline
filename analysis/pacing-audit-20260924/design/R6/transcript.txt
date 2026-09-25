@@ -1,0 +1,37 @@
+505 words 0.0 154.7
+wpm 195.9
+gap median 0.000 p90 0.180 max 0.540 n>0.3 14
+0.00-8.76 System Design 101. People hear words like load balancer, cache, queue, database replica, CDN, sharding, and it sounds like a giant collection of random infrastructure terms.
+9.00-15.44 But system design is really just this. You start with a product requirement, then figure out how to make it work reliably when the number of users gets huge.
+15.64-23.00 Let's build the mental model from scratch. Imagine a simple social app. A user opens it, loads their feed, likes a post, uploads a photo, sends a message.
+23.20-29.26 At first you run everything on one server. One backend, one database, one machine. For a thousand users that's completely fine.
+29.26-32.94 Then traffic grows. One server can't handle everything. So you scale horizontally.
+33.32-38.68 Instead of one backend server, you run several. But now users need somewhere to enter the system. That's the load balancer.
+38.88-41.72 It receives traffic and distributes requests across the healthy servers.
+41.98-44.92 But all those servers hit the same database and it becomes the bottleneck.
+44.98-48.14 So you reduce unnecessary reads out of cache like Redis.
+48.32-53.54 If the same profile gets requested 10,000 times, serve it from memory instead of querying the database every time.
+53.72-58.72 Reads keep growing. So you add read replicas. The primary handles writes, replicas handle reads.
+59.26-61.52 Eventually even one database cluster isn't enough.
+61.72-66.64 So you partition the data. Users in one range go to one database. Others go elsewhere. That's sharding.
+66.74-70.64 Now files. You don't want profile pictures and videos inside your relational database.
+70.92-77.40 Put them in object storage like C3 or R2. Then use a CDN to cache those files closer to users around the world.
+77.62-83.54 Now someone uploads a video. Should the user wait while the backend processes thumbnails, notifications, analytics and transcoding?
+83.72-88.86 No. So you introduce a queue. The request finishes quickly. And background workers process the slow jobs.
+88.86-92.08 Next problem. What happens when one service crashes?
+92.34-96.40 One database goes down. One region disappears. This is where redundancy matters.
+96.68-101.94 Multiple servers, replicated data, health checks, retries, failover. The system should expect parts to break.
+102.14-105.78 The goal isn't nothing ever fails. It's failure in one part doesn't destroy everything.
+106.06-110.44 Now add observability. Logs tell you what happened. Metrics tell you how the system is behaving.
+110.72-116.22 Tracing tells you how one request moved across services. Without those, debugging a distributed system is a nightmare.
+116.48-117.90 And here's where beginners make a mistake.
+117.90-121.18 They think system design means adding as much infrastructure as possible.
+121.42-125.52 Microservices, Kafka, Kubernetes, 10 databases. That's not good system design.
+125.80-130.36 Every component adds complexity. A cache can go stale. A queue can deliver twice.
+130.64-135.26 Replicas can lag. Sharding makes queries harder. Microservices introduce network failures.
+135.50-139.56 So you only add complexity when it solves a real bottleneck. That's the core of system design.
+139.86-143.72 Start simple. Find the bottleneck. Introduce the smallest component that solves it.
+143.82-147.88 Repeat as the system grows. So when you hear load balancer, cache, queue, CDN, replicas.
+147.90-150.00 Shard. Don't memorize them as random technologies.
+150.18-153.44 Ask one question. What problem appeared that forced us to add this component?
+153.60-154.70 That's system design 101.

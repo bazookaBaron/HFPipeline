@@ -50,6 +50,14 @@
           <label class="toggle"><input type="checkbox" name="sfxOn" checked> SFX</label>
           <label class="toggle"><input type="checkbox" name="endcardOn" checked> Ending (follow + vloombox.in)</label>
         </div>
+        <label>Music bed
+          <select name="music">
+            <option value="false" selected>Off</option>
+            <option value="lofi">Lo-fi</option>
+            <option value="ambient">Ambient</option>
+            <option value="pulse">Pulse</option>
+          </select>
+        </label>
         <button type="submit" class="run-btn">Run render (real)</button>
         <p class="hint">Runs <code>orchestrator/make-video.js</code>: Gemini storyboard, voice, stage render and mastering, then the hard QA gates, with automatic repair. Pace, captions and motion follow the reference spec.</p>
       </form>

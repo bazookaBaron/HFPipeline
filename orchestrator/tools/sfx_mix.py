@@ -2,12 +2,18 @@
 SFX synth + mixer for v3 videos (no downloaded assets: every sound is synthesized, deterministic).
 
   python sfx_mix.py cues.json narration.wav out.wav [--stem sfx_only.wav]
+         [--music lofi|ambient|pulse --duration sec --music-stem bed_only.wav --music-seed n]
 
 cues.json: {"cues": [{"t": sec, "kind": "tick|blip|pop|whoosh|swish|keys|roll|strike|chime", "dur"?: sec,
             "var"?: int, "gain"?: dB offset}]}
 narration.wav: any rate/channels (converted by ffmpeg to 48 kHz stereo s16 first).
 Levels are relative to the narration's speech peak (99.5th percentile |x|), so SFX sit under the voice
 before mastering, whatever the TTS level is.
+
+--music adds the optional synthesized bed (music_bed.py; off unless asked): placed BED_DB under the voice
+(K-weighted, speech-active frames) and ducked DUCK_DB more under speech by a sidechain from the narration
+envelope (20 ms look-ahead, ~40 ms down, recovers over ~250 ms in pauses), so pauses keep a continuous floor.
+--duration pads the mix to the video length so the bed's 2 s fade-out ends on the last frame.
 """
 import json
 import math
@@ -23,6 +29,8 @@ SR = 48000
 PENTA = [0, 2, 4, 7, 9, 12, 14]  # pentatonic steps for pitched variants (always consonant)
 
 # peak level of each kind relative to the speech peak (dB)
+BED_DB = -18.0   # bed (unducked, in pauses) vs speech loudness, K-weighted
+DUCK_DB = -6.0   # extra attenuation under speech
 LEVEL = {"tick": -15, "blip": -17, "pop": -11, "whoosh": -13, "swish": -17, "keys": -21, "roll": -19, "strike": -15, "chime": -14}
 
 
@@ -180,14 +188,90 @@ def write_wav(p, x):
         w.writeframes((x * 32767).astype("<i2").tobytes())
 
 
+def k_weight_ms(x, mask=None):
+    """mean square of the mono fold after an approximate BS.1770 K-weighting (RLB high-pass + +4 dB shelf)"""
+    m = x.mean(axis=1)
+    nfft = 1 << int(math.ceil(math.log2(len(m) + 1)))
+    f = np.fft.rfftfreq(nfft, 1 / SR)
+    fs = np.maximum(f, 1e-3)
+    hpf = fs ** 2 / np.sqrt((fs ** 2 - 38.0 ** 2) ** 2 + (fs * 38.0 / 0.5) ** 2)
+    shelf = 10 ** (4.0 / (1 + (1500.0 / fs) ** 2) / 20)
+    y = np.fft.irfft(np.fft.rfft(m, nfft) * hpf * shelf, nfft)[: len(m)]
+    if mask is not None:
+        y = y[mask]
+    return float(np.mean(y ** 2)) if len(y) else 0.0
+
+
+def speech_mask(voice, hop=480):
+    """per-10 ms-frame speech activity of the narration (relative gate, 20 ms look-ahead, 40 ms hang)"""
+    m = voice.mean(axis=1)
+    nf = len(m) // hop
+    rms = np.sqrt(np.mean(m[: nf * hop].reshape(nf, hop) ** 2, axis=1) + 1e-12)
+    thr = max(np.percentile(rms, 95) * 10 ** (-24 / 20), 10 ** (-60 / 20))
+    act = rms > thr
+    out = act.copy()
+    for k in range(1, 3):  # look-ahead 20 ms
+        out[:-k] |= act[k:]
+    for k in range(1, 5):  # hang 40 ms
+        out[k:] |= act[:-k]
+    return out, hop
+
+
+def duck_gain(active, hop, n):
+    """rate-limited gain in dB: DUCK_DB within ~40 ms of speech, back to 0 over ~250 ms in pauses"""
+    fr = hop / SR
+    down = abs(DUCK_DB) / 0.04 * fr
+    up = abs(DUCK_DB) / 0.25 * fr
+    g = np.zeros(len(active))
+    cur = 0.0
+    for i, a in enumerate(active):
+        tgt = DUCK_DB if a else 0.0
+        cur = max(tgt, cur - down) if tgt < cur else min(tgt, cur + up)
+        g[i] = cur
+    t_frames = (np.arange(len(g)) + 0.5) * hop
+    return 10 ** (np.interp(np.arange(n), t_frames, g) / 20)
+
+
+def add_music(voice, preset, seed):
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import music_bed
+
+    n = len(voice)
+    bed = music_bed.render(preset, n, seed)
+    active, hop = speech_mask(voice)
+    frame_mask = np.repeat(active, hop)
+    frame_mask = np.concatenate([frame_mask, np.zeros(n - len(frame_mask), dtype=bool)])
+    v_ms = k_weight_ms(voice, frame_mask) or k_weight_ms(voice) or 1e-6
+    body = slice(int(1.5 * SR), max(int(1.5 * SR) + 1, n - int(2.0 * SR)))  # skip the fades
+    b_ms = k_weight_ms(bed[body]) or 1e-9
+    g = 10 ** (BED_DB / 20) * math.sqrt(v_ms / b_ms)
+    duck = duck_gain(active, hop, n)
+    out = bed * (g * duck)[:, None]
+    stats = {
+        "music": preset,
+        "bedDb": BED_DB,
+        "duckDb": DUCK_DB,
+        "speechPct": round(100 * float(frame_mask.mean()), 1),
+        "monoLossDb": round(music_bed.mono_loss_db(bed[body]), 2),
+    }
+    return out, stats
+
+
 def main():
     cues_p, narr_p, out_p = sys.argv[1:4]
-    stem_p = sys.argv[sys.argv.index("--stem") + 1] if "--stem" in sys.argv else None
+    opt = lambda k: sys.argv[sys.argv.index(k) + 1] if k in sys.argv else None
+    stem_p = opt("--stem")
+    music = opt("--music")
+    music = None if music in (None, "", "false", "off", "none") else music
     cues = json.loads(Path(cues_p).read_text(encoding="utf-8"))["cues"]
     with tempfile.TemporaryDirectory() as td:
         tmp = Path(td) / "n.wav"
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", narr_p, "-ar", str(SR), "-ac", "2", "-c:a", "pcm_s16le", str(tmp)], check=True)
         voice = read_wav(tmp)
+    if music and opt("--duration"):
+        n_total = int(round(float(opt("--duration")) * SR))
+        if n_total > len(voice):
+            voice = np.concatenate([voice, np.zeros((n_total - len(voice), 2))])
     speech_peak = np.percentile(np.abs(voice[:, 0]), 99.5) or 0.3
     fx = np.zeros_like(voice)
     cache = {}
@@ -208,10 +292,15 @@ def main():
         seg = fx[start:start + len(s)]
         seg[:, 0] += s[: len(seg)] * g * math.sqrt(0.5 - pan / 2) * math.sqrt(2)
         seg[:, 1] += s[: len(seg)] * g * math.sqrt(0.5 + pan / 2) * math.sqrt(2)
-    write_wav(out_p, voice + fx)
+    bed, mstats = (None, {})
+    if music:
+        bed, mstats = add_music(voice, music, int(opt("--music-seed") or 7))
+        if opt("--music-stem"):
+            write_wav(opt("--music-stem"), bed)
+    write_wav(out_p, voice + fx + (bed if bed is not None else 0))
     if stem_p:
         write_wav(stem_p, fx)
-    print(json.dumps({"cues": len(cues), "speechPeak": round(float(speech_peak), 4), "fxPeak": round(float(np.max(np.abs(fx))), 4)}))
+    print(json.dumps({"cues": len(cues), "speechPeak": round(float(speech_peak), 4), "fxPeak": round(float(np.max(np.abs(fx))), 4), **mstats}))
 
 
 if __name__ == "__main__":

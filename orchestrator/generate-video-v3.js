@@ -14,6 +14,7 @@
  *
  * Usage: node generate-video-v3.js --storyboard sb.json --out out.mp4 [--run-id id] [--wpm 215]
  *          [--tts-speed 1] [--captions true] [--mascot true] [--reuse-voice true] [--quality looks]
+ *          [--music false|lofi|ambient|pulse]   (synthesized, ducked background bed; default false)
  * stdout: exactly one JSON line on success.
  */
 
@@ -31,6 +32,7 @@ const { compileStoryboard } = require("./lib/video/v3/compile");
 const { buildStageComposition } = require("./lib/video/v3/composeStage");
 const { mixSfx } = require("./lib/video/v3/sfx");
 const { appendEndcard, stripEndcard, captionWords } = require("./lib/video/v3/endcard");
+const { pickPromo } = require("./lib/video/v3/promo");
 const { masterVideo } = require("./lib/video/audioMaster");
 const { generateStoryboard } = require("./lib/video/v3/storyboardGen");
 
@@ -142,7 +144,22 @@ async function main() {
   }
   // the fixed channel ending (brand.json) rides after the topic; the saved storyboard stays topic-only
   const sbTopic = stripEndcard(JSON.parse(fs.readFileSync(sbPath, "utf-8")));
-  const sb = bool(args.endcard, true) ? appendEndcard(sbTopic) : sbTopic;
+  // topic-matched vloombox.in promo scene (our own screen recordings) before the follow card
+  let promo = null;
+  if (bool(args.endcard, true) && bool(args.promo, true)) {
+    let gen = null;
+    try {
+      gen = require("./lib/video/v3/storyboardGen").loadGemini();
+    } catch (_) {
+      gen = null;
+    }
+    promo = await pickPromo(topic || sbTopic.topic || "", { generate: gen, log }).catch((err) => {
+      log(`promo skipped: ${err.message}`);
+      return null;
+    });
+    if (promo) log(`promo: ${promo.clipId} -- "${promo.line}"`);
+  }
+  const sb = bool(args.endcard, true) ? appendEndcard(sbTopic, undefined, promo) : sbTopic;
   if (sb.version !== "storyboard.v3") return die("script", `expected storyboard.v3, got ${sb.version}`);
   metrics.set("counts", { sentences: sb.sentences.length, scaffolds: sb.scaffolds.length, events: (sb.events || []).length });
 
@@ -225,13 +242,23 @@ async function main() {
     if (/layout audit failed/.test(err.message)) throw err;
     log(`layout audit skipped: ${err.message}`);
   }
+  // ---- media gate (hard): sources local, no black first frames, aspect within 2% ----
+  {
+    const mp = require("./lib/video/v3/media").checkMedia(spec.media, VIDEO_ENGINE_DIR);
+    if (mp.length) return die("compose", `media check failed: ${mp.join(" | ")}`);
+  }
   // ---- SFX: synthesized cues on every visual change, mixed under the voice (tools/sfx_mix.py) ----
+  // --music <lofi|ambient|pulse>: optional synthesized bed (tools/music_bed.py), ducked under the voice; default off
   let audioRel = narrationRel;
-  if (bool(args.sfx, true)) {
+  const sfxOn = bool(args.sfx, true);
+  const music = args.music === true ? "lofi" : typeof args.music === "string" && !/^(false|off|none|)$/i.test(args.music) ? args.music.toLowerCase() : null;
+  if (sfxOn || music) {
     try {
       const mixRel = narrationRel.replace(/narration\.wav$/, "narration-sfx.wav");
-      const sfx = mixSfx({ spec, duration: timeline.totalSeconds, narrationWav: path.join(VIDEO_ENGINE_DIR, narrationRel), outWav: path.join(VIDEO_ENGINE_DIR, mixRel), log });
+      const musicStemWav = music ? path.join(VIDEO_ENGINE_DIR, narrationRel.replace(/narration\.wav$/, "music-bed.wav")) : undefined;
+      const sfx = mixSfx({ spec, duration: timeline.totalSeconds, narrationWav: path.join(VIDEO_ENGINE_DIR, narrationRel), outWav: path.join(VIDEO_ENGINE_DIR, mixRel), sfx: sfxOn, music, musicStemWav, log });
       metrics.set("sfx", { cues: sfx.cues.length });
+      if (music) metrics.set("music", { preset: music, bedDb: sfx.bedDb, duckDb: sfx.duckDb, monoLossDb: sfx.monoLossDb, stem: musicStemWav });
       audioRel = mixRel;
     } catch (err) {
       return die("compose", err.message, err);
@@ -241,7 +268,7 @@ async function main() {
   fs.writeFileSync(timelinePath, JSON.stringify({ runId, speed, timeline, spec }, null, 1));
   const compositionPath = path.join(VIDEO_ENGINE_DIR, "generated", `${runId}.html`);
   fs.mkdirSync(path.dirname(compositionPath), { recursive: true });
-  fs.writeFileSync(compositionPath, buildStageComposition({ runId, totalDuration: timeline.totalSeconds, spec, narrationRelPath: audioRel, words: captionWords(timeline.words), profile: sb.profile || "DH", accent, captionsOn }), "utf-8");
+  fs.writeFileSync(compositionPath, buildStageComposition({ runId, totalDuration: timeline.totalSeconds, spec, narrationRelPath: audioRel, words: captionWords(timeline.words), profile: sb.profile || "DH", accent, captionsOn, captionSkin: typeof args["caption-skin"] === "string" ? args["caption-skin"] : sb.captionSkin }), "utf-8");
   log(`composition -> ${compositionPath}`);
 
   // ---- check ----

@@ -104,7 +104,18 @@ def main():
     # ---- cadence (exact, from the compiled spec) ----
     beats = beats_from_spec(spec)
     bpm = len(beats) / total * 60
-    gaps = [b - a for a, b in zip([0.0] + beats, beats + [total])]
+    # playing footage (media windows) is continuous motion (R8 measured it that way): it fills
+    # holds for the gap gate only, it never counts as extra beats/min
+    live = list(beats)
+    for m in spec.get("media") or []:
+        for it in m.get("items") or []:
+            if it.get("kind") == "video":
+                k = it["start"]
+                while k < it["start"] + it["dur"]:
+                    live.append(round(k, 2))
+                    k += 1.0
+    live = sorted(set(live))
+    gaps = [b - a for a, b in zip([0.0] + live, live + [total])]
     lives = [s["t1"] - s["t0"] for s in spec["scaffolds"]]
     gate("beats_per_min", B["beats_per_min"][0] <= bpm <= B["beats_per_min"][1], round(bpm, 1), B["beats_per_min"], repair="storyboard")
     gate("max_visual_gap_s", max(gaps) <= B["max_visual_gap_s"], round(max(gaps), 2), f"<= {B['max_visual_gap_s']}", repair="storyboard")

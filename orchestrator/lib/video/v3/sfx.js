@@ -83,18 +83,30 @@ function sfxCues(spec, duration) {
   return kept.map(({ at, ...c }) => ({ ...c, t: +c.t.toFixed(3) }));
 }
 
-/** Mix SFX under the narration: writes outWav (48 kHz stereo) and returns {cues, ...stats}. */
-function mixSfx({ spec, duration, narrationWav, outWav, stemWav, log = () => {} }) {
-  const cues = sfxCues(spec, duration);
+/** synthesized music-bed presets (tools/music_bed.py); the bed is optional and off by default */
+const MUSIC_PRESETS = ["lofi", "ambient", "pulse"];
+
+/**
+ * Mix SFX (and, when `music` names a preset, the ducked synthesized bed) under the narration:
+ * writes outWav (48 kHz stereo) and returns {cues, ...stats}. sfx=false mixes the bed alone.
+ */
+function mixSfx({ spec, duration, narrationWav, outWav, stemWav, sfx = true, music = null, musicStemWav, log = () => {} }) {
+  if (music && !MUSIC_PRESETS.includes(music)) throw new Error(`unknown music preset "${music}" (have ${MUSIC_PRESETS.join(", ")})`);
+  const cues = sfx ? sfxCues(spec, duration) : [];
   const cuesPath = outWav + ".cues.json";
   fs.writeFileSync(cuesPath, JSON.stringify({ cues }, null, 1));
   const args = [path.join(__dirname, "..", "..", "..", "tools", "sfx_mix.py"), cuesPath, narrationWav, outWav];
   if (stemWav) args.push("--stem", stemWav);
+  if (music) {
+    args.push("--music", music, "--duration", String(duration));
+    if (musicStemWav) args.push("--music-stem", musicStemWav);
+  }
   const r = spawnSync(PYTHON, args, { encoding: "utf-8" });
   if (r.status !== 0) throw new Error(`sfx mix failed: ${(r.stderr || r.error || "").toString().slice(-600)}`);
   const stats = JSON.parse(r.stdout.trim().split(/\n/).pop());
-  log(`sfx: ${cues.length} cues mixed (${Object.entries(cues.reduce((a, c) => ((a[c.kind] = (a[c.kind] || 0) + 1), a), {})).map(([k, n]) => k + " " + n).join(", ")})`);
+  if (sfx) log(`sfx: ${cues.length} cues mixed (${Object.entries(cues.reduce((a, c) => ((a[c.kind] = (a[c.kind] || 0) + 1), a), {})).map(([k, n]) => k + " " + n).join(", ")})`);
+  if (music) log(`music: "${music}" bed ${stats.bedDb} dB under the voice, ${stats.duckDb} dB more under speech (mono fold ${stats.monoLossDb} dB)`);
   return { cues, ...stats };
 }
 
-module.exports = { sfxCues, mixSfx };
+module.exports = { sfxCues, mixSfx, MUSIC_PRESETS };

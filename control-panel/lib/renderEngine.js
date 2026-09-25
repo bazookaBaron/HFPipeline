@@ -94,6 +94,9 @@ function runCsExplainerRender(jobId, config) {
   const profile = config && ["DH", "LC", "DC"].includes(config.profile) ? config.profile : "auto";
   args.push("--profile", profile);
   args.push("--captions", String(captionsOn), "--sfx", String(sfxOn), "--endcard", String(!(config && config.endcardOn === false)));
+  // optional synthesized music bed (orchestrator/tools/music_bed.py); off unless a preset is picked
+  const music = config && ["lofi", "ambient", "pulse"].includes(config.music) ? config.music : "false";
+  args.push("--music", music);
 
   const voiceProfile = voiceUpload.activeVoiceProfile();
   if (voiceProfile && voiceProfile.refAudioPath && voiceProfile.refText && fs.existsSync(voiceProfile.refAudioPath)) {

@@ -37,7 +37,7 @@ function chrome(profile, sb, i, n) {
   const handle = (sb.handle || brand.handle || "").trim();
   if (profile === "LC") return [{ id: "lchead", type: "lcHeader", rect: [70, 56, 938, 55], props: { kicker: sb.kicker || "", counter: counter.replace(" / ", " — ") } }];
   if (profile === "DC") return [{ id: "dcchrome", type: "dcChrome", rect: [60, 64, 960, 40], props: { label: sb.kicker || "", index: Math.max(1, Math.min(10, Math.round(((i + 1) / n) * 10))) } }];
-  return [{ id: "chead", type: "cHead", rect: [60, 52, 960, 56], props: { handle: handle || "@", kicker: "", counter } }];
+  return [{ id: "chead", type: "cHead", rect: [60, 52, 960, 56], props: { handle: handle || (brand.endcard && brand.endcard.site) || "", kicker: "", counter } }];
 }
 
 function heroModule(profile, h, y) {

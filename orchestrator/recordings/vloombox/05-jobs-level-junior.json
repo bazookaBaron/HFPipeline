@@ -1,0 +1,103 @@
+{
+  "id": "jobs-level-junior",
+  "url": "https://www.vloombox.in/",
+  "page": "/",
+  "viewport": "16x9-close",
+  "ready": "!document.body.innerText.includes('Loading jobs') && /[0-9,]+ jobs/.test(document.body.innerText)",
+  "cursor": {
+    "start": [
+      520,
+      420
+    ]
+  },
+  "setup": [
+    {
+      "do": "scroll",
+      "toTarget": {
+        "sel": "button",
+        "text": "Remote"
+      },
+      "offset": 80,
+      "dur": 0.1
+    }
+  ],
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "select",
+      "target": {
+        "sel": "select",
+        "hasOption": "Junior"
+      },
+      "value": "junior",
+      "dur": 0.7,
+      "what": "opens the level menu and picks Junior (0–2y)"
+    },
+    {
+      "do": "waitFor",
+      "js": "/[0-9,]+ jobs/.test(document.body.innerText) && !document.body.innerText.includes('Loading jobs')"
+    },
+    {
+      "do": "capture",
+      "vars": {
+        "junior": "(()=>{const e=[...document.querySelectorAll('body *')].find(e=>e.children.length===0&&/^[0-9,]+ jobs$/.test(e.textContent.trim()));return e?e.textContent.trim().replace(/ jobs$/,''):''})()"
+      }
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "div",
+        "textMatch": "^[0-9,]+ jobs$"
+      },
+      "dur": 1.3,
+      "pad": 6,
+      "hold": 0.8,
+      "what": "{junior} junior-level jobs"
+    },
+    {
+      "do": "select",
+      "target": {
+        "sel": "select",
+        "hasOption": "Junior"
+      },
+      "value": "intern",
+      "dur": 0.5,
+      "what": "switches the level to Intern"
+    },
+    {
+      "do": "waitFor",
+      "js": "/[0-9,]+ jobs/.test(document.body.innerText) && !document.body.innerText.includes('Loading jobs')"
+    },
+    {
+      "do": "capture",
+      "vars": {
+        "intern": "(()=>{const e=[...document.querySelectorAll('body *')].find(e=>e.children.length===0&&/^[0-9,]+ jobs$/.test(e.textContent.trim()));return e?e.textContent.trim().replace(/ jobs$/,''):''})()"
+      }
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "div",
+        "textMatch": "^[0-9,]+ jobs$"
+      },
+      "dur": 1.3,
+      "pad": 6,
+      "hold": 0.8,
+      "what": "{intern} internships"
+    }
+  ],
+  "tags": [
+    "jobs",
+    "filter",
+    "level",
+    "junior",
+    "intern",
+    "freshers",
+    "select"
+  ],
+  "description": "The level menu on the vloombox jobs board switches to Junior (0–2y), then Intern, and the job count updates each time.",
+  "promoLine": "Fresher or intern? vloom box dot in filters thousands of tech jobs down to your level in one click."
+}

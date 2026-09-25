@@ -93,6 +93,74 @@ function preferred(fill, w) {
       const ar = Number(p.aspect) > 0 ? Number(p.aspect) : 16 / 9;
       return Math.round(((w || 690) - 3) / ar + (p.head || p.dot ? 40.5 : 0) + 3);
     }
+    // ---- BR cards (lib/stage/modules-br.js, R7 §5): 39 px title bar + body + 3 px border ----
+    case "decisionSheet":
+      return 39 + (p.situation ? 86 : 0) + n(p.questions) * (p.compact ? 92 : 104) + 9;
+    case "targetForm":
+      return 39 + 12 + n(p.fields) * 78 + (p.status === false ? 0 : 69) + 9;
+    case "writerWindow": {
+      const cpl = Math.max(10, Math.floor(((w || 700) - 97) / 12.6));
+      const lines = p.lines || Math.max(2, Math.ceil(String(p.text || "").length / cpl));
+      return 39 + (n(p.vendors) ? 46 : 0) + lines * 39 + 13;
+    }
+    case "toolTiles":
+      return Math.ceil(n(p.tiles) / (p.cols || 2)) * ((p.tileH || 150) + 18) - 18 + 8;
+    case "appGrid":
+      return Math.ceil(n(p.apps) / (p.cols || 3)) * ((p.tileH || 170) + 18) - 18 + 8;
+    case "docGrid":
+      return 12 + Math.ceil(n(p.docs) / (p.cols || 5)) * ((p.tileH || 122) + 16) - 16 + 6;
+    case "raceBars":
+      return 39 + 14 + n(p.rows) * 84 + 38 + 3;
+    case "costBar":
+      return 80;
+    case "terminal":
+      return 39 + 24 + (p.intro ? 40 : 0) + 70 + (p.comment ? 40 : 0) + 22;
+    case "slamStamp":
+      return p.h || 170;
+    case "modelTile":
+      return p.h || 250;
+    case "pinkBand":
+      return 747;
+    case "eyebrow":
+      return 30;
+    case "keywordHeadline":
+    case "displayLine":
+      return (Array.isArray(p.lines) ? p.lines.length : 1) * Math.round((p.size || 56) * 1.12) + 4;
+    // ---- BP cards (lib/stage/modules-bp.js, R6 §5) ----
+    case "blueprint":
+      return p.h || 600;
+    case "featureRows":
+      return n(p.items) * 150 + Math.max(0, n(p.items) - 1) * 21;
+    case "costCards":
+      return n(p.items) * 230 + Math.max(0, n(p.items) - 1) * 21;
+    case "techCards": {
+      const r = Math.ceil(n(p.items) / 2);
+      return r * 340 + Math.max(0, r - 1) * 21;
+    }
+    case "displayHeadline":
+      return n(p.lines) * Math.min(p.size || 111, 115) + 4;
+    case "strikeStrips":
+      return 2 * 156 + 21;
+    case "verdictStamp":
+      return p.sub || n(p.icons) ? 320 : 240;
+    case "phone":
+      return 675;
+    case "reqList":
+      return (p.eyebrow ? 58 : 16) + n(p.rows) * 78 - 14 + (p.total ? 120 : 18);
+    case "dotGrid":
+      return (p.eyebrow ? 60 : 22) + (p.rows || 5) * 34.5 + 22;
+    case "hitCounter":
+      return 200;
+    case "vsCards":
+      return 400;
+    case "latencyBars":
+      return (p.eyebrow ? 70 : 26) + n(p.bars) * 110 + (p.footer ? 58 : 0) + 20;
+    case "logoGrid":
+      return 58 + Math.ceil(n(p.tiles) / (p.cols || 6)) * 120;
+    case "imageSlot":
+      return p.h || 220;
+    case "jargonCloud":
+      return p.h || 720;
     default:
       return fill.h || 200;
   }

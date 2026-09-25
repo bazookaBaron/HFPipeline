@@ -1,0 +1,100 @@
+{
+  "id": "jobs-analytics",
+  "url": "https://www.vloombox.in/",
+  "page": "/",
+  "viewport": "16x9-close",
+  "ready": "!document.body.innerText.includes('Loading jobs') && /[0-9,]+ jobs/.test(document.body.innerText)",
+  "cursor": {
+    "start": [
+      600,
+      300
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "button",
+        "text": "ANALYTICS"
+      },
+      "dur": 0.8,
+      "what": "switches from Listings to the Analytics tab"
+    },
+    {
+      "do": "waitFor",
+      "js": "document.body.innerText.includes('OPEN POSTINGS') && document.body.innerText.includes('TRENDING')"
+    },
+    {
+      "do": "capture",
+      "vars": {
+        "open": "(()=>{const m=document.body.innerText.match(/([0-9,]+)\\s*OPEN POSTINGS/);return m?m[1]:''})()"
+      }
+    },
+    {
+      "do": "hold",
+      "dur": 0.3
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "div",
+        "textMatch": "^[0-9,]+ OPEN POSTINGS$"
+      },
+      "tight": false,
+      "dur": 1.4,
+      "pad": 3,
+      "hold": 0.8,
+      "what": "{open} open postings and a new-this-week counter"
+    },
+    {
+      "do": "scroll",
+      "toTarget": {
+        "sel": "h2",
+        "textIncludes": "hiring for right now"
+      },
+      "offset": 70,
+      "dur": 1.8,
+      "what": "scrolls to 'What the market's hiring for': seniority, work type, geography"
+    },
+    {
+      "do": "hold",
+      "dur": 1
+    },
+    {
+      "do": "scroll",
+      "toTarget": {
+        "sel": "div",
+        "textMatch": "^TRENDING COMPANIES"
+      },
+      "offset": 70,
+      "dur": 1.8,
+      "what": "trending companies this period, ranked by new postings"
+    },
+    {
+      "do": "move",
+      "to": [
+        520,
+        330
+      ],
+      "dur": 0.8
+    },
+    {
+      "do": "hold",
+      "dur": 0.6
+    }
+  ],
+  "tags": [
+    "jobs",
+    "analytics",
+    "charts",
+    "market",
+    "trending companies",
+    "hiring"
+  ],
+  "description": "The Analytics tab of the vloombox jobs board: open postings, hiring-velocity chart, seniority, work-type and geography mix, trending companies.",
+  "promoLine": "Want to know who is hiring? vloom box dot in tracks the tech job market week by week."
+}

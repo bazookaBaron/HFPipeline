@@ -1,0 +1,64 @@
+{
+  "id": "about-whats-inside",
+  "url": "https://www.vloombox.in/about",
+  "page": "/about",
+  "viewport": "16x9-close",
+  "ready": "document.body.innerText.includes('inside')",
+  "cursor": {
+    "start": [
+      900,
+      420
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.5,
+      "what": "About Vloombox: an all-in-one interview-prep platform"
+    },
+    {
+      "do": "scroll",
+      "toTarget": {
+        "sel": "h2",
+        "textIncludes": "inside"
+      },
+      "offset": 80,
+      "dur": 1.9,
+      "ease": "sine",
+      "what": "scrolls to 'What's inside'"
+    },
+    {
+      "do": "hold",
+      "dur": 0.3
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "ul",
+        "nth": 0
+      },
+      "tight": false,
+      "dur": 2.4,
+      "pad": 8,
+      "moveDur": 0.8,
+      "hold": 1.5,
+      "at": [
+        0.97,
+        0.5
+      ],
+      "what": "feature list: DSA, LLD, HLD, interview questions, resume optimiser, jobs board, referrals"
+    },
+    {
+      "do": "hold",
+      "dur": 0.3
+    }
+  ],
+  "tags": [
+    "about",
+    "features",
+    "overview",
+    "all-in-one"
+  ],
+  "description": "The vloombox About page scrolls to 'What's inside', the list of every feature on the platform.",
+  "promoLine": "DSA, system design, interview questions, resume tailoring, jobs and referrals: all on vloom box dot in."
+}

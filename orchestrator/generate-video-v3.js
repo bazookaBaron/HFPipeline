@@ -206,7 +206,8 @@ async function main() {
   const narrationRel = `assets/generated/${runId}/narration.wav`;
   try {
     const plan0 = planNarration(sb.sentences, clips, { sentenceGap: 0 });
-    const solved = solveSpeed(plan0, sb.sentences, wpm);
+    // BP (R6) is delivered at 196 wpm: target 200 unless --wpm is given
+    const solved = solveSpeed(plan0, sb.sentences, !args.wpm && sb.profile === "BP" ? 200 : wpm);
     speed = solved.speed;
     const plan = planNarration(sb.sentences, clips, { sentenceGap: SENTENCE_GAP_FINAL * speed });
     await assembleNarration({ segments: plan.segments, totalSeconds: plan.totalSeconds, outPath: authoredWav, log });

@@ -1,0 +1,93 @@
+{
+  "id": "jobs-overview",
+  "url": "https://www.vloombox.in/",
+  "page": "/",
+  "viewport": "16x9-close",
+  "ready": "!document.body.innerText.includes('Loading jobs') && /[0-9,]+ jobs/.test(document.body.innerText)",
+  "cursor": {
+    "start": [
+      760,
+      420
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.6,
+      "what": "jobs board header: search, work-type and company-type chips, level and sort"
+    },
+    {
+      "do": "beat",
+      "what": "smooth scroll from the filters down to the live listings",
+      "actions": [
+        {
+          "do": "scroll",
+          "toTarget": {
+            "sel": "div",
+            "textMatch": "^[0-9,]+ jobs$"
+          },
+          "offset": 70,
+          "dur": 1.7
+        },
+        {
+          "do": "hold",
+          "dur": 0.3
+        }
+      ]
+    },
+    {
+      "do": "capture",
+      "vars": {
+        "count": "(()=>{const e=[...document.querySelectorAll('body *')].find(e=>e.children.length===0&&/^[0-9,]+ jobs$/.test(e.textContent.trim()));return e?e.textContent.trim().replace(/ jobs$/,''):''})()"
+      }
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "div",
+        "textMatch": "^[0-9,]+ jobs$"
+      },
+      "dur": 1.6,
+      "pad": 6,
+      "hold": 1,
+      "what": "{count} fresh tech jobs from the last 24 hours"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": ".job-card",
+        "nth": 0
+      },
+      "dur": 1.8,
+      "pad": 3,
+      "moveDur": 0.7,
+      "hold": 1.1,
+      "at": [
+        0.55,
+        0.5
+      ],
+      "what": "hovers the newest listing: title, company, location, work type, level"
+    },
+    {
+      "do": "move",
+      "to": [
+        760,
+        420
+      ],
+      "dur": 0.8
+    },
+    {
+      "do": "hold",
+      "dur": 0.5
+    }
+  ],
+  "tags": [
+    "jobs",
+    "overview",
+    "listings",
+    "live count",
+    "scroll"
+  ],
+  "description": "The vloombox jobs board scrolls from its filters down to the live job count and the newest tech job cards.",
+  "promoLine": "Job hunting? vloom box dot in lists fresh tech openings from about 500 companies, refreshed all day."
+}

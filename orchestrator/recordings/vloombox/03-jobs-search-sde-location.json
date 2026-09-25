@@ -1,0 +1,131 @@
+{
+  "id": "jobs-search-sde-location",
+  "url": "https://www.vloombox.in/",
+  "page": "/",
+  "viewport": "16x9-close",
+  "ready": "!document.body.innerText.includes('Loading jobs') && /[0-9,]+ jobs/.test(document.body.innerText)",
+  "cursor": {
+    "start": [
+      640,
+      420
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "click",
+      "target": {
+        "placeholder": "Search job title",
+        "anchor": [
+          0.3,
+          0.5
+        ]
+      },
+      "dur": 0.8,
+      "caret": true
+    },
+    {
+      "do": "type",
+      "text": "SDE",
+      "cps": 7,
+      "what": "types 'SDE' in the job search"
+    },
+    {
+      "do": "hold",
+      "dur": 0.5
+    },
+    {
+      "do": "click",
+      "target": {
+        "placeholder": "Locations",
+        "anchor": [
+          0.3,
+          0.5
+        ]
+      },
+      "dur": 0.8,
+      "caret": true
+    },
+    {
+      "do": "type",
+      "text": "Bengaluru",
+      "cps": 9,
+      "what": "types 'Bengaluru' in the locations box"
+    },
+    {
+      "do": "hold",
+      "dur": 0.6
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "h1",
+        "text": "Jobs",
+        "offset": [
+          260,
+          0
+        ]
+      },
+      "dur": 0.6
+    },
+    {
+      "do": "waitFor",
+      "js": "/[0-9,]+ jobs/.test(document.body.innerText) && !document.body.innerText.includes('Loading jobs')"
+    },
+    {
+      "do": "capture",
+      "vars": {
+        "count": "(()=>{const e=[...document.querySelectorAll('body *')].find(e=>e.children.length===0&&/^[0-9,]+ jobs$/.test(e.textContent.trim()));return e?e.textContent.trim().replace(/ jobs$/,''):''})()"
+      }
+    },
+    {
+      "do": "scroll",
+      "toTarget": {
+        "sel": "button",
+        "text": "Remote"
+      },
+      "offset": 70,
+      "dur": 1
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "div",
+        "textMatch": "^[0-9,]+ jobs$"
+      },
+      "dur": 1.4,
+      "pad": 6,
+      "hold": 0.8,
+      "what": "{count} SDE jobs in Bengaluru"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": ".job-card",
+        "nth": 0
+      },
+      "dur": 1.4,
+      "pad": 3,
+      "hold": 0.8,
+      "at": [
+        0.55,
+        0.5
+      ],
+      "what": "top SDE listing in Bengaluru"
+    }
+  ],
+  "tags": [
+    "jobs",
+    "search",
+    "typing",
+    "SDE",
+    "location",
+    "Bengaluru",
+    "India"
+  ],
+  "description": "Searching 'SDE' with location 'Bengaluru' narrows the vloombox jobs board to SDE openings in Bengaluru.",
+  "promoLine": "SDE jobs in Bengaluru, posted today? vloom box dot in has them in one search."
+}

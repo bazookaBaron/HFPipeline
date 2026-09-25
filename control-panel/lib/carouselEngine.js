@@ -68,7 +68,7 @@ function runCarouselRender(jobId, config) {
 
   // v3: same card library + styles as the videos, brand end slide (orchestrator/make-carousel.js)
   const args = ["make-carousel.js", "--topic", topic, "--run-id", jobId, "--out-dir", outDir];
-  const profile = config && ["DH", "LC", "DC"].includes(config.profile) ? config.profile : "auto";
+  const profile = config && ["DH", "LC", "DC", "BR", "BP"].includes(config.profile) ? config.profile : "auto";
   args.push("--profile", profile);
   if (accentColor) args.push("--accent", accentColor);
   if (brandHandle) args.push("--handle", brandHandle);

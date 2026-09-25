@@ -68,6 +68,20 @@
       settle: { dur: 0.233, y: 22, ease: "power2.out" },
       riseMid: { dur: 0.233, y: 22, ease: "power2.out" },
     },
+    // BP (R6 §E): elements cut in or pop (ghost cards pre-built, lit per word); rows rise 12 px / 133 ms
+    BP: {
+      fade: { dur: 0.1, y: 0, ease: "power2.out" },
+      rise: { dur: 0.133, y: 12, ease: "power3.out" },
+      settle: { dur: 0.133, y: 12, ease: "power3.out" },
+      riseMid: { dur: 0.133, y: 12, ease: "power3.out" },
+    },
+    // BR (R7 E1/#21): opaque pop on frame 1 + 25.5 px drift up, 8 f power2.out (no fade)
+    BR: {
+      fade: { dur: 0.267, y: 25.5, ease: "power2.out", from: 1 },
+      rise: { dur: 0.267, y: 25.5, ease: "power2.out", from: 1 },
+      settle: { dur: 0.267, y: 25.5, ease: "power2.out", from: 1 },
+      riseMid: { dur: 0.233, y: 25.5, ease: "power2.out", from: 1 },
+    },
   };
   // per-profile mascot (SPEC 4.5): DH slides + hides on full width; LC never hides, blinks 200 ms
   // every ~4.6-5.0 s and sways (R4: 3.6 s period, ~1.7 px at the head, pivot at the feet)
@@ -76,6 +90,12 @@
     LC: { rect: [36, 969, 260, 374], blinkDur: 0.2, hideOnFull: false, sway: 0.35, swayPeriod: 3.6 },
     // R5: 447x594 flush left at (0,783); blink 100-133 ms on a ~3.2 s loop; hidden on photo cards
     DC: { rect: [0, 783, 447, 594], blinkDur: 0.12, hideOnFull: true, sway: 0, blinkGaps: [3.2, 3.1, 3.3, 3.2, 3.0, 3.4], alignX: 0.25, maxH: 525 }, // presenter clears the stage frame (bottom 840)
+    // BP (R6 §2): presenter feet on y 1363.5, laptop side cut by the left frame edge, right edge
+    // stays left of the content column (301.5); never hidden; blink 133 ms every ~2.9 s
+    BP: { rect: [-50, 800, 325, 563.5], blinkDur: 0.133, hideOnFull: false, sway: 0, blinkGaps: [2.9, 2.6, 3.2, 2.8, 3.1, 2.7, 3.0] },
+    // BR (R7 #9): full-body presenter at the left, feet on y 1363.5, right edge left of the content
+    // column (319.5); hidden for full-width scaffolds; every entry slides in (367 ms ease-out)
+    BR: { rect: [0, 700, 300, 663.5], blinkDur: 0.133, hideOnFull: true, sway: 0, alignX: 0.3, slideReenter: true },
   };
 
   var MASCOT = {
@@ -434,7 +454,7 @@
     scaffolds.forEach(function (s, i) {
       var want = s.layout === "column" || (!mp.hideOnFull && s.layout !== "title");
       if (want && !shown) {
-        if (!everShown) {
+        if (!everShown || mp.slideReenter) {
           tl.fromTo(wrap, { autoAlpha: 1, x: slideFrom }, { x: 0, duration: MASCOT.enterDur, ease: "power2.out", immediateRender: false }, s.t0);
           tl.set(wrap, { autoAlpha: 1 }, s.t0);
         } else {
@@ -669,6 +689,16 @@
     LC: {
       tone: { blue: "#1766da", green: "#187a5b", red: "#b23a3f", amber: "#9a6414", purple: "#6d4ea5", cyan: "#1f6f8b", orange: "#b14b30", pink: "#a33a63", white: "#17232b", grey: "#626667" },
       tint: { blue: ["#e5eef9", "#b9cdeb"], green: ["#ddf2e7", "#a9d3bc"], red: ["#fae4da", "#e3b1a0"], amber: ["#f7f1e7", "#dcc7a0"], purple: ["#eae6f2", "#c6b9dd"], cyan: ["#e0eef3", "#a8cbd8"], orange: ["#fae4da", "#e3b1a0"], pink: ["#f6e3ea", "#ddb3c3"], grey: ["#f1f2ec", "#d2d6d3"] },
+    },
+    // BP (R6 §C11): cool light; purple = added component / fix, blue = numbers, red = problem
+    BP: {
+      tone: { blue: "#1f4dbd", green: "#1d7a4f", red: "#ae2435", amber: "#a15c00", purple: "#7643ff", cyan: "#1f6f8b", orange: "#c2521c", pink: "#b0306a", white: "#141920", grey: "#64686c" },
+      tint: { blue: ["#e3ebf9", "#b3c6ee"], green: ["#e0f3e6", "#a7d5b6"], red: ["#fbe6e6", "#eeb4b9"], amber: ["#fcf3e3", "#e6c98f"], purple: ["#efeafb", "#c9b8f7"], cyan: ["#e0eef3", "#a8cbd8"], orange: ["#fbe9df", "#eebc9e"], pink: ["#f9e4ee", "#e4b0c8"], grey: ["#f4f6f7", "#dbdfe1"] },
+    },
+    // BR (R7 §11): magenta = the decider/brand, blue = generator/LLM, red = cost/danger, green = success
+    BR: {
+      tone: { blue: "#2044b0", green: "#2a8a4a", red: "#d04444", amber: "#9a6414", purple: "#981878", magenta: "#981878", cyan: "#1f6f8b", orange: "#b03030", pink: "#cc60ac", white: "#1b1d1d", grey: "#6e6e6a" },
+      tint: { blue: ["#e8edf9", "#b4c3ea"], green: ["#dff2e2", "#a8d5b0"], red: ["#fbe4e2", "#eab0ab"], amber: ["#fdf3d7", "#e8cf8a"], purple: ["#f9edf5", "#e3b3d5"], magenta: ["#f9edf5", "#e3b3d5"], cyan: ["#e0eef3", "#a8cbd8"], orange: ["#fbe4e2", "#eab0ab"], pink: ["#f9edf5", "#e3b3d5"], grey: ["#f7f5f1", "#cbc9c7"] },
     },
   };
   function pal() {

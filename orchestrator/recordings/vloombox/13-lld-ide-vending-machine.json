@@ -1,0 +1,96 @@
+{
+  "id": "lld-ide-vending-machine",
+  "url": "https://www.vloombox.in/lld",
+  "page": "/lld/vending-machine",
+  "viewport": "16x9-close",
+  "ready": "document.body.innerText.includes('OPEN IDE')",
+  "cursor": {
+    "start": [
+      560,
+      470
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "h3",
+        "nth": 0
+      },
+      "dur": 0.8,
+      "what": "opens Designing a Vending Machine"
+    },
+    {
+      "do": "waitFor",
+      "js": "location.pathname.startsWith('/lld/') && document.body.innerText.includes('FILES') && /package|class /.test(document.body.innerText)",
+      "settle": 0.8
+    },
+    {
+      "do": "hold",
+      "dur": 0.8,
+      "what": "IDE view: requirements, file tree of the Java solution, code editor"
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "*",
+        "text": "Inventory.java"
+      },
+      "dur": 0.9,
+      "what": "opens Inventory.java from the file tree"
+    },
+    {
+      "do": "waitFor",
+      "idle": true,
+      "settle": 0.5
+    },
+    {
+      "do": "hold",
+      "dur": 1
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "*",
+        "text": "Coin.java"
+      },
+      "dur": 0.7,
+      "what": "switches to the Coin enum"
+    },
+    {
+      "do": "waitFor",
+      "idle": true,
+      "settle": 0.5
+    },
+    {
+      "do": "hold",
+      "dur": 1
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "*",
+        "textMatch": "^REQUIREMENTS"
+      },
+      "dur": 1.3,
+      "pad": 4,
+      "moveDur": 0.8,
+      "hold": 0.6,
+      "what": "requirements panel beside the code"
+    }
+  ],
+  "tags": [
+    "lld",
+    "ide",
+    "code",
+    "java",
+    "vending machine",
+    "file tree"
+  ],
+  "description": "A vloombox LLD problem opens in the built-in IDE: requirements on the left, the Java solution file tree and code on the right.",
+  "promoLine": "Stuck on LLD? vloom box dot in walks you through real designs, class by class, in a built-in IDE."
+}

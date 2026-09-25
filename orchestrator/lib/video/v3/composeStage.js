@@ -107,6 +107,10 @@ CAPTION_SKINS.chipCyan = {
   swap: "crossfade2",
   wordLag: 0.04,
 };
+// BR (R7) defaults to the highlighter "marker" skin
+CAPTION_SKINS.BR = CAPTION_SKINS.marker;
+// BP (R6) defaults to the highlighter "marker" skin too
+CAPTION_SKINS.BP = CAPTION_SKINS.marker;
 
 const F = 1 / 30;
 
@@ -351,6 +355,10 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/stage/modules-end.js"></script>
     <script src="compositions/components/lib/stage/modules-media.js"></script>
     <script src="compositions/components/lib/stage/modules-p2.js"></script>
+    <script src="compositions/components/lib/stage/profile-br.js"></script>
+    <script src="compositions/components/lib/stage/modules-br.js"></script>
+    <script src="compositions/components/lib/stage/profile-bp.js"></script>
+    <script src="compositions/components/lib/stage/modules-bp.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }

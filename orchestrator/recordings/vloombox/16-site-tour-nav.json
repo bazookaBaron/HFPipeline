@@ -1,0 +1,104 @@
+{
+  "id": "site-tour-nav",
+  "url": "https://www.vloombox.in/",
+  "page": "/",
+  "viewport": "16x9-close",
+  "ready": "!document.body.innerText.includes('Loading jobs') && /[0-9,]+ jobs/.test(document.body.innerText)",
+  "cursor": {
+    "start": [
+      640,
+      300
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.6,
+      "what": "Jobs board"
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "a",
+        "text": "DSA"
+      },
+      "dur": 0.7
+    },
+    {
+      "do": "waitFor",
+      "js": "document.querySelectorAll('a[href*=\"leetcode.com/problems\"]').length >= 3",
+      "settle": 0.4
+    },
+    {
+      "do": "hold",
+      "dur": 1.1,
+      "what": "DSA: company-wise LeetCode problems"
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "a",
+        "text": "LLD"
+      },
+      "dur": 0.5
+    },
+    {
+      "do": "waitFor",
+      "js": "document.body.innerText.includes('OPEN IDE')",
+      "settle": 0.4
+    },
+    {
+      "do": "hold",
+      "dur": 1.1,
+      "what": "LLD: low-level design problems"
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "a",
+        "text": "HLD"
+      },
+      "dur": 0.5
+    },
+    {
+      "do": "waitFor",
+      "js": "document.querySelectorAll('h3').length > 6",
+      "settle": 0.4
+    },
+    {
+      "do": "hold",
+      "dur": 1.1,
+      "what": "HLD: system design questions"
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "a",
+        "text": "INTERVIEW"
+      },
+      "dur": 0.5
+    },
+    {
+      "do": "waitFor",
+      "js": "document.body.innerText.includes('QUESTIONS') && !window.__recLoading()",
+      "settle": 0.6
+    },
+    {
+      "do": "hold",
+      "dur": 1.2,
+      "what": "Interview Q&A question bank"
+    }
+  ],
+  "tags": [
+    "tour",
+    "navigation",
+    "jobs",
+    "dsa",
+    "lld",
+    "hld",
+    "interview",
+    "montage"
+  ],
+  "description": "A quick tour through the vloombox navigation bar: Jobs, DSA, LLD, HLD and the interview question bank.",
+  "promoLine": "Jobs, DSA, system design and interview prep, all in one place: vloom box dot in."
+}

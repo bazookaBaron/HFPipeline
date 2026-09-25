@@ -1,0 +1,1106 @@
+[
+  {
+    "id": "jobs-overview",
+    "file": "jobs-overview.mp4",
+    "poster": "jobs-overview.png",
+    "page": "/",
+    "url": "https://www.vloombox.in/",
+    "duration": 7.3,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "jobs",
+      "overview",
+      "listings",
+      "live count",
+      "scroll"
+    ],
+    "description": "The vloombox jobs board scrolls from its filters down to the live job count and the newest tech job cards.",
+    "segments": [
+      {
+        "start": 0,
+        "end": 0.6,
+        "what": "jobs board header: search, work-type and company-type chips, level and sort"
+      },
+      {
+        "start": 0.6,
+        "end": 2.6,
+        "what": "smooth scroll from the filters down to the live listings"
+      },
+      {
+        "start": 2.6,
+        "end": 4.2,
+        "what": "2,788 fresh tech jobs from the last 24 hours"
+      },
+      {
+        "start": 4.2,
+        "end": 6,
+        "what": "hovers the newest listing: title, company, location, work type, level"
+      }
+    ],
+    "promoLine": "Job hunting? vloom box dot in lists fresh tech openings from about five hundred companies, refreshed all day.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 393149,
+    "qc": {
+      "firstFrameYavg": 32.2,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 8.68,
+      "ok": true
+    }
+  },
+  {
+    "id": "jobs-search-backend",
+    "file": "jobs-search-backend.mp4",
+    "poster": "jobs-search-backend.png",
+    "page": "/",
+    "url": "https://www.vloombox.in/",
+    "duration": 8.367,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "jobs",
+      "search",
+      "typing",
+      "backend",
+      "filter"
+    ],
+    "description": "Typing 'backend' into the vloombox job search shows title suggestions and narrows the board to backend roles.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 1.467,
+        "what": "clicks the job search box"
+      },
+      {
+        "start": 1.467,
+        "end": 2.5,
+        "what": "types 'backend'; matching job titles drop down as suggestions"
+      },
+      {
+        "start": 5.367,
+        "end": 6.867,
+        "what": "results filter to 40 backend jobs"
+      },
+      {
+        "start": 6.867,
+        "end": 8.367,
+        "what": "first backend listing highlighted"
+      }
+    ],
+    "promoLine": "Looking for a backend role? Search vloom box dot in and every fresh backend opening shows up in one list.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 381527,
+    "qc": {
+      "firstFrameYavg": 32.2,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [
+        {
+          "at": 1.83,
+          "frames": 7
+        }
+      ],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 8.68,
+      "ok": true
+    }
+  },
+  {
+    "id": "jobs-search-sde-location",
+    "file": "jobs-search-sde-location.mp4",
+    "poster": "jobs-search-sde-location.png",
+    "page": "/",
+    "url": "https://www.vloombox.in/",
+    "duration": 10.033,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "jobs",
+      "search",
+      "typing",
+      "SDE",
+      "location",
+      "Bengaluru",
+      "India"
+    ],
+    "description": "Searching 'SDE' with location 'Bengaluru' narrows the vloombox jobs board to SDE openings in Bengaluru.",
+    "segments": [
+      {
+        "start": 1.467,
+        "end": 2.033,
+        "what": "types 'SDE' in the job search"
+      },
+      {
+        "start": 3.6,
+        "end": 4.767,
+        "what": "types 'Bengaluru' in the locations box"
+      },
+      {
+        "start": 7.233,
+        "end": 8.633,
+        "what": "792 SDE jobs in Bengaluru"
+      },
+      {
+        "start": 8.633,
+        "end": 10.033,
+        "what": "top SDE listing in Bengaluru"
+      }
+    ],
+    "promoLine": "SDE jobs in Bengaluru, posted today? vloom box dot in has them in one search.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 455327,
+    "qc": {
+      "firstFrameYavg": 32.2,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 8.68,
+      "ok": true
+    }
+  },
+  {
+    "id": "jobs-filter-remote",
+    "file": "jobs-filter-remote.mp4",
+    "poster": "jobs-filter-remote.png",
+    "page": "/",
+    "url": "https://www.vloombox.in/",
+    "duration": 5.967,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "jobs",
+      "filter",
+      "remote",
+      "chips"
+    ],
+    "description": "Tapping the Remote chip on the vloombox jobs board filters the listings to remote tech jobs.",
+    "segments": [
+      {
+        "start": 0.5,
+        "end": 1.567,
+        "what": "taps the Remote work-type chip"
+      },
+      {
+        "start": 1.867,
+        "end": 3.367,
+        "what": "board filters to 35 remote jobs"
+      },
+      {
+        "start": 3.367,
+        "end": 4.867,
+        "what": "listings carry the green 'remote' tag"
+      }
+    ],
+    "promoLine": "Want to work remote? One tap on vloom box dot in shows only remote tech jobs.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 138164,
+    "qc": {
+      "firstFrameYavg": 35.8,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 2.45,
+      "ok": true
+    }
+  },
+  {
+    "id": "jobs-level-junior",
+    "file": "jobs-level-junior.mp4",
+    "poster": "jobs-level-junior.png",
+    "page": "/",
+    "url": "https://www.vloombox.in/",
+    "duration": 8,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "jobs",
+      "filter",
+      "level",
+      "junior",
+      "intern",
+      "freshers",
+      "select"
+    ],
+    "description": "The level menu on the vloombox jobs board switches to Junior (0–2y), then Intern, and the job count updates each time.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 2.9,
+        "what": "opens the level menu and picks Junior (0–2y)"
+      },
+      {
+        "start": 2.9,
+        "end": 4.3,
+        "what": "88 junior-level jobs"
+      },
+      {
+        "start": 4.3,
+        "end": 6.6,
+        "what": "switches the level to Intern"
+      },
+      {
+        "start": 6.6,
+        "end": 8,
+        "what": "63 internships"
+      }
+    ],
+    "promoLine": "Fresher or intern? vloom box dot in filters thousands of tech jobs down to your level in one click.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 264608,
+    "qc": {
+      "firstFrameYavg": 35.8,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 5.12,
+      "ok": true
+    }
+  },
+  {
+    "id": "jobs-sort-company",
+    "file": "jobs-sort-company.mp4",
+    "poster": "jobs-sort-company.png",
+    "page": "/",
+    "url": "https://www.vloombox.in/",
+    "duration": 6.8,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "jobs",
+      "sort",
+      "by company",
+      "select"
+    ],
+    "description": "Sorting the vloombox jobs board 'By company' regroups the listings alphabetically by employer.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 2.8,
+        "what": "opens the sort menu and picks 'By company'"
+      },
+      {
+        "start": 3.1,
+        "end": 4.5,
+        "what": "listings regroup alphabetically by company"
+      }
+    ],
+    "promoLine": "Targeting specific companies? Sort vloom box dot in by company and see who is hiring right now.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 168450,
+    "qc": {
+      "firstFrameYavg": 35.7,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 3.99,
+      "ok": true
+    }
+  },
+  {
+    "id": "jobs-analytics",
+    "file": "jobs-analytics.mp4",
+    "poster": "jobs-analytics.png",
+    "page": "/",
+    "url": "https://www.vloombox.in/",
+    "duration": 9.167,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "jobs",
+      "analytics",
+      "charts",
+      "market",
+      "trending companies",
+      "hiring"
+    ],
+    "description": "The Analytics tab of the vloombox jobs board: open postings, hiring-velocity chart, seniority, work-type and geography mix, trending companies.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 1.467,
+        "what": "switches from Listings to the Analytics tab"
+      },
+      {
+        "start": 1.767,
+        "end": 3.167,
+        "what": "14,021 open postings and a new-this-week counter"
+      },
+      {
+        "start": 3.167,
+        "end": 4.967,
+        "what": "scrolls to 'What the market's hiring for': seniority, work type, geography"
+      },
+      {
+        "start": 5.967,
+        "end": 7.767,
+        "what": "trending companies this period, ranked by new postings"
+      }
+    ],
+    "promoLine": "Want to know who is hiring? vloom box dot in tracks the tech job market week by week.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 864633,
+    "qc": {
+      "firstFrameYavg": 32.2,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 9.34,
+      "ok": true
+    }
+  },
+  {
+    "id": "dsa-overview",
+    "file": "dsa-overview.mp4",
+    "poster": "dsa-overview.png",
+    "page": "/dsa",
+    "url": "https://www.vloombox.in/dsa",
+    "duration": 6.6,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "dsa",
+      "leetcode",
+      "company-wise",
+      "problems",
+      "scroll"
+    ],
+    "description": "The vloombox DSA page: a company-wise LeetCode problem table with difficulty and the companies that ask each problem.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 1.9,
+        "what": "'LeetCode company-wise' problem set: 3250 problems"
+      },
+      {
+        "start": 1.9,
+        "end": 3.5,
+        "what": "scrolls into the problem table: title, difficulty, companies that ask it"
+      },
+      {
+        "start": 3.8,
+        "end": 5.4,
+        "what": "each problem is tagged with the companies that asked it"
+      }
+    ],
+    "promoLine": "Preparing DSA? vloom box dot in has company-wise LeetCode sheets, over three thousand problems.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 461655,
+    "qc": {
+      "firstFrameYavg": 33,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 9.82,
+      "ok": true
+    }
+  },
+  {
+    "id": "dsa-company-google",
+    "file": "dsa-company-google.mp4",
+    "poster": "dsa-company-google.png",
+    "page": "/dsa",
+    "url": "https://www.vloombox.in/dsa",
+    "duration": 7.633,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "dsa",
+      "company filter",
+      "google",
+      "typing",
+      "leetcode"
+    ],
+    "description": "On the vloombox DSA page the company filter is set to Google and the problem list narrows to Google's questions.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 1.467,
+        "what": "opens the company filter"
+      },
+      {
+        "start": 1.467,
+        "end": 2.3,
+        "what": "types 'Google'"
+      },
+      {
+        "start": 2.8,
+        "end": 3.667,
+        "what": "picks Google from the suggestions"
+      },
+      {
+        "start": 4.833,
+        "end": 6.133,
+        "what": "Google filter chip applied"
+      },
+      {
+        "start": 6.133,
+        "end": 7.633,
+        "what": "list narrows to problems Google has asked"
+      }
+    ],
+    "promoLine": "Interviewing at Google? vloom box dot in shows the exact DSA problems Google asks.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 206302,
+    "qc": {
+      "firstFrameYavg": 33.1,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [
+        {
+          "at": 1.73,
+          "frames": 9
+        }
+      ],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 8.68,
+      "ok": true
+    }
+  },
+  {
+    "id": "dsa-filter-hard",
+    "file": "dsa-filter-hard.mp4",
+    "poster": "dsa-filter-hard.png",
+    "page": "/dsa",
+    "url": "https://www.vloombox.in/dsa",
+    "duration": 5.067,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "dsa",
+      "difficulty",
+      "hard",
+      "sort",
+      "leetcode"
+    ],
+    "description": "The vloombox DSA problem list is filtered to HARD difficulty.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 1.467,
+        "what": "taps the HARD difficulty filter"
+      },
+      {
+        "start": 1.867,
+        "end": 3.367,
+        "what": "only HARD problems remain, each with its company tags"
+      }
+    ],
+    "promoLine": "Ready for the hard ones? Filter vloom box dot in DSA sheets by difficulty and company.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 197470,
+    "qc": {
+      "firstFrameYavg": 33,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 6.37,
+      "ok": true
+    }
+  },
+  {
+    "id": "dsa-search-topic",
+    "file": "dsa-search-topic.mp4",
+    "poster": "dsa-search-topic.png",
+    "page": "/dsa",
+    "url": "https://www.vloombox.in/dsa",
+    "duration": 5.6,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "dsa",
+      "search",
+      "typing",
+      "trees",
+      "leetcode"
+    ],
+    "description": "Searching 'tree' on the vloombox DSA page filters the problem table to tree questions.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 1.467,
+        "what": "clicks the DSA search box"
+      },
+      {
+        "start": 1.467,
+        "end": 2.1,
+        "what": "types 'tree'"
+      },
+      {
+        "start": 2.6,
+        "end": 4,
+        "what": "the table narrows to tree problems with their company tags"
+      }
+    ],
+    "promoLine": "Weak at trees? Search any DSA topic on vloom box dot in and practise the problems companies ask.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 250652,
+    "qc": {
+      "firstFrameYavg": 33.1,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 5.21,
+      "ok": true
+    }
+  },
+  {
+    "id": "lld-overview",
+    "file": "lld-overview.mp4",
+    "poster": "lld-overview.png",
+    "page": "/lld",
+    "url": "https://www.vloombox.in/lld",
+    "duration": 5.2,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "lld",
+      "low-level design",
+      "system design",
+      "oop",
+      "cards"
+    ],
+    "description": "The vloombox LLD page: low-level design problem cards (vending machine, traffic signal, tic-tac-toe) with company tags and an Open IDE link.",
+    "segments": [
+      {
+        "start": 0,
+        "end": 0.5,
+        "what": "LLD Problems: 'class diagrams + code walkthroughs'"
+      },
+      {
+        "start": 0.5,
+        "end": 2,
+        "what": "Designing a Vending Machine: requirements and companies that ask it"
+      },
+      {
+        "start": 2,
+        "end": 3.4,
+        "what": "Designing a Traffic Signal Control System"
+      },
+      {
+        "start": 3.4,
+        "end": 4.8,
+        "what": "Designing a Tic Tac Toe Game"
+      }
+    ],
+    "promoLine": "Low-level design rounds? vloom box dot in has LLD problems with class diagrams and full code.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 166654,
+    "qc": {
+      "firstFrameYavg": 35.5,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 0.83,
+      "ok": true
+    }
+  },
+  {
+    "id": "lld-ide-vending-machine",
+    "file": "lld-ide-vending-machine.mp4",
+    "poster": "lld-ide-vending-machine.png",
+    "page": "/lld/vending-machine",
+    "url": "https://www.vloombox.in/lld",
+    "duration": 7.8,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "lld",
+      "ide",
+      "code",
+      "java",
+      "vending machine",
+      "file tree"
+    ],
+    "description": "A vloombox LLD problem opens in the built-in IDE: requirements on the left, the Java solution file tree and code on the right.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 1.467,
+        "what": "opens Designing a Vending Machine"
+      },
+      {
+        "start": 1.467,
+        "end": 2.267,
+        "what": "IDE view: requirements, file tree of the Java solution, code editor"
+      },
+      {
+        "start": 2.267,
+        "end": 3.433,
+        "what": "opens Inventory.java from the file tree"
+      },
+      {
+        "start": 4.433,
+        "end": 5.4,
+        "what": "switches to the Coin enum"
+      },
+      {
+        "start": 6.4,
+        "end": 7.8,
+        "what": "requirements panel beside the code"
+      }
+    ],
+    "promoLine": "Stuck on LLD? vloom box dot in walks you through real designs, class by class, in a built-in IDE.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 334490,
+    "qc": {
+      "firstFrameYavg": 35.5,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 34.22,
+      "ok": true
+    }
+  },
+  {
+    "id": "hld-browse",
+    "file": "hld-browse.mp4",
+    "poster": "hld-browse.png",
+    "page": "/hld",
+    "url": "https://www.vloombox.in/hld",
+    "duration": 5.5,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "hld",
+      "high-level design",
+      "system design",
+      "architecture"
+    ],
+    "description": "The vloombox HLD page: a grid of system-design questions (YouTube, Google Docs, digital wallet, Splitwise) with difficulty and company tags.",
+    "segments": [
+      {
+        "start": 0,
+        "end": 0.4,
+        "what": "HLD Questions: architecture, scalability, trade-offs"
+      },
+      {
+        "start": 1.7,
+        "end": 3.2,
+        "what": "Design YouTube (video streaming), tagged Google, Hulu, Netflix, Twitch"
+      },
+      {
+        "start": 3.2,
+        "end": 4.6,
+        "what": "more system-design prompts: Google Docs, Nearby Friends, Digital Wallet, Splitwise"
+      }
+    ],
+    "promoLine": "System design interview coming up? vloom box dot in has HLD questions from YouTube to Splitwise.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 589360,
+    "qc": {
+      "firstFrameYavg": 34.5,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 7.48,
+      "ok": true
+    }
+  },
+  {
+    "id": "interview-react-qa",
+    "file": "interview-react-qa.mp4",
+    "poster": "interview-react-qa.png",
+    "page": "/interview",
+    "url": "https://www.vloombox.in/interview",
+    "duration": 6.933,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "interview",
+      "question bank",
+      "react",
+      "q&a",
+      "frontend"
+    ],
+    "description": "The vloombox interview question bank: picking the React topic and opening 'What is a React component?' shows a detailed written answer.",
+    "segments": [
+      {
+        "start": 0,
+        "end": 0.4,
+        "what": "Interview Q&A: topics grouped by databases, cloud, frameworks, languages, tools"
+      },
+      {
+        "start": 0.4,
+        "end": 1.567,
+        "what": "picks the 'react' topic"
+      },
+      {
+        "start": 1.967,
+        "end": 3.133,
+        "what": "opens 'What is a React component?'"
+      },
+      {
+        "start": 3.133,
+        "end": 3.933,
+        "what": "a full written answer appears"
+      },
+      {
+        "start": 4.533,
+        "end": 6.333,
+        "what": "scrolls the answer: explanation, core concepts, code example"
+      }
+    ],
+    "promoLine": "Revising for interviews? vloom box dot in has a question bank with detailed answers, topic by topic.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 443931,
+    "qc": {
+      "firstFrameYavg": 32.2,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 7.07,
+      "ok": true
+    }
+  },
+  {
+    "id": "site-tour-nav",
+    "file": "site-tour-nav.mp4",
+    "poster": "site-tour-nav.png",
+    "page": "/",
+    "url": "https://www.vloombox.in/",
+    "duration": 8.367,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "tour",
+      "navigation",
+      "jobs",
+      "dsa",
+      "lld",
+      "hld",
+      "interview",
+      "montage"
+    ],
+    "description": "A quick tour through the vloombox navigation bar: Jobs, DSA, LLD, HLD and the interview question bank.",
+    "segments": [
+      {
+        "start": 0,
+        "end": 0.6,
+        "what": "Jobs board"
+      },
+      {
+        "start": 1.567,
+        "end": 2.667,
+        "what": "DSA: company-wise LeetCode problems"
+      },
+      {
+        "start": 3.433,
+        "end": 4.533,
+        "what": "LLD: low-level design problems"
+      },
+      {
+        "start": 5.3,
+        "end": 6.4,
+        "what": "HLD: system design questions"
+      },
+      {
+        "start": 7.167,
+        "end": 8.367,
+        "what": "Interview Q&A question bank"
+      }
+    ],
+    "promoLine": "Jobs, DSA, system design and interview prep, all in one place: vloom box dot in.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 360986,
+    "qc": {
+      "firstFrameYavg": 32.2,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 12.32,
+      "ok": true
+    }
+  },
+  {
+    "id": "referrals-landing",
+    "file": "referrals-landing.mp4",
+    "poster": "referrals-landing.png",
+    "page": "/referrals",
+    "url": "https://www.vloombox.in/referrals",
+    "duration": 4.3,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "referrals",
+      "referral marketplace",
+      "landing"
+    ],
+    "description": "The vloombox Referrals page explaining that members working at your target company can refer you.",
+    "segments": [
+      {
+        "start": 0,
+        "end": 0.5,
+        "what": "Referrals: ask verified employees to refer you"
+      },
+      {
+        "start": 0.5,
+        "end": 2.1,
+        "what": "'Ask verified employees to refer you, or refer candidates targeting your company'"
+      },
+      {
+        "start": 2.1,
+        "end": 3.9,
+        "what": "post a request for a target company; members who work there can refer you"
+      }
+    ],
+    "promoLine": "Need a referral? On vloom box dot in, people already working at your target company can refer you.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 62916,
+    "qc": {
+      "firstFrameYavg": 30.5,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 8.68,
+      "ok": true
+    }
+  },
+  {
+    "id": "faq-referrals",
+    "file": "faq-referrals.mp4",
+    "poster": "faq-referrals.png",
+    "page": "/faq",
+    "url": "https://www.vloombox.in/faq",
+    "duration": 4.567,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "referrals",
+      "faq",
+      "accordion"
+    ],
+    "description": "The vloombox FAQ expands 'How do referrals work?' to show how members at a company can refer you.",
+    "segments": [
+      {
+        "start": 0.4,
+        "end": 1.567,
+        "what": "expands 'How do referrals work?'"
+      },
+      {
+        "start": 1.967,
+        "end": 4.167,
+        "what": "answer: post a request, members at that company can choose to refer you"
+      }
+    ],
+    "promoLine": "Referrals decide interviews. vloom box dot in connects you with people inside your target company.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 123947,
+    "qc": {
+      "firstFrameYavg": 29.5,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 5.01,
+      "ok": true
+    }
+  },
+  {
+    "id": "optimizer-landing",
+    "file": "optimizer-landing.mp4",
+    "poster": "optimizer-landing.png",
+    "page": "/optimizer",
+    "url": "https://www.vloombox.in/optimizer",
+    "duration": 4,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "resume",
+      "optimizer",
+      "ats",
+      "ai",
+      "landing"
+    ],
+    "description": "The vloombox Resume Optimizer landing: upload your resume PDF and a job description to get a tailored, ATS-optimized PDF.",
+    "segments": [
+      {
+        "start": 0,
+        "end": 0.5,
+        "what": "Resume Optimizer page"
+      },
+      {
+        "start": 0.5,
+        "end": 2.6,
+        "what": "upload a resume PDF + paste a job description and get a tailored, ATS-optimized PDF"
+      }
+    ],
+    "promoLine": "Resume not getting shortlisted? vloom box dot in tailors it to any job description with AI.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 56303,
+    "qc": {
+      "firstFrameYavg": 31.9,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 5.21,
+      "ok": true
+    }
+  },
+  {
+    "id": "about-whats-inside",
+    "file": "about-whats-inside.mp4",
+    "poster": "about-whats-inside.png",
+    "page": "/about",
+    "url": "https://www.vloombox.in/about",
+    "duration": 5.3,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "about",
+      "features",
+      "overview",
+      "all-in-one"
+    ],
+    "description": "The vloombox About page scrolls to 'What's inside', the list of every feature on the platform.",
+    "segments": [
+      {
+        "start": 0,
+        "end": 0.5,
+        "what": "About Vloombox: an all-in-one interview-prep platform"
+      },
+      {
+        "start": 0.5,
+        "end": 2.4,
+        "what": "scrolls to 'What's inside'"
+      },
+      {
+        "start": 2.7,
+        "end": 5,
+        "what": "feature list: DSA, LLD, HLD, interview questions, resume optimiser, jobs board, referrals"
+      }
+    ],
+    "promoLine": "DSA, system design, interview questions, resume tailoring, jobs and referrals: all on vloom box dot in.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 691589,
+    "qc": {
+      "firstFrameYavg": 30.9,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 13.71,
+      "ok": true
+    }
+  },
+  {
+    "id": "blog-index",
+    "file": "blog-index.mp4",
+    "poster": "blog-index.png",
+    "page": "/blog",
+    "url": "https://www.vloombox.in/blog",
+    "duration": 4,
+    "fps": 30,
+    "width": 1280,
+    "height": 720,
+    "aspect": "16:9",
+    "tags": [
+      "blog",
+      "articles",
+      "landing"
+    ],
+    "description": "The vloombox blog index with its first post on interview prep, system design and ATS tips.",
+    "segments": [
+      {
+        "start": 0,
+        "end": 0.5,
+        "what": "Blog: interview prep, system design and resume tips"
+      },
+      {
+        "start": 0.5,
+        "end": 2.7,
+        "what": "latest post: 'Welcome to the Resume Optimizer blog'"
+      }
+    ],
+    "promoLine": "Interview prep, system design and resume tips, on the vloom box dot in blog.",
+    "licence": "owned (vloombox.in)",
+    "recordedAt": "2026-09-25",
+    "bytes": 64638,
+    "qc": {
+      "firstFrameYavg": 29.1,
+      "blackRanges": [],
+      "loadingFrames": [],
+      "stalledRunsOutsideHolds": [],
+      "dupRunsDuringMotion": [],
+      "maxFrameDiff": 8.68,
+      "ok": true
+    }
+  }
+]

@@ -36,6 +36,24 @@ DH = {
     "lra_max": 1.6,                  # refs 1.0-1.4; AAC re-measure variance allowance
     "tp_max": -0.9,                  # refs -0.5..-1.1 dBTP
 }
+BR = {
+    "beats_per_min": (55, 80),       # R7 62.8 (chrome ticks count as beats)
+    "max_visual_gap_s": 3.6,         # R7 longest hold 3.43 s
+    "scaffold_life_median_s": (2.5, 5.0),  # R7 3.53 s (host sheet mutates in place)
+    "wpm": (195, 218),               # R7 204; the pipeline targets ~212
+    "lufs": (-14.4, -13.8),          # R7 -14.1
+    "lra_max": 1.6,                  # R7 1.5
+    "tp_max": -0.9,
+}
+BP = {
+    "beats_per_min": (45, 65),       # R6 52.1 (48.6 at 0.15 %); chrome (note / tracker / users) counts
+    "max_visual_gap_s": 3.8,         # R6 longest content hold 3.73 s (packets run on the blueprint)
+    "scaffold_life_median_s": (2.5, 5.0),  # R6 3.67 s (blueprint visits mutate in place)
+    "wpm": (185, 215),               # R6 196; BP renders at ~200
+    "lufs": (-14.4, -13.8),          # R6 -14.1
+    "lra_max": 1.6,                  # R6 1.5
+    "tp_max": -0.9,
+}
 
 
 def beats_from_spec(spec):
@@ -94,7 +112,7 @@ def main():
     tl = json.load(open(a.timeline, encoding="utf-8"))
     spec, timeline = tl["spec"], tl["timeline"]
     profile = spec.get("profile", "DH")
-    B = LC if profile == "LC" else DC if profile == "DC" else DH
+    B = LC if profile == "LC" else DC if profile == "DC" else BR if profile == "BR" else BP if profile == "BP" else DH
     total = timeline["totalSeconds"]
     gates = []
 
@@ -152,9 +170,27 @@ def main():
         if len(raw) < 1080 * 1920 * 3:
             geo_fail.append(f"{s['id']}: no frame at {t:.2f}")
             continue
-        bgc = (0xF4, 0xF4, 0xED) if profile == "LC" else (0x09, 0x0A, 0x0D) if profile == "DC" else (0, 0, 0)
+        bgc = (0xF4, 0xF4, 0xED) if profile == "LC" else (0x09, 0x0A, 0x0D) if profile == "DC" else (0xF1, 0xF1, 0xEA) if profile == "BR" else (0xED, 0xF1, 0xF3) if profile == "BP" else (0, 0, 0)
         if not near(px(raw, 4, 4), bgc, 6) or not near(px(raw, 4, 1915), bgc, 6):
             geo_fail.append(f"{s['id']}: background {px(raw, 4, 4)} at corners, want {bgc}")
+        if profile == "BP" and any(m["id"] == "bphead" for m in s["modules"]):
+            # R6 header bar: brand block #111923 at x 45-310.5 x y 236-291
+            if not near(px(raw, 305, 284), (0x11, 0x19, 0x23), 10):
+                geo_fail.append(f"{s['id']}: BP header brand block {px(raw, 305, 284)} at (305,284), want #111923")
+        if profile in ("BR", "BP"):
+            # R7 marker caption: pure-white chip (the #F1F1EA plate stays < 247) at y 1440-1540
+            box = []
+            for y in range(1400, 1600):
+                n = 0
+                for x in range(150, 930, 2):
+                    c = px(raw, x, y)
+                    if c[0] >= 250 and c[1] >= 250 and c[2] >= 248:
+                        n += 1
+                if n >= 20:
+                    box.append(y)
+            if box and not (1435 <= box[0] <= 1446 and 1533 <= box[-1] <= 1546):
+                geo_fail.append(f"{s['id']}: BR caption chip y {box[0]}-{box[-1]}, want 1440-1540")
+            continue
         if profile == "DC":
             continue  # quiet chip caption: no bright border to scan; bg checked above
         if profile == "LC":

@@ -1,0 +1,54 @@
+{
+  "id": "blog-index",
+  "url": "https://www.vloombox.in/blog",
+  "page": "/blog",
+  "viewport": "16x9-close",
+  "ready": "document.body.innerText.includes('min read')",
+  "cursor": {
+    "start": [
+      820,
+      420
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.5,
+      "what": "Blog: interview prep, system design and resume tips"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "*",
+        "textMatch": "^Welcome to the Resume Optimizer blog$"
+      },
+      "dur": 2.4,
+      "pad": 6,
+      "hold": 1.6,
+      "at": [
+        0.6,
+        0.6
+      ],
+      "what": "latest post: 'Welcome to the Resume Optimizer blog'"
+    },
+    {
+      "do": "move",
+      "to": [
+        760,
+        400
+      ],
+      "dur": 0.8
+    },
+    {
+      "do": "hold",
+      "dur": 0.5
+    }
+  ],
+  "tags": [
+    "blog",
+    "articles",
+    "landing"
+  ],
+  "description": "The vloombox blog index with its first post on interview prep, system design and ATS tips.",
+  "promoLine": "Interview prep, system design and resume tips, on the vloom box dot in blog."
+}

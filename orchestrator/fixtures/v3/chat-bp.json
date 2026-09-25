@@ -1,0 +1,1250 @@
+{
+ "version": "storyboard.v3",
+ "profile": "BP",
+ "topic": "How a chat app grows from one server to millions of users",
+ "entities": {
+  "brand": "CHAT DESIGN 101",
+  "users": 0,
+  "tracker": [
+   "LB",
+   "DATABASE",
+   "CACHE",
+   "QUEUE",
+   "WORKERS"
+  ],
+  "blueprint": {
+   "title": "BLUEPRINT · CHAT APP",
+   "version": 1,
+   "nodes": [
+    {
+     "id": "users",
+     "kind": "users",
+     "label": "USERS",
+     "sub": "phones · web",
+     "row": 0
+    },
+    {
+     "id": "lb",
+     "icon": "network",
+     "tone": "purple",
+     "label": "LOAD BALANCER",
+     "sub": "nginx",
+     "row": 1,
+     "hidden": true
+    },
+    {
+     "id": "machine",
+     "kind": "machine",
+     "label": "ONE MACHINE",
+     "badge": "×1",
+     "row": 2,
+     "rows": [
+      {
+       "icon": "server",
+       "label": "BACKEND",
+       "sub": "your code",
+       "badge": "×1"
+      },
+      {
+       "icon": "database",
+       "label": "DATABASE",
+       "sub": "your data",
+       "badge": "×1"
+      }
+     ],
+     "x": 0.5,
+     "final": false
+    },
+    {
+     "id": "s1",
+     "icon": "server",
+     "label": "SERVER",
+     "sub": "app",
+     "row": 2,
+     "hidden": true
+    },
+    {
+     "id": "s2",
+     "icon": "server",
+     "label": "SERVER",
+     "sub": "app",
+     "row": 2,
+     "hidden": true
+    },
+    {
+     "id": "s3",
+     "icon": "server",
+     "label": "SERVER",
+     "sub": "app",
+     "row": 2,
+     "hidden": true
+    },
+    {
+     "id": "cache",
+     "icon": "zap",
+     "tone": "red",
+     "label": "CACHE",
+     "sub": "redis · memory",
+     "row": 3,
+     "hidden": true
+    },
+    {
+     "id": "db",
+     "icon": "database",
+     "tone": "blue",
+     "label": "DATABASE",
+     "sub": "primary",
+     "row": 3,
+     "hidden": true
+    },
+    {
+     "id": "queue",
+     "icon": "package",
+     "tone": "pink",
+     "label": "QUEUE",
+     "sub": "jobs wait here",
+     "row": 3,
+     "hidden": true
+    },
+    {
+     "id": "workers",
+     "icon": "cpu",
+     "tone": "purple",
+     "label": "WORKERS",
+     "sub": "slow jobs",
+     "row": 4,
+     "hidden": true
+    }
+   ],
+   "edges": [
+    {
+     "from": "users",
+     "to": "machine",
+     "route": "bus"
+    },
+    {
+     "from": "users",
+     "to": "lb"
+    },
+    {
+     "from": "lb",
+     "to": "s1"
+    },
+    {
+     "from": "lb",
+     "to": "s2"
+    },
+    {
+     "from": "lb",
+     "to": "s3"
+    },
+    {
+     "from": "s1",
+     "to": "cache"
+    },
+    {
+     "from": "s2",
+     "to": "db"
+    },
+    {
+     "from": "s3",
+     "to": "queue"
+    },
+    {
+     "from": "queue",
+     "to": "workers"
+    }
+   ]
+  }
+ },
+ "sentences": [
+  {
+   "id": "s1",
+   "text": "Every chat app you use sits on the same simple blueprint."
+  },
+  {
+   "id": "s2",
+   "text": "It starts with one server running the code and the database together."
+  },
+  {
+   "id": "s3",
+   "text": "For a thousand people chatting, that single machine is perfectly fine."
+  },
+  {
+   "id": "s4",
+   "text": "Then a group chat goes viral, and the processor pins at one hundred percent."
+  },
+  {
+   "id": "s5",
+   "text": "So you add more servers and put a load balancer in front of them."
+  },
+  {
+   "id": "s6",
+   "text": "It spreads every connection across the healthy servers."
+  },
+  {
+   "id": "s7",
+   "text": "Now every message still hits one database, and that becomes the bottleneck."
+  },
+  {
+   "id": "s8",
+   "text": "Recent messages move into a cache, so most reads come from memory."
+  },
+  {
+   "id": "s9",
+   "text": "Sending should feel instant, but push notifications, previews and search indexing are slow."
+  },
+  {
+   "id": "s10",
+   "text": "Should the sender wait for all of that?"
+  },
+  {
+   "id": "s11",
+   "text": "No."
+  },
+  {
+   "id": "s12",
+   "text": "A queue takes the slow jobs, and background workers finish them later."
+  },
+  {
+   "id": "s13",
+   "text": "The system is not a pile of trendy tools."
+  },
+  {
+   "id": "s14",
+   "text": "Every piece exists because a real bottleneck appeared."
+  },
+  {
+   "id": "s15",
+   "text": "Start simple, find the bottleneck, add the smallest fix, and repeat."
+  }
+ ],
+ "scaffolds": [
+  {
+   "id": "sc1",
+   "template": "bpScene",
+   "from": "s1",
+   "chapter": "THE BLUEPRINT",
+   "note": {
+    "kind": "rule",
+    "text": "Every app grows the same way"
+   },
+   "slots": {
+    "top": [
+     {
+      "id": "hookTitle",
+      "type": "displayHeadline",
+      "props": {
+       "lines": [
+        "CHAT APP",
+        "BLUEPRINT"
+       ],
+       "accent": [
+        "BLUEPRINT"
+       ],
+       "accentTone": "purple",
+       "size": 104
+      }
+     },
+     {
+      "id": "bpHook",
+      "type": "blueprint",
+      "h": 640,
+      "props": {
+       "final": true,
+       "version": 4
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sc2",
+   "template": "bpHost",
+   "from": "s2",
+   "chapter": "ONE SERVER",
+   "transition": {
+    "out": "dropOut",
+    "in": "riseIn"
+   },
+   "note": {
+    "kind": "rule",
+    "text": "Start simple: one server"
+   },
+   "slots": {
+    "blueprint": {
+     "id": "bp"
+    }
+   }
+  },
+  {
+   "id": "sc3",
+   "template": "bpScene",
+   "from": "s4",
+   "chapter": "SCALE OUT",
+   "transition": {
+    "out": "driftLeft",
+    "in": "cover"
+   },
+   "note": {
+    "kind": "problem",
+    "text": "One machine can't keep up"
+   },
+   "slots": {
+    "top": [
+     {
+      "id": "ph",
+      "type": "phone",
+      "half": true,
+      "props": {
+       "screen": "feed",
+       "app": "chatter",
+       "user": "design team",
+       "caption": "the launch thread is on fire"
+      }
+     },
+     {
+      "id": "reqs",
+      "type": "reqList",
+      "half": true,
+      "h": 675,
+      "props": {
+       "eyebrow": "REQUESTS",
+       "icon": "zap",
+       "rows": [
+        {
+         "verb": "POST",
+         "path": "/messages"
+        },
+        {
+         "verb": "GET",
+         "path": "/chats"
+        },
+        {
+         "verb": "POST",
+         "path": "/typing"
+        },
+        {
+         "verb": "GET",
+         "path": "/members"
+        }
+       ],
+       "total": {
+        "label": "CPU",
+        "value": "12%"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sc4",
+   "template": "bpHost",
+   "from": "s5",
+   "transition": {
+    "out": "dropOut",
+    "in": "riseIn"
+   },
+   "note": {
+    "kind": "fix",
+    "text": "Scale out behind one front door"
+   },
+   "slots": {
+    "blueprint": {
+     "id": "bp"
+    }
+   }
+  },
+  {
+   "id": "sc5",
+   "template": "bpScene",
+   "from": "s7",
+   "chapter": "THE DATABASE",
+   "transition": {
+    "out": "driftLeft",
+    "in": "cover"
+   },
+   "note": {
+    "kind": "problem",
+    "text": "Every read hits one database"
+   },
+   "slots": {
+    "top": [
+     {
+      "id": "hits",
+      "type": "hitCounter",
+      "props": {
+       "handle": "design-team",
+       "route": "GET /chats/design",
+       "count": 0,
+       "label": "READS"
+      }
+     },
+     {
+      "id": "dots",
+      "type": "dotGrid",
+      "props": {
+       "eyebrow": "EACH DOT = 100 READS",
+       "tone": "blue"
+      }
+     },
+     {
+      "id": "lat",
+      "type": "latencyBars",
+      "props": {
+       "eyebrow": "ONE DATABASE, ALL READS",
+       "bars": [
+        {
+         "label": "QUEUED READS",
+         "value": 92,
+         "display": "1.9 s",
+         "tone": "red"
+        },
+        {
+         "label": "ONE READ ALONE",
+         "value": 8,
+         "display": "15 ms",
+         "tone": "purple"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sc6",
+   "template": "bpHost",
+   "from": "s8",
+   "transition": {
+    "out": "dropOut",
+    "in": "riseIn"
+   },
+   "note": {
+    "kind": "fix",
+    "text": "Serve hot reads from memory"
+   },
+   "slots": {
+    "blueprint": {
+     "id": "bp"
+    }
+   }
+  },
+  {
+   "id": "sc7",
+   "template": "bpScene",
+   "from": "s9",
+   "chapter": "SLOW WORK",
+   "transition": {
+    "out": "exitRight",
+    "in": "slideInRight"
+   },
+   "note": {
+    "kind": "problem",
+    "text": "The sender sits and waits"
+   },
+   "slots": {
+    "top": [
+     {
+      "id": "ph2",
+      "type": "phone",
+      "half": true,
+      "props": {
+       "screen": "post",
+       "app": "chatter",
+       "caption": "Launch day photos",
+       "file": {
+        "name": "launch.mp4",
+        "size": "210 MB"
+       },
+       "progress": 100
+      }
+     },
+     {
+      "id": "jobs",
+      "type": "reqList",
+      "half": true,
+      "h": 675,
+      "props": {
+       "eyebrow": "THEN THE BACKEND MUST…",
+       "rows": [
+        {
+         "icon": "download",
+         "label": "Notifications",
+         "value": "0.8 s"
+        },
+        {
+         "icon": "app-window",
+         "label": "Previews",
+         "value": "1.2 s"
+        },
+        {
+         "icon": "database-zap",
+         "label": "Search index",
+         "value": "0.6 s"
+        },
+        {
+         "icon": "cpu",
+         "label": "Analytics",
+         "value": "0.4 s"
+        }
+       ],
+       "total": {
+        "label": "SENDER WAITS",
+        "value": "3.0 S"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sc9",
+   "template": "bpHost",
+   "from": "s11",
+   "transition": {
+    "out": "pushLeft",
+    "in": "afterPush"
+   },
+   "note": {
+    "kind": "fix",
+    "text": "Queue the slow work"
+   },
+   "slots": {
+    "blueprint": {
+     "id": "bp"
+    }
+   }
+  },
+  {
+   "id": "sc10",
+   "template": "bpScene",
+   "from": "s13",
+   "chapter": "THE METHOD",
+   "transition": {
+    "out": "driftLeft",
+    "in": "cover"
+   },
+   "note": {
+    "kind": "cost",
+    "text": "Every piece adds complexity"
+   },
+   "slots": {
+    "top": [
+     {
+      "id": "logos",
+      "type": "logoGrid",
+      "props": {
+       "label": "COMPONENTS",
+       "start": 6,
+       "tiles": [
+        "server",
+        "database",
+        "zap",
+        "package",
+        "cpu",
+        "network",
+        "cloud",
+        "globe",
+        "shield",
+        "lock",
+        "key",
+        "router",
+        "monitor",
+        "terminal",
+        "git-branch",
+        "folder",
+        "database-zap",
+        "rows-3"
+       ]
+      }
+     },
+     {
+      "id": "stamp",
+      "type": "verdictStamp",
+      "anchor": {
+       "text": "not"
+      },
+      "props": {
+       "lines": [
+        "NOT A PILE",
+        "OF TOOLS"
+       ],
+       "sub": "…for a chat with a thousand users?"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sc11",
+   "template": "bpScene",
+   "from": "s14",
+   "transition": {
+    "out": "pushLeft",
+    "in": "afterPush"
+   },
+   "note": {
+    "kind": "rule",
+    "text": "Only add what a problem forced"
+   },
+   "slots": {
+    "top": [
+     {
+      "id": "thesis",
+      "type": "displayHeadline",
+      "props": {
+       "lines": [
+        "EVERY PIECE",
+        "SOLVES A REAL",
+        "BOTTLENECK."
+       ],
+       "accent": [
+        "BOTTLENECK."
+       ]
+      }
+     },
+     {
+      "id": "why",
+      "type": "strikeStrips",
+      "props": {
+       "no": {
+        "eyebrow": "Add it because",
+        "text": "It's popular"
+       },
+       "yes": {
+        "eyebrow": "Add it because",
+        "text": "Something broke"
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sc12",
+   "template": "bpScene",
+   "from": "s15",
+   "note": {
+    "kind": "goal",
+    "text": "The loop behind every design"
+   },
+   "slots": {
+    "top": [
+     {
+      "id": "loop",
+      "type": "featureRows",
+      "props": {
+       "items": [
+        {
+         "icon": "server",
+         "title": "Start simple",
+         "sub": "one machine",
+         "visual": [
+          {
+           "text": "V1",
+           "tone": "purple"
+          }
+         ]
+        },
+        {
+         "icon": "triangle-alert",
+         "tone": "red",
+         "title": "Find the bottleneck",
+         "sub": "measure first",
+         "visual": [
+          {
+           "text": "CPU 100%",
+           "tone": "red"
+          }
+         ]
+        },
+        {
+         "icon": "zap",
+         "title": "Smallest fix",
+         "sub": "one component",
+         "visual": [
+          {
+           "text": "+ CACHE",
+           "tone": "purple"
+          }
+         ]
+        },
+        {
+         "icon": "git-branch",
+         "tone": "blue",
+         "title": "Repeat",
+         "sub": "as it grows",
+         "visual": [
+          {
+           "text": "V1 → V4",
+           "tone": "blue"
+          }
+         ]
+        }
+       ]
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "events": [
+  {
+   "sentence": "s1",
+   "anchor": {
+    "text": "blueprint."
+   },
+   "op": "lit",
+   "target": "hookTitle"
+  },
+  {
+   "sentence": "s2",
+   "anchor": {
+    "text": "code"
+   },
+   "op": "light",
+   "target": "bp",
+   "value": {
+    "node": "machine"
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "thousand"
+   },
+   "op": "users",
+   "target": "bphead",
+   "value": {
+    "to": 1000
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "fine."
+   },
+   "op": "annotate",
+   "target": "bp",
+   "value": {
+    "at": "machine",
+    "text": "CPU 12% · FINE",
+    "tone": "green",
+    "icon": "circle-check"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "viral,"
+   },
+   "op": "users",
+   "target": "bphead",
+   "value": {
+    "to": 250000
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "group"
+   },
+   "op": "rowLit",
+   "target": "reqs",
+   "value": {
+    "row": 1,
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "chat"
+   },
+   "op": "rowLit",
+   "target": "reqs",
+   "value": {
+    "row": 2,
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "processor"
+   },
+   "op": "rowLit",
+   "target": "reqs",
+   "value": {
+    "row": 3,
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "percent."
+   },
+   "op": "total",
+   "target": "reqs",
+   "value": {
+    "tone": "red",
+    "text": "100%"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "servers"
+   },
+   "op": "remove",
+   "target": "bp",
+   "value": {
+    "node": "machine"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "servers"
+   },
+   "op": "add",
+   "target": "bp",
+   "value": {
+    "nodes": [
+     "s1",
+     "s2",
+     "s3"
+    ]
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "servers"
+   },
+   "op": "version",
+   "target": "bp",
+   "value": {
+    "n": 2
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "balancer"
+   },
+   "op": "add",
+   "target": "bp",
+   "value": {
+    "node": "lb"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "balancer"
+   },
+   "op": "light",
+   "target": "tracker",
+   "value": {
+    "chip": "LB"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "front"
+   },
+   "op": "annotate",
+   "target": "bp",
+   "value": {
+    "at": "lb",
+    "text": "THE FRONT DOOR",
+    "side": "right"
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "spreads"
+   },
+   "op": "packet",
+   "target": "bp",
+   "value": {
+    "from": "lb",
+    "to": "s1",
+    "loops": 3
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "servers"
+   },
+   "op": "users",
+   "target": "bphead",
+   "value": {
+    "to": 1000000
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "healthy"
+   },
+   "op": "packet",
+   "target": "bp",
+   "value": {
+    "from": "lb",
+    "to": "s3",
+    "loops": 3
+   }
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "message"
+   },
+   "op": "count",
+   "target": "hits",
+   "value": {
+    "to": 10000,
+    "dur": 1
+   }
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "message"
+   },
+   "op": "fill",
+   "target": "dots"
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "bottleneck."
+   },
+   "op": "fill",
+   "target": "lat"
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "Recent"
+   },
+   "op": "add",
+   "target": "bp",
+   "value": {
+    "node": "db"
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "Recent"
+   },
+   "op": "alert",
+   "target": "bp",
+   "value": {
+    "node": "db",
+    "text": "BOTTLENECK"
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "cache,"
+   },
+   "op": "add",
+   "target": "bp",
+   "value": {
+    "node": "cache"
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "cache,"
+   },
+   "op": "light",
+   "target": "tracker",
+   "value": {
+    "chip": "CACHE"
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "cache,"
+   },
+   "op": "version",
+   "target": "bp",
+   "value": {
+    "n": 3
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "memory."
+   },
+   "op": "clear",
+   "target": "bp",
+   "value": {
+    "node": "db"
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "memory."
+   },
+   "op": "unannotate",
+   "target": "bp"
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "Recent"
+   },
+   "op": "light",
+   "target": "tracker",
+   "value": {
+    "chip": "DATABASE"
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "instant,"
+   },
+   "op": "timer",
+   "target": "ph2",
+   "value": {
+    "to": 3,
+    "dur": 3
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "notifications,"
+   },
+   "op": "rowLit",
+   "target": "jobs",
+   "value": {
+    "row": 1,
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "previews"
+   },
+   "op": "rowLit",
+   "target": "jobs",
+   "value": {
+    "row": 2,
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "search"
+   },
+   "op": "rowLit",
+   "target": "jobs",
+   "value": {
+    "row": 3,
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "wait"
+   },
+   "op": "rowLit",
+   "target": "jobs",
+   "value": {
+    "row": 4,
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "wait"
+   },
+   "op": "total",
+   "target": "jobs",
+   "value": {
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "s12",
+   "anchor": {
+    "text": "queue"
+   },
+   "op": "add",
+   "target": "bp",
+   "value": {
+    "node": "queue"
+   }
+  },
+  {
+   "sentence": "s12",
+   "anchor": {
+    "text": "queue"
+   },
+   "op": "light",
+   "target": "tracker",
+   "value": {
+    "chip": "QUEUE"
+   }
+  },
+  {
+   "sentence": "s12",
+   "anchor": {
+    "text": "queue"
+   },
+   "op": "version",
+   "target": "bp",
+   "value": {
+    "n": 4
+   }
+  },
+  {
+   "sentence": "s12",
+   "anchor": {
+    "text": "workers"
+   },
+   "op": "add",
+   "target": "bp",
+   "value": {
+    "node": "workers"
+   }
+  },
+  {
+   "sentence": "s12",
+   "anchor": {
+    "text": "workers"
+   },
+   "op": "light",
+   "target": "tracker",
+   "value": {
+    "chip": "WORKERS"
+   }
+  },
+  {
+   "sentence": "s12",
+   "anchor": {
+    "text": "later."
+   },
+   "op": "packet",
+   "target": "bp",
+   "value": {
+    "from": "queue",
+    "to": "workers",
+    "loops": 3
+   }
+  },
+  {
+   "sentence": "s12",
+   "anchor": {
+    "text": "queue"
+   },
+   "op": "users",
+   "target": "bphead",
+   "value": {
+    "to": 20000000
+   }
+  },
+  {
+   "sentence": "s13",
+   "anchor": {
+    "text": "pile"
+   },
+   "op": "flood",
+   "target": "logos",
+   "value": {
+    "dur": 1.2
+   }
+  },
+  {
+   "sentence": "s14",
+   "anchor": {
+    "text": "piece"
+   },
+   "op": "strike",
+   "target": "why"
+  },
+  {
+   "sentence": "s14",
+   "anchor": {
+    "text": "real"
+   },
+   "op": "lit",
+   "target": "thesis"
+  },
+  {
+   "sentence": "s14",
+   "anchor": {
+    "text": "appeared."
+   },
+   "op": "lit",
+   "target": "why"
+  },
+  {
+   "sentence": "s15",
+   "anchor": {
+    "text": "Start"
+   },
+   "op": "lit",
+   "target": "loop",
+   "value": {
+    "i": 1
+   }
+  },
+  {
+   "sentence": "s15",
+   "anchor": {
+    "text": "bottleneck,"
+   },
+   "op": "lit",
+   "target": "loop",
+   "value": {
+    "i": 2
+   }
+  },
+  {
+   "sentence": "s15",
+   "anchor": {
+    "text": "smallest"
+   },
+   "op": "lit",
+   "target": "loop",
+   "value": {
+    "i": 3
+   }
+  },
+  {
+   "sentence": "s15",
+   "anchor": {
+    "text": "repeat."
+   },
+   "op": "lit",
+   "target": "loop",
+   "value": {
+    "i": 4
+   }
+  }
+ ]
+}

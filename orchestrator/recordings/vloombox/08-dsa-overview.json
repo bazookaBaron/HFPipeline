@@ -1,0 +1,86 @@
+{
+  "id": "dsa-overview",
+  "url": "https://www.vloombox.in/dsa",
+  "page": "/dsa",
+  "viewport": "16x9-close",
+  "ready": "document.querySelectorAll('a[href*=\"leetcode.com/problems\"]').length >= 3",
+  "cursor": {
+    "start": [
+      700,
+      330
+    ]
+  },
+  "actions": [
+    {
+      "do": "capture",
+      "vars": {
+        "total": "(()=>{const m=document.body.innerText.match(/([0-9,]+) problems/);return m?m[1]+' problems':''})()"
+      }
+    },
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "*",
+        "textMatch": "^LeetCode company-wise"
+      },
+      "dur": 1.5,
+      "pad": 5,
+      "hold": 0.9,
+      "what": "'LeetCode company-wise' problem set: {total}"
+    },
+    {
+      "do": "scroll",
+      "toTarget": {
+        "sel": "a[href*=\"leetcode.com/problems\"]",
+        "nth": 0,
+        "up": 3
+      },
+      "offset": 60,
+      "dur": 1.6,
+      "ease": "sine",
+      "what": "scrolls into the problem table: title, difficulty, companies that ask it"
+    },
+    {
+      "do": "hold",
+      "dur": 0.3
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "a",
+        "text": "Tree Diameter",
+        "up": 3
+      },
+      "tight": false,
+      "dur": 1.6,
+      "pad": 5,
+      "hold": 1,
+      "what": "each problem is tagged with the companies that asked it"
+    },
+    {
+      "do": "move",
+      "to": [
+        700,
+        330
+      ],
+      "dur": 0.8
+    },
+    {
+      "do": "hold",
+      "dur": 0.4
+    }
+  ],
+  "tags": [
+    "dsa",
+    "leetcode",
+    "company-wise",
+    "problems",
+    "scroll"
+  ],
+  "description": "The vloombox DSA page: a company-wise LeetCode problem table with difficulty and the companies that ask each problem.",
+  "promoLine": "Preparing DSA? vloom box dot in has company-wise LeetCode sheets, over 3,000 problems."
+}

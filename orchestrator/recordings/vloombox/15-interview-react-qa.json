@@ -1,0 +1,91 @@
+{
+  "id": "interview-react-qa",
+  "url": "https://www.vloombox.in/interview",
+  "page": "/interview",
+  "viewport": "16x9-close",
+  "ready": "document.body.innerText.includes('QUESTIONS') && !window.__recLoading()",
+  "cursor": {
+    "start": [
+      520,
+      330
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4,
+      "what": "Interview Q&A: topics grouped by databases, cloud, frameworks, languages, tools"
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "button",
+        "text": "react"
+      },
+      "dur": 0.9,
+      "what": "picks the 'react' topic"
+    },
+    {
+      "do": "waitFor",
+      "js": "document.body.innerText.includes('What is a React component') && !window.__recLoading()",
+      "settle": 0.5
+    },
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "button",
+        "textMatch": "^03"
+      },
+      "dur": 0.9,
+      "what": "opens 'What is a React component?'"
+    },
+    {
+      "do": "waitFor",
+      "js": "document.body.innerText.split('What is a React component?').length > 2 && !window.__recLoading()",
+      "settle": 0.6
+    },
+    {
+      "do": "hold",
+      "dur": 0.8,
+      "what": "a full written answer appears"
+    },
+    {
+      "do": "move",
+      "to": [
+        560,
+        400
+      ],
+      "dur": 0.6
+    },
+    {
+      "do": "scroll",
+      "el": {
+        "sel": "div",
+        "scrollable": true,
+        "textIncludes": "What is a React component?",
+        "nth": 0
+      },
+      "by": 330,
+      "dur": 1.8,
+      "ease": "sine",
+      "what": "scrolls the answer: explanation, core concepts, code example"
+    },
+    {
+      "do": "hold",
+      "dur": 0.6
+    }
+  ],
+  "tags": [
+    "interview",
+    "question bank",
+    "react",
+    "q&a",
+    "frontend"
+  ],
+  "description": "The vloombox interview question bank: picking the React topic and opening 'What is a React component?' shows a detailed written answer.",
+  "promoLine": "Revising for interviews? vloom box dot in has a question bank with detailed answers, topic by topic."
+}

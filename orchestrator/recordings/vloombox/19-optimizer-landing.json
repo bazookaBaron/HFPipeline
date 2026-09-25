@@ -1,0 +1,52 @@
+{
+  "id": "optimizer-landing",
+  "url": "https://www.vloombox.in/optimizer",
+  "page": "/optimizer",
+  "viewport": "16x9-close",
+  "ready": "document.body.innerText.includes('Resume Optimizer')",
+  "cursor": {
+    "start": [
+      820,
+      420
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.5,
+      "what": "Resume Optimizer page"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "*",
+        "textMatch": "^Upload your resume PDF"
+      },
+      "dur": 2.2,
+      "pad": 5,
+      "hold": 1.5,
+      "what": "upload a resume PDF + paste a job description and get a tailored, ATS-optimized PDF"
+    },
+    {
+      "do": "move",
+      "to": [
+        700,
+        330
+      ],
+      "dur": 0.8
+    },
+    {
+      "do": "hold",
+      "dur": 0.6
+    }
+  ],
+  "tags": [
+    "resume",
+    "optimizer",
+    "ats",
+    "ai",
+    "landing"
+  ],
+  "description": "The vloombox Resume Optimizer landing: upload your resume PDF and a job description to get a tailored, ATS-optimized PDF.",
+  "promoLine": "Resume not getting shortlisted? vloom box dot in tailors it to any job description with AI."
+}

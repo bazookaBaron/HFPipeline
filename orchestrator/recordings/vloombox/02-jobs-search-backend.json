@@ -1,0 +1,108 @@
+{
+  "id": "jobs-search-backend",
+  "url": "https://www.vloombox.in/",
+  "page": "/",
+  "viewport": "16x9-close",
+  "ready": "!document.body.innerText.includes('Loading jobs') && /[0-9,]+ jobs/.test(document.body.innerText)",
+  "cursor": {
+    "start": [
+      640,
+      420
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "click",
+      "target": {
+        "placeholder": "Search job title",
+        "anchor": [
+          0.3,
+          0.5
+        ]
+      },
+      "dur": 0.8,
+      "caret": true,
+      "what": "clicks the job search box"
+    },
+    {
+      "do": "type",
+      "text": "backend",
+      "cps": 8,
+      "what": "types 'backend'; matching job titles drop down as suggestions"
+    },
+    {
+      "do": "hold",
+      "dur": 1
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "h1",
+        "text": "Jobs",
+        "offset": [
+          260,
+          0
+        ]
+      },
+      "dur": 0.6
+    },
+    {
+      "do": "waitFor",
+      "js": "/[0-9,]+ jobs/.test(document.body.innerText) && !document.body.innerText.includes('Loading jobs')"
+    },
+    {
+      "do": "capture",
+      "vars": {
+        "count": "(()=>{const e=[...document.querySelectorAll('body *')].find(e=>e.children.length===0&&/^[0-9,]+ jobs$/.test(e.textContent.trim()));return e?e.textContent.trim().replace(/ jobs$/,''):''})()"
+      }
+    },
+    {
+      "do": "scroll",
+      "toTarget": {
+        "sel": "button",
+        "text": "Remote"
+      },
+      "offset": 70,
+      "dur": 1
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "div",
+        "textMatch": "^[0-9,]+ jobs$"
+      },
+      "dur": 1.5,
+      "pad": 6,
+      "hold": 0.9,
+      "what": "results filter to {count} backend jobs"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": ".job-card",
+        "nth": 0
+      },
+      "dur": 1.5,
+      "pad": 3,
+      "hold": 0.9,
+      "at": [
+        0.55,
+        0.5
+      ],
+      "what": "first backend listing highlighted"
+    }
+  ],
+  "tags": [
+    "jobs",
+    "search",
+    "typing",
+    "backend",
+    "filter"
+  ],
+  "description": "Typing 'backend' into the vloombox job search shows title suggestions and narrows the board to backend roles.",
+  "promoLine": "Looking for a backend role? Search vloom box dot in and every fresh backend opening shows up in one list."
+}

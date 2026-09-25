@@ -36,6 +36,10 @@ const LIBS = [
   "compositions/components/lib/stage/modules-carousel.js",
   "compositions/components/lib/stage/modules-media.js",
   "compositions/components/lib/stage/modules-p2.js",
+  "compositions/components/lib/stage/profile-br.js",
+  "compositions/components/lib/stage/modules-br.js",
+  "compositions/components/lib/stage/profile-bp.js",
+  "compositions/components/lib/stage/modules-bp.js",
 ];
 
 function harnessHtml(spec, duration, frame = { w: 1080, h: 1920 }) {
@@ -116,7 +120,7 @@ function probe(t) {
       const small = Math.min(a.width * a.height, b.width * b.height) || 1;
       // a frame module (DC stage) holds its sub-state's card on purpose
       // connectors and stamps are drawn over other cards by design
-      const frame = [content[i], content[j]].some((m) => ["st-dcStage", "st-connector", "st-stamp"].some((c) => m.classList.contains(c)));
+      const frame = [content[i], content[j]].some((m) => ["st-dcStage", "st-connector", "st-stamp"].some((c) => m.classList.contains(c)) || m.classList.contains("st-slamStamp") || m.hasAttribute("data-overlay")); // BR: stamp slam, pink band plate, T4 overlay card
       if (!frame && ov / small > 0.04 && ov > 1500) out.push({ kind: "card-overlap", modules: [modName(content[i]), modName(content[j])], frac: +(ov / small).toFixed(2) });
     }
   // text covered by the mascot (inner 70% of its box, the art's opaque core)

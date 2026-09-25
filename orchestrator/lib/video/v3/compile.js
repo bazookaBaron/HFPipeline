@@ -25,9 +25,11 @@ const { TEMPLATES: DH_TEMPLATES } = require("./templates-dh");
 const { GENERIC_TEMPLATES } = require("./templates-generic");
 const { LC_TEMPLATES } = require("./templates-lc");
 const { DC_TEMPLATES } = require("./templates-dc");
+const { BR_TEMPLATES, brChrome } = require("./templates-br");
+const { BP_TEMPLATES, bpChrome } = require("./templates-bp");
 const { ENDCARD_TEMPLATES } = require("./endcard");
 const BRAND = new Set(["endcard", "promo"]); // channel scenes after the topic: no topic chrome
-const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES, ...DC_TEMPLATES, ...ENDCARD_TEMPLATES };
+const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES, ...DC_TEMPLATES, ...BR_TEMPLATES, ...BP_TEMPLATES, ...ENDCARD_TEMPLATES };
 
 // Seconds a beat fires before its word onset. Refs land visuals on the audible word or up to
 // ~250 ms before it (SPEC 7.2, ASR bias verified); our word times are forced-aligned on our
@@ -132,6 +134,11 @@ function compileStoryboard(sb, timeline, opts = {}) {
       if (i > 0) chromeEvents.push({ t: s.t0, op: "sub", target: "dcstage", value: { text: (src.slots && src.slots.sub) || "" } });
     });
   }
+
+  // ---- BR chrome (R7): brand header (chapter title + running counter) + tab chips (templates-br.js) ----
+  if ((sb.profile || "DH") === "BR") brChrome(sb, scaffolds, chromeEvents, BRAND);
+  // ---- BP chrome (R6): segmented header + component tracker + note card (templates-bp.js) ----
+  if ((sb.profile || "DH") === "BP") bpChrome(sb, scaffolds, chromeEvents, BRAND);
 
   // ---- events ----
   const events = (sb.events || []).map((ev, i) => {

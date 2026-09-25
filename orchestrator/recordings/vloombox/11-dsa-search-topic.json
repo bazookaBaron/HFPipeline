@@ -1,0 +1,86 @@
+{
+  "id": "dsa-search-topic",
+  "url": "https://www.vloombox.in/dsa",
+  "page": "/dsa",
+  "viewport": "16x9-close",
+  "ready": "document.querySelectorAll('a[href*=\"leetcode.com/problems\"]').length >= 3",
+  "cursor": {
+    "start": [
+      640,
+      380
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "#dsa-search",
+        "anchor": [
+          0.3,
+          0.5
+        ]
+      },
+      "dur": 0.8,
+      "caret": true,
+      "what": "clicks the DSA search box"
+    },
+    {
+      "do": "type",
+      "text": "tree",
+      "cps": 7,
+      "what": "types 'tree'"
+    },
+    {
+      "do": "waitFor",
+      "js": "document.querySelectorAll('a[href*=\"leetcode.com/problems\"]').length >= 3",
+      "settle": 0.4
+    },
+    {
+      "do": "hold",
+      "dur": 0.5
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "a[href*=\"leetcode.com/problems\"]",
+        "nth": 0,
+        "up": 3
+      },
+      "tight": false,
+      "dur": 1.4,
+      "pad": 4,
+      "hold": 0.8,
+      "what": "the table narrows to tree problems with their company tags"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "a[href*=\"leetcode.com/problems\"]",
+        "nth": 1,
+        "up": 3
+      },
+      "tight": false,
+      "dur": 1.4,
+      "pad": 4,
+      "moveDur": 0.5,
+      "hold": 0.8
+    },
+    {
+      "do": "hold",
+      "dur": 0.3
+    }
+  ],
+  "tags": [
+    "dsa",
+    "search",
+    "typing",
+    "trees",
+    "leetcode"
+  ],
+  "description": "Searching 'tree' on the vloombox DSA page filters the problem table to tree questions.",
+  "promoLine": "Weak at trees? Search any DSA topic on vloom box dot in and practise the problems companies ask."
+}

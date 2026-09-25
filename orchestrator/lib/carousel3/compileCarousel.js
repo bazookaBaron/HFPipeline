@@ -36,6 +36,9 @@ function chrome(profile, sb, i, n) {
   const brand = loadBrand();
   const handle = (sb.handle || brand.handle || "").trim();
   if (profile === "LC") return [{ id: "lchead", type: "lcHeader", rect: [70, 56, 938, 55], props: { kicker: sb.kicker || "", counter: counter.replace(" / ", " — ") } }];
+  // BR (R7): brand header with the slide counter in the magenta counter cell
+  if (profile === "BR") return [{ id: "brhead", type: "brHeader", rect: [40.5, 52, 999, 57], props: { brand: String(handle || (brand.endcard && brand.endcard.site) || "vloombox").replace(/^@/, "").slice(0, 14), title: sb.kicker || "", label: "SLIDE", value: i + 1, pad: 2 } }];
+  if (profile === "BP") return [{ id: "bphead", type: "bpHeader", rect: [44, 52, 992, 55], props: { brand: String(sb.kicker || handle || "SYSTEM DESIGN").slice(0, 22), chapter: counter, users: i + 1, label: "SLIDE" } }];
   if (profile === "DC") return [{ id: "dcchrome", type: "dcChrome", rect: [60, 64, 960, 40], props: { label: sb.kicker || "", index: Math.max(1, Math.min(10, Math.round(((i + 1) / n) * 10))) } }];
   return [{ id: "chead", type: "cHead", rect: [60, 52, 960, 56], props: { handle: handle || (brand.endcard && brand.endcard.site) || "", kicker: "", counter } }];
 }
@@ -43,6 +46,8 @@ function chrome(profile, sb, i, n) {
 function heroModule(profile, h, y) {
   const p = h || {};
   if (profile === "LC") return { id: "hero", type: "lcDisplay", rect: [X, y, W, 118], props: { text: p.text, tone: p.tone }, h: 118 };
+  if (profile === "BR") return { id: "hero", type: "keywordHeadline", rect: [X, y, W, 140], props: { lines: [p.text], keyword: p.text, keywordLit: true, tone: p.tone === "blue" ? "blue" : "magenta", size: 120 }, h: 140 };
+  if (profile === "BP") return { id: "hero", type: "displayHeadline", rect: [X, y, W, 124], props: { lines: [String(p.text || "")], accent: String(p.text || "").split(/\s+/), accentTone: p.tone === "red" ? "red" : "purple", dim: false, size: 120 }, h: 124 };
   if (profile === "DC") return { id: "hero", type: "dcHero", rect: [X, y, W, 300], props: { text: p.text, kicker: p.kicker, tone: p.tone }, h: 300 };
   return { id: "hero", type: "hero", rect: [X, y, W, 150], props: { text: p.text, tone: p.tone || "blue", size: 150, align: "center" }, h: 150 };
 }
@@ -111,7 +116,7 @@ function compileSlide(sb, slide, i, n) {
   mods.push({ id: "cfoot", type: "cFoot", rect: FOOT, props: last ? { left: sb.handle || brand.handle || "", right: site, arrow: false } : { left: sb.handle || brand.handle || site, right: "SWIPE" } });
   const modules = mods.map((m) => {
     const { h, ...rest } = m;
-    return { ...rest, at: 0, enter: m.enter || (m.type === "cHead" || m.type === "cFoot" || m.type === "lcHeader" || m.type === "dcChrome" ? "none" : undefined) };
+    return { ...rest, at: 0, enter: m.enter || (m.type === "cHead" || m.type === "cFoot" || m.type === "lcHeader" || m.type === "dcChrome" || m.type === "brHeader" ? "none" : undefined) };
   });
   return {
     frame: FRAME,

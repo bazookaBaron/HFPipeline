@@ -1,0 +1,96 @@
+{
+  "id": "jobs-filter-remote",
+  "url": "https://www.vloombox.in/",
+  "page": "/",
+  "viewport": "16x9-close",
+  "ready": "!document.body.innerText.includes('Loading jobs') && /[0-9,]+ jobs/.test(document.body.innerText)",
+  "cursor": {
+    "start": [
+      520,
+      420
+    ]
+  },
+  "setup": [
+    {
+      "do": "scroll",
+      "toTarget": {
+        "sel": "button",
+        "text": "Remote"
+      },
+      "offset": 80,
+      "dur": 0.1
+    }
+  ],
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.5
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "button",
+        "text": "Remote"
+      },
+      "dur": 0.8,
+      "what": "taps the Remote work-type chip"
+    },
+    {
+      "do": "waitFor",
+      "js": "/[0-9,]+ jobs/.test(document.body.innerText) && !document.body.innerText.includes('Loading jobs')"
+    },
+    {
+      "do": "capture",
+      "vars": {
+        "count": "(()=>{const e=[...document.querySelectorAll('body *')].find(e=>e.children.length===0&&/^[0-9,]+ jobs$/.test(e.textContent.trim()));return e?e.textContent.trim().replace(/ jobs$/,''):''})()"
+      }
+    },
+    {
+      "do": "hold",
+      "dur": 0.3
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "div",
+        "textMatch": "^[0-9,]+ jobs$"
+      },
+      "dur": 1.5,
+      "pad": 6,
+      "hold": 0.9,
+      "what": "board filters to {count} remote jobs"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": ".job-card span",
+        "textMatch": "^remote$",
+        "nth": 0
+      },
+      "dur": 1.4,
+      "pad": 4,
+      "hold": 0.9,
+      "what": "listings carry the green 'remote' tag"
+    },
+    {
+      "do": "move",
+      "to": [
+        700,
+        470
+      ],
+      "dur": 0.7
+    },
+    {
+      "do": "hold",
+      "dur": 0.4
+    }
+  ],
+  "tags": [
+    "jobs",
+    "filter",
+    "remote",
+    "chips"
+  ],
+  "description": "Tapping the Remote chip on the vloombox jobs board filters the listings to remote tech jobs.",
+  "promoLine": "Want to work remote? One tap on vloom box dot in shows only remote tech jobs."
+}

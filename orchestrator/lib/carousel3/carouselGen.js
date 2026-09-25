@@ -19,6 +19,8 @@ const HEIGHTS = "CARD HEIGHTS (px, slide content band is ~800 px under a title, 
 const GRAMMAR = {
   DH: "Dark dashboard style: near-black, HUD-like chrome, colour = state (green ok, red failure, blue primary, amber warning, purple the actor). Mechanism slides use nodes (3-4 nodes on one row or an L), panels with status rows, kpis with real numbers.",
   LC: "Light editorial style: warm paper, ivory window cards. Step-by-step building; each slide adds one idea; nodes are window cards (x 0.2-0.8, max 3 per row); tables and code for concrete formats. No strike-through.",
+  BP: "Light blueprint style: cool grey line-grid plate, white cards with soft shadows; purple = an added component / the fix, blue = numbers, red = the problem. System-design stories: one architecture growing slide by slide (nodes diagrams with 3-5 components per slide), panels with request / job rows, kpis with real numbers, compare for trade-offs.",
+  BR: "Light brutalist style: warm grey dotted plate, square window cards with black title bars and hard offset shadows; magenta = the decider / the product, blue = the generator / LLM, red = cost. Product and AI explainers: concrete forms, choices and answers (panels with status rows, tables, compare, code); one idea per slide.",
   DC: "Dark chaptered documentary style: serif display titles, a framed stage, mostly monochrome with ONE accent per slide (teal = the platform, amber = attention, pink = failure). Hero slides for the named concepts and big numbers.",
 };
 

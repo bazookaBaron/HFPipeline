@@ -272,7 +272,7 @@ const server = http.createServer(async (req, res) => {
         ttsSpeed: Number(body.ttsSpeed) || 1.0,
         captionsOn: body.captionsOn !== undefined ? !!body.captionsOn : true,
         sfxOn: body.sfxOn !== undefined ? !!body.sfxOn : true,
-        profile: ["DH", "LC", "DC"].includes(body.profile) ? body.profile : "auto",
+        profile: ["DH", "LC", "DC", "BR", "BP"].includes(body.profile) ? body.profile : "auto",
       };
 
       const videoRun = startPipelineRun("cs-explainer", sharedConfig);

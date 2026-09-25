@@ -28,7 +28,7 @@ const log = (m) => process.stderr.write(`[make-carousel] ${m}\n`);
 async function main() {
   const topic = String(arg("topic", "")).trim();
   const outDir = path.resolve(arg("out-dir", path.join("output", "carousel-" + Date.now().toString(36))));
-  const profile = ["DH", "LC", "DC"].includes(arg("profile")) ? arg("profile") : "auto";
+  const profile = ["DH", "LC", "DC", "BR", "BP"].includes(arg("profile")) ? arg("profile") : "auto";
   const handle = arg("handle", "");
   const content = arg("content"); // re-render an existing carousel.v3 without the model
   if (!topic && !content) throw new Error("--topic is required");

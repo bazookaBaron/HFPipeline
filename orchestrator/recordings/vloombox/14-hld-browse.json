@@ -1,0 +1,71 @@
+{
+  "id": "hld-browse",
+  "url": "https://www.vloombox.in/hld",
+  "page": "/hld",
+  "viewport": "16x9-close",
+  "ready": "document.querySelectorAll('h3').length > 6",
+  "cursor": {
+    "start": [
+      620,
+      470
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4,
+      "what": "HLD Questions: architecture, scalability, trade-offs"
+    },
+    {
+      "do": "scroll",
+      "toTarget": {
+        "sel": "h3",
+        "nth": 0,
+        "up": 1
+      },
+      "offset": 70,
+      "dur": 1.3,
+      "ease": "sine"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "h3",
+        "textIncludes": "YOUTUBE",
+        "up": 1
+      },
+      "tight": false,
+      "dur": 1.5,
+      "pad": 3,
+      "hold": 0.9,
+      "at": [
+        0.5,
+        0.5
+      ],
+      "what": "Design YouTube (video streaming), tagged Google, Hulu, Netflix, Twitch"
+    },
+    {
+      "do": "scroll",
+      "by": 250,
+      "dur": 1.4,
+      "ease": "sine",
+      "what": "more system-design prompts: Google Docs, Nearby Friends, Digital Wallet, Splitwise"
+    },
+    {
+      "do": "hold",
+      "dur": 0.3
+    },
+    {
+      "do": "hold",
+      "dur": 0.6
+    }
+  ],
+  "tags": [
+    "hld",
+    "high-level design",
+    "system design",
+    "architecture"
+  ],
+  "description": "The vloombox HLD page: a grid of system-design questions (YouTube, Google Docs, digital wallet, Splitwise) with difficulty and company tags.",
+  "promoLine": "System design interview coming up? vloom box dot in has HLD questions from YouTube to Splitwise."
+}

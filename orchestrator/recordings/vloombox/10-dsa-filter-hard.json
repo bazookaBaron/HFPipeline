@@ -1,0 +1,76 @@
+{
+  "id": "dsa-filter-hard",
+  "url": "https://www.vloombox.in/dsa",
+  "page": "/dsa",
+  "viewport": "16x9-close",
+  "ready": "document.querySelectorAll('a[href*=\"leetcode.com/problems\"]').length >= 3",
+  "cursor": {
+    "start": [
+      640,
+      380
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "button",
+        "text": "HARD"
+      },
+      "dur": 0.8,
+      "what": "taps the HARD difficulty filter"
+    },
+    {
+      "do": "waitFor",
+      "idle": true,
+      "settle": 0.4
+    },
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "a[href*=\"leetcode.com/problems\"]",
+        "nth": 0,
+        "up": 3
+      },
+      "tight": false,
+      "dur": 1.5,
+      "pad": 4,
+      "hold": 0.9,
+      "what": "only HARD problems remain, each with its company tags"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "a[href*=\"leetcode.com/problems\"]",
+        "nth": 1,
+        "up": 3
+      },
+      "tight": false,
+      "dur": 1.5,
+      "pad": 4,
+      "moveDur": 0.5,
+      "hold": 0.9
+    },
+    {
+      "do": "hold",
+      "dur": 0.3
+    }
+  ],
+  "tags": [
+    "dsa",
+    "difficulty",
+    "hard",
+    "sort",
+    "leetcode"
+  ],
+  "description": "The vloombox DSA problem list is filtered to HARD difficulty.",
+  "promoLine": "Ready for the hard ones? Filter vloom box dot in DSA sheets by difficulty and company."
+}

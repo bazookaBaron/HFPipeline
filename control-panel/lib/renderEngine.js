@@ -91,7 +91,7 @@ function runCsExplainerRender(jobId, config) {
   // style, so ttsSpeed / captionsOn / sfxOn / brandHandle are not passed; they are logged below.
   const args = ["make-video.js", "--topic", topic, "--length-seconds", String(Math.min(75, Math.max(30, lengthSeconds))), "--out", outputPath];
   if (accentColor && /^#[0-9a-fA-F]{6}$/.test(accentColor)) args.push("--accent", accentColor);
-  const profile = config && ["DH", "LC", "DC"].includes(config.profile) ? config.profile : "auto";
+  const profile = config && ["DH", "LC", "DC", "BR", "BP"].includes(config.profile) ? config.profile : "auto";
   args.push("--profile", profile);
   args.push("--captions", String(captionsOn), "--sfx", String(sfxOn), "--endcard", String(!(config && config.endcardOn === false)));
   // optional synthesized music bed (orchestrator/tools/music_bed.py); off unless a preset is picked

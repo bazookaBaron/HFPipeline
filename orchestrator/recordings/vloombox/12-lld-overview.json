@@ -1,0 +1,83 @@
+{
+  "id": "lld-overview",
+  "url": "https://www.vloombox.in/lld",
+  "page": "/lld",
+  "viewport": "16x9-close",
+  "ready": "document.body.innerText.includes('OPEN IDE')",
+  "cursor": {
+    "start": [
+      560,
+      470
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.5,
+      "what": "LLD Problems: 'class diagrams + code walkthroughs'"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "h3",
+        "nth": 0,
+        "up": 2
+      },
+      "dur": 1.5,
+      "pad": 3,
+      "hold": 0.9,
+      "at": [
+        0.5,
+        0.45
+      ],
+      "what": "Designing a Vending Machine: requirements and companies that ask it"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "h3",
+        "nth": 1,
+        "up": 2
+      },
+      "dur": 1.4,
+      "pad": 3,
+      "moveDur": 0.6,
+      "hold": 0.8,
+      "at": [
+        0.5,
+        0.45
+      ],
+      "what": "Designing a Traffic Signal Control System"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "h3",
+        "nth": 2,
+        "up": 2
+      },
+      "dur": 1.4,
+      "pad": 3,
+      "moveDur": 0.6,
+      "hold": 0.8,
+      "at": [
+        0.5,
+        0.45
+      ],
+      "what": "Designing a Tic Tac Toe Game"
+    },
+    {
+      "do": "hold",
+      "dur": 0.4
+    }
+  ],
+  "tags": [
+    "lld",
+    "low-level design",
+    "system design",
+    "oop",
+    "cards"
+  ],
+  "description": "The vloombox LLD page: low-level design problem cards (vending machine, traffic signal, tic-tac-toe) with company tags and an Open IDE link.",
+  "promoLine": "Low-level design rounds? vloom box dot in has LLD problems with class diagrams and full code."
+}

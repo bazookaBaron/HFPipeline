@@ -1,0 +1,182 @@
+{
+ "version": "storyboard.v3",
+ "profile": "BR",
+ "topic": "What a tool router does inside an AI agent",
+ "entities": { "brand": "Router", "counter": { "label": "DECISIONS", "value": 0 } },
+ "sentences": [
+  { "id": "s1", "text": "What does a tool router actually do inside an AI agent?" },
+  { "id": "s2", "text": "Your agent can search the web, run code, query a database, or send an email." },
+  { "id": "s3", "text": "Before every step, something has to pick exactly one of those tools." },
+  { "id": "s4", "text": "Most teams just ask the big model, and it writes a paragraph about its plan." },
+  { "id": "s5", "text": "Then your code has to dig the tool name out of that prose." },
+  { "id": "s6", "text": "A router skips the essay: you list the tools and it returns one choice." },
+  { "id": "s7", "text": "It even attaches a confidence, like ninety two percent for web search." },
+  { "id": "s8", "text": "That answer drops straight into your app as structured data." },
+  { "id": "s9", "text": "The same trick guards a shell command before the agent runs it." },
+  { "id": "s10", "text": "Allow it, ask a human, or block it, decided in milliseconds." },
+  { "id": "s11", "text": "The big model takes seconds, so every tiny choice gets slower and pricier." },
+  { "id": "s12", "text": "Remember it this way: big models write, routers decide." }
+ ],
+ "scaffolds": [
+  {
+   "id": "sc1", "template": "brStack", "from": "s1", "layout": "full", "chapter": "WHAT IT IS",
+   "slots": {
+    "headline": { "props": { "lines": ["What does a", "tool router do?"], "keyword": "router", "size": 88 } },
+    "top": [
+     { "id": "hook", "type": "decisionSheet", "props": { "title": "router · decision sheet (example)", "situation": "Find me flights to Tokyo under $500.", "compact": true, "questions": [ { "label": "NEXT TOOL", "options": ["web search", "code", "database", "email"] }, { "label": "NEEDS HUMAN?", "options": ["yes", "no"] } ] }, "anchor": { "text": "actually" } }
+    ]
+   }
+  },
+  {
+   "id": "sc2", "template": "brStack", "from": "s2", "chapter": "THE PROBLEM",
+   "slots": {
+    "eyebrow": { "props": { "text": "One agent, four tools" } },
+    "top": [
+     { "id": "tools", "type": "toolTiles", "props": { "tiles": [ { "icon": "search", "label": "Web search" }, { "icon": "code", "label": "Run code" }, { "icon": "database", "label": "Database" }, { "icon": "mail", "label": "Send email" } ] } }
+    ]
+   }
+  },
+  {
+   "id": "sc3", "template": "brStack", "from": "s3",
+   "slots": {
+    "eyebrow": { "props": { "text": "Every step: pick one" } },
+    "top": [
+     { "id": "tools", "type": "toolTiles", "props": { "tiles": [ { "icon": "search", "label": "Web search" }, { "icon": "code", "label": "Run code" }, { "icon": "database", "label": "Database" }, { "icon": "mail", "label": "Send email" } ] } },
+     { "id": "q", "type": "decisionSheet", "props": { "title": "agent · tiny choice", "compact": true, "questions": [ { "label": "WHICH TOOL?", "options": ["search", "code", "db", "email"] } ] }, "anchor": { "text": "something" } }
+    ]
+   }
+  },
+  {
+   "id": "sc4", "template": "brStack", "from": "s4", "chapter": "THE USUAL WAY",
+   "slots": {
+    "top": [
+     { "id": "llm", "type": "writerWindow", "props": { "title": "LLM · writing…", "vendors": ["GPT", "Claude", "Gemini"], "text": "Sure! To answer this I would probably start with a quick web search for current flight prices, then maybe run some code to compare them, and possibly check the database for any saved trips first." } },
+     { "id": "app", "type": "targetForm", "props": { "title": "your_app", "fields": [ { "label": "TOOL" }, { "label": "QUERY" } ] }, "anchor": { "text": "paragraph" } }
+    ]
+   }
+  },
+  {
+   "id": "sc5", "template": "brStack", "from": "s5",
+   "slots": {
+    "top": [
+     { "id": "llm", "type": "writerWindow", "props": { "title": "LLM · writing…", "vendors": ["GPT", "Claude", "Gemini"], "text": "Sure! To answer this I would probably start with a quick web search for current flight prices, then maybe run some code to compare them, and possibly check the database for any saved trips first." } },
+     { "id": "app", "type": "targetForm", "props": { "title": "your_app", "fields": [ { "label": "TOOL" }, { "label": "QUERY" } ] } }
+    ]
+   }
+  },
+  {
+   "id": "sc6", "template": "brStack", "from": "s6", "chapter": "THE ROUTER",
+   "slots": {
+    "eyebrow": { "props": { "text": "You list the tools" } },
+    "top": [
+     { "id": "sheet", "type": "decisionSheet", "props": { "title": "router · decision sheet", "situation": "Find me flights to Tokyo under $500.", "questions": [ { "label": "TOOL", "options": ["search", "code", "database"], "answer": "search", "p": 92 }, { "label": "NEEDS HUMAN?", "options": ["yes", "no"], "answer": "no", "p": 97 } ] } },
+     { "id": "app2", "type": "targetForm", "props": { "title": "your_app", "fields": [ { "label": "TOOL" }, { "label": "HUMAN?" } ] } }
+    ]
+   }
+  },
+  {
+   "id": "sc7", "template": "brStack", "from": "s7",
+   "slots": {
+    "eyebrow": { "props": { "text": "…and how sure it is" } },
+    "top": [
+     { "id": "sheet", "type": "decisionSheet", "props": { "title": "router · decision sheet", "situation": "Find me flights to Tokyo under $500.", "questions": [ { "label": "TOOL", "options": ["search", "code", "database"], "answer": "search", "p": 92 }, { "label": "NEEDS HUMAN?", "options": ["yes", "no"], "answer": "no", "p": 97 } ] } },
+     { "id": "app2", "type": "targetForm", "props": { "title": "your_app", "fields": [ { "label": "TOOL" }, { "label": "HUMAN?" } ] } }
+    ]
+   }
+  },
+  {
+   "id": "sc8", "template": "brStack", "from": "s8",
+   "slots": {
+    "eyebrow": { "props": { "text": "No prose. Just answers." } },
+    "top": [
+     { "id": "sheet", "type": "decisionSheet", "props": { "title": "router · decision sheet", "situation": "Find me flights to Tokyo under $500.", "questions": [ { "label": "TOOL", "options": ["search", "code", "database"], "answer": "search", "p": 92 }, { "label": "NEEDS HUMAN?", "options": ["yes", "no"], "answer": "no", "p": 97 } ] } },
+     { "id": "app2", "type": "targetForm", "props": { "title": "your_app", "fields": [ { "label": "TOOL" }, { "label": "HUMAN?" } ] } }
+    ]
+   }
+  },
+  {
+   "id": "sc9", "template": "brStack", "from": "s9", "chapter": "USE CASES", "tabs": { "items": ["Guardrails", "Speed", "Cost"], "active": 1 },
+   "slots": {
+    "headline": { "id": "gh", "props": { "lines": ["Agent guardrails"], "keyword": "guardrails" } },
+    "top": [
+     { "id": "term", "type": "terminal", "props": { "title": "coding agent · terminal", "intro": "The agent wants to run:", "command": "rm -rf ~/projects", "comment": "= delete every project on this machine", "typed": false } },
+     { "id": "guard", "type": "decisionSheet", "props": { "title": "router · safety check", "compact": true, "questions": [ { "label": "RUN THIS?", "options": ["allow", "ask a human", "block"] } ] } }
+    ]
+   }
+  },
+  {
+   "id": "sc10", "template": "brStack", "from": "s10", "tabs": { "items": ["Guardrails", "Speed", "Cost"], "active": 1 },
+   "slots": {
+    "headline": { "id": "gh", "props": { "lines": ["Agent guardrails"], "keyword": "guardrails" } },
+    "top": [
+     { "id": "term", "type": "terminal", "props": { "title": "coding agent · terminal", "intro": "The agent wants to run:", "command": "rm -rf ~/projects", "comment": "= delete every project on this machine", "typed": false } },
+     { "id": "guard", "type": "decisionSheet", "props": { "title": "router · safety check", "compact": true, "questions": [ { "label": "RUN THIS?", "options": ["allow", "ask a human", "block"] } ] } }
+    ]
+   }
+  },
+  {
+   "id": "sc11", "template": "brStack", "from": "s11", "chapter": "WHY IT MATTERS", "tabs": { "items": ["Guardrails", "Speed", "Cost"], "active": 2 },
+   "slots": {
+    "headline": { "props": { "lines": ["Milliseconds vs seconds"], "keyword": "Milliseconds" } },
+    "top": [
+     { "id": "race", "type": "raceBars", "props": { "title": "response time · one tiny choice", "axisMax": 5, "rows": [ { "label": "ROUTER", "value": 0.3, "display": "~0.3 s", "fast": true }, { "label": "BIG MODEL", "value": 4, "tone": "blue", "display": "~4 s" } ] } },
+     { "id": "bill", "type": "modelTile", "props": { "label": "Giant model for every choice", "chips": ["GPT", "Claude", "Gemini"], "h": 210 } }
+    ],
+    "display": { "props": { "lines": ["Slower. Pricier."], "keyword": "Pricier.", "tone": "red" } }
+   }
+  },
+  {
+   "id": "sc12", "template": "brSummary", "from": "s12", "chapter": "REMEMBER THIS",
+   "slots": {
+    "a": {
+     "headline": { "props": { "lines": ["Big models write."], "keyword": "write.", "tone": "blue" } },
+     "module": { "id": "sumw", "type": "writerWindow", "props": { "title": "LLM · writing…", "text": "Thanks for reaching out! It sounds like the best next step might be to search the web for…", "lines": 2 } }
+    },
+    "b": {
+     "headline": { "props": { "lines": ["Routers decide."], "keyword": "decide.", "tone": "magenta" } },
+     "module": { "id": "sums", "type": "decisionSheet", "props": { "title": "router · decision sheet", "compact": true, "questions": [ { "label": "TOOL", "options": ["search", "code", "database"] } ] } }
+    }
+   }
+  }
+ ],
+ "events": [
+  { "sentence": "s1", "anchor": { "text": "router" }, "op": "recolour", "target": "sc1_headline" },
+  { "sentence": "s1", "anchor": { "text": "agent?" }, "op": "focus", "target": "hook", "value": { "q": 1 } },
+  { "sentence": "s2", "anchor": { "text": "search" }, "op": "light", "target": "tools", "value": { "i": 1 } },
+  { "sentence": "s2", "anchor": { "text": "code," }, "op": "light", "target": "tools", "value": { "i": 2 } },
+  { "sentence": "s2", "anchor": { "text": "database," }, "op": "light", "target": "tools", "value": { "i": 3 } },
+  { "sentence": "s2", "anchor": { "text": "email." }, "op": "light", "target": "tools", "value": { "i": 4 } },
+  { "sentence": "s3", "anchor": { "text": "pick" }, "op": "focus", "target": "q", "value": { "q": 1 } },
+  { "sentence": "s3", "anchor": { "text": "tools." }, "op": "pick", "target": "tools", "value": { "i": 1 } },
+  { "sentence": "s4", "anchor": { "text": "writes" }, "op": "ask", "target": "app", "value": { "field": 1 } },
+  { "sentence": "s5", "anchor": { "text": "dig" }, "op": "mark", "target": "llm", "value": { "phrase": "web search" } },
+  { "sentence": "s5", "anchor": { "text": "name" }, "op": "fill", "target": "app", "value": { "field": 1, "text": "search?", "tone": "uncertain" } },
+  { "sentence": "s5", "anchor": { "text": "prose." }, "op": "mark", "target": "llm", "value": { "phrase": "probably" } },
+  { "sentence": "s5", "anchor": { "text": "prose." }, "op": "fill", "target": "app", "value": { "field": 2, "text": "maybe??", "tone": "uncertain" } },
+  { "sentence": "s6", "anchor": { "text": "list" }, "op": "focus", "target": "sheet", "value": { "q": 1 } },
+  { "sentence": "s6", "anchor": { "text": "tools" }, "op": "pulse", "target": "sheet", "value": { "q": 1, "opt": 2 } },
+  { "sentence": "s6", "anchor": { "text": "returns" }, "op": "scan", "target": "sheet" },
+  { "sentence": "s6", "anchor": { "text": "choice." }, "op": "tick", "target": "brhead", "value": { "by": 2 } },
+  { "sentence": "s7", "anchor": { "text": "confidence," }, "op": "prob", "target": "sheet", "value": { "q": 2, "p": 97 } },
+  { "sentence": "s7", "anchor": { "text": "ninety" }, "op": "prob", "target": "sheet", "value": { "q": 1, "p": 92 } },
+  { "sentence": "s7", "anchor": { "text": "search." }, "op": "outline", "target": "sheet", "value": { "q": 1 } },
+  { "sentence": "s8", "anchor": { "text": "drops" }, "op": "fly", "target": "app2", "value": { "from": "sheet.q1.o1", "field": 1, "text": "search" } },
+  { "sentence": "s8", "anchor": { "text": "straight" }, "op": "fly", "target": "app2", "value": { "from": "sheet.q2.o2", "field": 2, "text": "no" } },
+  { "sentence": "s8", "anchor": { "text": "structured" }, "op": "status", "target": "app2", "value": { "text": "Web search · no human needed", "tone": "ok" } },
+  { "sentence": "s9", "anchor": { "text": "guards" }, "op": "recolour", "target": "gh" },
+  { "sentence": "s9", "anchor": { "text": "command" }, "op": "type", "target": "term" },
+  { "sentence": "s10", "anchor": { "text": "Allow" }, "op": "pulse", "target": "guard", "value": { "q": 1, "opt": 1 } },
+  { "sentence": "s10", "anchor": { "text": "human," }, "op": "pulse", "target": "guard", "value": { "q": 1, "opt": 2 } },
+  { "sentence": "s10", "anchor": { "text": "block" }, "op": "pulse", "target": "guard", "value": { "q": 1, "opt": 3 } },
+  { "sentence": "s10", "anchor": { "text": "decided" }, "op": "pick", "target": "guard", "value": { "q": 1, "opt": 2 } },
+  { "sentence": "s10", "anchor": { "text": "milliseconds." }, "op": "tick", "target": "brhead", "value": { "by": 1 } },
+  { "sentence": "s11", "anchor": { "text": "big" }, "op": "race", "target": "race", "value": { "row": 1 } },
+  { "sentence": "s11", "anchor": { "text": "seconds," }, "op": "race", "target": "race", "value": { "row": 2 } },
+  { "sentence": "s11", "anchor": { "text": "tiny" }, "op": "tag", "target": "bill", "value": { "text": "$$$" } },
+  { "sentence": "s11", "anchor": { "text": "pricier." }, "op": "recolour", "target": "sc11_display" },
+  { "sentence": "s12", "anchor": { "text": "write," }, "op": "recolour", "target": "sc12_ahl" },
+  { "sentence": "s12", "anchor": { "text": "decide." }, "op": "recolour", "target": "sc12_bhl" },
+  { "sentence": "s12", "anchor": { "text": "decide." }, "op": "pick", "target": "sums", "value": { "q": 1, "opt": 1 } },
+  { "sentence": "s12", "anchor": { "text": "routers" }, "op": "countUp", "target": "brhead", "value": { "to": 1000000 } }
+ ]
+}

@@ -1,0 +1,58 @@
+{
+  "id": "referrals-landing",
+  "url": "https://www.vloombox.in/referrals",
+  "page": "/referrals",
+  "viewport": "16x9-close",
+  "ready": "document.body.innerText.includes('Post a request')",
+  "cursor": {
+    "start": [
+      760,
+      420
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.5,
+      "what": "Referrals: ask verified employees to refer you"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "*",
+        "textMatch": "^Ask verified employees"
+      },
+      "dur": 1.6,
+      "pad": 5,
+      "hold": 1,
+      "what": "'Ask verified employees to refer you, or refer candidates targeting your company'"
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "*",
+        "textMatch": "^Post a request for a company"
+      },
+      "dur": 1.7,
+      "pad": 6,
+      "moveDur": 0.7,
+      "hold": 1.1,
+      "at": [
+        0.8,
+        0.9
+      ],
+      "what": "post a request for a target company; members who work there can refer you"
+    },
+    {
+      "do": "hold",
+      "dur": 0.4
+    }
+  ],
+  "tags": [
+    "referrals",
+    "referral marketplace",
+    "landing"
+  ],
+  "description": "The vloombox Referrals page explaining that members working at your target company can refer you.",
+  "promoLine": "Need a referral? On vloom box dot in, people already working at your target company can refer you."
+}

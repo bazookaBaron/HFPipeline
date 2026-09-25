@@ -1,0 +1,64 @@
+{
+  "id": "faq-referrals",
+  "url": "https://www.vloombox.in/faq",
+  "page": "/faq",
+  "viewport": "16x9-close",
+  "ready": "document.body.innerText.includes('How do referrals work')",
+  "cursor": {
+    "start": [
+      760,
+      420
+    ]
+  },
+  "actions": [
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "click",
+      "target": {
+        "sel": "button",
+        "textIncludes": "How do referrals work"
+      },
+      "dur": 0.9,
+      "what": "expands 'How do referrals work?'"
+    },
+    {
+      "do": "waitFor",
+      "idle": false,
+      "settle": 0.6
+    },
+    {
+      "do": "hold",
+      "dur": 0.4
+    },
+    {
+      "do": "highlight",
+      "target": {
+        "sel": "*",
+        "textMatch": "^Post a request with the target company"
+      },
+      "dur": 2,
+      "pad": 6,
+      "moveDur": 0.8,
+      "hold": 1.4,
+      "at": [
+        0.9,
+        0.95
+      ],
+      "what": "answer: post a request, members at that company can choose to refer you"
+    },
+    {
+      "do": "hold",
+      "dur": 0.4
+    }
+  ],
+  "tags": [
+    "referrals",
+    "faq",
+    "accordion"
+  ],
+  "description": "The vloombox FAQ expands 'How do referrals work?' to show how members at a company can refer you.",
+  "promoLine": "Referrals decide interviews. vloom box dot in connects you with people inside your target company."
+}

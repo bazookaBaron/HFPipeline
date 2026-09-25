@@ -1,0 +1,30 @@
+from mlib import *
+im=load('f_1.41.png')
+def med(x0,y0,x1,y1,sat=False,dark=None):
+    r=im[y0:y1,x0:x1].reshape(-1,3)
+    if sat: s=r.max(1)-r.min(1); r=r[s>=np.percentile(s,90)]
+    if dark: L=r.sum(1); r=r[L<=np.percentile(L,dark)]
+    return hx(np.median(r,0))
+print('III bars sat', med(605,430,650,465,sat=True))
+print('git diamond sat', med(240,425,290,470,sat=True))
+print('ONE REPOSITORY text dark10', med(300,425,460,445,dark=10), bbox(im,300,420,470,448,thr=80))
+print('app/.git text', med(300,455,380,475,dark=10), bbox(im,300,452,390,478,thr=80))
+print('repo fill', med(470,450,590,480))
+print('folder card fill', med(480,570,570,590), med(480,640,640,655))
+print('stub vertical profile x=205'); 
+for y in range(603,617): print(y,hx(im[y,205]))
+print('trunk ext', bbox(im,185,440,195,770,thr=100))
+print('stub rows', rows(im,200,215,430,780,thr=100))
+print('app folder icon', med(238,578,275,610,sat=True), bbox(im,236,575,278,612,thr=100))
+print('app/ text', med(285,580,340,605,dark=10), bbox(im,285,580,340,610,thr=100))
+print('src line', med(285,625,470,645,dark=10), bbox(im,285,622,480,648,thr=80))
+print('main pill', bbox(im,570,575,655,612,thr=12,ref=np.array([254,252,248])))
+print('main pill fill', med(585,600,640,604), 'text', med(605,585,645,600,sat=True), bbox(im,605,583,645,603,thr=100,ref=np.array([230,236,240])))
+print('auth pill', bbox(im,505,725,655,762,thr=12,ref=np.array([254,252,248])), med(525,752,640,755), med(545,735,645,752,sat=True))
+print('auth folder', med(238,728,275,760,sat=True))
+print('auth card border y', [hx(im[y,450]) for y in range(704,712)])
+print('caption box', bbox(im,100,930,650,1030,thr=25), )
+print('caption fill', med(170,955,180,1000), 'dark word', med(170,960,380,995,dark=5), 'red word', med(385,960,550,995,sat=True))
+print('caption text bbox', bbox(im,165,955,560,1000,thr=150,ref=np.array([255,255,255])))
+print('G in caption', bbox(im,172,955,200,1000,thr=150,ref=np.array([255,255,255])))
+print('mascot bbox', bbox(im,30,480,215,910,thr=60))

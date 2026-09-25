@@ -65,8 +65,10 @@ you detect for technical terms (e.g. "O(1)", "O(N)", "HashDoS").
 ## Task C3 — Audio mastering module
 Add `orchestrator/lib/video/audioMaster.js`: `masterVideo({inputPath, outputPath, speed, log}) → {code, stats}`.
 It applies the video/audio speed (same filter semantics as `speedUp.js`; speed 1 = no-op) plus two-pass `loudnorm` to the
-**measured reference target: −17 LUFS integrated, LRA ≤ 2 LU, true peak −1 dBTP** (all 5 references measure −17.0…−17.2 LUFS,
-LRA 1.0–1.5, TP ≈ −1; ours −19.0 LUFS, LRA 2.8). Then re-measure with `ebur128` and return the stats. Also return the
+**measured reference target: −14 LUFS integrated, LRA ≤ 1.5 LU, true peak −1 dBTP** (CORRECTED 2026-09-25: measured with
+`ebur128=peak=true` directly on the delivered mp4s, all 5 references are −14.1…−14.2 LUFS, LRA 1.0–1.4, peak −0.5…−1.1;
+ours: v1 cs-b9d30fa7964c0cf0.mp4 −16.0 LUFS / LRA 2.9 / peak −3.1, v2-bluegreen-2.mp4 −17.1 / 2.1 / −3.2. The earlier
+−17 figure came from resampled mono WAV extracts and is wrong). Measure on the final mp4, same method. Then re-measure with `ebur128` and return the stats. Also return the
 percentage of 20 ms windows below −60 dBFS (references 0.1–0.2 %, ours 16.7 %) as a report metric, not something to hide.
 Don't raise the whole mix to mask gaps; gaps are fixed upstream by C1's trim. Test it on the existing
 `control-panel/data/renders/cs-b9d30fa7964c0cf0.mp4` (copy it; never overwrite it) and record the before/after stats.

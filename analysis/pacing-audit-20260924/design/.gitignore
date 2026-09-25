@@ -1,0 +1,7 @@
+# per-video audit scratch (frames/strips/crops) is regenerable from the scripts
+R*/**/*.png
+R*/**/*.jpg
+R*/**/*.npy
+R*/**/*.pyc
+R*/**/__pycache__/
+!R2/sbs*.png

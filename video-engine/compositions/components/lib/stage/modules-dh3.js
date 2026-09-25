@@ -74,7 +74,7 @@
     "html .st-node{position:absolute;display:flex;flex-direction:column;align-items:center;gap:10px;}",
     "html .st-node .n-tile{width:96px;height:96px;border-radius:14px;background:#10161e;border:1.5px solid #252b33;display:flex;align-items:center;justify-content:center;color:#6f7780;}",
     "html .st-node .n-lab{font-family:var(--st-mono);font-size:18px;color:#8b9098;white-space:nowrap;text-align:center;}",
-    "html .st-node .n-sub{font-size:12px;font-weight:700;letter-spacing:.16em;color:#5f666e;text-transform:uppercase;white-space:nowrap;margin-top:-6px;}",
+    "html .st-node .n-sub{font-size:12px;font-weight:700;letter-spacing:.16em;color:#72787f;text-transform:uppercase;white-space:nowrap;margin-top:-6px;}",
     "html .st-node[data-lit] .n-tile{background:var(--n-fill);border-color:var(--n-line);color:var(--n-acc);}",
     "html .st-node[data-lit] .n-lab{color:#e6e9ed;}",
     "html .st-elabel{position:absolute;transform:translate(-50%,-50%);font-family:var(--st-mono);font-size:15px;color:#aab1b9;background:#07090c;border:1.5px solid #20262d;border-radius:6px;padding:2px 8px;white-space:nowrap;}",
@@ -85,7 +85,7 @@
     "html .st-kpi .k-eye{font-size:13px;font-weight:700;letter-spacing:.2em;color:#85898f;text-transform:uppercase;white-space:nowrap;}",
     "html .st-kpi .k-val{font-family:var(--st-mono);font-size:40px;font-weight:700;color:#f1f5fd;white-space:nowrap;line-height:1;}",
     "html .st-kpi .k-val[data-tone]{color:var(--k-acc);}",
-    "html .st-kpi .k-sub{font-size:13px;font-weight:600;letter-spacing:.14em;color:#6f757c;text-transform:uppercase;white-space:nowrap;}",
+    "html .st-kpi .k-sub{font-size:13px;font-weight:600;letter-spacing:.14em;color:#787e85;text-transform:uppercase;white-space:nowrap;}",
     "html .st-kpi .k-bar{position:absolute;left:20px;right:20px;bottom:16px;height:8px;border-radius:4px;background:#10161e;overflow:hidden;}",
     "html .st-kpi .k-fill{position:absolute;left:0;top:0;bottom:0;border-radius:4px;transform-origin:0 50%;}",
     // code / terminal (X8 / U2)
@@ -95,7 +95,7 @@
     "html .st-code .c-name{margin-left:10px;font-family:var(--st-mono);font-size:15px;color:#7e848b;}",
     "html .st-code .c-eye{margin-left:auto;font-size:12px;font-weight:700;letter-spacing:.18em;color:#a77bfb;text-transform:uppercase;}",
     "html .st-code .c-ln{position:absolute;left:22px;right:22px;height:40px;display:flex;align-items:center;font-family:var(--st-mono);font-size:20px;color:#d6dbe1;white-space:pre;overflow:hidden;}",
-    "html .st-code .c-ln .pr{color:#a77bfb;margin-right:12px;}html .st-code .c-ln .cm{color:#5f666e;}",
+    "html .st-code .c-ln .pr{color:#a77bfb;margin-right:12px;}html .st-code .c-ln .cm{color:#72787f;}",
     "html .st-code .c-ln[data-tone]{color:var(--l-acc);}",
     "html .st-code .c-ln[data-hl='1']{background:#1a1407;box-shadow:inset 3px 0 0 #fcba48;}",
     "html .st-code .c-cur{display:inline-block;width:11px;height:24px;background:#d6dbe1;margin-left:4px;vertical-align:middle;}",
@@ -114,13 +114,13 @@
     // steps / tab strip (X7)
     "html .st-steps{display:flex;gap:12px;}",
     "html .st-steps .s-tab{flex:1;border-radius:9px;background:#060c0e;border:1.5px solid #1a2024;display:flex;align-items:center;gap:12px;padding:0 16px;overflow:hidden;}",
-    "html .st-steps .s-n{font-family:var(--st-mono);font-size:22px;font-weight:700;color:#4a5058;}",
-    "html .st-steps .s-l{font-size:15px;font-weight:700;letter-spacing:.14em;color:#6f757c;text-transform:uppercase;white-space:nowrap;}",
+    "html .st-steps .s-n{font-family:var(--st-mono);font-size:22px;font-weight:700;color:#787e85;}",
+    "html .st-steps .s-l{font-size:15px;font-weight:700;letter-spacing:.14em;color:#787e85;text-transform:uppercase;white-space:nowrap;}",
     "html .st-steps .s-tab[data-on='1']{background:var(--s-fill);border-color:var(--s-line);}",
     "html .st-steps .s-tab[data-on='1'] .s-n,html .st-steps .s-tab[data-on='1'] .s-l{color:var(--s-acc);}",
     "html .st-steps .s-tab[data-done='1'] .s-n{color:#8b9098;}",
     // chips grid (D6)
-    "html .st-chips .ch{position:absolute;border-radius:6px;border:1.5px solid #20262d;background:#0b0f14;display:flex;align-items:center;justify-content:center;font-family:var(--st-mono);font-size:16px;color:#6f757c;overflow:hidden;white-space:nowrap;}",
+    "html .st-chips .ch{position:absolute;border-radius:6px;border:1.5px solid #20262d;background:#0b0f14;display:flex;align-items:center;justify-content:center;font-family:var(--st-mono);font-size:16px;color:#787e85;overflow:hidden;white-space:nowrap;}",
     "html .st-chips .ch[data-tone]{background:var(--ch-fill);border-color:var(--ch-line);color:var(--ch-acc);}",
   ].join("\n");
 

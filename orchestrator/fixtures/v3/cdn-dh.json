@@ -92,7 +92,32 @@
       "text": "NETWORK",
       "size": "xl"
      }
-    }
+    },
+    "top": [
+     {
+      "id": "hookKpis",
+      "type": "kpis",
+      "anchor": {
+       "text": "instant."
+      },
+      "props": {
+       "items": [
+        {
+         "eyebrow": "FROM VIRGINIA",
+         "value": "240 ms",
+         "sub": "EVERY IMAGE",
+         "tone": "red"
+        },
+        {
+         "eyebrow": "FROM THE EDGE",
+         "value": "12 ms",
+         "sub": "SAME IMAGE",
+         "tone": "green"
+        }
+       ]
+      }
+     }
+    ]
    }
   },
   {
@@ -110,7 +135,7 @@
      {
       "id": "map",
       "type": "nodes",
-      "h": 430,
+      "h": 460,
       "props": {
        "nodes": [
         {
@@ -328,6 +353,39 @@
         }
        ]
       }
+     },
+     {
+      "id": "latBars",
+      "type": "bars",
+      "props": {
+       "filled": false,
+       "items": [
+        {
+         "label": "From origin",
+         "value": 100,
+         "display": "240 ms",
+         "tone": "red"
+        },
+        {
+         "label": "From Sydney edge",
+         "value": 5,
+         "display": "12 ms",
+         "tone": "green"
+        }
+       ]
+      }
+     },
+     {
+      "id": "hitNote",
+      "type": "note",
+      "props": {
+       "text": "served from syd-3 cache",
+       "tone": "green"
+      },
+      "anchor": {
+       "text": "hit,",
+       "sentence": "s6"
+      }
      }
     ],
     "bottom": [
@@ -406,6 +464,32 @@
          "tone": "green",
          "comment": true,
          "hidden": true
+        },
+        {
+         "text": "x-cache: HIT   (edge 11 ms)",
+         "tone": "green",
+         "comment": true,
+         "hidden": true
+        }
+       ]
+      }
+     },
+     {
+      "id": "missKpis",
+      "type": "kpis",
+      "props": {
+       "items": [
+        {
+         "eyebrow": "ORIGIN FETCH",
+         "value": "238 ms",
+         "sub": "FIRST REQUEST",
+         "tone": "amber"
+        },
+        {
+         "eyebrow": "EVERY NEXT HIT",
+         "value": "12 ms",
+         "sub": "FROM CACHE",
+         "tone": "green"
         }
        ]
       }
@@ -505,7 +589,8 @@
          "12 ms images"
         ]
        }
-      }
+      },
+      "h": 300
      },
      {
       "id": "sumKpis",
@@ -516,13 +601,15 @@
          "eyebrow": "IMAGE LOAD",
          "value": "12 ms",
          "sub": "WAS 240 MS",
-         "tone": "green"
+         "tone": "green",
+         "bar": 100
         },
         {
          "eyebrow": "ORIGIN HITS",
          "value": "5%",
          "sub": "WAS 100%",
-         "tone": "cyan"
+         "tone": "cyan",
+         "bar": 5
         }
        ]
       }
@@ -1071,6 +1158,39 @@
    "target": "term",
    "value": {
     "line": 4
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "served"
+   },
+   "op": "fill",
+   "target": "latBars",
+   "value": {
+    "item": 1
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "twelve"
+   },
+   "op": "fill",
+   "target": "latBars",
+   "value": {
+    "item": 2
+   }
+  },
+  {
+   "sentence": "s8b",
+   "anchor": {
+    "text": "instantly."
+   },
+   "op": "type",
+   "target": "term",
+   "value": {
+    "line": 5
    }
   }
  ]

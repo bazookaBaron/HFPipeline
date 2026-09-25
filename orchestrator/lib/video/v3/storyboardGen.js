@@ -97,6 +97,7 @@ function validate(sb, opts = {}) {
     });
   });
   if (sb.scaffolds[0].template !== "opener") P.push("the first scaffold must be an opener (hook headline)");
+  if (sb.scaffolds[0].template === "opener" && !((sb.scaffolds[0].slots || {}).top || []).length) P.push("the opener hook needs one visual module in slots.top under the headline (e.g. kpis, nodes, compare, chips) so frame 0 is not just text");
   // density: refs fill 20-40% of the frame with 2-5 modules; a lone small card reads as empty
   const { preferred } = require("./templates-generic");
   sb.scaffolds.forEach((sc) => {
@@ -104,7 +105,11 @@ function validate(sb, opts = {}) {
     const w = sc.layout === "full" ? 960 : 690;
     const mods = [].concat((sc.slots && sc.slots.top) || [], (sc.slots && sc.slots.bottom) || []);
     const h = mods.reduce((a, m) => a + (m.h || preferred(m, w)), 0) + Math.max(0, mods.length - 1) * 19;
-    if (mods.length && h < 380) P.push(`scaffold ${sc.id}: only ${Math.round(h)} px of content; add a second module (kpis, note, panel, stat) so the block is at least 380 px`);
+    const need = sc.layout === "full" ? 560 : 600; // R2 carrier+slot fills ~960 px; refs 2-5 modules per frame
+    if (mods.length && h < need) P.push(`scaffold ${sc.id}: only ${Math.round(h)} px of content; the frame reads empty. Add modules (nodes 420+, table, panel with 3-5 rows, kpis, note) to reach at least ${need} px`);
+    mods.forEach((m) => {
+      if (m.type === "panel" && (m.props && m.props.rows || []).length < 3) P.push(`scaffold ${sc.id}: panel ${m.id} has fewer than 3 rows; use 3-5 rows or a different module`);
+    });
   });
   if (P.length) return P;
 
@@ -176,6 +181,8 @@ VISUAL GRAMMAR (measured)
 - Negation / "instead of" / rejected option: strike. Cause -> effect / flow: connector draw then packet. State change: tone / text / activate.
 - Colour = role, never list position: red = failure/attack, green = success/healthy, amber = warning/in-progress, blue/cyan = the system/user, purple = infrastructure/secondary. Max 3 hues on screen.
 - Use 'full' layout for climaxes, wide diagrams and compare; otherwise 'column'.
+- Fill the frame like the references: every stack scaffold carries 2-4 modules totalling 600-900 px (column) / 560-900 px (full); panels have 3-5 rows; diagrams are 420-560 px tall. A lone small card is never enough.
+- The opening hook puts a visual module under the headline (slots.top), entering on a word.
 - Put hidden:true / lit:false / drawn:false on things that should appear on words, and the matching event on the word.
 - A module persists across consecutive scaffolds only if it has the same id; otherwise ids are unique.
 
@@ -269,6 +276,13 @@ async function generateStoryboard(topic, opts = {}) {
     } catch (err) {
       problems = [`model call failed: ${err.message}`];
       attempts.push({ problems });
+      // billing / auth / permission errors never fix themselves on retry: stop now, say why
+      if (/\b(401|402|403)\b|credits are depleted|API key not valid|PERMISSION_DENIED/i.test(err.message)) {
+        const fatal = new Error(`model unavailable (not retried): ${err.message}`);
+        fatal.attempts = attempts;
+        fatal.last = raw;
+        throw fatal;
+      }
       continue;
     }
     if (raw && !raw.version) raw.version = "storyboard.v3";

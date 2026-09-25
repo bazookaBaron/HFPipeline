@@ -1,0 +1,3166 @@
+{
+  "source": "C:\\Users\\debna\\Downloads\\igexport-DdZAerYMAYa.mp4",
+  "model": "small-cpu-int8",
+  "language": "en",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 3.74,
+      "text": "What are Transformers? Transformers are the architecture behind most modern AI models.",
+      "words": [
+        {
+          "text": "What",
+          "start": 0.0,
+          "end": 0.26
+        },
+        {
+          "text": "are",
+          "start": 0.26,
+          "end": 0.36
+        },
+        {
+          "text": "Transformers?",
+          "start": 0.36,
+          "end": 0.92
+        },
+        {
+          "text": "Transformers",
+          "start": 1.26,
+          "end": 1.7
+        },
+        {
+          "text": "are",
+          "start": 1.7,
+          "end": 1.82
+        },
+        {
+          "text": "the",
+          "start": 1.82,
+          "end": 1.9
+        },
+        {
+          "text": "architecture",
+          "start": 1.9,
+          "end": 2.28
+        },
+        {
+          "text": "behind",
+          "start": 2.28,
+          "end": 2.64
+        },
+        {
+          "text": "most",
+          "start": 2.64,
+          "end": 2.86
+        },
+        {
+          "text": "modern",
+          "start": 2.86,
+          "end": 3.18
+        },
+        {
+          "text": "AI",
+          "start": 3.18,
+          "end": 3.36
+        },
+        {
+          "text": "models.",
+          "start": 3.36,
+          "end": 3.74
+        }
+      ]
+    },
+    {
+      "start": 3.98,
+      "end": 8.62,
+      "text": "Chat, GPT, Claude, Gemini. Most large language models today are built on some version of the",
+      "words": [
+        {
+          "text": "Chat,",
+          "start": 3.98,
+          "end": 4.18
+        },
+        {
+          "text": "GPT,",
+          "start": 4.34,
+          "end": 4.84
+        },
+        {
+          "text": "Claude,",
+          "start": 5.02,
+          "end": 5.36
+        },
+        {
+          "text": "Gemini.",
+          "start": 5.5,
+          "end": 5.88
+        },
+        {
+          "text": "Most",
+          "start": 6.12,
+          "end": 6.22
+        },
+        {
+          "text": "large",
+          "start": 6.22,
+          "end": 6.48
+        },
+        {
+          "text": "language",
+          "start": 6.48,
+          "end": 6.76
+        },
+        {
+          "text": "models",
+          "start": 6.76,
+          "end": 7.06
+        },
+        {
+          "text": "today",
+          "start": 7.06,
+          "end": 7.34
+        },
+        {
+          "text": "are",
+          "start": 7.34,
+          "end": 7.5
+        },
+        {
+          "text": "built",
+          "start": 7.5,
+          "end": 7.66
+        },
+        {
+          "text": "on",
+          "start": 7.66,
+          "end": 7.84
+        },
+        {
+          "text": "some",
+          "start": 7.84,
+          "end": 8.06
+        },
+        {
+          "text": "version",
+          "start": 8.06,
+          "end": 8.36
+        },
+        {
+          "text": "of",
+          "start": 8.36,
+          "end": 8.52
+        },
+        {
+          "text": "the",
+          "start": 8.52,
+          "end": 8.62
+        }
+      ]
+    },
+    {
+      "start": 8.62,
+      "end": 12.16,
+      "text": "Transformer. And the big reason they work so well comes down to one idea, attention.",
+      "words": [
+        {
+          "text": "Transformer.",
+          "start": 8.62,
+          "end": 9.28
+        },
+        {
+          "text": "And",
+          "start": 9.34,
+          "end": 9.42
+        },
+        {
+          "text": "the",
+          "start": 9.42,
+          "end": 9.54
+        },
+        {
+          "text": "big",
+          "start": 9.54,
+          "end": 9.66
+        },
+        {
+          "text": "reason",
+          "start": 9.66,
+          "end": 9.96
+        },
+        {
+          "text": "they",
+          "start": 9.96,
+          "end": 10.12
+        },
+        {
+          "text": "work",
+          "start": 10.12,
+          "end": 10.28
+        },
+        {
+          "text": "so",
+          "start": 10.28,
+          "end": 10.46
+        },
+        {
+          "text": "well",
+          "start": 10.46,
+          "end": 10.64
+        },
+        {
+          "text": "comes",
+          "start": 10.64,
+          "end": 10.84
+        },
+        {
+          "text": "down",
+          "start": 10.84,
+          "end": 11.02
+        },
+        {
+          "text": "to",
+          "start": 11.02,
+          "end": 11.14
+        },
+        {
+          "text": "one",
+          "start": 11.14,
+          "end": 11.3
+        },
+        {
+          "text": "idea,",
+          "start": 11.3,
+          "end": 11.58
+        },
+        {
+          "text": "attention.",
+          "start": 11.82,
+          "end": 12.16
+        }
+      ]
+    },
+    {
+      "start": 12.7,
+      "end": 16.92,
+      "text": "Let's build the intuition from scratch. Imagine the sentence. The animal didn't cross the street",
+      "words": [
+        {
+          "text": "Let's",
+          "start": 12.7,
+          "end": 12.9
+        },
+        {
+          "text": "build",
+          "start": 12.9,
+          "end": 13.06
+        },
+        {
+          "text": "the",
+          "start": 13.06,
+          "end": 13.22
+        },
+        {
+          "text": "intuition",
+          "start": 13.22,
+          "end": 13.62
+        },
+        {
+          "text": "from",
+          "start": 13.62,
+          "end": 13.86
+        },
+        {
+          "text": "scratch.",
+          "start": 13.86,
+          "end": 14.1
+        },
+        {
+          "text": "Imagine",
+          "start": 14.52,
+          "end": 14.76
+        },
+        {
+          "text": "the",
+          "start": 14.76,
+          "end": 15.0
+        },
+        {
+          "text": "sentence.",
+          "start": 15.0,
+          "end": 15.26
+        },
+        {
+          "text": "The",
+          "start": 15.64,
+          "end": 15.66
+        },
+        {
+          "text": "animal",
+          "start": 15.66,
+          "end": 15.94
+        },
+        {
+          "text": "didn't",
+          "start": 15.94,
+          "end": 16.28
+        },
+        {
+          "text": "cross",
+          "start": 16.28,
+          "end": 16.5
+        },
+        {
+          "text": "the",
+          "start": 16.5,
+          "end": 16.7
+        },
+        {
+          "text": "street",
+          "start": 16.7,
+          "end": 16.92
+        }
+      ]
+    },
+    {
+      "start": 16.92,
+      "end": 21.26,
+      "text": "because it was too tired. What does the word it refer to? The street or the animal? A human",
+      "words": [
+        {
+          "text": "because",
+          "start": 16.92,
+          "end": 17.16
+        },
+        {
+          "text": "it",
+          "start": 17.16,
+          "end": 17.3
+        },
+        {
+          "text": "was",
+          "start": 17.3,
+          "end": 17.42
+        },
+        {
+          "text": "too",
+          "start": 17.42,
+          "end": 17.6
+        },
+        {
+          "text": "tired.",
+          "start": 17.6,
+          "end": 17.98
+        },
+        {
+          "text": "What",
+          "start": 18.14,
+          "end": 18.26
+        },
+        {
+          "text": "does",
+          "start": 18.26,
+          "end": 18.38
+        },
+        {
+          "text": "the",
+          "start": 18.38,
+          "end": 18.5
+        },
+        {
+          "text": "word",
+          "start": 18.5,
+          "end": 18.64
+        },
+        {
+          "text": "it",
+          "start": 18.64,
+          "end": 18.88
+        },
+        {
+          "text": "refer",
+          "start": 18.88,
+          "end": 19.14
+        },
+        {
+          "text": "to?",
+          "start": 19.14,
+          "end": 19.42
+        },
+        {
+          "text": "The",
+          "start": 19.62,
+          "end": 19.72
+        },
+        {
+          "text": "street",
+          "start": 19.72,
+          "end": 20.0
+        },
+        {
+          "text": "or",
+          "start": 20.0,
+          "end": 20.3
+        },
+        {
+          "text": "the",
+          "start": 20.3,
+          "end": 20.44
+        },
+        {
+          "text": "animal?",
+          "start": 20.44,
+          "end": 20.78
+        },
+        {
+          "text": "A",
+          "start": 20.96,
+          "end": 21.04
+        },
+        {
+          "text": "human",
+          "start": 21.04,
+          "end": 21.26
+        }
+      ]
+    },
+    {
+      "start": 21.26,
+      "end": 25.32,
+      "text": "looks at the surrounding words and understands that it refers to the animal. Transformers",
+      "words": [
+        {
+          "text": "looks",
+          "start": 21.26,
+          "end": 21.46
+        },
+        {
+          "text": "at",
+          "start": 21.46,
+          "end": 21.62
+        },
+        {
+          "text": "the",
+          "start": 21.62,
+          "end": 21.72
+        },
+        {
+          "text": "surrounding",
+          "start": 21.72,
+          "end": 22.02
+        },
+        {
+          "text": "words",
+          "start": 22.02,
+          "end": 22.36
+        },
+        {
+          "text": "and",
+          "start": 22.36,
+          "end": 22.56
+        },
+        {
+          "text": "understands",
+          "start": 22.56,
+          "end": 22.9
+        },
+        {
+          "text": "that",
+          "start": 22.9,
+          "end": 23.22
+        },
+        {
+          "text": "it",
+          "start": 23.22,
+          "end": 23.38
+        },
+        {
+          "text": "refers",
+          "start": 23.38,
+          "end": 23.72
+        },
+        {
+          "text": "to",
+          "start": 23.72,
+          "end": 23.92
+        },
+        {
+          "text": "the",
+          "start": 23.92,
+          "end": 24.04
+        },
+        {
+          "text": "animal.",
+          "start": 24.04,
+          "end": 24.38
+        },
+        {
+          "text": "Transformers",
+          "start": 24.88,
+          "end": 25.32
+        }
+      ]
+    },
+    {
+      "start": 25.32,
+      "end": 29.14,
+      "text": "do something similar. Instead of processing each word in isolation, they look at how every",
+      "words": [
+        {
+          "text": "do",
+          "start": 25.32,
+          "end": 25.5
+        },
+        {
+          "text": "something",
+          "start": 25.5,
+          "end": 25.74
+        },
+        {
+          "text": "similar.",
+          "start": 25.74,
+          "end": 26.14
+        },
+        {
+          "text": "Instead",
+          "start": 26.28,
+          "end": 26.5
+        },
+        {
+          "text": "of",
+          "start": 26.5,
+          "end": 26.68
+        },
+        {
+          "text": "processing",
+          "start": 26.68,
+          "end": 27.06
+        },
+        {
+          "text": "each",
+          "start": 27.06,
+          "end": 27.38
+        },
+        {
+          "text": "word",
+          "start": 27.38,
+          "end": 27.58
+        },
+        {
+          "text": "in",
+          "start": 27.58,
+          "end": 27.72
+        },
+        {
+          "text": "isolation,",
+          "start": 27.72,
+          "end": 28.16
+        },
+        {
+          "text": "they",
+          "start": 28.4,
+          "end": 28.48
+        },
+        {
+          "text": "look",
+          "start": 28.48,
+          "end": 28.64
+        },
+        {
+          "text": "at",
+          "start": 28.64,
+          "end": 28.74
+        },
+        {
+          "text": "how",
+          "start": 28.74,
+          "end": 28.88
+        },
+        {
+          "text": "every",
+          "start": 28.88,
+          "end": 29.14
+        }
+      ]
+    },
+    {
+      "start": 29.14,
+      "end": 30.32,
+      "text": "Every token relates to the others.",
+      "words": [
+        {
+          "text": "Every",
+          "start": 29.14,
+          "end": 29.24
+        },
+        {
+          "text": "token",
+          "start": 29.24,
+          "end": 29.4
+        },
+        {
+          "text": "relates",
+          "start": 29.4,
+          "end": 29.72
+        },
+        {
+          "text": "to",
+          "start": 29.72,
+          "end": 29.98
+        },
+        {
+          "text": "the",
+          "start": 29.98,
+          "end": 30.1
+        },
+        {
+          "text": "others.",
+          "start": 30.1,
+          "end": 30.32
+        }
+      ]
+    },
+    {
+      "start": 30.52,
+      "end": 32.12,
+      "text": "That mechanism is called self-attention.",
+      "words": [
+        {
+          "text": "That",
+          "start": 30.52,
+          "end": 30.64
+        },
+        {
+          "text": "mechanism",
+          "start": 30.64,
+          "end": 31.0
+        },
+        {
+          "text": "is",
+          "start": 31.0,
+          "end": 31.26
+        },
+        {
+          "text": "called",
+          "start": 31.26,
+          "end": 31.44
+        },
+        {
+          "text": "self",
+          "start": 31.44,
+          "end": 31.78
+        },
+        {
+          "text": "-attention.",
+          "start": 31.78,
+          "end": 32.12
+        }
+      ]
+    },
+    {
+      "start": 32.34,
+      "end": 34.2,
+      "text": "Let's say the model is processing the word it.",
+      "words": [
+        {
+          "text": "Let's",
+          "start": 32.34,
+          "end": 32.52
+        },
+        {
+          "text": "say",
+          "start": 32.52,
+          "end": 32.6
+        },
+        {
+          "text": "the",
+          "start": 32.6,
+          "end": 32.72
+        },
+        {
+          "text": "model",
+          "start": 32.72,
+          "end": 32.94
+        },
+        {
+          "text": "is",
+          "start": 32.94,
+          "end": 33.14
+        },
+        {
+          "text": "processing",
+          "start": 33.14,
+          "end": 33.56
+        },
+        {
+          "text": "the",
+          "start": 33.56,
+          "end": 33.76
+        },
+        {
+          "text": "word",
+          "start": 33.76,
+          "end": 33.92
+        },
+        {
+          "text": "it.",
+          "start": 33.92,
+          "end": 34.2
+        }
+      ]
+    },
+    {
+      "start": 34.62,
+      "end": 37.9,
+      "text": "Which previous words should I pay attention to in order to understand what it means?",
+      "words": [
+        {
+          "text": "Which",
+          "start": 34.62,
+          "end": 34.74
+        },
+        {
+          "text": "previous",
+          "start": 34.74,
+          "end": 35.0
+        },
+        {
+          "text": "words",
+          "start": 35.0,
+          "end": 35.4
+        },
+        {
+          "text": "should",
+          "start": 35.4,
+          "end": 35.6
+        },
+        {
+          "text": "I",
+          "start": 35.6,
+          "end": 35.7
+        },
+        {
+          "text": "pay",
+          "start": 35.7,
+          "end": 35.88
+        },
+        {
+          "text": "attention",
+          "start": 35.88,
+          "end": 36.16
+        },
+        {
+          "text": "to",
+          "start": 36.16,
+          "end": 36.42
+        },
+        {
+          "text": "in",
+          "start": 36.42,
+          "end": 36.52
+        },
+        {
+          "text": "order",
+          "start": 36.52,
+          "end": 36.68
+        },
+        {
+          "text": "to",
+          "start": 36.68,
+          "end": 36.8
+        },
+        {
+          "text": "understand",
+          "start": 36.8,
+          "end": 37.16
+        },
+        {
+          "text": "what",
+          "start": 37.16,
+          "end": 37.38
+        },
+        {
+          "text": "it",
+          "start": 37.38,
+          "end": 37.54
+        },
+        {
+          "text": "means?",
+          "start": 37.54,
+          "end": 37.9
+        }
+      ]
+    },
+    {
+      "start": 38.08,
+      "end": 42.36,
+      "text": "Maybe animal gets a high attention score, street gets a lower score, tired also matters.",
+      "words": [
+        {
+          "text": "Maybe",
+          "start": 38.08,
+          "end": 38.3
+        },
+        {
+          "text": "animal",
+          "start": 38.3,
+          "end": 38.78
+        },
+        {
+          "text": "gets",
+          "start": 38.78,
+          "end": 39.04
+        },
+        {
+          "text": "a",
+          "start": 39.04,
+          "end": 39.22
+        },
+        {
+          "text": "high",
+          "start": 39.22,
+          "end": 39.38
+        },
+        {
+          "text": "attention",
+          "start": 39.38,
+          "end": 39.64
+        },
+        {
+          "text": "score,",
+          "start": 39.64,
+          "end": 40.06
+        },
+        {
+          "text": "street",
+          "start": 40.22,
+          "end": 40.42
+        },
+        {
+          "text": "gets",
+          "start": 40.42,
+          "end": 40.68
+        },
+        {
+          "text": "a",
+          "start": 40.68,
+          "end": 40.82
+        },
+        {
+          "text": "lower",
+          "start": 40.82,
+          "end": 40.96
+        },
+        {
+          "text": "score,",
+          "start": 40.96,
+          "end": 41.24
+        },
+        {
+          "text": "tired",
+          "start": 41.38,
+          "end": 41.62
+        },
+        {
+          "text": "also",
+          "start": 41.62,
+          "end": 42.02
+        },
+        {
+          "text": "matters.",
+          "start": 42.02,
+          "end": 42.36
+        }
+      ]
+    },
+    {
+      "start": 42.6,
+      "end": 46.6,
+      "text": "The model combines all of that context into a better representation of the word and it",
+      "words": [
+        {
+          "text": "The",
+          "start": 42.6,
+          "end": 42.64
+        },
+        {
+          "text": "model",
+          "start": 42.64,
+          "end": 42.82
+        },
+        {
+          "text": "combines",
+          "start": 42.82,
+          "end": 43.18
+        },
+        {
+          "text": "all",
+          "start": 43.18,
+          "end": 43.48
+        },
+        {
+          "text": "of",
+          "start": 43.48,
+          "end": 43.6
+        },
+        {
+          "text": "that",
+          "start": 43.6,
+          "end": 43.74
+        },
+        {
+          "text": "context",
+          "start": 43.74,
+          "end": 44.14
+        },
+        {
+          "text": "into",
+          "start": 44.14,
+          "end": 44.42
+        },
+        {
+          "text": "a",
+          "start": 44.42,
+          "end": 44.54
+        },
+        {
+          "text": "better",
+          "start": 44.54,
+          "end": 44.72
+        },
+        {
+          "text": "representation",
+          "start": 44.72,
+          "end": 45.22
+        },
+        {
+          "text": "of",
+          "start": 45.22,
+          "end": 45.62
+        },
+        {
+          "text": "the",
+          "start": 45.62,
+          "end": 45.72
+        },
+        {
+          "text": "word",
+          "start": 45.72,
+          "end": 45.98
+        },
+        {
+          "text": "and",
+          "start": 45.98,
+          "end": 46.48
+        },
+        {
+          "text": "it",
+          "start": 46.48,
+          "end": 46.6
+        }
+      ]
+    },
+    {
+      "start": 46.6,
+      "end": 47.74,
+      "text": "does this for every token.",
+      "words": [
+        {
+          "text": "does",
+          "start": 46.6,
+          "end": 46.78
+        },
+        {
+          "text": "this",
+          "start": 46.78,
+          "end": 46.94
+        },
+        {
+          "text": "for",
+          "start": 46.94,
+          "end": 47.16
+        },
+        {
+          "text": "every",
+          "start": 47.16,
+          "end": 47.42
+        },
+        {
+          "text": "token.",
+          "start": 47.42,
+          "end": 47.74
+        }
+      ]
+    },
+    {
+      "start": 47.94,
+      "end": 48.9,
+      "text": "Now here's where it gets powerful.",
+      "words": [
+        {
+          "text": "Now",
+          "start": 47.94,
+          "end": 48.04
+        },
+        {
+          "text": "here's",
+          "start": 48.04,
+          "end": 48.22
+        },
+        {
+          "text": "where",
+          "start": 48.22,
+          "end": 48.32
+        },
+        {
+          "text": "it",
+          "start": 48.32,
+          "end": 48.42
+        },
+        {
+          "text": "gets",
+          "start": 48.42,
+          "end": 48.56
+        },
+        {
+          "text": "powerful.",
+          "start": 48.56,
+          "end": 48.9
+        }
+      ]
+    },
+    {
+      "start": 49.24,
+      "end": 52.68,
+      "text": "Transformers don't just use one attention pattern, they use multiple attention heads.",
+      "words": [
+        {
+          "text": "Transformers",
+          "start": 49.24,
+          "end": 49.68
+        },
+        {
+          "text": "don't",
+          "start": 49.68,
+          "end": 49.84
+        },
+        {
+          "text": "just",
+          "start": 49.84,
+          "end": 50.02
+        },
+        {
+          "text": "use",
+          "start": 50.02,
+          "end": 50.2
+        },
+        {
+          "text": "one",
+          "start": 50.2,
+          "end": 50.4
+        },
+        {
+          "text": "attention",
+          "start": 50.4,
+          "end": 50.68
+        },
+        {
+          "text": "pattern,",
+          "start": 50.68,
+          "end": 51.06
+        },
+        {
+          "text": "they",
+          "start": 51.26,
+          "end": 51.36
+        },
+        {
+          "text": "use",
+          "start": 51.36,
+          "end": 51.52
+        },
+        {
+          "text": "multiple",
+          "start": 51.52,
+          "end": 51.84
+        },
+        {
+          "text": "attention",
+          "start": 51.84,
+          "end": 52.3
+        },
+        {
+          "text": "heads.",
+          "start": 52.3,
+          "end": 52.68
+        }
+      ]
+    },
+    {
+      "start": 52.92,
+      "end": 55.48,
+      "text": "One head might learn relationships between subjects and pronouns.",
+      "words": [
+        {
+          "text": "One",
+          "start": 52.92,
+          "end": 53.06
+        },
+        {
+          "text": "head",
+          "start": 53.06,
+          "end": 53.24
+        },
+        {
+          "text": "might",
+          "start": 53.24,
+          "end": 53.4
+        },
+        {
+          "text": "learn",
+          "start": 53.4,
+          "end": 53.62
+        },
+        {
+          "text": "relationships",
+          "start": 53.62,
+          "end": 54.14
+        },
+        {
+          "text": "between",
+          "start": 54.14,
+          "end": 54.56
+        },
+        {
+          "text": "subjects",
+          "start": 54.56,
+          "end": 54.96
+        },
+        {
+          "text": "and",
+          "start": 54.96,
+          "end": 55.16
+        },
+        {
+          "text": "pronouns.",
+          "start": 55.16,
+          "end": 55.48
+        }
+      ]
+    },
+    {
+      "start": 55.78,
+      "end": 57.0,
+      "text": "Another might focus on grammar.",
+      "words": [
+        {
+          "text": "Another",
+          "start": 55.78,
+          "end": 55.94
+        },
+        {
+          "text": "might",
+          "start": 55.94,
+          "end": 56.18
+        },
+        {
+          "text": "focus",
+          "start": 56.18,
+          "end": 56.44
+        },
+        {
+          "text": "on",
+          "start": 56.44,
+          "end": 56.68
+        },
+        {
+          "text": "grammar.",
+          "start": 56.68,
+          "end": 57.0
+        }
+      ]
+    },
+    {
+      "start": 57.0,
+      "end": 60.98,
+      "text": "Another might connect cause and effect. Another might track long-range dependencies.",
+      "words": [
+        {
+          "text": "Another",
+          "start": 57.0,
+          "end": 57.62
+        },
+        {
+          "text": "might",
+          "start": 57.62,
+          "end": 57.9
+        },
+        {
+          "text": "connect",
+          "start": 57.9,
+          "end": 58.18
+        },
+        {
+          "text": "cause",
+          "start": 58.18,
+          "end": 58.52
+        },
+        {
+          "text": "and",
+          "start": 58.52,
+          "end": 58.66
+        },
+        {
+          "text": "effect.",
+          "start": 58.66,
+          "end": 58.96
+        },
+        {
+          "text": "Another",
+          "start": 59.22,
+          "end": 59.32
+        },
+        {
+          "text": "might",
+          "start": 59.32,
+          "end": 59.6
+        },
+        {
+          "text": "track",
+          "start": 59.6,
+          "end": 59.86
+        },
+        {
+          "text": "long",
+          "start": 59.86,
+          "end": 60.16
+        },
+        {
+          "text": "-range",
+          "start": 60.16,
+          "end": 60.34
+        },
+        {
+          "text": "dependencies.",
+          "start": 60.34,
+          "end": 60.98
+        }
+      ]
+    },
+    {
+      "start": 61.28,
+      "end": 64.32,
+      "text": "Together, these heads let the model build a richer understanding of the text.",
+      "words": [
+        {
+          "text": "Together,",
+          "start": 61.28,
+          "end": 61.52
+        },
+        {
+          "text": "these",
+          "start": 61.84,
+          "end": 61.96
+        },
+        {
+          "text": "heads",
+          "start": 61.96,
+          "end": 62.2
+        },
+        {
+          "text": "let",
+          "start": 62.2,
+          "end": 62.38
+        },
+        {
+          "text": "the",
+          "start": 62.38,
+          "end": 62.48
+        },
+        {
+          "text": "model",
+          "start": 62.48,
+          "end": 62.7
+        },
+        {
+          "text": "build",
+          "start": 62.7,
+          "end": 62.94
+        },
+        {
+          "text": "a",
+          "start": 62.94,
+          "end": 63.04
+        },
+        {
+          "text": "richer",
+          "start": 63.04,
+          "end": 63.24
+        },
+        {
+          "text": "understanding",
+          "start": 63.24,
+          "end": 63.76
+        },
+        {
+          "text": "of",
+          "start": 63.76,
+          "end": 63.92
+        },
+        {
+          "text": "the",
+          "start": 63.92,
+          "end": 64.02
+        },
+        {
+          "text": "text.",
+          "start": 64.02,
+          "end": 64.32
+        }
+      ]
+    },
+    {
+      "start": 64.54,
+      "end": 67.2,
+      "text": "But attention alone isn't enough. Words also need position,",
+      "words": [
+        {
+          "text": "But",
+          "start": 64.54,
+          "end": 64.6
+        },
+        {
+          "text": "attention",
+          "start": 64.6,
+          "end": 64.9
+        },
+        {
+          "text": "alone",
+          "start": 64.9,
+          "end": 65.24
+        },
+        {
+          "text": "isn't",
+          "start": 65.24,
+          "end": 65.56
+        },
+        {
+          "text": "enough.",
+          "start": 65.56,
+          "end": 65.84
+        },
+        {
+          "text": "Words",
+          "start": 66.12,
+          "end": 66.26
+        },
+        {
+          "text": "also",
+          "start": 66.26,
+          "end": 66.6
+        },
+        {
+          "text": "need",
+          "start": 66.6,
+          "end": 66.78
+        },
+        {
+          "text": "position,",
+          "start": 66.78,
+          "end": 67.2
+        }
+      ]
+    },
+    {
+      "start": 67.38,
+      "end": 70.96,
+      "text": "because dog bites man and man bites dog contain the same words,",
+      "words": [
+        {
+          "text": "because",
+          "start": 67.38,
+          "end": 67.62
+        },
+        {
+          "text": "dog",
+          "start": 67.62,
+          "end": 67.92
+        },
+        {
+          "text": "bites",
+          "start": 67.92,
+          "end": 68.18
+        },
+        {
+          "text": "man",
+          "start": 68.18,
+          "end": 68.48
+        },
+        {
+          "text": "and",
+          "start": 68.48,
+          "end": 68.74
+        },
+        {
+          "text": "man",
+          "start": 68.74,
+          "end": 68.92
+        },
+        {
+          "text": "bites",
+          "start": 68.92,
+          "end": 69.18
+        },
+        {
+          "text": "dog",
+          "start": 69.18,
+          "end": 69.58
+        },
+        {
+          "text": "contain",
+          "start": 69.58,
+          "end": 70.14
+        },
+        {
+          "text": "the",
+          "start": 70.14,
+          "end": 70.4
+        },
+        {
+          "text": "same",
+          "start": 70.4,
+          "end": 70.56
+        },
+        {
+          "text": "words,",
+          "start": 70.56,
+          "end": 70.96
+        }
+      ]
+    },
+    {
+      "start": 71.12,
+      "end": 72.88,
+      "text": "but obviously mean very different things.",
+      "words": [
+        {
+          "text": "but",
+          "start": 71.12,
+          "end": 71.22
+        },
+        {
+          "text": "obviously",
+          "start": 71.22,
+          "end": 71.64
+        },
+        {
+          "text": "mean",
+          "start": 71.64,
+          "end": 71.92
+        },
+        {
+          "text": "very",
+          "start": 71.92,
+          "end": 72.2
+        },
+        {
+          "text": "different",
+          "start": 72.2,
+          "end": 72.52
+        },
+        {
+          "text": "things.",
+          "start": 72.52,
+          "end": 72.88
+        }
+      ]
+    },
+    {
+      "start": 73.1,
+      "end": 75.36,
+      "text": "So transformers also include positional information.",
+      "words": [
+        {
+          "text": "So",
+          "start": 73.1,
+          "end": 73.2
+        },
+        {
+          "text": "transformers",
+          "start": 73.2,
+          "end": 73.82
+        },
+        {
+          "text": "also",
+          "start": 73.82,
+          "end": 74.04
+        },
+        {
+          "text": "include",
+          "start": 74.04,
+          "end": 74.4
+        },
+        {
+          "text": "positional",
+          "start": 74.4,
+          "end": 74.98
+        },
+        {
+          "text": "information.",
+          "start": 74.98,
+          "end": 75.36
+        }
+      ]
+    },
+    {
+      "start": 75.64,
+      "end": 77.84,
+      "text": "That tells the model where each token appears in the sequence.",
+      "words": [
+        {
+          "text": "That",
+          "start": 75.64,
+          "end": 75.76
+        },
+        {
+          "text": "tells",
+          "start": 75.76,
+          "end": 75.92
+        },
+        {
+          "text": "the",
+          "start": 75.92,
+          "end": 76.06
+        },
+        {
+          "text": "model",
+          "start": 76.06,
+          "end": 76.3
+        },
+        {
+          "text": "where",
+          "start": 76.3,
+          "end": 76.48
+        },
+        {
+          "text": "each",
+          "start": 76.48,
+          "end": 76.68
+        },
+        {
+          "text": "token",
+          "start": 76.68,
+          "end": 76.92
+        },
+        {
+          "text": "appears",
+          "start": 76.92,
+          "end": 77.24
+        },
+        {
+          "text": "in",
+          "start": 77.24,
+          "end": 77.46
+        },
+        {
+          "text": "the",
+          "start": 77.46,
+          "end": 77.54
+        },
+        {
+          "text": "sequence.",
+          "start": 77.54,
+          "end": 77.84
+        }
+      ]
+    },
+    {
+      "start": 78.2,
+      "end": 79.06,
+      "text": "Now let's zoom out.",
+      "words": [
+        {
+          "text": "Now",
+          "start": 78.2,
+          "end": 78.34
+        },
+        {
+          "text": "let's",
+          "start": 78.34,
+          "end": 78.62
+        },
+        {
+          "text": "zoom",
+          "start": 78.62,
+          "end": 78.78
+        },
+        {
+          "text": "out.",
+          "start": 78.78,
+          "end": 79.06
+        }
+      ]
+    },
+    {
+      "start": 79.24,
+      "end": 83.68,
+      "text": "A transformer is built from layers. Inside each layer, you usually have self-attention.",
+      "words": [
+        {
+          "text": "A",
+          "start": 79.24,
+          "end": 79.28
+        },
+        {
+          "text": "transformer",
+          "start": 79.28,
+          "end": 79.72
+        },
+        {
+          "text": "is",
+          "start": 79.72,
+          "end": 79.96
+        },
+        {
+          "text": "built",
+          "start": 79.96,
+          "end": 80.14
+        },
+        {
+          "text": "from",
+          "start": 80.14,
+          "end": 80.32
+        },
+        {
+          "text": "layers.",
+          "start": 80.32,
+          "end": 80.58
+        },
+        {
+          "text": "Inside",
+          "start": 80.82,
+          "end": 81.02
+        },
+        {
+          "text": "each",
+          "start": 81.02,
+          "end": 81.3
+        },
+        {
+          "text": "layer,",
+          "start": 81.3,
+          "end": 81.56
+        },
+        {
+          "text": "you",
+          "start": 81.78,
+          "end": 81.84
+        },
+        {
+          "text": "usually",
+          "start": 81.84,
+          "end": 82.1
+        },
+        {
+          "text": "have",
+          "start": 82.1,
+          "end": 82.38
+        },
+        {
+          "text": "self",
+          "start": 82.38,
+          "end": 83.16
+        },
+        {
+          "text": "-attention.",
+          "start": 83.16,
+          "end": 83.68
+        }
+      ]
+    },
+    {
+      "start": 83.68,
+      "end": 87.14,
+      "text": "A feed-forward neural network, normalization, and residual connections.",
+      "words": [
+        {
+          "text": "A",
+          "start": 83.68,
+          "end": 84.04
+        },
+        {
+          "text": "feed",
+          "start": 84.04,
+          "end": 84.22
+        },
+        {
+          "text": "-forward",
+          "start": 84.22,
+          "end": 84.48
+        },
+        {
+          "text": "neural",
+          "start": 84.48,
+          "end": 84.76
+        },
+        {
+          "text": "network,",
+          "start": 84.76,
+          "end": 85.14
+        },
+        {
+          "text": "normalization,",
+          "start": 85.3,
+          "end": 85.92
+        },
+        {
+          "text": "and",
+          "start": 86.1,
+          "end": 86.22
+        },
+        {
+          "text": "residual",
+          "start": 86.22,
+          "end": 86.56
+        },
+        {
+          "text": "connections.",
+          "start": 86.56,
+          "end": 87.14
+        }
+      ]
+    },
+    {
+      "start": 87.44,
+      "end": 90.52,
+      "text": "The output of one layer becomes the input to the next, layer after layer.",
+      "words": [
+        {
+          "text": "The",
+          "start": 87.44,
+          "end": 87.48
+        },
+        {
+          "text": "output",
+          "start": 87.48,
+          "end": 87.76
+        },
+        {
+          "text": "of",
+          "start": 87.76,
+          "end": 87.94
+        },
+        {
+          "text": "one",
+          "start": 87.94,
+          "end": 88.14
+        },
+        {
+          "text": "layer",
+          "start": 88.14,
+          "end": 88.34
+        },
+        {
+          "text": "becomes",
+          "start": 88.34,
+          "end": 88.62
+        },
+        {
+          "text": "the",
+          "start": 88.62,
+          "end": 88.82
+        },
+        {
+          "text": "input",
+          "start": 88.82,
+          "end": 89.04
+        },
+        {
+          "text": "to",
+          "start": 89.04,
+          "end": 89.24
+        },
+        {
+          "text": "the",
+          "start": 89.24,
+          "end": 89.34
+        },
+        {
+          "text": "next,",
+          "start": 89.34,
+          "end": 89.58
+        },
+        {
+          "text": "layer",
+          "start": 89.78,
+          "end": 89.98
+        },
+        {
+          "text": "after",
+          "start": 89.98,
+          "end": 90.26
+        },
+        {
+          "text": "layer.",
+          "start": 90.26,
+          "end": 90.52
+        }
+      ]
+    },
+    {
+      "start": 90.76,
+      "end": 92.58,
+      "text": "The model builds more abstract representations.",
+      "words": [
+        {
+          "text": "The",
+          "start": 90.76,
+          "end": 90.82
+        },
+        {
+          "text": "model",
+          "start": 90.82,
+          "end": 91.02
+        },
+        {
+          "text": "builds",
+          "start": 91.02,
+          "end": 91.32
+        },
+        {
+          "text": "more",
+          "start": 91.32,
+          "end": 91.48
+        },
+        {
+          "text": "abstract",
+          "start": 91.48,
+          "end": 91.86
+        },
+        {
+          "text": "representations.",
+          "start": 91.86,
+          "end": 92.58
+        }
+      ]
+    },
+    {
+      "start": 92.96,
+      "end": 94.68,
+      "text": "Early layers might learn simple syntax.",
+      "words": [
+        {
+          "text": "Early",
+          "start": 92.96,
+          "end": 93.16
+        },
+        {
+          "text": "layers",
+          "start": 93.16,
+          "end": 93.5
+        },
+        {
+          "text": "might",
+          "start": 93.5,
+          "end": 93.7
+        },
+        {
+          "text": "learn",
+          "start": 93.7,
+          "end": 93.92
+        },
+        {
+          "text": "simple",
+          "start": 93.92,
+          "end": 94.26
+        },
+        {
+          "text": "syntax.",
+          "start": 94.26,
+          "end": 94.68
+        }
+      ]
+    },
+    {
+      "start": 95.14,
+      "end": 99.2,
+      "text": "Deeper layers can capture meaning, relationships, patterns, and more complex concepts.",
+      "words": [
+        {
+          "text": "Deeper",
+          "start": 95.14,
+          "end": 95.48
+        },
+        {
+          "text": "layers",
+          "start": 95.48,
+          "end": 95.68
+        },
+        {
+          "text": "can",
+          "start": 95.68,
+          "end": 95.92
+        },
+        {
+          "text": "capture",
+          "start": 95.92,
+          "end": 96.22
+        },
+        {
+          "text": "meaning,",
+          "start": 96.22,
+          "end": 96.52
+        },
+        {
+          "text": "relationships,",
+          "start": 96.78,
+          "end": 97.12
+        },
+        {
+          "text": "patterns,",
+          "start": 97.52,
+          "end": 97.84
+        },
+        {
+          "text": "and",
+          "start": 98.04,
+          "end": 98.1
+        },
+        {
+          "text": "more",
+          "start": 98.1,
+          "end": 98.26
+        },
+        {
+          "text": "complex",
+          "start": 98.26,
+          "end": 98.62
+        },
+        {
+          "text": "concepts.",
+          "start": 98.62,
+          "end": 99.2
+        }
+      ]
+    },
+    {
+      "start": 99.44,
+      "end": 101.04,
+      "text": "Now how does this become chat GPT?",
+      "words": [
+        {
+          "text": "Now",
+          "start": 99.44,
+          "end": 99.54
+        },
+        {
+          "text": "how",
+          "start": 99.54,
+          "end": 99.66
+        },
+        {
+          "text": "does",
+          "start": 99.66,
+          "end": 99.8
+        },
+        {
+          "text": "this",
+          "start": 99.8,
+          "end": 99.92
+        },
+        {
+          "text": "become",
+          "start": 99.92,
+          "end": 100.18
+        },
+        {
+          "text": "chat",
+          "start": 100.18,
+          "end": 100.46
+        },
+        {
+          "text": "GPT?",
+          "start": 100.46,
+          "end": 101.04
+        }
+      ]
+    },
+    {
+      "start": 101.28,
+      "end": 104.08,
+      "text": "During training, a language model sees enormous amounts of text.",
+      "words": [
+        {
+          "text": "During",
+          "start": 101.28,
+          "end": 101.52
+        },
+        {
+          "text": "training,",
+          "start": 101.52,
+          "end": 101.9
+        },
+        {
+          "text": "a",
+          "start": 102.12,
+          "end": 102.24
+        },
+        {
+          "text": "language",
+          "start": 102.24,
+          "end": 102.46
+        },
+        {
+          "text": "model",
+          "start": 102.46,
+          "end": 102.78
+        },
+        {
+          "text": "sees",
+          "start": 102.78,
+          "end": 103.0
+        },
+        {
+          "text": "enormous",
+          "start": 103.0,
+          "end": 103.3
+        },
+        {
+          "text": "amounts",
+          "start": 103.3,
+          "end": 103.58
+        },
+        {
+          "text": "of",
+          "start": 103.58,
+          "end": 103.78
+        },
+        {
+          "text": "text.",
+          "start": 103.78,
+          "end": 104.08
+        }
+      ]
+    },
+    {
+      "start": 104.28,
+      "end": 106.96,
+      "text": "Then it repeatedly plays one game, predict the next token.",
+      "words": [
+        {
+          "text": "Then",
+          "start": 104.28,
+          "end": 104.44
+        },
+        {
+          "text": "it",
+          "start": 104.44,
+          "end": 104.52
+        },
+        {
+          "text": "repeatedly",
+          "start": 104.52,
+          "end": 104.86
+        },
+        {
+          "text": "plays",
+          "start": 104.86,
+          "end": 105.24
+        },
+        {
+          "text": "one",
+          "start": 105.24,
+          "end": 105.52
+        },
+        {
+          "text": "game,",
+          "start": 105.52,
+          "end": 105.76
+        },
+        {
+          "text": "predict",
+          "start": 105.94,
+          "end": 106.18
+        },
+        {
+          "text": "the",
+          "start": 106.18,
+          "end": 106.42
+        },
+        {
+          "text": "next",
+          "start": 106.42,
+          "end": 106.6
+        },
+        {
+          "text": "token.",
+          "start": 106.6,
+          "end": 106.96
+        }
+      ]
+    },
+    {
+      "start": 107.1,
+      "end": 111.08,
+      "text": "For example, the capital of France is, the model might assign high probability to",
+      "words": [
+        {
+          "text": "For",
+          "start": 107.1,
+          "end": 107.2
+        },
+        {
+          "text": "example,",
+          "start": 107.2,
+          "end": 107.54
+        },
+        {
+          "text": "the",
+          "start": 107.76,
+          "end": 107.84
+        },
+        {
+          "text": "capital",
+          "start": 107.84,
+          "end": 108.18
+        },
+        {
+          "text": "of",
+          "start": 108.18,
+          "end": 108.36
+        },
+        {
+          "text": "France",
+          "start": 108.36,
+          "end": 108.62
+        },
+        {
+          "text": "is,",
+          "start": 108.62,
+          "end": 108.84
+        },
+        {
+          "text": "the",
+          "start": 109.1,
+          "end": 109.24
+        },
+        {
+          "text": "model",
+          "start": 109.24,
+          "end": 109.48
+        },
+        {
+          "text": "might",
+          "start": 109.48,
+          "end": 109.7
+        },
+        {
+          "text": "assign",
+          "start": 109.7,
+          "end": 109.96
+        },
+        {
+          "text": "high",
+          "start": 109.96,
+          "end": 110.22
+        },
+        {
+          "text": "probability",
+          "start": 110.22,
+          "end": 110.58
+        },
+        {
+          "text": "to",
+          "start": 110.58,
+          "end": 111.08
+        }
+      ]
+    },
+    {
+      "start": 111.08,
+      "end": 111.54,
+      "text": "Paris.",
+      "words": [
+        {
+          "text": "Paris.",
+          "start": 111.08,
+          "end": 111.54
+        }
+      ]
+    },
+    {
+      "start": 111.54,
+      "end": 115.52,
+      "text": "If it predicts badly gradient descent, adjusts the model's weights, then it tries again.",
+      "words": [
+        {
+          "text": "If",
+          "start": 111.54,
+          "end": 111.96
+        },
+        {
+          "text": "it",
+          "start": 111.96,
+          "end": 112.06
+        },
+        {
+          "text": "predicts",
+          "start": 112.06,
+          "end": 112.46
+        },
+        {
+          "text": "badly",
+          "start": 112.46,
+          "end": 112.72
+        },
+        {
+          "text": "gradient",
+          "start": 112.72,
+          "end": 113.14
+        },
+        {
+          "text": "descent,",
+          "start": 113.14,
+          "end": 113.4
+        },
+        {
+          "text": "adjusts",
+          "start": 113.58,
+          "end": 113.94
+        },
+        {
+          "text": "the",
+          "start": 113.94,
+          "end": 113.98
+        },
+        {
+          "text": "model's",
+          "start": 113.98,
+          "end": 114.38
+        },
+        {
+          "text": "weights,",
+          "start": 114.38,
+          "end": 114.56
+        },
+        {
+          "text": "then",
+          "start": 114.72,
+          "end": 114.82
+        },
+        {
+          "text": "it",
+          "start": 114.82,
+          "end": 114.94
+        },
+        {
+          "text": "tries",
+          "start": 114.94,
+          "end": 115.14
+        },
+        {
+          "text": "again.",
+          "start": 115.14,
+          "end": 115.52
+        }
+      ]
+    },
+    {
+      "start": 115.98,
+      "end": 119.72,
+      "text": "After doing this across massive data sets, the Transformer learns statistical patterns",
+      "words": [
+        {
+          "text": "After",
+          "start": 115.98,
+          "end": 116.2
+        },
+        {
+          "text": "doing",
+          "start": 116.2,
+          "end": 116.4
+        },
+        {
+          "text": "this",
+          "start": 116.4,
+          "end": 116.64
+        },
+        {
+          "text": "across",
+          "start": 116.64,
+          "end": 116.84
+        },
+        {
+          "text": "massive",
+          "start": 116.84,
+          "end": 117.3
+        },
+        {
+          "text": "data",
+          "start": 117.3,
+          "end": 117.54
+        },
+        {
+          "text": "sets,",
+          "start": 117.54,
+          "end": 117.84
+        },
+        {
+          "text": "the",
+          "start": 118.02,
+          "end": 118.06
+        },
+        {
+          "text": "Transformer",
+          "start": 118.06,
+          "end": 118.6
+        },
+        {
+          "text": "learns",
+          "start": 118.6,
+          "end": 118.8
+        },
+        {
+          "text": "statistical",
+          "start": 118.8,
+          "end": 119.24
+        },
+        {
+          "text": "patterns",
+          "start": 119.24,
+          "end": 119.72
+        }
+      ]
+    },
+    {
+      "start": 119.72,
+      "end": 122.84,
+      "text": "about language, facts, code, reasoning, style, and many other things.",
+      "words": [
+        {
+          "text": "about",
+          "start": 119.72,
+          "end": 119.98
+        },
+        {
+          "text": "language,",
+          "start": 119.98,
+          "end": 120.32
+        },
+        {
+          "text": "facts,",
+          "start": 120.52,
+          "end": 120.68
+        },
+        {
+          "text": "code,",
+          "start": 120.9,
+          "end": 121.12
+        },
+        {
+          "text": "reasoning,",
+          "start": 121.3,
+          "end": 121.54
+        },
+        {
+          "text": "style,",
+          "start": 121.74,
+          "end": 121.98
+        },
+        {
+          "text": "and",
+          "start": 122.12,
+          "end": 122.16
+        },
+        {
+          "text": "many",
+          "start": 122.16,
+          "end": 122.32
+        },
+        {
+          "text": "other",
+          "start": 122.32,
+          "end": 122.52
+        },
+        {
+          "text": "things.",
+          "start": 122.52,
+          "end": 122.84
+        }
+      ]
+    },
+    {
+      "start": 123.04,
+      "end": 126.12,
+      "text": "Now one reason Transformers became such a big deal is parallelism.",
+      "words": [
+        {
+          "text": "Now",
+          "start": 123.04,
+          "end": 123.14
+        },
+        {
+          "text": "one",
+          "start": 123.14,
+          "end": 123.32
+        },
+        {
+          "text": "reason",
+          "start": 123.32,
+          "end": 123.56
+        },
+        {
+          "text": "Transformers",
+          "start": 123.56,
+          "end": 124.2
+        },
+        {
+          "text": "became",
+          "start": 124.2,
+          "end": 124.44
+        },
+        {
+          "text": "such",
+          "start": 124.44,
+          "end": 124.74
+        },
+        {
+          "text": "a",
+          "start": 124.74,
+          "end": 124.9
+        },
+        {
+          "text": "big",
+          "start": 124.9,
+          "end": 125.04
+        },
+        {
+          "text": "deal",
+          "start": 125.04,
+          "end": 125.26
+        },
+        {
+          "text": "is",
+          "start": 125.26,
+          "end": 125.42
+        },
+        {
+          "text": "parallelism.",
+          "start": 125.42,
+          "end": 126.12
+        }
+      ]
+    },
+    {
+      "start": 126.26,
+      "end": 129.74,
+      "text": "Older architectures like RNN's process sequence is more step by step.",
+      "words": [
+        {
+          "text": "Older",
+          "start": 126.26,
+          "end": 126.5
+        },
+        {
+          "text": "architectures",
+          "start": 126.5,
+          "end": 127.06
+        },
+        {
+          "text": "like",
+          "start": 127.06,
+          "end": 127.26
+        },
+        {
+          "text": "RNN's",
+          "start": 127.26,
+          "end": 127.88
+        },
+        {
+          "text": "process",
+          "start": 127.88,
+          "end": 128.16
+        },
+        {
+          "text": "sequence",
+          "start": 128.16,
+          "end": 128.66
+        },
+        {
+          "text": "is",
+          "start": 128.66,
+          "end": 128.86
+        },
+        {
+          "text": "more",
+          "start": 128.86,
+          "end": 129.0
+        },
+        {
+          "text": "step",
+          "start": 129.0,
+          "end": 129.28
+        },
+        {
+          "text": "by",
+          "start": 129.28,
+          "end": 129.46
+        },
+        {
+          "text": "step.",
+          "start": 129.46,
+          "end": 129.74
+        }
+      ]
+    },
+    {
+      "start": 130.22,
+      "end": 132.92,
+      "text": "Transformers can process many tokens in parallel during training.",
+      "words": [
+        {
+          "text": "Transformers",
+          "start": 130.22,
+          "end": 130.66
+        },
+        {
+          "text": "can",
+          "start": 130.66,
+          "end": 130.78
+        },
+        {
+          "text": "process",
+          "start": 130.78,
+          "end": 131.12
+        },
+        {
+          "text": "many",
+          "start": 131.12,
+          "end": 131.4
+        },
+        {
+          "text": "tokens",
+          "start": 131.4,
+          "end": 131.72
+        },
+        {
+          "text": "in",
+          "start": 131.72,
+          "end": 131.96
+        },
+        {
+          "text": "parallel",
+          "start": 131.96,
+          "end": 132.24
+        },
+        {
+          "text": "during",
+          "start": 132.24,
+          "end": 132.56
+        },
+        {
+          "text": "training.",
+          "start": 132.56,
+          "end": 132.92
+        }
+      ]
+    },
+    {
+      "start": 133.08,
+      "end": 135.8,
+      "text": "That makes them much easier to scale across huge GPU clusters.",
+      "words": [
+        {
+          "text": "That",
+          "start": 133.08,
+          "end": 133.18
+        },
+        {
+          "text": "makes",
+          "start": 133.18,
+          "end": 133.34
+        },
+        {
+          "text": "them",
+          "start": 133.34,
+          "end": 133.5
+        },
+        {
+          "text": "much",
+          "start": 133.5,
+          "end": 133.7
+        },
+        {
+          "text": "easier",
+          "start": 133.7,
+          "end": 133.96
+        },
+        {
+          "text": "to",
+          "start": 133.96,
+          "end": 134.1
+        },
+        {
+          "text": "scale",
+          "start": 134.1,
+          "end": 134.32
+        },
+        {
+          "text": "across",
+          "start": 134.32,
+          "end": 134.56
+        },
+        {
+          "text": "huge",
+          "start": 134.56,
+          "end": 134.94
+        },
+        {
+          "text": "GPU",
+          "start": 134.94,
+          "end": 135.36
+        },
+        {
+          "text": "clusters.",
+          "start": 135.36,
+          "end": 135.8
+        }
+      ]
+    },
+    {
+      "start": 136.04,
+      "end": 137.52,
+      "text": "And scale turned out to matter a lot.",
+      "words": [
+        {
+          "text": "And",
+          "start": 136.04,
+          "end": 136.12
+        },
+        {
+          "text": "scale",
+          "start": 136.12,
+          "end": 136.36
+        },
+        {
+          "text": "turned",
+          "start": 136.36,
+          "end": 136.62
+        },
+        {
+          "text": "out",
+          "start": 136.62,
+          "end": 136.8
+        },
+        {
+          "text": "to",
+          "start": 136.8,
+          "end": 136.94
+        },
+        {
+          "text": "matter",
+          "start": 136.94,
+          "end": 137.12
+        },
+        {
+          "text": "a",
+          "start": 137.12,
+          "end": 137.3
+        },
+        {
+          "text": "lot.",
+          "start": 137.3,
+          "end": 137.52
+        }
+      ]
+    },
+    {
+      "start": 137.64,
+      "end": 138.04,
+      "text": "More data.",
+      "words": [
+        {
+          "text": "More",
+          "start": 137.64,
+          "end": 137.74
+        },
+        {
+          "text": "data.",
+          "start": 137.74,
+          "end": 138.04
+        }
+      ]
+    },
+    {
+      "start": 138.24,
+      "end": 138.7,
+      "text": "More compute.",
+      "words": [
+        {
+          "text": "More",
+          "start": 138.24,
+          "end": 138.34
+        },
+        {
+          "text": "compute.",
+          "start": 138.34,
+          "end": 138.7
+        }
+      ]
+    },
+    {
+      "start": 138.9,
+      "end": 139.4,
+      "text": "More parameters.",
+      "words": [
+        {
+          "text": "More",
+          "start": 138.9,
+          "end": 139.02
+        },
+        {
+          "text": "parameters.",
+          "start": 139.02,
+          "end": 139.4
+        }
+      ]
+    },
+    {
+      "start": 139.4,
+      "end": 145.0,
+      "text": "more layers. That's how we went from the original transformer paper to models with hundreds of billions of parameters.",
+      "words": [
+        {
+          "text": "more",
+          "start": 139.4,
+          "end": 139.78
+        },
+        {
+          "text": "layers.",
+          "start": 139.78,
+          "end": 140.14
+        },
+        {
+          "text": "That's",
+          "start": 140.38,
+          "end": 140.54
+        },
+        {
+          "text": "how",
+          "start": 140.54,
+          "end": 140.64
+        },
+        {
+          "text": "we",
+          "start": 140.64,
+          "end": 140.74
+        },
+        {
+          "text": "went",
+          "start": 140.74,
+          "end": 140.88
+        },
+        {
+          "text": "from",
+          "start": 140.88,
+          "end": 141.02
+        },
+        {
+          "text": "the",
+          "start": 141.02,
+          "end": 141.14
+        },
+        {
+          "text": "original",
+          "start": 141.14,
+          "end": 141.44
+        },
+        {
+          "text": "transformer",
+          "start": 141.44,
+          "end": 141.98
+        },
+        {
+          "text": "paper",
+          "start": 141.98,
+          "end": 142.36
+        },
+        {
+          "text": "to",
+          "start": 142.36,
+          "end": 143.1
+        },
+        {
+          "text": "models",
+          "start": 143.1,
+          "end": 143.36
+        },
+        {
+          "text": "with",
+          "start": 143.36,
+          "end": 143.58
+        },
+        {
+          "text": "hundreds",
+          "start": 143.58,
+          "end": 143.86
+        },
+        {
+          "text": "of",
+          "start": 143.86,
+          "end": 144.1
+        },
+        {
+          "text": "billions",
+          "start": 144.1,
+          "end": 144.34
+        },
+        {
+          "text": "of",
+          "start": 144.34,
+          "end": 144.6
+        },
+        {
+          "text": "parameters.",
+          "start": 144.6,
+          "end": 145.0
+        }
+      ]
+    },
+    {
+      "start": 145.24,
+      "end": 150.56,
+      "text": "So the easiest way to think about a transformer is this. Instead of reading text one word at a time and forgetting what came before,",
+      "words": [
+        {
+          "text": "So",
+          "start": 145.24,
+          "end": 145.34
+        },
+        {
+          "text": "the",
+          "start": 145.34,
+          "end": 145.48
+        },
+        {
+          "text": "easiest",
+          "start": 145.48,
+          "end": 145.7
+        },
+        {
+          "text": "way",
+          "start": 145.7,
+          "end": 145.92
+        },
+        {
+          "text": "to",
+          "start": 145.92,
+          "end": 146.04
+        },
+        {
+          "text": "think",
+          "start": 146.04,
+          "end": 146.18
+        },
+        {
+          "text": "about",
+          "start": 146.18,
+          "end": 146.36
+        },
+        {
+          "text": "a",
+          "start": 146.36,
+          "end": 146.44
+        },
+        {
+          "text": "transformer",
+          "start": 146.44,
+          "end": 146.92
+        },
+        {
+          "text": "is",
+          "start": 146.92,
+          "end": 147.18
+        },
+        {
+          "text": "this.",
+          "start": 147.18,
+          "end": 147.4
+        },
+        {
+          "text": "Instead",
+          "start": 147.6,
+          "end": 147.8
+        },
+        {
+          "text": "of",
+          "start": 147.8,
+          "end": 147.96
+        },
+        {
+          "text": "reading",
+          "start": 147.96,
+          "end": 148.14
+        },
+        {
+          "text": "text",
+          "start": 148.14,
+          "end": 148.46
+        },
+        {
+          "text": "one",
+          "start": 148.46,
+          "end": 148.74
+        },
+        {
+          "text": "word",
+          "start": 148.74,
+          "end": 148.94
+        },
+        {
+          "text": "at",
+          "start": 148.94,
+          "end": 149.06
+        },
+        {
+          "text": "a",
+          "start": 149.06,
+          "end": 149.14
+        },
+        {
+          "text": "time",
+          "start": 149.14,
+          "end": 149.4
+        },
+        {
+          "text": "and",
+          "start": 149.4,
+          "end": 149.52
+        },
+        {
+          "text": "forgetting",
+          "start": 149.52,
+          "end": 149.82
+        },
+        {
+          "text": "what",
+          "start": 149.82,
+          "end": 150.02
+        },
+        {
+          "text": "came",
+          "start": 150.02,
+          "end": 150.2
+        },
+        {
+          "text": "before,",
+          "start": 150.2,
+          "end": 150.56
+        }
+      ]
+    },
+    {
+      "start": 150.88,
+      "end": 155.58,
+      "text": "it constantly asks which parts of this context matter most for understanding what I'm looking at right now.",
+      "words": [
+        {
+          "text": "it",
+          "start": 150.88,
+          "end": 150.94
+        },
+        {
+          "text": "constantly",
+          "start": 150.94,
+          "end": 151.34
+        },
+        {
+          "text": "asks",
+          "start": 151.34,
+          "end": 151.74
+        },
+        {
+          "text": "which",
+          "start": 151.74,
+          "end": 152.26
+        },
+        {
+          "text": "parts",
+          "start": 152.26,
+          "end": 152.54
+        },
+        {
+          "text": "of",
+          "start": 152.54,
+          "end": 152.68
+        },
+        {
+          "text": "this",
+          "start": 152.68,
+          "end": 152.82
+        },
+        {
+          "text": "context",
+          "start": 152.82,
+          "end": 153.2
+        },
+        {
+          "text": "matter",
+          "start": 153.2,
+          "end": 153.5
+        },
+        {
+          "text": "most",
+          "start": 153.5,
+          "end": 153.74
+        },
+        {
+          "text": "for",
+          "start": 153.74,
+          "end": 153.9
+        },
+        {
+          "text": "understanding",
+          "start": 153.9,
+          "end": 154.34
+        },
+        {
+          "text": "what",
+          "start": 154.34,
+          "end": 154.62
+        },
+        {
+          "text": "I'm",
+          "start": 154.62,
+          "end": 154.76
+        },
+        {
+          "text": "looking",
+          "start": 154.76,
+          "end": 154.92
+        },
+        {
+          "text": "at",
+          "start": 154.92,
+          "end": 155.14
+        },
+        {
+          "text": "right",
+          "start": 155.14,
+          "end": 155.32
+        },
+        {
+          "text": "now.",
+          "start": 155.32,
+          "end": 155.58
+        }
+      ]
+    },
+    {
+      "start": 155.78,
+      "end": 161.54,
+      "text": "That attention mechanism repeated across billions of parameters in many layers is one of the core ideas behind modern AI.",
+      "words": [
+        {
+          "text": "That",
+          "start": 155.78,
+          "end": 155.88
+        },
+        {
+          "text": "attention",
+          "start": 155.88,
+          "end": 156.28
+        },
+        {
+          "text": "mechanism",
+          "start": 156.28,
+          "end": 156.84
+        },
+        {
+          "text": "repeated",
+          "start": 156.84,
+          "end": 157.3
+        },
+        {
+          "text": "across",
+          "start": 157.3,
+          "end": 157.6
+        },
+        {
+          "text": "billions",
+          "start": 157.6,
+          "end": 158.02
+        },
+        {
+          "text": "of",
+          "start": 158.02,
+          "end": 158.26
+        },
+        {
+          "text": "parameters",
+          "start": 158.26,
+          "end": 158.64
+        },
+        {
+          "text": "in",
+          "start": 158.64,
+          "end": 158.88
+        },
+        {
+          "text": "many",
+          "start": 158.88,
+          "end": 159.08
+        },
+        {
+          "text": "layers",
+          "start": 159.08,
+          "end": 159.48
+        },
+        {
+          "text": "is",
+          "start": 159.48,
+          "end": 159.78
+        },
+        {
+          "text": "one",
+          "start": 159.78,
+          "end": 159.94
+        },
+        {
+          "text": "of",
+          "start": 159.94,
+          "end": 160.02
+        },
+        {
+          "text": "the",
+          "start": 160.02,
+          "end": 160.1
+        },
+        {
+          "text": "core",
+          "start": 160.1,
+          "end": 160.32
+        },
+        {
+          "text": "ideas",
+          "start": 160.32,
+          "end": 160.64
+        },
+        {
+          "text": "behind",
+          "start": 160.64,
+          "end": 160.94
+        },
+        {
+          "text": "modern",
+          "start": 160.94,
+          "end": 161.3
+        },
+        {
+          "text": "AI.",
+          "start": 161.3,
+          "end": 161.54
+        }
+      ]
+    }
+  ]
+}

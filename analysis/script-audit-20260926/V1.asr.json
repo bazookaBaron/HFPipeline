@@ -1,0 +1,2902 @@
+{
+  "source": "C:\\Users\\debna\\Downloads\\AQPkRKCDspuOdXQ1rbVzQeATb05U1Z7pdcL8wZtcNCYGdTT41JkWaZf_99cRZahIKr4-k5HhzSsechdY9N9Ysm2bm-d-4QJH67o3IaQ.mp4",
+  "model": "small-cpu-int8",
+  "language": "en",
+  "segments": [
+    {
+      "start": 0.0,
+      "end": 1.46,
+      "text": "What exactly is an AI harness?",
+      "words": [
+        {
+          "text": "What",
+          "start": 0.0,
+          "end": 0.24
+        },
+        {
+          "text": "exactly",
+          "start": 0.24,
+          "end": 0.6
+        },
+        {
+          "text": "is",
+          "start": 0.6,
+          "end": 0.8
+        },
+        {
+          "text": "an",
+          "start": 0.8,
+          "end": 0.9
+        },
+        {
+          "text": "AI",
+          "start": 0.9,
+          "end": 1.1
+        },
+        {
+          "text": "harness?",
+          "start": 1.1,
+          "end": 1.46
+        }
+      ]
+    },
+    {
+      "start": 1.76,
+      "end": 6.72,
+      "text": "Because people talk about models like Claude, GPT, or Gemini as if the model itself is doing everything.",
+      "words": [
+        {
+          "text": "Because",
+          "start": 1.76,
+          "end": 1.94
+        },
+        {
+          "text": "people",
+          "start": 1.94,
+          "end": 2.2
+        },
+        {
+          "text": "talk",
+          "start": 2.2,
+          "end": 2.44
+        },
+        {
+          "text": "about",
+          "start": 2.44,
+          "end": 2.64
+        },
+        {
+          "text": "models",
+          "start": 2.64,
+          "end": 2.98
+        },
+        {
+          "text": "like",
+          "start": 2.98,
+          "end": 3.22
+        },
+        {
+          "text": "Claude,",
+          "start": 3.22,
+          "end": 3.64
+        },
+        {
+          "text": "GPT,",
+          "start": 3.76,
+          "end": 4.24
+        },
+        {
+          "text": "or",
+          "start": 4.32,
+          "end": 4.34
+        },
+        {
+          "text": "Gemini",
+          "start": 4.34,
+          "end": 4.78
+        },
+        {
+          "text": "as",
+          "start": 4.78,
+          "end": 4.96
+        },
+        {
+          "text": "if",
+          "start": 4.96,
+          "end": 5.08
+        },
+        {
+          "text": "the",
+          "start": 5.08,
+          "end": 5.2
+        },
+        {
+          "text": "model",
+          "start": 5.2,
+          "end": 5.44
+        },
+        {
+          "text": "itself",
+          "start": 5.44,
+          "end": 5.76
+        },
+        {
+          "text": "is",
+          "start": 5.76,
+          "end": 6.0
+        },
+        {
+          "text": "doing",
+          "start": 6.0,
+          "end": 6.18
+        },
+        {
+          "text": "everything.",
+          "start": 6.18,
+          "end": 6.72
+        }
+      ]
+    },
+    {
+      "start": 6.96,
+      "end": 7.4,
+      "text": "It isn't.",
+      "words": [
+        {
+          "text": "It",
+          "start": 6.96,
+          "end": 7.0
+        },
+        {
+          "text": "isn't.",
+          "start": 7.0,
+          "end": 7.4
+        }
+      ]
+    },
+    {
+      "start": 7.5,
+      "end": 9.18,
+      "text": "The model is only one part of the system.",
+      "words": [
+        {
+          "text": "The",
+          "start": 7.5,
+          "end": 7.56
+        },
+        {
+          "text": "model",
+          "start": 7.56,
+          "end": 7.8
+        },
+        {
+          "text": "is",
+          "start": 7.8,
+          "end": 7.98
+        },
+        {
+          "text": "only",
+          "start": 7.98,
+          "end": 8.16
+        },
+        {
+          "text": "one",
+          "start": 8.16,
+          "end": 8.38
+        },
+        {
+          "text": "part",
+          "start": 8.38,
+          "end": 8.62
+        },
+        {
+          "text": "of",
+          "start": 8.62,
+          "end": 8.74
+        },
+        {
+          "text": "the",
+          "start": 8.74,
+          "end": 8.84
+        },
+        {
+          "text": "system.",
+          "start": 8.84,
+          "end": 9.18
+        }
+      ]
+    },
+    {
+      "start": 9.4,
+      "end": 12.84,
+      "text": "The harness is the software around the model that lets it actually do useful work.",
+      "words": [
+        {
+          "text": "The",
+          "start": 9.4,
+          "end": 9.48
+        },
+        {
+          "text": "harness",
+          "start": 9.48,
+          "end": 9.72
+        },
+        {
+          "text": "is",
+          "start": 9.72,
+          "end": 9.96
+        },
+        {
+          "text": "the",
+          "start": 9.96,
+          "end": 10.08
+        },
+        {
+          "text": "software",
+          "start": 10.08,
+          "end": 10.46
+        },
+        {
+          "text": "around",
+          "start": 10.46,
+          "end": 10.8
+        },
+        {
+          "text": "the",
+          "start": 10.8,
+          "end": 10.92
+        },
+        {
+          "text": "model",
+          "start": 10.92,
+          "end": 11.18
+        },
+        {
+          "text": "that",
+          "start": 11.18,
+          "end": 11.32
+        },
+        {
+          "text": "lets",
+          "start": 11.32,
+          "end": 11.52
+        },
+        {
+          "text": "it",
+          "start": 11.52,
+          "end": 11.64
+        },
+        {
+          "text": "actually",
+          "start": 11.64,
+          "end": 11.9
+        },
+        {
+          "text": "do",
+          "start": 11.9,
+          "end": 12.14
+        },
+        {
+          "text": "useful",
+          "start": 12.14,
+          "end": 12.48
+        },
+        {
+          "text": "work.",
+          "start": 12.48,
+          "end": 12.84
+        }
+      ]
+    },
+    {
+      "start": 13.14,
+      "end": 14.64,
+      "text": "And a good example is Claude Code.",
+      "words": [
+        {
+          "text": "And",
+          "start": 13.14,
+          "end": 13.28
+        },
+        {
+          "text": "a",
+          "start": 13.28,
+          "end": 13.38
+        },
+        {
+          "text": "good",
+          "start": 13.38,
+          "end": 13.46
+        },
+        {
+          "text": "example",
+          "start": 13.46,
+          "end": 13.8
+        },
+        {
+          "text": "is",
+          "start": 13.8,
+          "end": 14.0
+        },
+        {
+          "text": "Claude",
+          "start": 14.0,
+          "end": 14.38
+        },
+        {
+          "text": "Code.",
+          "start": 14.38,
+          "end": 14.64
+        }
+      ]
+    },
+    {
+      "start": 14.86,
+      "end": 16.08,
+      "text": "Claude itself is the model.",
+      "words": [
+        {
+          "text": "Claude",
+          "start": 14.86,
+          "end": 15.12
+        },
+        {
+          "text": "itself",
+          "start": 15.12,
+          "end": 15.48
+        },
+        {
+          "text": "is",
+          "start": 15.48,
+          "end": 15.72
+        },
+        {
+          "text": "the",
+          "start": 15.72,
+          "end": 15.84
+        },
+        {
+          "text": "model.",
+          "start": 15.84,
+          "end": 16.08
+        }
+      ]
+    },
+    {
+      "start": 16.22,
+      "end": 17.78,
+      "text": "Claude Code is the harness around it.",
+      "words": [
+        {
+          "text": "Claude",
+          "start": 16.22,
+          "end": 16.54
+        },
+        {
+          "text": "Code",
+          "start": 16.54,
+          "end": 16.74
+        },
+        {
+          "text": "is",
+          "start": 16.74,
+          "end": 16.88
+        },
+        {
+          "text": "the",
+          "start": 16.88,
+          "end": 17.0
+        },
+        {
+          "text": "harness",
+          "start": 17.0,
+          "end": 17.24
+        },
+        {
+          "text": "around",
+          "start": 17.24,
+          "end": 17.6
+        },
+        {
+          "text": "it.",
+          "start": 17.6,
+          "end": 17.78
+        }
+      ]
+    },
+    {
+      "start": 17.84,
+      "end": 18.62,
+      "text": "Let's break that down.",
+      "words": [
+        {
+          "text": "Let's",
+          "start": 17.84,
+          "end": 18.0
+        },
+        {
+          "text": "break",
+          "start": 18.0,
+          "end": 18.14
+        },
+        {
+          "text": "that",
+          "start": 18.14,
+          "end": 18.34
+        },
+        {
+          "text": "down.",
+          "start": 18.34,
+          "end": 18.62
+        }
+      ]
+    },
+    {
+      "start": 18.76,
+      "end": 20.12,
+      "text": "Imagine you ask Claude Code.",
+      "words": [
+        {
+          "text": "Imagine",
+          "start": 18.76,
+          "end": 19.0
+        },
+        {
+          "text": "you",
+          "start": 19.0,
+          "end": 19.26
+        },
+        {
+          "text": "ask",
+          "start": 19.26,
+          "end": 19.44
+        },
+        {
+          "text": "Claude",
+          "start": 19.44,
+          "end": 19.82
+        },
+        {
+          "text": "Code.",
+          "start": 19.82,
+          "end": 20.12
+        }
+      ]
+    },
+    {
+      "start": 20.28,
+      "end": 24.04,
+      "text": "Find the bug in this repository, fix it, run the test, and make sure nothing else breaks.",
+      "words": [
+        {
+          "text": "Find",
+          "start": 20.28,
+          "end": 20.42
+        },
+        {
+          "text": "the",
+          "start": 20.42,
+          "end": 20.58
+        },
+        {
+          "text": "bug",
+          "start": 20.58,
+          "end": 20.8
+        },
+        {
+          "text": "in",
+          "start": 20.8,
+          "end": 20.94
+        },
+        {
+          "text": "this",
+          "start": 20.94,
+          "end": 21.08
+        },
+        {
+          "text": "repository,",
+          "start": 21.08,
+          "end": 21.54
+        },
+        {
+          "text": "fix",
+          "start": 21.84,
+          "end": 22.0
+        },
+        {
+          "text": "it,",
+          "start": 22.0,
+          "end": 22.2
+        },
+        {
+          "text": "run",
+          "start": 22.28,
+          "end": 22.4
+        },
+        {
+          "text": "the",
+          "start": 22.4,
+          "end": 22.54
+        },
+        {
+          "text": "test,",
+          "start": 22.54,
+          "end": 22.76
+        },
+        {
+          "text": "and",
+          "start": 22.9,
+          "end": 22.94
+        },
+        {
+          "text": "make",
+          "start": 22.94,
+          "end": 23.08
+        },
+        {
+          "text": "sure",
+          "start": 23.08,
+          "end": 23.24
+        },
+        {
+          "text": "nothing",
+          "start": 23.24,
+          "end": 23.48
+        },
+        {
+          "text": "else",
+          "start": 23.48,
+          "end": 23.72
+        },
+        {
+          "text": "breaks.",
+          "start": 23.72,
+          "end": 24.04
+        }
+      ]
+    },
+    {
+      "start": 24.3,
+      "end": 25.84,
+      "text": "The model can reason about the task.",
+      "words": [
+        {
+          "text": "The",
+          "start": 24.3,
+          "end": 24.4
+        },
+        {
+          "text": "model",
+          "start": 24.4,
+          "end": 24.62
+        },
+        {
+          "text": "can",
+          "start": 24.62,
+          "end": 24.82
+        },
+        {
+          "text": "reason",
+          "start": 24.82,
+          "end": 25.1
+        },
+        {
+          "text": "about",
+          "start": 25.1,
+          "end": 25.32
+        },
+        {
+          "text": "the",
+          "start": 25.32,
+          "end": 25.48
+        },
+        {
+          "text": "task.",
+          "start": 25.48,
+          "end": 25.84
+        }
+      ]
+    },
+    {
+      "start": 26.14,
+      "end": 28.28,
+      "text": "But by itself, the model cannot open your files.",
+      "words": [
+        {
+          "text": "But",
+          "start": 26.14,
+          "end": 26.3
+        },
+        {
+          "text": "by",
+          "start": 26.3,
+          "end": 26.46
+        },
+        {
+          "text": "itself,",
+          "start": 26.46,
+          "end": 26.8
+        },
+        {
+          "text": "the",
+          "start": 26.94,
+          "end": 27.02
+        },
+        {
+          "text": "model",
+          "start": 27.02,
+          "end": 27.22
+        },
+        {
+          "text": "cannot",
+          "start": 27.22,
+          "end": 27.46
+        },
+        {
+          "text": "open",
+          "start": 27.46,
+          "end": 27.74
+        },
+        {
+          "text": "your",
+          "start": 27.74,
+          "end": 27.92
+        },
+        {
+          "text": "files.",
+          "start": 27.92,
+          "end": 28.28
+        }
+      ]
+    },
+    {
+      "start": 28.28,
+      "end": 31.24,
+      "text": "It cannot search the repository. It cannot run terminal commands.",
+      "words": [
+        {
+          "text": "It",
+          "start": 28.28,
+          "end": 28.56
+        },
+        {
+          "text": "cannot",
+          "start": 28.56,
+          "end": 28.74
+        },
+        {
+          "text": "search",
+          "start": 28.74,
+          "end": 29.06
+        },
+        {
+          "text": "the",
+          "start": 29.06,
+          "end": 29.26
+        },
+        {
+          "text": "repository.",
+          "start": 29.26,
+          "end": 29.84
+        },
+        {
+          "text": "It",
+          "start": 30.08,
+          "end": 30.1
+        },
+        {
+          "text": "cannot",
+          "start": 30.1,
+          "end": 30.28
+        },
+        {
+          "text": "run",
+          "start": 30.28,
+          "end": 30.52
+        },
+        {
+          "text": "terminal",
+          "start": 30.52,
+          "end": 30.82
+        },
+        {
+          "text": "commands.",
+          "start": 30.82,
+          "end": 31.24
+        }
+      ]
+    },
+    {
+      "start": 31.5,
+      "end": 34.46,
+      "text": "It cannot execute the test suite. It cannot edit the code on disk.",
+      "words": [
+        {
+          "text": "It",
+          "start": 31.5,
+          "end": 31.6
+        },
+        {
+          "text": "cannot",
+          "start": 31.6,
+          "end": 31.8
+        },
+        {
+          "text": "execute",
+          "start": 31.8,
+          "end": 32.26
+        },
+        {
+          "text": "the",
+          "start": 32.26,
+          "end": 32.48
+        },
+        {
+          "text": "test",
+          "start": 32.48,
+          "end": 32.68
+        },
+        {
+          "text": "suite.",
+          "start": 32.68,
+          "end": 32.92
+        },
+        {
+          "text": "It",
+          "start": 33.04,
+          "end": 33.14
+        },
+        {
+          "text": "cannot",
+          "start": 33.14,
+          "end": 33.34
+        },
+        {
+          "text": "edit",
+          "start": 33.34,
+          "end": 33.62
+        },
+        {
+          "text": "the",
+          "start": 33.62,
+          "end": 33.8
+        },
+        {
+          "text": "code",
+          "start": 33.8,
+          "end": 34.0
+        },
+        {
+          "text": "on",
+          "start": 34.0,
+          "end": 34.18
+        },
+        {
+          "text": "disk.",
+          "start": 34.18,
+          "end": 34.46
+        }
+      ]
+    },
+    {
+      "start": 34.82,
+      "end": 36.18,
+      "text": "Claude Code gives it those abilities.",
+      "words": [
+        {
+          "text": "Claude",
+          "start": 34.82,
+          "end": 34.98
+        },
+        {
+          "text": "Code",
+          "start": 34.98,
+          "end": 35.18
+        },
+        {
+          "text": "gives",
+          "start": 35.18,
+          "end": 35.46
+        },
+        {
+          "text": "it",
+          "start": 35.46,
+          "end": 35.6
+        },
+        {
+          "text": "those",
+          "start": 35.6,
+          "end": 35.76
+        },
+        {
+          "text": "abilities.",
+          "start": 35.76,
+          "end": 36.18
+        }
+      ]
+    },
+    {
+      "start": 36.46,
+      "end": 39.14,
+      "text": "So the model might decide, I need to inspect these files first.",
+      "words": [
+        {
+          "text": "So",
+          "start": 36.46,
+          "end": 36.58
+        },
+        {
+          "text": "the",
+          "start": 36.58,
+          "end": 36.7
+        },
+        {
+          "text": "model",
+          "start": 36.7,
+          "end": 36.92
+        },
+        {
+          "text": "might",
+          "start": 36.92,
+          "end": 37.14
+        },
+        {
+          "text": "decide,",
+          "start": 37.14,
+          "end": 37.48
+        },
+        {
+          "text": "I",
+          "start": 37.64,
+          "end": 37.68
+        },
+        {
+          "text": "need",
+          "start": 37.68,
+          "end": 37.82
+        },
+        {
+          "text": "to",
+          "start": 37.82,
+          "end": 37.94
+        },
+        {
+          "text": "inspect",
+          "start": 37.94,
+          "end": 38.24
+        },
+        {
+          "text": "these",
+          "start": 38.24,
+          "end": 38.46
+        },
+        {
+          "text": "files",
+          "start": 38.46,
+          "end": 38.82
+        },
+        {
+          "text": "first.",
+          "start": 38.82,
+          "end": 39.14
+        }
+      ]
+    },
+    {
+      "start": 39.62,
+      "end": 42.84,
+      "text": "It generates a structured tool request. Claude Code reads the files.",
+      "words": [
+        {
+          "text": "It",
+          "start": 39.62,
+          "end": 39.72
+        },
+        {
+          "text": "generates",
+          "start": 39.72,
+          "end": 40.04
+        },
+        {
+          "text": "a",
+          "start": 40.04,
+          "end": 40.26
+        },
+        {
+          "text": "structured",
+          "start": 40.26,
+          "end": 40.5
+        },
+        {
+          "text": "tool",
+          "start": 40.5,
+          "end": 40.88
+        },
+        {
+          "text": "request.",
+          "start": 40.88,
+          "end": 41.26
+        },
+        {
+          "text": "Claude",
+          "start": 41.54,
+          "end": 41.8
+        },
+        {
+          "text": "Code",
+          "start": 41.8,
+          "end": 42.04
+        },
+        {
+          "text": "reads",
+          "start": 42.04,
+          "end": 42.26
+        },
+        {
+          "text": "the",
+          "start": 42.26,
+          "end": 42.48
+        },
+        {
+          "text": "files.",
+          "start": 42.48,
+          "end": 42.84
+        }
+      ]
+    },
+    {
+      "start": 43.06,
+      "end": 45.14,
+      "text": "Then it puts the result back into the model's context.",
+      "words": [
+        {
+          "text": "Then",
+          "start": 43.06,
+          "end": 43.16
+        },
+        {
+          "text": "it",
+          "start": 43.16,
+          "end": 43.28
+        },
+        {
+          "text": "puts",
+          "start": 43.28,
+          "end": 43.4
+        },
+        {
+          "text": "the",
+          "start": 43.4,
+          "end": 43.58
+        },
+        {
+          "text": "result",
+          "start": 43.58,
+          "end": 43.82
+        },
+        {
+          "text": "back",
+          "start": 43.82,
+          "end": 44.06
+        },
+        {
+          "text": "into",
+          "start": 44.06,
+          "end": 44.28
+        },
+        {
+          "text": "the",
+          "start": 44.28,
+          "end": 44.4
+        },
+        {
+          "text": "model's",
+          "start": 44.4,
+          "end": 44.76
+        },
+        {
+          "text": "context.",
+          "start": 44.76,
+          "end": 45.14
+        }
+      ]
+    },
+    {
+      "start": 45.4,
+      "end": 49.0,
+      "text": "Now the model thinks again. Maybe it decides the bug is probably in this function.",
+      "words": [
+        {
+          "text": "Now",
+          "start": 45.4,
+          "end": 45.48
+        },
+        {
+          "text": "the",
+          "start": 45.48,
+          "end": 45.56
+        },
+        {
+          "text": "model",
+          "start": 45.56,
+          "end": 45.82
+        },
+        {
+          "text": "thinks",
+          "start": 45.82,
+          "end": 46.08
+        },
+        {
+          "text": "again.",
+          "start": 46.08,
+          "end": 46.4
+        },
+        {
+          "text": "Maybe",
+          "start": 46.6,
+          "end": 46.78
+        },
+        {
+          "text": "it",
+          "start": 46.78,
+          "end": 46.94
+        },
+        {
+          "text": "decides",
+          "start": 46.94,
+          "end": 47.26
+        },
+        {
+          "text": "the",
+          "start": 47.26,
+          "end": 47.52
+        },
+        {
+          "text": "bug",
+          "start": 47.52,
+          "end": 47.72
+        },
+        {
+          "text": "is",
+          "start": 47.72,
+          "end": 47.88
+        },
+        {
+          "text": "probably",
+          "start": 47.88,
+          "end": 48.24
+        },
+        {
+          "text": "in",
+          "start": 48.24,
+          "end": 48.48
+        },
+        {
+          "text": "this",
+          "start": 48.48,
+          "end": 48.62
+        },
+        {
+          "text": "function.",
+          "start": 48.62,
+          "end": 49.0
+        }
+      ]
+    },
+    {
+      "start": 49.14,
+      "end": 51.94,
+      "text": "So it asks the harness to edit the file. Then run the tests.",
+      "words": [
+        {
+          "text": "So",
+          "start": 49.14,
+          "end": 49.3
+        },
+        {
+          "text": "it",
+          "start": 49.3,
+          "end": 49.42
+        },
+        {
+          "text": "asks",
+          "start": 49.42,
+          "end": 49.6
+        },
+        {
+          "text": "the",
+          "start": 49.6,
+          "end": 49.76
+        },
+        {
+          "text": "harness",
+          "start": 49.76,
+          "end": 49.94
+        },
+        {
+          "text": "to",
+          "start": 49.94,
+          "end": 50.2
+        },
+        {
+          "text": "edit",
+          "start": 50.2,
+          "end": 50.38
+        },
+        {
+          "text": "the",
+          "start": 50.38,
+          "end": 50.58
+        },
+        {
+          "text": "file.",
+          "start": 50.58,
+          "end": 50.94
+        },
+        {
+          "text": "Then",
+          "start": 51.06,
+          "end": 51.26
+        },
+        {
+          "text": "run",
+          "start": 51.26,
+          "end": 51.48
+        },
+        {
+          "text": "the",
+          "start": 51.48,
+          "end": 51.62
+        },
+        {
+          "text": "tests.",
+          "start": 51.62,
+          "end": 51.94
+        }
+      ]
+    },
+    {
+      "start": 52.4,
+      "end": 55.94,
+      "text": "The harness executes the command. The test output comes back into the context.",
+      "words": [
+        {
+          "text": "The",
+          "start": 52.4,
+          "end": 52.56
+        },
+        {
+          "text": "harness",
+          "start": 52.56,
+          "end": 52.78
+        },
+        {
+          "text": "executes",
+          "start": 52.78,
+          "end": 53.36
+        },
+        {
+          "text": "the",
+          "start": 53.36,
+          "end": 53.5
+        },
+        {
+          "text": "command.",
+          "start": 53.5,
+          "end": 53.8
+        },
+        {
+          "text": "The",
+          "start": 54.06,
+          "end": 54.16
+        },
+        {
+          "text": "test",
+          "start": 54.16,
+          "end": 54.36
+        },
+        {
+          "text": "output",
+          "start": 54.36,
+          "end": 54.66
+        },
+        {
+          "text": "comes",
+          "start": 54.66,
+          "end": 54.92
+        },
+        {
+          "text": "back",
+          "start": 54.92,
+          "end": 55.18
+        },
+        {
+          "text": "into",
+          "start": 55.18,
+          "end": 55.38
+        },
+        {
+          "text": "the",
+          "start": 55.38,
+          "end": 55.52
+        },
+        {
+          "text": "context.",
+          "start": 55.52,
+          "end": 55.94
+        }
+      ]
+    },
+    {
+      "start": 55.94,
+      "end": 60.78,
+      "text": "The model sees one test failed reasons about why edits the code again and runs the test again.",
+      "words": [
+        {
+          "text": "The",
+          "start": 55.94,
+          "end": 56.24
+        },
+        {
+          "text": "model",
+          "start": 56.24,
+          "end": 56.44
+        },
+        {
+          "text": "sees",
+          "start": 56.44,
+          "end": 56.68
+        },
+        {
+          "text": "one",
+          "start": 56.68,
+          "end": 56.96
+        },
+        {
+          "text": "test",
+          "start": 56.96,
+          "end": 57.22
+        },
+        {
+          "text": "failed",
+          "start": 57.22,
+          "end": 57.58
+        },
+        {
+          "text": "reasons",
+          "start": 57.58,
+          "end": 57.92
+        },
+        {
+          "text": "about",
+          "start": 57.92,
+          "end": 58.24
+        },
+        {
+          "text": "why",
+          "start": 58.24,
+          "end": 58.52
+        },
+        {
+          "text": "edits",
+          "start": 58.52,
+          "end": 58.84
+        },
+        {
+          "text": "the",
+          "start": 58.84,
+          "end": 59.08
+        },
+        {
+          "text": "code",
+          "start": 59.08,
+          "end": 59.28
+        },
+        {
+          "text": "again",
+          "start": 59.28,
+          "end": 59.58
+        },
+        {
+          "text": "and",
+          "start": 59.58,
+          "end": 59.8
+        },
+        {
+          "text": "runs",
+          "start": 59.8,
+          "end": 60.0
+        },
+        {
+          "text": "the",
+          "start": 60.0,
+          "end": 60.18
+        },
+        {
+          "text": "test",
+          "start": 60.18,
+          "end": 60.44
+        },
+        {
+          "text": "again.",
+          "start": 60.44,
+          "end": 60.78
+        }
+      ]
+    },
+    {
+      "start": 61.02,
+      "end": 65.72,
+      "text": "That loop is the important part. Think, act, observe, think again. The model provides the reasoning.",
+      "words": [
+        {
+          "text": "That",
+          "start": 61.02,
+          "end": 61.16
+        },
+        {
+          "text": "loop",
+          "start": 61.16,
+          "end": 61.36
+        },
+        {
+          "text": "is",
+          "start": 61.36,
+          "end": 61.54
+        },
+        {
+          "text": "the",
+          "start": 61.54,
+          "end": 61.64
+        },
+        {
+          "text": "important",
+          "start": 61.64,
+          "end": 61.98
+        },
+        {
+          "text": "part.",
+          "start": 61.98,
+          "end": 62.28
+        },
+        {
+          "text": "Think,",
+          "start": 62.5,
+          "end": 62.66
+        },
+        {
+          "text": "act,",
+          "start": 62.92,
+          "end": 63.08
+        },
+        {
+          "text": "observe,",
+          "start": 63.28,
+          "end": 63.58
+        },
+        {
+          "text": "think",
+          "start": 63.84,
+          "end": 63.96
+        },
+        {
+          "text": "again.",
+          "start": 63.96,
+          "end": 64.26
+        },
+        {
+          "text": "The",
+          "start": 64.54,
+          "end": 64.56
+        },
+        {
+          "text": "model",
+          "start": 64.56,
+          "end": 64.8
+        },
+        {
+          "text": "provides",
+          "start": 64.8,
+          "end": 65.18
+        },
+        {
+          "text": "the",
+          "start": 65.18,
+          "end": 65.36
+        },
+        {
+          "text": "reasoning.",
+          "start": 65.36,
+          "end": 65.72
+        }
+      ]
+    },
+    {
+      "start": 66.2,
+      "end": 69.02,
+      "text": "The harness provides the ability to interact with the real environment.",
+      "words": [
+        {
+          "text": "The",
+          "start": 66.2,
+          "end": 66.3
+        },
+        {
+          "text": "harness",
+          "start": 66.3,
+          "end": 66.48
+        },
+        {
+          "text": "provides",
+          "start": 66.48,
+          "end": 66.86
+        },
+        {
+          "text": "the",
+          "start": 66.86,
+          "end": 67.06
+        },
+        {
+          "text": "ability",
+          "start": 67.06,
+          "end": 67.36
+        },
+        {
+          "text": "to",
+          "start": 67.36,
+          "end": 67.54
+        },
+        {
+          "text": "interact",
+          "start": 67.54,
+          "end": 67.9
+        },
+        {
+          "text": "with",
+          "start": 67.9,
+          "end": 68.14
+        },
+        {
+          "text": "the",
+          "start": 68.14,
+          "end": 68.26
+        },
+        {
+          "text": "real",
+          "start": 68.26,
+          "end": 68.5
+        },
+        {
+          "text": "environment.",
+          "start": 68.5,
+          "end": 69.02
+        }
+      ]
+    },
+    {
+      "start": 69.3,
+      "end": 74.52,
+      "text": "But tools are only one part of a harness. It also manages context, your prompt, conversation history.",
+      "words": [
+        {
+          "text": "But",
+          "start": 69.3,
+          "end": 69.38
+        },
+        {
+          "text": "tools",
+          "start": 69.38,
+          "end": 69.6
+        },
+        {
+          "text": "are",
+          "start": 69.6,
+          "end": 69.86
+        },
+        {
+          "text": "only",
+          "start": 69.86,
+          "end": 70.06
+        },
+        {
+          "text": "one",
+          "start": 70.06,
+          "end": 70.26
+        },
+        {
+          "text": "part",
+          "start": 70.26,
+          "end": 70.5
+        },
+        {
+          "text": "of",
+          "start": 70.5,
+          "end": 70.62
+        },
+        {
+          "text": "a",
+          "start": 70.62,
+          "end": 70.7
+        },
+        {
+          "text": "harness.",
+          "start": 70.7,
+          "end": 70.94
+        },
+        {
+          "text": "It",
+          "start": 71.3,
+          "end": 71.36
+        },
+        {
+          "text": "also",
+          "start": 71.36,
+          "end": 71.62
+        },
+        {
+          "text": "manages",
+          "start": 71.62,
+          "end": 72.08
+        },
+        {
+          "text": "context,",
+          "start": 72.08,
+          "end": 72.54
+        },
+        {
+          "text": "your",
+          "start": 72.88,
+          "end": 73.0
+        },
+        {
+          "text": "prompt,",
+          "start": 73.0,
+          "end": 73.34
+        },
+        {
+          "text": "conversation",
+          "start": 73.56,
+          "end": 73.92
+        },
+        {
+          "text": "history.",
+          "start": 73.92,
+          "end": 74.52
+        }
+      ]
+    },
+    {
+      "start": 74.78,
+      "end": 78.42,
+      "text": "Files the model has opened, terminal output, tool results, instructions.",
+      "words": [
+        {
+          "text": "Files",
+          "start": 74.78,
+          "end": 75.02
+        },
+        {
+          "text": "the",
+          "start": 75.02,
+          "end": 75.2
+        },
+        {
+          "text": "model",
+          "start": 75.2,
+          "end": 75.42
+        },
+        {
+          "text": "has",
+          "start": 75.42,
+          "end": 75.64
+        },
+        {
+          "text": "opened,",
+          "start": 75.64,
+          "end": 75.96
+        },
+        {
+          "text": "terminal",
+          "start": 76.18,
+          "end": 76.46
+        },
+        {
+          "text": "output,",
+          "start": 76.46,
+          "end": 76.98
+        },
+        {
+          "text": "tool",
+          "start": 77.24,
+          "end": 77.4
+        },
+        {
+          "text": "results,",
+          "start": 77.4,
+          "end": 77.72
+        },
+        {
+          "text": "instructions.",
+          "start": 78.04,
+          "end": 78.42
+        }
+      ]
+    },
+    {
+      "start": 78.96,
+      "end": 83.16,
+      "text": "All of that has to fit inside the model's context window. And that context window is limited.",
+      "words": [
+        {
+          "text": "All",
+          "start": 78.96,
+          "end": 79.16
+        },
+        {
+          "text": "of",
+          "start": 79.16,
+          "end": 79.28
+        },
+        {
+          "text": "that",
+          "start": 79.28,
+          "end": 79.42
+        },
+        {
+          "text": "has",
+          "start": 79.42,
+          "end": 79.6
+        },
+        {
+          "text": "to",
+          "start": 79.6,
+          "end": 79.74
+        },
+        {
+          "text": "fit",
+          "start": 79.74,
+          "end": 79.92
+        },
+        {
+          "text": "inside",
+          "start": 79.92,
+          "end": 80.2
+        },
+        {
+          "text": "the",
+          "start": 80.2,
+          "end": 80.36
+        },
+        {
+          "text": "model's",
+          "start": 80.36,
+          "end": 80.72
+        },
+        {
+          "text": "context",
+          "start": 80.72,
+          "end": 81.0
+        },
+        {
+          "text": "window.",
+          "start": 81.0,
+          "end": 81.44
+        },
+        {
+          "text": "And",
+          "start": 81.64,
+          "end": 81.74
+        },
+        {
+          "text": "that",
+          "start": 81.74,
+          "end": 81.9
+        },
+        {
+          "text": "context",
+          "start": 81.9,
+          "end": 82.28
+        },
+        {
+          "text": "window",
+          "start": 82.28,
+          "end": 82.62
+        },
+        {
+          "text": "is",
+          "start": 82.62,
+          "end": 82.82
+        },
+        {
+          "text": "limited.",
+          "start": 82.82,
+          "end": 83.16
+        }
+      ]
+    },
+    {
+      "start": 83.16,
+      "end": 88.72,
+      "text": "So the harness has to decide what stays what gets summarized what gets removed and what should be loaded again later",
+      "words": [
+        {
+          "text": "So",
+          "start": 83.16,
+          "end": 83.5
+        },
+        {
+          "text": "the",
+          "start": 83.5,
+          "end": 83.66
+        },
+        {
+          "text": "harness",
+          "start": 83.66,
+          "end": 83.86
+        },
+        {
+          "text": "has",
+          "start": 83.86,
+          "end": 84.12
+        },
+        {
+          "text": "to",
+          "start": 84.12,
+          "end": 84.28
+        },
+        {
+          "text": "decide",
+          "start": 84.28,
+          "end": 84.6
+        },
+        {
+          "text": "what",
+          "start": 84.6,
+          "end": 84.82
+        },
+        {
+          "text": "stays",
+          "start": 84.82,
+          "end": 85.16
+        },
+        {
+          "text": "what",
+          "start": 85.16,
+          "end": 85.54
+        },
+        {
+          "text": "gets",
+          "start": 85.54,
+          "end": 85.76
+        },
+        {
+          "text": "summarized",
+          "start": 85.76,
+          "end": 86.38
+        },
+        {
+          "text": "what",
+          "start": 86.38,
+          "end": 86.54
+        },
+        {
+          "text": "gets",
+          "start": 86.54,
+          "end": 86.74
+        },
+        {
+          "text": "removed",
+          "start": 86.74,
+          "end": 87.02
+        },
+        {
+          "text": "and",
+          "start": 87.02,
+          "end": 87.36
+        },
+        {
+          "text": "what",
+          "start": 87.36,
+          "end": 87.54
+        },
+        {
+          "text": "should",
+          "start": 87.54,
+          "end": 87.68
+        },
+        {
+          "text": "be",
+          "start": 87.68,
+          "end": 87.82
+        },
+        {
+          "text": "loaded",
+          "start": 87.82,
+          "end": 88.06
+        },
+        {
+          "text": "again",
+          "start": 88.06,
+          "end": 88.38
+        },
+        {
+          "text": "later",
+          "start": 88.38,
+          "end": 88.72
+        }
+      ]
+    },
+    {
+      "start": 88.72,
+      "end": 94.2,
+      "text": "That is why the exact same model can feel much smarter in one product than another the difference might not be the model",
+      "words": [
+        {
+          "text": "That",
+          "start": 88.72,
+          "end": 89.32
+        },
+        {
+          "text": "is",
+          "start": 89.32,
+          "end": 89.44
+        },
+        {
+          "text": "why",
+          "start": 89.44,
+          "end": 89.58
+        },
+        {
+          "text": "the",
+          "start": 89.58,
+          "end": 89.7
+        },
+        {
+          "text": "exact",
+          "start": 89.7,
+          "end": 90.02
+        },
+        {
+          "text": "same",
+          "start": 90.02,
+          "end": 90.26
+        },
+        {
+          "text": "model",
+          "start": 90.26,
+          "end": 90.54
+        },
+        {
+          "text": "can",
+          "start": 90.54,
+          "end": 90.7
+        },
+        {
+          "text": "feel",
+          "start": 90.7,
+          "end": 90.94
+        },
+        {
+          "text": "much",
+          "start": 90.94,
+          "end": 91.2
+        },
+        {
+          "text": "smarter",
+          "start": 91.2,
+          "end": 91.58
+        },
+        {
+          "text": "in",
+          "start": 91.58,
+          "end": 91.74
+        },
+        {
+          "text": "one",
+          "start": 91.74,
+          "end": 91.9
+        },
+        {
+          "text": "product",
+          "start": 91.9,
+          "end": 92.22
+        },
+        {
+          "text": "than",
+          "start": 92.22,
+          "end": 92.42
+        },
+        {
+          "text": "another",
+          "start": 92.42,
+          "end": 92.68
+        },
+        {
+          "text": "the",
+          "start": 92.68,
+          "end": 92.96
+        },
+        {
+          "text": "difference",
+          "start": 92.96,
+          "end": 93.22
+        },
+        {
+          "text": "might",
+          "start": 93.22,
+          "end": 93.48
+        },
+        {
+          "text": "not",
+          "start": 93.48,
+          "end": 93.62
+        },
+        {
+          "text": "be",
+          "start": 93.62,
+          "end": 93.8
+        },
+        {
+          "text": "the",
+          "start": 93.8,
+          "end": 93.92
+        },
+        {
+          "text": "model",
+          "start": 93.92,
+          "end": 94.2
+        }
+      ]
+    },
+    {
+      "start": 94.2,
+      "end": 96.1,
+      "text": "It might be the harness now add permissions",
+      "words": [
+        {
+          "text": "It",
+          "start": 94.2,
+          "end": 94.36
+        },
+        {
+          "text": "might",
+          "start": 94.36,
+          "end": 94.52
+        },
+        {
+          "text": "be",
+          "start": 94.52,
+          "end": 94.68
+        },
+        {
+          "text": "the",
+          "start": 94.68,
+          "end": 94.8
+        },
+        {
+          "text": "harness",
+          "start": 94.8,
+          "end": 95.06
+        },
+        {
+          "text": "now",
+          "start": 95.06,
+          "end": 95.48
+        },
+        {
+          "text": "add",
+          "start": 95.48,
+          "end": 95.74
+        },
+        {
+          "text": "permissions",
+          "start": 95.74,
+          "end": 96.1
+        }
+      ]
+    },
+    {
+      "start": 96.1,
+      "end": 101.0,
+      "text": "Maybe the agent can read files freely, but needs your approval before running a dangerous shell command",
+      "words": [
+        {
+          "text": "Maybe",
+          "start": 96.1,
+          "end": 96.62
+        },
+        {
+          "text": "the",
+          "start": 96.62,
+          "end": 96.82
+        },
+        {
+          "text": "agent",
+          "start": 96.82,
+          "end": 97.08
+        },
+        {
+          "text": "can",
+          "start": 97.08,
+          "end": 97.32
+        },
+        {
+          "text": "read",
+          "start": 97.32,
+          "end": 97.48
+        },
+        {
+          "text": "files",
+          "start": 97.48,
+          "end": 97.86
+        },
+        {
+          "text": "freely,",
+          "start": 97.86,
+          "end": 98.16
+        },
+        {
+          "text": "but",
+          "start": 98.16,
+          "end": 98.52
+        },
+        {
+          "text": "needs",
+          "start": 98.52,
+          "end": 98.78
+        },
+        {
+          "text": "your",
+          "start": 98.78,
+          "end": 98.94
+        },
+        {
+          "text": "approval",
+          "start": 98.94,
+          "end": 99.32
+        },
+        {
+          "text": "before",
+          "start": 99.32,
+          "end": 99.58
+        },
+        {
+          "text": "running",
+          "start": 99.58,
+          "end": 99.9
+        },
+        {
+          "text": "a",
+          "start": 99.9,
+          "end": 100.04
+        },
+        {
+          "text": "dangerous",
+          "start": 100.04,
+          "end": 100.34
+        },
+        {
+          "text": "shell",
+          "start": 100.34,
+          "end": 100.66
+        },
+        {
+          "text": "command",
+          "start": 100.66,
+          "end": 101.0
+        }
+      ]
+    },
+    {
+      "start": 101.0,
+      "end": 106.92,
+      "text": "Maybe it can edit code but cannot deploy to production without confirmation the harness controls those boundaries too",
+      "words": [
+        {
+          "text": "Maybe",
+          "start": 101.0,
+          "end": 101.66
+        },
+        {
+          "text": "it",
+          "start": 101.66,
+          "end": 101.86
+        },
+        {
+          "text": "can",
+          "start": 101.86,
+          "end": 101.98
+        },
+        {
+          "text": "edit",
+          "start": 101.98,
+          "end": 102.16
+        },
+        {
+          "text": "code",
+          "start": 102.16,
+          "end": 102.56
+        },
+        {
+          "text": "but",
+          "start": 102.56,
+          "end": 102.82
+        },
+        {
+          "text": "cannot",
+          "start": 102.82,
+          "end": 103.08
+        },
+        {
+          "text": "deploy",
+          "start": 103.08,
+          "end": 103.44
+        },
+        {
+          "text": "to",
+          "start": 103.44,
+          "end": 103.58
+        },
+        {
+          "text": "production",
+          "start": 103.58,
+          "end": 103.94
+        },
+        {
+          "text": "without",
+          "start": 103.94,
+          "end": 104.28
+        },
+        {
+          "text": "confirmation",
+          "start": 104.28,
+          "end": 104.78
+        },
+        {
+          "text": "the",
+          "start": 104.78,
+          "end": 105.26
+        },
+        {
+          "text": "harness",
+          "start": 105.26,
+          "end": 105.48
+        },
+        {
+          "text": "controls",
+          "start": 105.48,
+          "end": 105.9
+        },
+        {
+          "text": "those",
+          "start": 105.9,
+          "end": 106.14
+        },
+        {
+          "text": "boundaries",
+          "start": 106.14,
+          "end": 106.56
+        },
+        {
+          "text": "too",
+          "start": 106.56,
+          "end": 106.92
+        }
+      ]
+    },
+    {
+      "start": 106.92,
+      "end": 108.2,
+      "text": "And then there's orchestration",
+      "words": [
+        {
+          "text": "And",
+          "start": 106.92,
+          "end": 107.2
+        },
+        {
+          "text": "then",
+          "start": 107.2,
+          "end": 107.32
+        },
+        {
+          "text": "there's",
+          "start": 107.32,
+          "end": 107.54
+        },
+        {
+          "text": "orchestration",
+          "start": 107.54,
+          "end": 108.2
+        }
+      ]
+    },
+    {
+      "start": 108.2,
+      "end": 112.76,
+      "text": "Imagine one task has three separate parts, one agent investigates the back end, another",
+      "words": [
+        {
+          "text": "Imagine",
+          "start": 108.2,
+          "end": 108.74
+        },
+        {
+          "text": "one",
+          "start": 108.74,
+          "end": 109.02
+        },
+        {
+          "text": "task",
+          "start": 109.02,
+          "end": 109.32
+        },
+        {
+          "text": "has",
+          "start": 109.32,
+          "end": 109.6
+        },
+        {
+          "text": "three",
+          "start": 109.6,
+          "end": 109.8
+        },
+        {
+          "text": "separate",
+          "start": 109.8,
+          "end": 110.12
+        },
+        {
+          "text": "parts,",
+          "start": 110.12,
+          "end": 110.54
+        },
+        {
+          "text": "one",
+          "start": 110.72,
+          "end": 110.86
+        },
+        {
+          "text": "agent",
+          "start": 110.86,
+          "end": 111.08
+        },
+        {
+          "text": "investigates",
+          "start": 111.08,
+          "end": 111.72
+        },
+        {
+          "text": "the",
+          "start": 111.72,
+          "end": 111.86
+        },
+        {
+          "text": "back",
+          "start": 111.86,
+          "end": 112.12
+        },
+        {
+          "text": "end,",
+          "start": 112.12,
+          "end": 112.34
+        },
+        {
+          "text": "another",
+          "start": 112.56,
+          "end": 112.76
+        }
+      ]
+    },
+    {
+      "start": 112.76,
+      "end": 115.0,
+      "text": "checks the front end, another reviews the tests.",
+      "words": [
+        {
+          "text": "checks",
+          "start": 112.76,
+          "end": 113.04
+        },
+        {
+          "text": "the",
+          "start": 113.04,
+          "end": 113.22
+        },
+        {
+          "text": "front",
+          "start": 113.22,
+          "end": 113.44
+        },
+        {
+          "text": "end,",
+          "start": 113.44,
+          "end": 113.66
+        },
+        {
+          "text": "another",
+          "start": 113.86,
+          "end": 114.1
+        },
+        {
+          "text": "reviews",
+          "start": 114.1,
+          "end": 114.48
+        },
+        {
+          "text": "the",
+          "start": 114.48,
+          "end": 114.66
+        },
+        {
+          "text": "tests.",
+          "start": 114.66,
+          "end": 115.0
+        }
+      ]
+    },
+    {
+      "start": 115.48,
+      "end": 119.32,
+      "text": "A more advanced harness can coordinate those sub-agents and bring the results back together.",
+      "words": [
+        {
+          "text": "A",
+          "start": 115.48,
+          "end": 115.58
+        },
+        {
+          "text": "more",
+          "start": 115.58,
+          "end": 115.74
+        },
+        {
+          "text": "advanced",
+          "start": 115.74,
+          "end": 116.12
+        },
+        {
+          "text": "harness",
+          "start": 116.12,
+          "end": 116.44
+        },
+        {
+          "text": "can",
+          "start": 116.44,
+          "end": 116.66
+        },
+        {
+          "text": "coordinate",
+          "start": 116.66,
+          "end": 117.02
+        },
+        {
+          "text": "those",
+          "start": 117.02,
+          "end": 117.3
+        },
+        {
+          "text": "sub",
+          "start": 117.3,
+          "end": 117.58
+        },
+        {
+          "text": "-agents",
+          "start": 117.58,
+          "end": 117.86
+        },
+        {
+          "text": "and",
+          "start": 117.86,
+          "end": 118.04
+        },
+        {
+          "text": "bring",
+          "start": 118.04,
+          "end": 118.22
+        },
+        {
+          "text": "the",
+          "start": 118.22,
+          "end": 118.36
+        },
+        {
+          "text": "results",
+          "start": 118.36,
+          "end": 118.64
+        },
+        {
+          "text": "back",
+          "start": 118.64,
+          "end": 118.92
+        },
+        {
+          "text": "together.",
+          "start": 118.92,
+          "end": 119.32
+        }
+      ]
+    },
+    {
+      "start": 119.64,
+      "end": 121.12,
+      "text": "So Claude Code is a great example.",
+      "words": [
+        {
+          "text": "So",
+          "start": 119.64,
+          "end": 119.66
+        },
+        {
+          "text": "Claude",
+          "start": 119.66,
+          "end": 120.02
+        },
+        {
+          "text": "Code",
+          "start": 120.02,
+          "end": 120.2
+        },
+        {
+          "text": "is",
+          "start": 120.2,
+          "end": 120.36
+        },
+        {
+          "text": "a",
+          "start": 120.36,
+          "end": 120.46
+        },
+        {
+          "text": "great",
+          "start": 120.46,
+          "end": 120.66
+        },
+        {
+          "text": "example.",
+          "start": 120.66,
+          "end": 121.12
+        }
+      ]
+    },
+    {
+      "start": 121.36,
+      "end": 122.14,
+      "text": "Claude is the brain.",
+      "words": [
+        {
+          "text": "Claude",
+          "start": 121.36,
+          "end": 121.58
+        },
+        {
+          "text": "is",
+          "start": 121.58,
+          "end": 121.68
+        },
+        {
+          "text": "the",
+          "start": 121.68,
+          "end": 121.86
+        },
+        {
+          "text": "brain.",
+          "start": 121.86,
+          "end": 122.14
+        }
+      ]
+    },
+    {
+      "start": 122.4,
+      "end": 126.6,
+      "text": "Claude Code gives that brain access to your repository, the file stem, the terminal,",
+      "words": [
+        {
+          "text": "Claude",
+          "start": 122.4,
+          "end": 122.68
+        },
+        {
+          "text": "Code",
+          "start": 122.68,
+          "end": 122.9
+        },
+        {
+          "text": "gives",
+          "start": 122.9,
+          "end": 123.14
+        },
+        {
+          "text": "that",
+          "start": 123.14,
+          "end": 123.38
+        },
+        {
+          "text": "brain",
+          "start": 123.38,
+          "end": 123.64
+        },
+        {
+          "text": "access",
+          "start": 123.64,
+          "end": 124.02
+        },
+        {
+          "text": "to",
+          "start": 124.02,
+          "end": 124.3
+        },
+        {
+          "text": "your",
+          "start": 124.3,
+          "end": 124.44
+        },
+        {
+          "text": "repository,",
+          "start": 124.44,
+          "end": 124.96
+        },
+        {
+          "text": "the",
+          "start": 125.42,
+          "end": 125.5
+        },
+        {
+          "text": "file",
+          "start": 125.5,
+          "end": 125.76
+        },
+        {
+          "text": "stem,",
+          "start": 125.76,
+          "end": 126.02
+        },
+        {
+          "text": "the",
+          "start": 126.18,
+          "end": 126.26
+        },
+        {
+          "text": "terminal,",
+          "start": 126.26,
+          "end": 126.6
+        }
+      ]
+    },
+    {
+      "start": 126.9,
+      "end": 130.96,
+      "text": "JIT, tests, tools, context management, and the loop that lets it keep working.",
+      "words": [
+        {
+          "text": "JIT,",
+          "start": 126.9,
+          "end": 127.24
+        },
+        {
+          "text": "tests,",
+          "start": 127.34,
+          "end": 127.58
+        },
+        {
+          "text": "tools,",
+          "start": 127.9,
+          "end": 128.04
+        },
+        {
+          "text": "context",
+          "start": 128.28,
+          "end": 128.56
+        },
+        {
+          "text": "management,",
+          "start": 128.56,
+          "end": 129.14
+        },
+        {
+          "text": "and",
+          "start": 129.36,
+          "end": 129.68
+        },
+        {
+          "text": "the",
+          "start": 129.68,
+          "end": 129.8
+        },
+        {
+          "text": "loop",
+          "start": 129.8,
+          "end": 130.0
+        },
+        {
+          "text": "that",
+          "start": 130.0,
+          "end": 130.18
+        },
+        {
+          "text": "lets",
+          "start": 130.18,
+          "end": 130.38
+        },
+        {
+          "text": "it",
+          "start": 130.38,
+          "end": 130.48
+        },
+        {
+          "text": "keep",
+          "start": 130.48,
+          "end": 130.64
+        },
+        {
+          "text": "working.",
+          "start": 130.64,
+          "end": 130.96
+        }
+      ]
+    },
+    {
+      "start": 131.2,
+      "end": 133.3,
+      "text": "And this is why AI agents are not just models.",
+      "words": [
+        {
+          "text": "And",
+          "start": 131.2,
+          "end": 131.28
+        },
+        {
+          "text": "this",
+          "start": 131.28,
+          "end": 131.44
+        },
+        {
+          "text": "is",
+          "start": 131.44,
+          "end": 131.56
+        },
+        {
+          "text": "why",
+          "start": 131.56,
+          "end": 131.72
+        },
+        {
+          "text": "AI",
+          "start": 131.72,
+          "end": 132.0
+        },
+        {
+          "text": "agents",
+          "start": 132.0,
+          "end": 132.4
+        },
+        {
+          "text": "are",
+          "start": 132.4,
+          "end": 132.6
+        },
+        {
+          "text": "not",
+          "start": 132.6,
+          "end": 132.76
+        },
+        {
+          "text": "just",
+          "start": 132.76,
+          "end": 132.96
+        },
+        {
+          "text": "models.",
+          "start": 132.96,
+          "end": 133.3
+        }
+      ]
+    },
+    {
+      "start": 133.52,
+      "end": 137.04,
+      "text": "The model might be brilliant, but without a good harness it is basically a brain",
+      "words": [
+        {
+          "text": "The",
+          "start": 133.52,
+          "end": 133.6
+        },
+        {
+          "text": "model",
+          "start": 133.6,
+          "end": 133.86
+        },
+        {
+          "text": "might",
+          "start": 133.86,
+          "end": 134.08
+        },
+        {
+          "text": "be",
+          "start": 134.08,
+          "end": 134.24
+        },
+        {
+          "text": "brilliant,",
+          "start": 134.24,
+          "end": 134.62
+        },
+        {
+          "text": "but",
+          "start": 134.84,
+          "end": 134.96
+        },
+        {
+          "text": "without",
+          "start": 134.96,
+          "end": 135.22
+        },
+        {
+          "text": "a",
+          "start": 135.22,
+          "end": 135.38
+        },
+        {
+          "text": "good",
+          "start": 135.38,
+          "end": 135.52
+        },
+        {
+          "text": "harness",
+          "start": 135.52,
+          "end": 135.86
+        },
+        {
+          "text": "it",
+          "start": 135.86,
+          "end": 136.06
+        },
+        {
+          "text": "is",
+          "start": 136.06,
+          "end": 136.18
+        },
+        {
+          "text": "basically",
+          "start": 136.18,
+          "end": 136.62
+        },
+        {
+          "text": "a",
+          "start": 136.62,
+          "end": 136.82
+        },
+        {
+          "text": "brain",
+          "start": 136.82,
+          "end": 137.04
+        }
+      ]
+    },
+    {
+      "start": 137.04,
+      "end": 137.86,
+      "text": "sitting in a jar.",
+      "words": [
+        {
+          "text": "sitting",
+          "start": 137.04,
+          "end": 137.32
+        },
+        {
+          "text": "in",
+          "start": 137.32,
+          "end": 137.52
+        },
+        {
+          "text": "a",
+          "start": 137.52,
+          "end": 137.62
+        },
+        {
+          "text": "jar.",
+          "start": 137.62,
+          "end": 137.86
+        }
+      ]
+    },
+    {
+      "start": 137.86,
+      "end": 142.16,
+      "text": "Give it tools memory permissions in an environment it can act on and now you have an agent",
+      "words": [
+        {
+          "text": "Give",
+          "start": 137.86,
+          "end": 138.24
+        },
+        {
+          "text": "it",
+          "start": 138.24,
+          "end": 138.38
+        },
+        {
+          "text": "tools",
+          "start": 138.38,
+          "end": 138.66
+        },
+        {
+          "text": "memory",
+          "start": 138.66,
+          "end": 139.08
+        },
+        {
+          "text": "permissions",
+          "start": 139.08,
+          "end": 139.66
+        },
+        {
+          "text": "in",
+          "start": 139.66,
+          "end": 139.86
+        },
+        {
+          "text": "an",
+          "start": 139.86,
+          "end": 139.98
+        },
+        {
+          "text": "environment",
+          "start": 139.98,
+          "end": 140.38
+        },
+        {
+          "text": "it",
+          "start": 140.38,
+          "end": 140.6
+        },
+        {
+          "text": "can",
+          "start": 140.6,
+          "end": 140.72
+        },
+        {
+          "text": "act",
+          "start": 140.72,
+          "end": 140.92
+        },
+        {
+          "text": "on",
+          "start": 140.92,
+          "end": 141.14
+        },
+        {
+          "text": "and",
+          "start": 141.14,
+          "end": 141.4
+        },
+        {
+          "text": "now",
+          "start": 141.4,
+          "end": 141.56
+        },
+        {
+          "text": "you",
+          "start": 141.56,
+          "end": 141.68
+        },
+        {
+          "text": "have",
+          "start": 141.68,
+          "end": 141.84
+        },
+        {
+          "text": "an",
+          "start": 141.84,
+          "end": 141.94
+        },
+        {
+          "text": "agent",
+          "start": 141.94,
+          "end": 142.16
+        }
+      ]
+    }
+  ]
+}

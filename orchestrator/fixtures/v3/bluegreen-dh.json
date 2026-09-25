@@ -1,0 +1,786 @@
+{
+  "version": "storyboard.v3",
+  "profile": "DH",
+  "topic": "Blue-green deployment",
+  "entities": {
+    "hud": {
+      "host": "shop.example.com",
+      "env": "BLUE",
+      "envTone": "blue",
+      "version": "v1.4.2",
+      "value": "0.4%",
+      "valueLabel": "errors"
+    },
+    "users": {
+      "count": 9,
+      "pitch": 78,
+      "convergeY": 150
+    },
+    "router": {
+      "left": 100,
+      "right": 0
+    },
+    "lever": {
+      "side": "left"
+    },
+    "left": {
+      "env": "blue",
+      "live": true,
+      "version": "v1.4.2",
+      "pct": 100,
+      "instances": [
+        {
+          "id": "i-0a3f8c21"
+        },
+        {
+          "id": "i-07b41de9"
+        },
+        {
+          "id": "i-0c92f5a4"
+        }
+      ]
+    },
+    "right": {
+      "env": "green",
+      "live": false,
+      "version": "—",
+      "pct": 0,
+      "instances": [
+        {
+          "id": "i-0d18ba77",
+          "status": "idle"
+        },
+        {
+          "id": "i-0e63c40b",
+          "status": "idle"
+        },
+        {
+          "id": "i-0f27ae55",
+          "status": "idle"
+        }
+      ]
+    }
+  },
+  "sentences": [
+    {
+      "id": "s1",
+      "text": "Here's how blue green deployment works."
+    },
+    {
+      "id": "s2",
+      "text": "Your shop is about to ship version two point zero."
+    },
+    {
+      "id": "s3",
+      "text": "Deploy it straight onto the live servers, and checkout breaks for every customer."
+    },
+    {
+      "id": "s4",
+      "text": "So instead, you run two identical environments behind one load balancer."
+    },
+    {
+      "id": "s5",
+      "text": "Blue is live and serves every request, while green sits idle."
+    },
+    {
+      "id": "s6",
+      "text": "Now deploy version two point zero to green, where no user can reach it."
+    },
+    {
+      "id": "s7",
+      "text": "Then test it privately, through its own address."
+    },
+    {
+      "id": "s8",
+      "text": "Every check passes, so you flip the switch."
+    },
+    {
+      "id": "s9",
+      "text": "All traffic moves to green at once, with zero downtime."
+    },
+    {
+      "id": "s10",
+      "text": "Five minutes later, checkout errors jump to eighteen percent."
+    },
+    {
+      "id": "s11",
+      "text": "Blue never went away, so you flip straight back."
+    },
+    {
+      "id": "s12",
+      "text": "Every customer is safe again within seconds."
+    },
+    {
+      "id": "s13",
+      "text": "One environment live, one ready, and a single switch between them."
+    }
+  ],
+  "scaffolds": [
+    {
+      "id": "title",
+      "template": "title",
+      "from": "s1",
+      "slots": {
+        "eyebrow": {
+          "props": {
+            "text": "HOW IT WORKS"
+          }
+        },
+        "left": {
+          "props": {
+            "word": "BLUE",
+            "tone": "blue"
+          }
+        },
+        "right": {
+          "props": {
+            "word": "GREEN",
+            "tone": "green"
+          }
+        },
+        "footer": {
+          "props": {
+            "text": "DEPLOYMENT",
+            "size": "xl"
+          }
+        }
+      }
+    },
+    {
+      "id": "problem",
+      "template": "problem",
+      "from": "s2",
+      "slots": {
+        "label": {
+          "props": {
+            "text": "THE PROBLEM"
+          }
+        },
+        "tag": {
+          "props": {
+            "text": "Deploy v2.0.0",
+            "tone": "amber"
+          },
+          "anchor": {
+            "text": "version"
+          }
+        },
+        "main": {
+          "id": "shop",
+          "props": {
+            "url": "https://shop.example.com"
+          }
+        }
+      }
+    },
+    {
+      "id": "idea",
+      "template": "carrier",
+      "from": "s4",
+      "slots": {
+        "label": {
+          "props": {
+            "text": "TWO ENVIRONMENTS"
+          }
+        }
+      }
+    },
+    {
+      "id": "test",
+      "template": "carrier",
+      "from": "s7",
+      "slots": {
+        "label": {
+          "props": {
+            "text": "TEST IT PRIVATELY"
+          }
+        },
+        "slot": {
+          "id": "console",
+          "type": "console",
+          "rect": [
+            330,
+            470,
+            690,
+            250
+          ],
+          "props": {
+            "url": "https://green.shop.example.com",
+            "chip": "STAFF ONLY · NOT IN DNS",
+            "rows": [
+              {
+                "path": "POST /login",
+                "hidden": false
+              },
+              {
+                "path": "POST /cart",
+                "hidden": false
+              },
+              {
+                "path": "POST /payments",
+                "hidden": false
+              },
+              {
+                "path": "GET /healthz",
+                "hidden": false
+              }
+            ]
+          }
+        },
+        "extra": [
+          {
+            "id": "bypass",
+            "type": "micro",
+            "rect": [
+              330,
+              428,
+              690,
+              26
+            ],
+            "props": {
+              "text": "BYPASSES THE LOAD BALANCER",
+              "tone": "amber",
+              "align": "right"
+            }
+          },
+          {
+            "id": "bypassLine",
+            "type": "connector",
+            "rect": [
+              840,
+              700,
+              200,
+              250
+            ],
+            "props": {
+              "from": [
+                1005,
+                720
+              ],
+              "to": [
+                850,
+                947
+              ],
+              "tone": "amber",
+              "bend": 0.55
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "switch",
+      "template": "reframe",
+      "from": "s8",
+      "slots": {
+        "headline": {
+          "props": {
+            "lines": [
+              "SWITCH THE",
+              "TRAFFIC"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "zero",
+      "template": "reframe",
+      "from": "s9",
+      "slots": {
+        "users": true,
+        "stat": {
+          "id": "downtime",
+          "rect": [
+            390,
+            334,
+            300,
+            104
+          ],
+          "props": {
+            "eyebrow": "DOWNTIME",
+            "value": "0.00s",
+            "sub": "NO DEPLOY, NO RESTART"
+          },
+          "anchor": {
+            "text": "zero"
+          }
+        }
+      }
+    },
+    {
+      "id": "alarm",
+      "template": "alarm",
+      "from": "s10",
+      "slots": {
+        "stat": {
+          "props": {
+            "eyebrow": "CHECKOUT ERRORS",
+            "value": "was 0.4%",
+            "sub": "5XX ON POST /CHECKOUT"
+          }
+        },
+        "hero": {
+          "id": "eighteen",
+          "props": {
+            "text": "18%"
+          },
+          "anchor": {
+            "text": "eighteen"
+          }
+        },
+        "chart": {
+          "id": "errors",
+          "props": {
+            "title": "5xx ERROR RATE",
+            "maxLabel": "20% max",
+            "to": 18,
+            "base": 0.4
+          }
+        }
+      }
+    },
+    {
+      "id": "back",
+      "template": "carrier",
+      "from": "s12",
+      "slots": {
+        "label": {
+          "props": {
+            "text": "STRAIGHT BACK",
+            "tone": "red"
+          }
+        }
+      }
+    },
+    {
+      "id": "outro",
+      "template": "outro",
+      "from": "s13",
+      "slots": {
+        "headline": {
+          "props": {
+            "lines": [
+              {
+                "text": "ONE LIVE",
+                "tone": "blue"
+              },
+              {
+                "text": "ONE READY",
+                "tone": "green"
+              }
+            ],
+            "size": 110,
+            "pitch": 128
+          }
+        },
+        "leftProps": {
+          "live": true,
+          "pct": 100
+        },
+        "rightProps": {
+          "live": false,
+          "pct": 0,
+          "version": "v2.0.1",
+          "instances": [
+            {
+              "id": "i-0d18ba77"
+            },
+            {
+              "id": "i-0e63c40b"
+            },
+            {
+              "id": "i-0f27ae55"
+            }
+          ],
+          "note": "READY"
+        },
+        "micro": {
+          "props": {
+            "text": "ONE TRAFFIC SWITCH"
+          }
+        }
+      }
+    }
+  ],
+  "events": [
+    {
+      "sentence": "s3",
+      "anchor": {
+        "text": "live"
+      },
+      "op": "highlight",
+      "target": "shop.tile2",
+      "value": {
+        "hold": 0.5
+      }
+    },
+    {
+      "sentence": "s3",
+      "anchor": {
+        "text": "servers,"
+      },
+      "op": "highlight",
+      "target": "shop.tile5",
+      "value": {
+        "hold": 0.5
+      }
+    },
+    {
+      "sentence": "s4",
+      "anchor": {
+        "text": "identical"
+      },
+      "op": "highlight",
+      "target": "right",
+      "value": {
+        "hold": 0.6
+      }
+    },
+    {
+      "sentence": "s4",
+      "anchor": {
+        "text": "load"
+      },
+      "op": "highlight",
+      "target": "router",
+      "value": {
+        "hold": 0.8
+      }
+    },
+    {
+      "sentence": "s1",
+      "anchor": {
+        "text": "blue"
+      },
+      "op": "light",
+      "target": "titleLeft"
+    },
+    {
+      "sentence": "s1",
+      "anchor": {
+        "text": "green"
+      },
+      "op": "light",
+      "target": "titleRight"
+    },
+    {
+      "sentence": "s3",
+      "anchor": {
+        "text": "breaks"
+      },
+      "op": "fail",
+      "target": "shop"
+    },
+    {
+      "sentence": "s5",
+      "anchor": {
+        "text": "Blue"
+      },
+      "op": "highlight",
+      "target": "left",
+      "value": {
+        "hold": 1.2
+      }
+    },
+    {
+      "sentence": "s5",
+      "anchor": {
+        "text": "idle."
+      },
+      "op": "dimCard",
+      "target": "right"
+    },
+    {
+      "sentence": "s6",
+      "anchor": {
+        "text": "deploy"
+      },
+      "op": "undimCard",
+      "target": "right"
+    },
+    {
+      "sentence": "s6",
+      "anchor": {
+        "text": "version"
+      },
+      "op": "retype",
+      "target": "right.version",
+      "value": {
+        "text": "v2.0.0"
+      }
+    },
+    {
+      "sentence": "s6",
+      "anchor": {
+        "text": "green,"
+      },
+      "op": "statusAll",
+      "target": "right",
+      "value": {
+        "status": "healthy",
+        "stagger": 0.15
+      }
+    },
+    {
+      "sentence": "s6",
+      "anchor": {
+        "text": "reach"
+      },
+      "op": "note",
+      "target": "right",
+      "value": {
+        "text": "READY · 3/3 HEALTHY"
+      }
+    },
+    {
+      "sentence": "s7",
+      "anchor": {
+        "text": "test"
+      },
+      "op": "check",
+      "target": "console",
+      "value": {
+        "row": 1,
+        "status": "200"
+      }
+    },
+    {
+      "sentence": "s7",
+      "anchor": {
+        "text": "privately,"
+      },
+      "op": "check",
+      "target": "console",
+      "value": {
+        "row": 2,
+        "status": "200"
+      }
+    },
+    {
+      "sentence": "s7",
+      "anchor": {
+        "text": "own"
+      },
+      "op": "draw",
+      "target": "bypassLine"
+    },
+    {
+      "sentence": "s7",
+      "anchor": {
+        "text": "own"
+      },
+      "op": "check",
+      "target": "console",
+      "value": {
+        "row": 3,
+        "status": "200"
+      }
+    },
+    {
+      "sentence": "s7",
+      "anchor": {
+        "text": "address."
+      },
+      "op": "check",
+      "target": "console",
+      "value": {
+        "row": 4,
+        "status": "200"
+      }
+    },
+    {
+      "sentence": "s8",
+      "anchor": {
+        "text": "flip"
+      },
+      "op": "traffic",
+      "target": "router",
+      "value": {
+        "left": 0,
+        "right": 100
+      }
+    },
+    {
+      "sentence": "s8",
+      "anchor": {
+        "text": "switch."
+      },
+      "op": "statusAll",
+      "target": "left",
+      "value": {
+        "status": "draining",
+        "stagger": 0.05
+      }
+    },
+    {
+      "sentence": "s9",
+      "anchor": {
+        "text": "green"
+      },
+      "op": "env",
+      "target": "hud",
+      "value": {
+        "text": "GREEN",
+        "tone": "green"
+      }
+    },
+    {
+      "sentence": "s9",
+      "anchor": {
+        "text": "green"
+      },
+      "op": "retype",
+      "target": "hud.version",
+      "value": {
+        "text": "v2.0.0"
+      }
+    },
+    {
+      "sentence": "s9",
+      "anchor": {
+        "text": "downtime."
+      },
+      "op": "statusAll",
+      "target": "left",
+      "value": {
+        "status": "idle",
+        "stagger": 0.05
+      }
+    },
+    {
+      "sentence": "s10",
+      "anchor": {
+        "text": "errors"
+      },
+      "op": "status",
+      "target": "right",
+      "value": {
+        "row": 2,
+        "status": "unhealthy"
+      }
+    },
+    {
+      "sentence": "s10",
+      "anchor": {
+        "text": "jump"
+      },
+      "op": "surge",
+      "target": "errors"
+    },
+    {
+      "sentence": "s10",
+      "anchor": {
+        "text": "eighteen"
+      },
+      "op": "text",
+      "target": "hud.value",
+      "value": {
+        "text": "18.0%"
+      }
+    },
+    {
+      "sentence": "s10",
+      "anchor": {
+        "text": "eighteen"
+      },
+      "op": "tone",
+      "target": "hud.value",
+      "value": {
+        "tone": "red"
+      }
+    },
+    {
+      "sentence": "s11",
+      "anchor": {
+        "text": "Blue"
+      },
+      "op": "highlight",
+      "target": "left",
+      "value": {
+        "hold": 0.9
+      }
+    },
+    {
+      "sentence": "s11",
+      "anchor": {
+        "text": "flip"
+      },
+      "op": "traffic",
+      "target": "router",
+      "value": {
+        "left": 100,
+        "right": 0
+      }
+    },
+    {
+      "sentence": "s11",
+      "anchor": {
+        "text": "flip"
+      },
+      "op": "statusAll",
+      "target": "left",
+      "value": {
+        "status": "healthy",
+        "stagger": 0.05
+      }
+    },
+    {
+      "sentence": "s11",
+      "anchor": {
+        "text": "back."
+      },
+      "op": "env",
+      "target": "hud",
+      "value": {
+        "text": "BLUE",
+        "tone": "blue"
+      }
+    },
+    {
+      "sentence": "s11",
+      "anchor": {
+        "text": "back."
+      },
+      "op": "retype",
+      "target": "hud.version",
+      "value": {
+        "text": "v1.4.2"
+      }
+    },
+    {
+      "sentence": "s12",
+      "anchor": {
+        "text": "safe"
+      },
+      "op": "text",
+      "target": "hud.value",
+      "value": {
+        "text": "0.4%"
+      }
+    },
+    {
+      "sentence": "s12",
+      "anchor": {
+        "text": "safe"
+      },
+      "op": "tone",
+      "target": "hud.value",
+      "value": {
+        "tone": ""
+      }
+    },
+    {
+      "sentence": "s12",
+      "anchor": {
+        "text": "seconds."
+      },
+      "op": "statusAll",
+      "target": "right",
+      "value": {
+        "status": "idle",
+        "stagger": 0.05
+      }
+    }
+  ]
+}

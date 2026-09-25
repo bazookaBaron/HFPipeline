@@ -28,3 +28,7 @@ analysis/**/dense/
 analysis/**/design/crops/
 .hyperframes/
 *.log
+
+# stage dev preview project (junctions into compositions/assets)
+video-engine/.stage-dev/
+video-engine/.orchestrator-snap-*/

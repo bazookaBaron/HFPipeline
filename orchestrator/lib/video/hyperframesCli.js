@@ -187,4 +187,43 @@ async function renderComposition({ compositionRelPath, outputPath, quality = "dr
   return { code };
 }
 
-module.exports = { checkComposition, renderComposition, VIDEO_ENGINE_DIR, HYPERFRAMES_VERSION };
+/**
+ * `hyperframes snapshot --at t1,t2,...` against the same kind of isolated scratch project as
+ * checkComposition; copies the PNGs to outDir as frame-<t>.png.
+ * @returns {Promise<{code:number, files:string[]}>}
+ */
+async function snapshotComposition(compositionPath, times, outDir, log) {
+  const scratchDir = path.join(VIDEO_ENGINE_DIR, `.orchestrator-snap-${process.pid}-${Date.now()}`);
+  fs.mkdirSync(scratchDir, { recursive: true });
+  const link = (name) => {
+    try {
+      fs.symlinkSync(path.join(VIDEO_ENGINE_DIR, name), path.join(scratchDir, name), "junction");
+    } catch (e) {
+      fs.cpSync(path.join(VIDEO_ENGINE_DIR, name), path.join(scratchDir, name), { recursive: true });
+    }
+  };
+  try {
+    fs.copyFileSync(compositionPath, path.join(scratchDir, "index.html"));
+    fs.copyFileSync(path.join(VIDEO_ENGINE_DIR, "hyperframes.json"), path.join(scratchDir, "hyperframes.json"));
+    link("compositions");
+    link("assets");
+    const { code } = await runNpx([HYPERFRAMES_VERSION, "snapshot", scratchDir, "--at", times.join(",")], log);
+    fs.mkdirSync(outDir, { recursive: true });
+    const snapDir = path.join(scratchDir, "snapshots");
+    const files = fs.existsSync(snapDir) ? fs.readdirSync(snapDir).filter((f) => f.endsWith(".png")) : [];
+    const out = files.map((f) => {
+      const dest = path.join(outDir, f);
+      fs.copyFileSync(path.join(snapDir, f), dest);
+      return dest;
+    });
+    return { code, files: out };
+  } finally {
+    try {
+      fs.rmSync(scratchDir, { recursive: true, force: true });
+    } catch (e) {
+      log(`Could not clean up scratch dir ${scratchDir}: ${e.message}`);
+    }
+  }
+}
+
+module.exports = { checkComposition, renderComposition, snapshotComposition, VIDEO_ENGINE_DIR, HYPERFRAMES_VERSION };

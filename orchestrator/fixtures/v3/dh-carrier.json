@@ -1,0 +1,31 @@
+{
+  "duration": 4,
+  "profile": "DH",
+  "accent": "#4497ff",
+  "spec": {
+    "profile": "DH",
+    "mascot": { "open": "assets/mascot/sb_open.png", "blink": "assets/mascot/sb_blink.png" },
+    "scaffolds": [
+      { "id": "carrier", "t0": 0, "t1": 4, "layout": "column", "modules": [
+        { "id": "hud", "type": "hud", "rect": [60, 235.5, 960, 69], "enter": "none",
+          "props": { "host": "shop.example.com", "env": "BLUE", "envTone": "blue", "version": "v1.4.2", "value": "0.4%", "valueLabel": "errors" } },
+        { "id": "users", "type": "users", "rect": [330, 571, 690, 209], "enter": "none", "props": { "count": 9, "pitch": 78, "convergeY": 150 } },
+        { "id": "router", "type": "router", "rect": [330, 780, 690, 64], "enter": "none",
+          "props": { "left": 100, "right": 0, "lever": "lever", "leftCard": "blue", "rightCard": "green" } },
+        { "id": "lever", "type": "lever", "rect": [330, 844, 690, 106], "enter": "none", "props": { "side": "left" } },
+        { "id": "blue", "type": "envCard", "rect": [330, 949.5, 334.5, 350.5], "enter": "none",
+          "props": { "env": "blue", "live": true, "version": "v1.4.2", "pct": 100,
+            "instances": [{ "id": "i-0a3f8c21" }, { "id": "i-07b41de9" }, { "id": "i-0c92f5a4" }] } },
+        { "id": "green", "type": "envCard", "rect": [684, 949.5, 331.5, 350.5], "enter": "none",
+          "props": { "env": "green", "live": false, "version": "—", "pct": 0,
+            "instances": [{ "id": "i-0d18ba77", "status": "idle" }, { "id": "i-0e63c40b", "status": "idle" }, { "id": "i-0f27ae55", "status": "idle" }] } }
+      ] }
+    ],
+    "events": [
+      { "t": 2.0, "op": "traffic", "target": "router", "value": { "left": 0, "right": 100 } },
+      { "t": 2.0, "op": "statusAll", "target": "blue", "value": { "status": "draining", "stagger": 0 } },
+      { "t": 2.0, "op": "statusAll", "target": "green", "value": { "status": "healthy", "stagger": 0.05 } }
+    ]
+  },
+  "words": []
+}

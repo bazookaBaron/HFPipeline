@@ -81,6 +81,8 @@ function validate(sb, opts = {}) {
     const n = tokens(s.text).length;
     nWords += n;
     if (n > 24) P.push(`sentence ${s.id} has ${n} words (max 24)`);
+    // IDs / keys / hashes read aloud ("H three M two", "IDEMP seventy seven") -- refs never do this
+    if (/\b[A-Z]{2,}[a-z]*\s+(zero|one|two|three|four|five|six|seven|eight|nine|ten|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)\b|\b[A-Z]\s+(zero|one|two|three|four|five|six|seven|eight|nine)\s+[A-Z]\b/.test(s.text)) P.push(`sentence ${s.id} reads an ID/key/code aloud; say what it is instead ("a unique key"), the visual shows the actual value`);
     if (/\d/.test(s.text)) P.push(`sentence ${s.id} contains digits; spell numbers out as spoken words (the visuals carry the digits)`);
   });
   if (nWords < WORDS[0] || nWords > WORDS[1]) P.push(`total narration is ${nWords} words; target ${WORDS[0]}-${WORDS[1]} (${opts.lengthSeconds || 45} s at ~215 wpm)`);
@@ -93,6 +95,11 @@ function validate(sb, opts = {}) {
     if (sb.profile === "LC" && !(sc.slots && sc.slots.title)) P.push(`scene ${sc.id}: every LC scene needs slots.title (and a subtitle)`);
     if (sb.profile === "DC") {
       if (!sc.chapter) P.push(`sub-state ${sc.id}: needs a chapter name`);
+      const st = (sc.slots && sc.slots.stage) || [];
+      if (st.length) {
+        const sh = st.reduce((a, m) => a + (m.h || require("./templates-generic").preferred(m, 912)), 0) + (st.length - 1) * 19;
+        if (sh < 300) P.push(`sub-state ${sc.id}: stage content is only ${Math.round(sh)} px; R5 stages are filled -- use a module of 300-494 px (diagram h 380-460, table with 4+ rows, layers, code with 5-6 lines) or a hero`);
+      }
       if (!(sc.slots && (sc.slots.hero || (sc.slots.stage || []).length))) P.push(`sub-state ${sc.id}: needs slots.hero or one module in slots.stage`);
       if (!(sc.slots && sc.slots.panel)) P.push(`sub-state ${sc.id}: needs slots.panel (the info panel beside the mascot)`);
     }
@@ -264,6 +271,7 @@ NARRATION RULES
 - ${BANDS.sentences[0]}-${BANDS.sentences[1]} sentences, ${wordBand(opts.lengthSeconds).join("-")} words total, max 24 words per sentence, conversational, concrete.
 - Structure: hook (what/why in 1 sentence) -> the problem with a concrete scenario -> the mechanism step by step -> a failure/edge case or trade-off -> the payoff with a number -> a 1-sentence summary.
 - Spell every number as spoken words in the narration ("two hundred forty milliseconds"); the visuals carry digits ("240 ms").
+- Never read IDs, keys, hashes, codes or file paths aloud; describe them ("a unique request key") and let the visual show the value.
 - Use realistic, internally consistent specifics (hostnames, IDs, versions, latencies, counts) and reuse them across scenes.
 
 VISUAL GRAMMAR (measured)
@@ -316,6 +324,7 @@ NARRATION RULES
 - ${BANDS.sentences[0]}-${BANDS.sentences[1]} sentences, ${wordBand(opts.lengthSeconds).join("-")} words total, max 24 words per sentence, conversational, concrete.
 - Structure: hook -> the concrete situation -> the mechanism step by step -> an edge case or trade-off -> the payoff -> a 1-sentence summary.
 - Spell every number as spoken words in the narration; the visuals carry digits.
+- Never read IDs, keys, hashes, codes or file paths aloud; describe them ("a unique request key") and let the visual show the value.
 - Realistic, consistent specifics (hosts, IDs, paths, versions) reused across scenes.
 
 ${P === "DC" ? DC_GRAMMAR : LC_GRAMMAR}
@@ -410,7 +419,7 @@ async function generateStoryboard(topic, opts = {}) {
     try {
       opts = { ...opts, profile: await chooseProfile(topic, generate) };
     } catch (err) {
-      if (/(401|402|403)|credits are depleted|API key not valid|PERMISSION_DENIED/i.test(err.message)) throw new Error(`model unavailable (not retried): ${err.message}`);
+      if (/\b(401|402|403)\b|credits are depleted|API key not valid|PERMISSION_DENIED/i.test(err.message)) throw new Error(`model unavailable (not retried): ${err.message}`);
       opts = { ...opts, profile: "DH" };
     }
     log(`profile: ${opts.profile}`);

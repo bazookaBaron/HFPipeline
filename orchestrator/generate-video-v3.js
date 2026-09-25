@@ -101,7 +101,7 @@ async function main() {
   const refAudio = typeof args["ref-audio"] === "string" && typeof args["ref-text"] === "string" ? path.resolve(args["ref-audio"]) : null;
   const refText = refAudio ? args["ref-text"] : null;
   const accent = typeof args.accent === "string" && /^#[0-9a-fA-F]{6}$/.test(args.accent) ? args.accent : "#4497ff";
-  const lengthSeconds = Number(args["length-seconds"]) || 50;
+  const lengthSeconds = Number(args["length-seconds"]) || 45;
 
   const metrics = createRunMetrics({ runId, metricsPath: `${outPath}.metrics.json`, config: { contract: "v3", storyboard: sbPath, wpm, ttsSpeed, captionsOn, mascotOn, quality } });
   const die = (stage, message, err) => {

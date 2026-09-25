@@ -86,6 +86,28 @@ const MODULES = {
     ops: { fill: "{from?, to?, tone?, stagger?}", cellTone: "{cell, tone}" },
     entities: "c<N>",
   },
+  stamp: { use: "verdict stamp slammed over the scene (REJECTED, NOT THIS, SAFE)", props: "{text, tone?: red|green|amber}", ops: {} },
+  timeline: {
+    use: "horizontal timeline with 3-6 ticks; progress runs to a tick",
+    props: "{ticks: [{label (e.g. '2019' or 'T+5m'), caption?}], progress?: tick reached at start}",
+    ops: { advance: "{to: tick index}" },
+    entities: "t<N>, t<N>.caption",
+  },
+  layers: {
+    use: "vertical stack of 3-5 layers/tiers (OSI, app stack, cache levels) that drop in",
+    props: "{layers: [{title, desc?, tone?, hidden?}]} top to bottom",
+    ops: { dropIn: "{layer}", layerTone: "{layer, tone}" },
+    entities: "l<N>",
+  },
+  tree: {
+    use: "one root fanning out to 2-4 children (fan-out, sharding, replicas, a directory)",
+    props: "{root: {title, sub?, tone?}, leaves: [{title, sub?, tone?, hidden?}], drawn?: false}",
+    ops: { branch: "{leaf?} draw one branch (or all, 100 ms apart) and reveal its child" },
+    entities: "root, leaf<N>",
+  },
+  note: { use: "one-line takeaway strip with a check / cross / bang mark", props: "{text (<=34 chars), tone: green|red|amber, mark?}", ops: {} },
+  letters: { use: "acronym tiles: one big letter per tile + its word, lit on the word", props: "{letters: [{letter, word}] (3-4), tone?}", ops: { light: "{i}" }, entities: "t<N>" },
+  slot: { use: "dashed placeholder that fills with the answer on a word", props: "{label?, fill: {text, tone}}", ops: { fill: "" } },
   chart: {
     use: "line chart with a flat line then a surge after an event marker",
     props: "{title, maxLabel?, ticks?: [3 labels], to, base, max?, eventAt?: 0-1}",

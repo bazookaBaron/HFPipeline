@@ -72,6 +72,20 @@ function preferred(fill, w) {
       return 209;
     case "option":
       return 86;
+    case "stamp":
+      return 150;
+    case "timeline":
+      return (p.ticks || []).some((t) => t.caption) ? 150 : 100;
+    case "layers":
+      return n(p.layers) * 84 - 12;
+    case "tree":
+      return p.h || 380;
+    case "note":
+      return 80;
+    case "letters":
+      return 260;
+    case "slot":
+      return p.h || 110;
     default:
       return fill.h || 200;
   }
@@ -97,7 +111,7 @@ function hudModule(entities, sc) {
 }
 
 // modules whose content scales with their box (they absorb spare height before centring)
-const STRETCH = new Set(["nodes", "chips", "chart", "browser"]);
+const STRETCH = new Set(["nodes", "chips", "chart", "browser", "tree"]);
 const STRETCH_MAX = 1.45;
 
 /**

@@ -98,7 +98,10 @@ function compileStoryboard(sb, timeline, opts = {}) {
   const events = (sb.events || []).map((ev, i) => {
     const w = wordTime(ev.sentence, ev.anchor, `event[${i}] ${ev.op}`);
     const lead = ev.lead !== undefined ? ev.lead : LEAD[ev.op] !== undefined ? LEAD[ev.op] : LEAD.default;
-    const t = round(Math.max(0, w.start - lead));
+    // never before its own sentence's onset: the sentence may start a new scaffold, and the
+    // pre-speech pad shrinks with the tempo change (0.06 s authored -> 0.034 s at 1.78x)
+    const sStart = tBy.get(ev.sentence) ? tBy.get(ev.sentence).start : 0;
+    const t = round(Math.max(0, sStart, w.start - lead));
     const modId = String(ev.target || "").split(".")[0];
     if (modId !== "mascot") {
       const live = scaffolds.find((s) => t >= s.t0 - 1e-6 && t < s.t1);

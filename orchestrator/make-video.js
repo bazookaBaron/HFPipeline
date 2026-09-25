@@ -57,7 +57,21 @@ async function main() {
     if (previous) args.push("--previous", previous, "--problems", problems);
     const gen = await run(process.execPath, args, logFile);
     if (gen.code !== 0) {
-      process.stdout.write(JSON.stringify({ ok: false, stage: "generate", round: r, log: logFile }) + "\n");
+      // a storyboard that fails on the REAL voice timing (compile/visual contract) is repairable:
+      // feed the compiler's message back to the generator; anything else is a hard failure
+      let failure = null;
+      try {
+        failure = JSON.parse(fs.readFileSync(`${outPath}.metrics.json`, "utf-8")).failure;
+      } catch (_) {}
+      const sbFile = `${outPath}.storyboard.json`;
+      const repairable = failure && failure.stage === "compose" && /not on screen|anchor|scaffold|overflow|content (needs|runs)|unknown/.test(failure.message || "");
+      if (repairable && fs.existsSync(sbFile) && r < rounds) {
+        previous = sbFile;
+        problems = `${outPath}.problems.json`;
+        fs.writeFileSync(problems, JSON.stringify([`on the real voice timing: ${failure.message}`]));
+        continue;
+      }
+      process.stdout.write(JSON.stringify({ ok: false, stage: "generate", round: r, failure, log: logFile }) + "\n");
       process.exit(1);
     }
     const g = await run("python", ["tools/v3_gates.py", "--video", outPath, "--timeline", `${outPath}.timeline.json`, "--metrics", `${outPath}.metrics.json`], logFile);

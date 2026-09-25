@@ -46,6 +46,10 @@
    "text": "It fetches once from the origin, then keeps a copy for everyone after."
   },
   {
+   "id": "s8b",
+   "text": "The next visitor from anywhere nearby gets that fast copy instantly."
+  },
+  {
    "id": "s9",
    "text": "On a busy site, ninety five percent of requests never touch your server."
   },
@@ -405,6 +409,18 @@
         }
        ]
       }
+     },
+     {
+      "id": "missNote",
+      "type": "note",
+      "props": {
+       "text": "cached at syd-3 for next time",
+       "tone": "green"
+      },
+      "anchor": {
+       "text": "fast",
+       "sentence": "s8b"
+      }
      }
     ]
    }
@@ -489,6 +505,37 @@
          "12 ms images"
         ]
        }
+      }
+     },
+     {
+      "id": "sumKpis",
+      "type": "kpis",
+      "props": {
+       "items": [
+        {
+         "eyebrow": "IMAGE LOAD",
+         "value": "12 ms",
+         "sub": "WAS 240 MS",
+         "tone": "green"
+        },
+        {
+         "eyebrow": "ORIGIN HITS",
+         "value": "5%",
+         "sub": "WAS 100%",
+         "tone": "cyan"
+        }
+       ]
+      }
+     },
+     {
+      "id": "sumNote",
+      "type": "note",
+      "props": {
+       "text": "closer copies, faster pages",
+       "tone": "green"
+      },
+      "anchor": {
+       "text": "everyone."
       }
      }
     ]
@@ -1013,6 +1060,17 @@
    "target": "cmp",
    "value": {
     "side": "right"
+   }
+  },
+  {
+   "sentence": "s8b",
+   "anchor": {
+    "text": "visitor"
+   },
+   "op": "lineHl",
+   "target": "term",
+   "value": {
+    "line": 4
    }
   }
  ]

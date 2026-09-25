@@ -191,6 +191,7 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/stage/modules-dh2.js"></script>
     <script src="compositions/components/lib/icons.js"></script>
     <script src="compositions/components/lib/stage/modules-dh3.js"></script>
+    <script src="compositions/components/lib/stage/modules-dh4.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }

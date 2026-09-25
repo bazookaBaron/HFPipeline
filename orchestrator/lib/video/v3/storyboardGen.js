@@ -53,7 +53,7 @@ function beats(spec) {
 
 function wordBand(lengthSeconds) {
   // 215 wpm delivered (refs 176-221) incl. sentence gaps; +-15 %
-  const n = ((lengthSeconds || 50) * 205) / 60;
+  const n = ((lengthSeconds || 45) * 205) / 60;
   return [Math.round(n * 0.85), Math.round(n * 1.15)];
 }
 
@@ -74,7 +74,7 @@ function validate(sb, opts = {}) {
     if (n > 24) P.push(`sentence ${s.id} has ${n} words (max 24)`);
     if (/\d/.test(s.text)) P.push(`sentence ${s.id} contains digits; spell numbers out as spoken words (the visuals carry the digits)`);
   });
-  if (nWords < WORDS[0] || nWords > WORDS[1]) P.push(`total narration is ${nWords} words; target ${WORDS[0]}-${WORDS[1]} (${opts.lengthSeconds || 50} s at ~215 wpm)`);
+  if (nWords < WORDS[0] || nWords > WORDS[1]) P.push(`total narration is ${nWords} words; target ${WORDS[0]}-${WORDS[1]} (${opts.lengthSeconds || 45} s at ~215 wpm)`);
   if (sb.sentences.length < BANDS.sentences[0] || sb.sentences.length > BANDS.sentences[1]) P.push(`${sb.sentences.length} sentences; use ${BANDS.sentences[0]}-${BANDS.sentences[1]}`);
   if (!Array.isArray(sb.scaffolds) || !sb.scaffolds.length) return P.concat(["scaffolds[] missing"]);
   const genericOnly = new Set(["opener", "stack", "hero"]);
@@ -97,6 +97,15 @@ function validate(sb, opts = {}) {
     });
   });
   if (sb.scaffolds[0].template !== "opener") P.push("the first scaffold must be an opener (hook headline)");
+  // density: refs fill 20-40% of the frame with 2-5 modules; a lone small card reads as empty
+  const { preferred } = require("./templates-generic");
+  sb.scaffolds.forEach((sc) => {
+    if (sc.template !== "stack") return;
+    const w = sc.layout === "full" ? 960 : 690;
+    const mods = [].concat((sc.slots && sc.slots.top) || [], (sc.slots && sc.slots.bottom) || []);
+    const h = mods.reduce((a, m) => a + (m.h || preferred(m, w)), 0) + Math.max(0, mods.length - 1) * 19;
+    if (mods.length && h < 380) P.push(`scaffold ${sc.id}: only ${Math.round(h)} px of content; add a second module (kpis, note, panel, stat) so the block is at least 380 px`);
+  });
   if (P.length) return P;
 
   // real compile on synthetic timings: anchors, targets on screen, layout overflow

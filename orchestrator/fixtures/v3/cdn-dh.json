@@ -555,6 +555,26 @@
         }
        ]
       }
+     },
+     {
+      "id": "loadKpis",
+      "type": "kpis",
+      "props": {
+       "items": [
+        {
+         "eyebrow": "ORIGIN REQUESTS",
+         "value": "5%",
+         "sub": "WAS 100%",
+         "tone": "green"
+        },
+        {
+         "eyebrow": "EDGE CACHE HITS",
+         "value": "95%",
+         "sub": "SERVED NEARBY",
+         "tone": "cyan"
+        }
+       ]
+      }
      }
     ]
    }
@@ -653,7 +673,32 @@
      "props": {
       "text": "CONTENT DELIVERY NETWORK"
      }
-    }
+    },
+    "top": [
+     {
+      "id": "endKpis",
+      "type": "kpis",
+      "anchor": {
+       "text": "fast."
+      },
+      "props": {
+       "items": [
+        {
+         "eyebrow": "LATENCY",
+         "value": "12 ms",
+         "sub": "WAS 240 MS",
+         "tone": "green"
+        },
+        {
+         "eyebrow": "ORIGIN LOAD",
+         "value": "5%",
+         "sub": "WAS 100%",
+         "tone": "cyan"
+        }
+       ]
+      }
+     }
+    ]
    }
   }
  ],

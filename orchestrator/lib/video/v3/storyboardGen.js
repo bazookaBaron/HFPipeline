@@ -116,6 +116,17 @@ function validate(sb, opts = {}) {
   if (sb.profile === "DH" && sb.scaffolds[0].template !== "opener") P.push("the first scaffold must be an opener (hook headline)");
   const s0 = sb.scaffolds[0].slots || {};
   if (!((s0.top || []).length || (s0.stage || []).length || s0.hero)) P.push("the first scene needs a visual module in slots.top (R3: the full answer is on screen by 1.5 s) so frame 0 is not just text");
+  // every opener (hook and summary) and every hero scene carries a visual under its text (R2 T6
+  // title cards / outro cards, R1 display slams over live panels)
+  sb.scaffolds.forEach((sc, i) => {
+    const top = (sc.slots && sc.slots.top) || [];
+    if (sc.template === "opener" && !top.length) P.push(`opener ${sc.id}: needs a visual module in slots.top under the headline (kpis, compare, nodes, chips)`);
+    if (sc.template === "hero") {
+      const w = sc.layout === "full" ? 960 : 690;
+      const h = top.reduce((a, m) => a + (m.h || require("./templates-generic").preferred(m, w)), 0) + Math.max(0, top.length - 1) * 19;
+      if (h < 250) P.push(`hero ${sc.id}: only ${Math.round(h)} px under the hero; add a module (kpis, panel, compare, bars with 3-4 items) of at least 250 px`);
+    }
+  });
   // density: refs fill 20-40% of the frame with 2-5 modules; a lone small card reads as empty
   const { preferred } = require("./templates-generic");
   sb.scaffolds.forEach((sc) => {
@@ -228,7 +239,7 @@ VISUAL GRAMMAR (measured)
 - Colour = role, never list position: red = failure/attack, green = success/healthy, amber = warning/in-progress, blue/cyan = the system/user, purple = infrastructure/secondary. Max 3 hues on screen.
 - Use 'full' layout for climaxes, wide diagrams and compare; otherwise 'column'.
 - Fill the frame like the references: every stack scaffold carries 2-4 modules totalling 600-900 px (column) / 560-900 px (full); panels have 3-5 rows; diagrams are 420-560 px tall. A lone small card is never enough.
-- The opening hook puts a visual module under the headline (slots.top), entering on a word.
+- Every opener (the hook AND the closing summary) puts a visual module under the headline (slots.top), entering on a word; hero scenes carry >= 250 px of supporting modules under the number.
 - Put hidden:true / lit:false / drawn:false on things that should appear on words, and the matching event on the word.
 - A module persists across consecutive scaffolds only if it has the same id; otherwise ids are unique.
 

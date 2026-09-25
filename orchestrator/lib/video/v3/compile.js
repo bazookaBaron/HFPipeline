@@ -19,8 +19,10 @@
  * event target not on screen at its time).
  */
 
-const { findAnchorIndex } = require("../v2/timeline");
-const { TEMPLATES } = require("./templates-dh");
+const { findAnchorIndex } = require("./timeline");
+const { TEMPLATES: DH_TEMPLATES } = require("./templates-dh");
+const { GENERIC_TEMPLATES } = require("./templates-generic");
+const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES };
 
 // Seconds a beat fires before its word onset. Refs land visuals on the audible word or up to
 // ~250 ms before it (SPEC 7.2, ASR bias verified); our word times are forced-aligned on our
@@ -63,13 +65,30 @@ function compileStoryboard(sb, timeline, opts = {}) {
     const built = TEMPLATES[x.sc.template](x.sc, sb.entities || {});
     const modules = built.modules.map((m) => {
       const fill = findFill(x.sc, m.id);
+      const anchor = m.anchor || (fill && fill.anchor);
       let at = m.at || 0;
-      if (fill && fill.anchor) {
-        const sid = fill.anchor.sentence || x.sc.from;
-        at = Math.max(0, wordTime(sid, fill.anchor, `scaffold ${x.sc.id} module ${m.id}`).start - (LEAD.default) - x.t0);
+      if (anchor) {
+        const sid = anchor.sentence || x.sc.from;
+        at = Math.max(0, wordTime(sid, anchor, `scaffold ${x.sc.id} module ${m.id}`).start - LEAD.default - x.t0);
+        if (at >= t1 - x.t0) throw new Error(`scaffold ${x.sc.id} module ${m.id}: anchor "${anchor.text}" falls after the scaffold ends`);
       }
       const out = { ...m, at: round(at) };
       delete out.anchor;
+      // headline lines: explicit props.lineAnchors, else (opener) line 2 lands on the word at
+      // ~45% of the scaffold's first sentence -- the hook gets 2 beats (R2 title: word-timed tints)
+      if (m.type === "headline" && Array.isArray(m.props.lines) && m.props.lines.length > 1 && !m.props.lineAt) {
+        const la = m.props.lineAnchors;
+        const base = x.t0 + out.at;
+        let lineAt = null;
+        if (Array.isArray(la)) {
+          lineAt = la.map((an, li) => (an ? round(Math.max(0, wordTime(an.sentence || x.sc.from, an, `headline ${m.id} line ${li + 1}`).start - LEAD.default - base)) : li * 0.1));
+        } else if (built.layout === "title") {
+          const ws = wordsBy.get(x.sc.from) || [];
+          const w = ws[Math.min(ws.length - 1, Math.max(1, Math.round(ws.length * 0.45)))];
+          if (w && w.start - base > 0.4) lineAt = [0, round(w.start - LEAD.default - base)];
+        }
+        if (lineAt) out.props = { ...m.props, lineAt };
+      }
       return out;
     });
     return { id: x.sc.id, template: x.sc.template, t0: round(x.t0), t1: round(t1), layout: built.layout, modules };
@@ -105,4 +124,4 @@ function findFill(sc, moduleId) {
   return null;
 }
 
-module.exports = { compileStoryboard, LEAD };
+module.exports = { compileStoryboard, LEAD, TEMPLATES };

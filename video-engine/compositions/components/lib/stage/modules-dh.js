@@ -446,7 +446,9 @@
       return {
         enter: function (t) {
           lines.forEach(function (d, i) {
-            c.tl.fromTo(d, { autoAlpha: 0, y: i === 0 ? 19.5 : 24 }, { autoAlpha: 1, y: 0, duration: 0.133, ease: "power2.out", immediateRender: false }, t + i * 0.1);
+            var at = Array.isArray(p.lineAt) && p.lineAt[i] !== undefined ? p.lineAt[i] : i * 0.1; // R2 E5: 100 ms stagger
+            if (at > 0) c.tl.set(d, { autoAlpha: 0 }, t);
+            c.tl.fromTo(d, { autoAlpha: 0, y: i === 0 ? 19.5 : 24 }, { autoAlpha: 1, y: 0, duration: 0.133, ease: "power2.out", immediateRender: false }, t + at);
           });
         },
         exit: function (t) {

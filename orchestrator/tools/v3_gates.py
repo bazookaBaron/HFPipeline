@@ -27,6 +27,9 @@ def beats_from_spec(spec):
         for m in s["modules"]:
             if m.get("at"):
                 t.append(s["t0"] + m["at"])
+            for la in (m.get("props") or {}).get("lineAt") or []:
+                if la > 0:
+                    t.append(s["t0"] + (m.get("at") or 0) + la)
     t += [e["t"] for e in spec["events"]]
     return sorted(set(round(x, 2) for x in t))
 

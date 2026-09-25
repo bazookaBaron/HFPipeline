@@ -2,7 +2,7 @@
 "use strict";
 
 /**
- * generate-video-v3.js -- reference-parity path (profile DH first; v1/v2 untouched).
+ * generate-video-v3.js -- the video pipeline (reference-parity DH style; v1/v2 retired to archive/).
  *
  *   storyboard.v3 (sentences + templated scaffolds + word-anchored events)
  *     -> voice per sentence (F5-TTS + WhisperX via voiceSynth; --reuse-voice skips unchanged text)
@@ -25,11 +25,12 @@ const { synthesizeScene } = require("./lib/video/voiceSynth");
 const { createVoiceService } = require("./lib/video/voiceService");
 const { checkComposition, renderComposition, VIDEO_ENGINE_DIR } = require("./lib/video/hyperframesCli");
 const { createRunMetrics } = require("./lib/video/runMetrics");
-const { planNarration } = require("./lib/video/v2/timeline");
-const { assembleNarration } = require("./lib/video/v2/narration");
+const { planNarration } = require("./lib/video/v3/timeline");
+const { assembleNarration } = require("./lib/video/v3/narration");
 const { compileStoryboard } = require("./lib/video/v3/compile");
 const { buildStageComposition } = require("./lib/video/v3/composeStage");
 const { masterVideo } = require("./lib/video/audioMaster");
+const { generateStoryboard } = require("./lib/video/v3/storyboardGen");
 
 const SENTENCE_GAP_FINAL = 0.2;
 
@@ -80,10 +81,11 @@ function solveSpeed(plan0, sentences, wpm) {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const sbPath = typeof args.storyboard === "string" ? path.resolve(args.storyboard) : null;
+  let sbPath = typeof args.storyboard === "string" ? path.resolve(args.storyboard) : null;
+  const topic = typeof args.topic === "string" ? args.topic : null;
   const outPath = typeof args.out === "string" ? path.resolve(args.out) : null;
-  if (!sbPath || !outPath) {
-    process.stderr.write("Error: --storyboard and --out are required\n");
+  if ((!sbPath && !topic) || !outPath) {
+    process.stderr.write("Error: --out and one of --storyboard / --topic are required\n");
     process.exit(1);
   }
   const runId = String(args["run-id"] || `v3-${path.basename(outPath, ".mp4")}`).replace(/[^a-zA-Z0-9_-]/g, "-");
@@ -95,6 +97,11 @@ async function main() {
   const quality = typeof args.quality === "string" ? args.quality : "looks";
   // "worker" keeps F5/WhisperX loaded across sentences (Codex C1); "legacy" spawns per sentence.
   const voiceMode = args.voice === "legacy" ? "legacy" : "worker";
+  // cloned voice from the control panel (both or neither)
+  const refAudio = typeof args["ref-audio"] === "string" && typeof args["ref-text"] === "string" ? path.resolve(args["ref-audio"]) : null;
+  const refText = refAudio ? args["ref-text"] : null;
+  const accent = typeof args.accent === "string" && /^#[0-9a-fA-F]{6}$/.test(args.accent) ? args.accent : "#4497ff";
+  const lengthSeconds = Number(args["length-seconds"]) || 50;
 
   const metrics = createRunMetrics({ runId, metricsPath: `${outPath}.metrics.json`, config: { contract: "v3", storyboard: sbPath, wpm, ttsSpeed, captionsOn, mascotOn, quality } });
   const die = (stage, message, err) => {
@@ -104,6 +111,19 @@ async function main() {
   };
 
   metrics.start("script");
+  if (topic) {
+    // --topic: Gemini storyboard with validation + bounded repair (lib/video/v3/storyboardGen.js);
+    // --previous/--problems feed a failed render's gate results back into the repair loop.
+    try {
+      const readJson = (k) => (typeof args[k] === "string" ? JSON.parse(fs.readFileSync(path.resolve(args[k]), "utf-8")) : undefined);
+      const gen = await generateStoryboard(topic, { log, lengthSeconds, previous: readJson("previous"), extraProblems: readJson("problems") });
+      sbPath = `${outPath}.storyboard.json`;
+      fs.writeFileSync(sbPath, JSON.stringify(gen.storyboard, null, 1));
+      metrics.set("script", { topic, attempts: gen.attempts.length, storyboard: sbPath });
+    } catch (err) {
+      return die("script", `storyboard generation failed: ${err.message}`, err);
+    }
+  }
   const sb = JSON.parse(fs.readFileSync(sbPath, "utf-8"));
   if (sb.version !== "storyboard.v3") return die("script", `expected storyboard.v3, got ${sb.version}`);
   metrics.set("counts", { sentences: sb.sentences.length, scaffolds: sb.scaffolds.length, events: (sb.events || []).length });
@@ -115,8 +135,10 @@ async function main() {
   const clips = [];
   const svc = voiceMode === "worker" ? createVoiceService({ log }) : null;
   const synth = async (o) => {
-    if (!svc) return synthesizeScene({ ...o, log });
-    const r = await svc.synthesize({ genText: o.genText, outAudio: o.outAudio, outTiming: o.outTiming, speed: o.speed });
+    if (!svc) return synthesizeScene({ ...o, refAudio: refAudio || undefined, refText: refText || undefined, log });
+    const req = { genText: o.genText, outAudio: o.outAudio, outTiming: o.outTiming, speed: o.speed };
+    if (refAudio) Object.assign(req, { refAudio, refText });
+    const r = await svc.synthesize(req);
     return { durationSeconds: r.durationSeconds };
   };
   for (let i = 0; i < sb.sentences.length; i++) {
@@ -124,7 +146,7 @@ async function main() {
     const audioPath = path.join(assetsDir, `s${i + 1}.wav`);
     const timingPath = path.join(assetsDir, `s${i + 1}.timing.json`);
     const textPath = path.join(assetsDir, `s${i + 1}.txt`);
-    const key = JSON.stringify({ text: s.text, ttsSpeed });
+    const key = JSON.stringify({ text: s.text, ttsSpeed, voice: refAudio || "default" });
     if (reuseVoice && fs.existsSync(audioPath) && fs.existsSync(timingPath) && fs.existsSync(textPath) && fs.readFileSync(textPath, "utf-8") === key) {
       clips.push({ audioPath, durationSeconds: probe(audioPath), words: JSON.parse(fs.readFileSync(timingPath, "utf-8")) });
       log(`reused voice for ${s.id}`);
@@ -179,7 +201,7 @@ async function main() {
   fs.writeFileSync(timelinePath, JSON.stringify({ runId, speed, timeline, spec }, null, 1));
   const compositionPath = path.join(VIDEO_ENGINE_DIR, "generated", `${runId}.html`);
   fs.mkdirSync(path.dirname(compositionPath), { recursive: true });
-  fs.writeFileSync(compositionPath, buildStageComposition({ runId, totalDuration: timeline.totalSeconds, spec, narrationRelPath: narrationRel, words: timeline.words, profile: sb.profile || "DH", captionsOn }), "utf-8");
+  fs.writeFileSync(compositionPath, buildStageComposition({ runId, totalDuration: timeline.totalSeconds, spec, narrationRelPath: narrationRel, words: timeline.words, profile: sb.profile || "DH", accent, captionsOn }), "utf-8");
   log(`composition -> ${compositionPath}`);
 
   // ---- check ----

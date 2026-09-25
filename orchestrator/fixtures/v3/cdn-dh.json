@@ -1,0 +1,1019 @@
+{
+ "version": "storyboard.v3",
+ "profile": "DH",
+ "topic": "How a CDN works",
+ "entities": {
+  "hud": {
+   "host": "img.shop.io",
+   "env": "ORIGIN",
+   "envTone": "blue",
+   "version": "us-east-1",
+   "value": "240 ms",
+   "valueLabel": "latency"
+  }
+ },
+ "sentences": [
+  {
+   "id": "s1",
+   "text": "Here's how a content delivery network makes a site feel instant."
+  },
+  {
+   "id": "s2",
+   "text": "Your server lives in Virginia, but a user opens your page from Sydney."
+  },
+  {
+   "id": "s3",
+   "text": "Every request crosses sixteen thousand kilometres, so each image takes two hundred forty milliseconds."
+  },
+  {
+   "id": "s4",
+   "text": "A CDN copies your files to edge servers all around the world."
+  },
+  {
+   "id": "s5",
+   "text": "Now Sydney asks the nearest edge, and the image is already there."
+  },
+  {
+   "id": "s6",
+   "text": "That's a cache hit, served in twelve milliseconds."
+  },
+  {
+   "id": "s7",
+   "text": "If the edge doesn't have it yet, that's a miss."
+  },
+  {
+   "id": "s8",
+   "text": "It fetches once from the origin, then keeps a copy for everyone after."
+  },
+  {
+   "id": "s9",
+   "text": "On a busy site, ninety five percent of requests never touch your server."
+  },
+  {
+   "id": "s10",
+   "text": "Less distance, less load, and a faster page for everyone."
+  },
+  {
+   "id": "s11",
+   "text": "Copy it close, and serve it fast."
+  }
+ ],
+ "scaffolds": [
+  {
+   "id": "open",
+   "template": "opener",
+   "from": "s1",
+   "slots": {
+    "eyebrow": {
+     "props": {
+      "text": "HOW IT WORKS"
+     }
+    },
+    "headline": {
+     "props": {
+      "lines": [
+       {
+        "text": "CONTENT",
+        "tone": "blue"
+       },
+       {
+        "text": "DELIVERY",
+        "tone": "green"
+       }
+      ]
+     }
+    },
+    "footer": {
+     "props": {
+      "text": "NETWORK",
+      "size": "xl"
+     }
+    }
+   }
+  },
+  {
+   "id": "problem",
+   "template": "stack",
+   "from": "s2",
+   "layout": "column",
+   "slots": {
+    "label": {
+     "props": {
+      "text": "THE PROBLEM"
+     }
+    },
+    "top": [
+     {
+      "id": "map",
+      "type": "nodes",
+      "h": 430,
+      "props": {
+       "nodes": [
+        {
+         "id": "origin",
+         "icon": "server",
+         "label": "origin",
+         "sub": "VIRGINIA",
+         "x": 0.2,
+         "y": 0.28,
+         "tone": "blue"
+        },
+        {
+         "id": "user",
+         "icon": "smartphone",
+         "label": "user",
+         "sub": "SYDNEY",
+         "x": 0.8,
+         "y": 0.72,
+         "tone": "cyan",
+         "hidden": true
+        }
+       ],
+       "edges": [
+        {
+         "from": "user",
+         "to": "origin",
+         "label": "16,000 km",
+         "style": "dashed",
+         "drawn": false
+        }
+       ]
+      }
+     }
+    ],
+    "bottom": [
+     {
+      "id": "lat",
+      "type": "kpis",
+      "props": {
+       "items": [
+        {
+         "eyebrow": "IMAGE LOAD",
+         "value": "240 ms",
+         "sub": "EVERY REQUEST",
+         "tone": "red",
+         "countFrom": 0
+        },
+        {
+         "eyebrow": "ROUND TRIPS",
+         "value": "4",
+         "sub": "PER PAGE",
+         "countFrom": 0
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "fix",
+   "template": "stack",
+   "from": "s4",
+   "layout": "full",
+   "slots": {
+    "label": {
+     "props": {
+      "text": "THE FIX"
+     }
+    },
+    "top": [
+     {
+      "id": "edges",
+      "type": "nodes",
+      "h": 560,
+      "props": {
+       "nodes": [
+        {
+         "id": "origin",
+         "icon": "server",
+         "label": "origin",
+         "sub": "VIRGINIA",
+         "x": 0.5,
+         "y": 0.14,
+         "tone": "blue"
+        },
+        {
+         "id": "syd",
+         "icon": "globe",
+         "label": "edge",
+         "sub": "SYDNEY",
+         "x": 0.16,
+         "y": 0.8,
+         "tone": "cyan",
+         "lit": false
+        },
+        {
+         "id": "lon",
+         "icon": "globe",
+         "label": "edge",
+         "sub": "LONDON",
+         "x": 0.5,
+         "y": 0.8,
+         "tone": "cyan",
+         "lit": false
+        },
+        {
+         "id": "tok",
+         "icon": "globe",
+         "label": "edge",
+         "sub": "TOKYO",
+         "x": 0.84,
+         "y": 0.8,
+         "tone": "cyan",
+         "lit": false
+        }
+       ],
+       "edges": [
+        {
+         "from": "origin",
+         "to": "syd",
+         "shape": "curve",
+         "drawn": false
+        },
+        {
+         "from": "origin",
+         "to": "lon",
+         "shape": "straight",
+         "drawn": false
+        },
+        {
+         "from": "origin",
+         "to": "tok",
+         "shape": "curve",
+         "drawn": false
+        }
+       ]
+      }
+     }
+    ],
+    "bottom": [
+     {
+      "id": "files",
+      "type": "chips",
+      "h": 120,
+      "props": {
+       "cols": 6,
+       "rows": 2,
+       "gap": 12,
+       "tone": "cyan",
+       "labels": [
+        "hero.jpg",
+        "app.js",
+        "logo.svg",
+        "font.woff",
+        "style.css",
+        "cart.js",
+        "p1.jpg",
+        "p2.jpg",
+        "p3.jpg",
+        "p4.jpg",
+        "p5.jpg",
+        "p6.jpg"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "hit",
+   "template": "stack",
+   "from": "s5",
+   "layout": "column",
+   "slots": {
+    "label": {
+     "props": {
+      "text": "CACHE HIT",
+      "tone": "green"
+     }
+    },
+    "top": [
+     {
+      "id": "edgeLog",
+      "type": "panel",
+      "props": {
+       "title": "EDGE · SYDNEY",
+       "icon": "globe",
+       "iconTone": "cyan",
+       "meta": "syd-3",
+       "rows": [
+        {
+         "text": "GET /hero.jpg",
+         "mono": true,
+         "icon": "file",
+         "iconTone": "blue",
+         "status": "HIT",
+         "hidden": true
+        },
+        {
+         "text": "GET /app.js",
+         "mono": true,
+         "icon": "file",
+         "iconTone": "blue",
+         "status": "HIT",
+         "hidden": true
+        },
+        {
+         "text": "GET /logo.svg",
+         "mono": true,
+         "icon": "file",
+         "iconTone": "blue",
+         "status": "HIT",
+         "hidden": true
+        }
+       ]
+      }
+     }
+    ],
+    "bottom": [
+     {
+      "id": "lat2",
+      "type": "kpis",
+      "props": {
+       "items": [
+        {
+         "eyebrow": "IMAGE LOAD",
+         "value": "240 ms",
+         "sub": "FROM SYDNEY",
+         "tone": "red",
+         "bar": 100
+        },
+        {
+         "eyebrow": "DISTANCE",
+         "value": "40 km",
+         "sub": "TO NEAREST EDGE",
+         "tone": "cyan"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "miss",
+   "template": "stack",
+   "from": "s7",
+   "layout": "column",
+   "slots": {
+    "label": {
+     "props": {
+      "text": "CACHE MISS",
+      "tone": "orange"
+     }
+    },
+    "top": [
+     {
+      "id": "flow",
+      "type": "steps",
+      "props": {
+       "items": [
+        "MISS",
+        "FETCH",
+        "STORE",
+        "HIT"
+       ],
+       "tone": "amber"
+      }
+     },
+     {
+      "id": "term",
+      "type": "code",
+      "props": {
+       "name": "syd-3 — zsh",
+       "prompt": "$",
+       "lines": [
+        {
+         "text": "curl -I img.shop.io/new.jpg"
+        },
+        {
+         "text": "x-cache: MISS  (origin 238 ms)",
+         "tone": "amber",
+         "comment": true,
+         "hidden": true
+        },
+        {
+         "text": "curl -I img.shop.io/new.jpg",
+         "hidden": true
+        },
+        {
+         "text": "x-cache: HIT   (edge 12 ms)",
+         "tone": "green",
+         "comment": true,
+         "hidden": true
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "load",
+   "template": "hero",
+   "from": "s9",
+   "layout": "column",
+   "slots": {
+    "hero": {
+     "id": "pct",
+     "props": {
+      "text": "95%",
+      "tone": "green",
+      "size": 150
+     },
+     "anchor": {
+      "text": "ninety"
+     }
+    },
+    "kicker": {
+     "props": {
+      "text": "OF REQUESTS NEVER REACH ORIGIN"
+     },
+     "anchor": {
+      "text": "never"
+     }
+    },
+    "top": [
+     {
+      "id": "loadBars",
+      "type": "bars",
+      "props": {
+       "filled": false,
+       "items": [
+        {
+         "label": "Origin load, no CDN",
+         "value": 100,
+         "display": "100%",
+         "tone": "red"
+        },
+        {
+         "label": "Origin load, with CDN",
+         "value": 5,
+         "display": "5%",
+         "tone": "green"
+        }
+       ]
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sum",
+   "template": "stack",
+   "from": "s10",
+   "layout": "full",
+   "slots": {
+    "top": [
+     {
+      "id": "cmp",
+      "type": "compare",
+      "props": {
+       "hidden": true,
+       "left": {
+        "title": "WITHOUT CDN",
+        "tone": "red",
+        "rows": [
+         "16,000 km per request",
+         "Origin takes every hit",
+         "240 ms images"
+        ]
+       },
+       "right": {
+        "title": "WITH CDN",
+        "tone": "green",
+        "rows": [
+         "40 km to the edge",
+         "5% reaches origin",
+         "12 ms images"
+        ]
+       }
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "end",
+   "template": "opener",
+   "from": "s11",
+   "slots": {
+    "headline": {
+     "props": {
+      "lines": [
+       {
+        "text": "COPY IT CLOSE",
+        "tone": "blue"
+       },
+       {
+        "text": "SERVE IT FAST",
+        "tone": "green"
+       }
+      ],
+      "size": 100,
+      "pitch": 118
+     }
+    },
+    "footer": {
+     "props": {
+      "text": "CONTENT DELIVERY NETWORK"
+     }
+    }
+   }
+  }
+ ],
+ "events": [
+  {
+   "sentence": "s2",
+   "anchor": {
+    "text": "Virginia,"
+   },
+   "op": "light",
+   "target": "map",
+   "value": {
+    "node": "origin",
+    "tone": "blue"
+   }
+  },
+  {
+   "sentence": "s2",
+   "anchor": {
+    "text": "user"
+   },
+   "op": "nodeIn",
+   "target": "map",
+   "value": {
+    "node": "user"
+   }
+  },
+  {
+   "sentence": "s2",
+   "anchor": {
+    "text": "Sydney."
+   },
+   "op": "light",
+   "target": "map",
+   "value": {
+    "node": "user",
+    "tone": "cyan"
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "request"
+   },
+   "op": "draw",
+   "target": "map",
+   "value": {
+    "from": "user",
+    "to": "origin"
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "crosses"
+   },
+   "op": "packet",
+   "target": "map",
+   "value": {
+    "from": "user",
+    "to": "origin",
+    "tone": "blue",
+    "icon": "file",
+    "loops": 2,
+    "speed": 420
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "image"
+   },
+   "op": "count",
+   "target": "lat",
+   "value": {
+    "item": 1,
+    "dur": 1.2
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "milliseconds."
+   },
+   "op": "count",
+   "target": "lat",
+   "value": {
+    "item": 2,
+    "dur": 0.6
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "milliseconds."
+   },
+   "op": "tone",
+   "target": "hud.value",
+   "value": {
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "copies"
+   },
+   "op": "draw",
+   "target": "edges",
+   "value": {
+    "from": "origin",
+    "to": "syd"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "files"
+   },
+   "op": "fill",
+   "target": "files",
+   "value": {
+    "stagger": 0.05
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "edge"
+   },
+   "op": "draw",
+   "target": "edges",
+   "value": {
+    "from": "origin",
+    "to": "lon"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "servers"
+   },
+   "op": "draw",
+   "target": "edges",
+   "value": {
+    "from": "origin",
+    "to": "tok"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "around"
+   },
+   "op": "light",
+   "target": "edges",
+   "value": {
+    "node": "syd"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "the",
+    "occurrence": 1
+   },
+   "op": "light",
+   "target": "edges",
+   "value": {
+    "node": "lon"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "world."
+   },
+   "op": "light",
+   "target": "edges",
+   "value": {
+    "node": "tok"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "Sydney"
+   },
+   "op": "env",
+   "target": "hud",
+   "value": {
+    "text": "EDGE",
+    "tone": "green"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "Sydney"
+   },
+   "op": "retype",
+   "target": "hud.version",
+   "value": {
+    "text": "syd-3"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "nearest"
+   },
+   "op": "rowIn",
+   "target": "edgeLog",
+   "value": {
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "image"
+   },
+   "op": "rowIn",
+   "target": "edgeLog",
+   "value": {
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "there."
+   },
+   "op": "rowIn",
+   "target": "edgeLog",
+   "value": {
+    "row": 3
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "hit,"
+   },
+   "op": "rowTone",
+   "target": "edgeLog",
+   "value": {
+    "row": 1,
+    "tone": "green"
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "twelve"
+   },
+   "op": "count",
+   "target": "lat2",
+   "value": {
+    "item": 1,
+    "from": 240,
+    "to": "12 ms",
+    "dur": 0.8
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "twelve"
+   },
+   "op": "fill",
+   "target": "lat2",
+   "value": {
+    "item": 1,
+    "to": 5
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "twelve"
+   },
+   "op": "tone",
+   "target": "lat2",
+   "value": {
+    "item": 1,
+    "tone": "green"
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "milliseconds."
+   },
+   "op": "text",
+   "target": "hud.value",
+   "value": {
+    "text": "12 ms"
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "milliseconds."
+   },
+   "op": "tone",
+   "target": "hud.value",
+   "value": {
+    "tone": ""
+   }
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "doesn't"
+   },
+   "op": "activate",
+   "target": "flow",
+   "value": {
+    "step": 1
+   }
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "miss."
+   },
+   "op": "type",
+   "target": "term",
+   "value": {
+    "line": 2
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "fetches"
+   },
+   "op": "activate",
+   "target": "flow",
+   "value": {
+    "step": 2
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "keeps"
+   },
+   "op": "activate",
+   "target": "flow",
+   "value": {
+    "step": 3
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "copy"
+   },
+   "op": "type",
+   "target": "term",
+   "value": {
+    "line": 3
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "everyone"
+   },
+   "op": "activate",
+   "target": "flow",
+   "value": {
+    "step": 4
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "after."
+   },
+   "op": "type",
+   "target": "term",
+   "value": {
+    "line": 4
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "busy"
+   },
+   "op": "fill",
+   "target": "loadBars",
+   "value": {
+    "item": 1
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "never"
+   },
+   "op": "fill",
+   "target": "loadBars",
+   "value": {
+    "item": 2
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "Less",
+    "occurrence": 1
+   },
+   "op": "rowIn",
+   "target": "cmp",
+   "value": {
+    "side": "left",
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "distance,"
+   },
+   "op": "rowIn",
+   "target": "cmp",
+   "value": {
+    "side": "right",
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "less",
+    "occurrence": 2
+   },
+   "op": "rowIn",
+   "target": "cmp",
+   "value": {
+    "side": "left",
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "load,"
+   },
+   "op": "rowIn",
+   "target": "cmp",
+   "value": {
+    "side": "right",
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "faster"
+   },
+   "op": "rowIn",
+   "target": "cmp",
+   "value": {
+    "side": "left",
+    "row": 3
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "page"
+   },
+   "op": "rowIn",
+   "target": "cmp",
+   "value": {
+    "side": "right",
+    "row": 3
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "everyone."
+   },
+   "op": "pick",
+   "target": "cmp",
+   "value": {
+    "side": "right"
+   }
+  }
+ ]
+}

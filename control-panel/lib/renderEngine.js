@@ -38,7 +38,9 @@ const voiceUpload = require("./voiceUpload");
 
 const VIDEO_ENGINE_DIR = path.resolve(__dirname, "..", "..", "video-engine");
 const ORCHESTRATOR_DIR = path.resolve(__dirname, "..", "..", "orchestrator");
-const ORCHESTRATOR_ENTRY = path.join(ORCHESTRATOR_DIR, "generate-video.js");
+// v3 one-click path: topic -> Gemini storyboard -> voice -> stage render -> master -> hard gates
+// (orchestrator/make-video.js). The v1/v2 flows were retired in favour of the measured reference style.
+const ORCHESTRATOR_ENTRY = path.join(ORCHESTRATOR_DIR, "make-video.js");
 const RENDERS_DIR = path.join(__dirname, "..", "data", "renders");
 
 function videoEngineReady() {
@@ -85,25 +87,10 @@ function runCsExplainerRender(jobId, config) {
   // overridable via an explicit config.sfxOn === false from the control-panel UI.
   const sfxOn = config && config.sfxOn !== undefined ? !!config.sfxOn : true;
 
-  const args = [
-    "generate-video.js",
-    "--topic",
-    topic,
-    "--length-seconds",
-    String(lengthSeconds),
-    "--tts-speed",
-    String(ttsSpeed),
-    "--captions",
-    String(captionsOn),
-    "--sfx",
-    String(sfxOn),
-    "--run-id",
-    jobId,
-    "--out",
-    outputPath,
-  ];
-  if (accentColor) args.push("--accent", accentColor);
-  if (brandHandle) args.push("--handle", brandHandle);
+  // v3 pace is solved to the reference band (~215 wpm) and captions/SFX follow the measured
+  // style, so ttsSpeed / captionsOn / sfxOn / brandHandle are not passed; they are logged below.
+  const args = ["make-video.js", "--topic", topic, "--length-seconds", String(Math.min(75, Math.max(30, lengthSeconds))), "--out", outputPath];
+  if (accentColor && /^#[0-9a-fA-F]{6}$/.test(accentColor)) args.push("--accent", accentColor);
 
   const voiceProfile = voiceUpload.activeVoiceProfile();
   if (voiceProfile && voiceProfile.refAudioPath && voiceProfile.refText && fs.existsSync(voiceProfile.refAudioPath)) {
@@ -113,14 +100,8 @@ function runCsExplainerRender(jobId, config) {
     jobs.appendLog(jobId, "meta", "No voice profile uploaded yet -- using F5-TTS's built-in default reference voice.");
   }
 
-  jobs.appendLog(
-    jobId,
-    "meta",
-    `$ node generate-video.js --topic "${topic}" --length-seconds ${lengthSeconds} --tts-speed ${ttsSpeed} ` +
-      `--captions ${captionsOn} --sfx ${sfxOn} --run-id ${jobId} --out ${outputPath}` +
-      (accentColor ? ` --accent ${accentColor}` : "") +
-      (brandHandle ? ` --handle ${brandHandle}` : "")
-  );
+  jobs.appendLog(jobId, "meta", `$ node ${args.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(" ")}`);
+  jobs.appendLog(jobId, "meta", `v3 style: pace, captions and motion follow the reference spec (ignored: ttsSpeed=${ttsSpeed}, captions=${captionsOn}, sfx=${sfxOn}, handle=${brandHandle || "-"}).`);
   jobs.appendLog(jobId, "meta", `cwd: ${ORCHESTRATOR_DIR}`);
   jobs.setStatus(jobId, "running");
 

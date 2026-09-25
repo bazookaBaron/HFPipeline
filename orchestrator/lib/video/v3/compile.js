@@ -20,11 +20,13 @@
  */
 
 const { findAnchorIndex } = require("./timeline");
+const { buildMediaLayer } = require("./media");
 const { TEMPLATES: DH_TEMPLATES } = require("./templates-dh");
 const { GENERIC_TEMPLATES } = require("./templates-generic");
 const { LC_TEMPLATES } = require("./templates-lc");
 const { DC_TEMPLATES } = require("./templates-dc");
 const { ENDCARD_TEMPLATES } = require("./endcard");
+const BRAND = new Set(["endcard", "promo"]); // channel scenes after the topic: no topic chrome
 const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES, ...DC_TEMPLATES, ...ENDCARD_TEMPLATES };
 
 // Seconds a beat fires before its word onset. Refs land visuals on the audible word or up to
@@ -101,10 +103,10 @@ function compileStoryboard(sb, timeline, opts = {}) {
   const chromeEvents = [];
   if ((sb.profile || "DH") === "LC") {
     // the channel endcard is not a topic scene: no header, not counted
-    const total = String(scaffolds.filter((s) => s.template !== "endcard").length).padStart(2, "0");
+    const total = String(scaffolds.filter((s) => !BRAND.has(s.template)).length).padStart(2, "0");
     const kicker = (sb.entities && sb.entities.kicker) || String(sb.topic || "").toUpperCase().replace(/\s+/g, " ").slice(0, 34);
     scaffolds.forEach((s, i) => {
-      if (s.template === "endcard") return;
+      if (BRAND.has(s.template)) return;
       s.modules.unshift({ id: "lchead", type: "lcHeader", rect: [70, 224, 938, 55], props: { kicker, counter: `01 — ${total}` }, enter: "none", at: 0 });
       if (i > 0) chromeEvents.push({ t: s.t0, op: "counter", target: "lchead", value: { text: `${String(i + 1).padStart(2, "0")} — ${total}` } });
     });
@@ -117,7 +119,7 @@ function compileStoryboard(sb, timeline, opts = {}) {
     let idx = 0;
     scaffolds.forEach((s, i) => {
       const src = sb.scaffolds[i];
-      if (s.template === "endcard") return;
+      if (BRAND.has(s.template)) return;
       const name = String(src.chapter || chapter || "").toUpperCase();
       if (name !== chapter) {
         chapter = name;
@@ -146,12 +148,38 @@ function compileStoryboard(sb, timeline, opts = {}) {
   });
 
   events.push(...chromeEvents);
+  // root-level timed <video> trims for media windows (lib/video/v3/media.js)
+  const media = buildMediaLayer({ scaffolds, events, sbScaffolds: sb.scaffolds, wordTime });
   return {
     profile: sb.profile || "DH",
-    mascot: opts.mascot === false ? null : { open: "assets/mascot/sb_open.png", blink: "assets/mascot/sb_blink.png" },
+    mascot: opts.mascot === false ? null : presenterSpec(words),
     scaffolds,
     events,
+    media,
   };
+}
+
+// ---- presenter (original robot, video-engine/assets/mascot/presenter/) ----
+// All five sprites share one canvas (701x1112, feet on the bottom edge) and differ only on the
+// face screen; `face` gives the eye / mouth regions (fractions of the canvas: x, y, w, h) so the
+// stage can layer eye and mouth states independently. `talk` = narration word intervals that
+// drive the mouth flap. The old SpongeBob placeholder (assets/mascot/sb_*.png) stays on disk.
+const PRESENTER = {
+  open: "assets/mascot/presenter/open.png",
+  blink: "assets/mascot/presenter/blink.png",
+  talk2: "assets/mascot/presenter/talk2.png",
+  glance: "assets/mascot/presenter/glance.png",
+  aspect: 0.6304,
+  face: { eyes: [0.3345, 0.2262, 0.3576, 0.1061], mouth: [0.4505, 0.3323, 0.1418, 0.0706] },
+};
+
+function presenterSpec(words) {
+  const talk = (words || [])
+    .filter((w) => Number.isFinite(w.start) && Number.isFinite(w.end) && w.end > w.start)
+    .map((w) => [round(w.start), round(w.end)]);
+  // `talk` doubles as the open-mouth sprite path and the word intervals: the sprite lives in
+  // talkSprite so the interval list keeps the documented name.
+  return { ...PRESENTER, talkSprite: "assets/mascot/presenter/talk.png", talk };
 }
 
 function findFill(sc, moduleId) {

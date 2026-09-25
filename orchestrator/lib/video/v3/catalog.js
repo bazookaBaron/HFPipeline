@@ -115,6 +115,11 @@ const MODULES = {
   },
   browser: { use: "browser window with a product grid that can fail to an error page", props: "{url, errorCode?, errorMsg?, cols?, rows?}", ops: { fail: "" }, entities: "tile<N>, grid, error" },
   console: { use: "test console window with checklist rows", props: "{url, chip?, rows: [{path, status?, state?}]}", ops: { check: "{row, state?: pass|fail, status?}" } },
+  media: {
+    use: "app-style window showing REAL footage or a screenshot (screen recording, product demo, photo) inside the reel; muted, cover fit, trims cut ~100 ms before the phrase they illustrate",
+    props: "{kind: video|image, src (library asset), poster?, head? (caps window label e.g. 'VLOOMBOX.IN · JOBS'), dot?: red|amber|green|none, aspect? (default 16/9), trims?: [{in (s), at?: {text: word}}] (video), focus?: [x%, y%] (image)}",
+    ops: { highlight: "{box: [x%, y%, w%, h%], tone?} box drawn on the footage", unhighlight: "", head: "{text}", dot: "{tone}", shrink: "{scale?} shrink to a corner thumbnail (433 ms)" },
+  },
   connector: { use: "free curve between two absolute frame points", props: "{from:[x,y], to:[x,y], tone?, bend?}", ops: { draw: "{dur?}" } },
 };
 

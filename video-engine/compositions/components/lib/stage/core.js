@@ -13,7 +13,7 @@
  *     scaffolds: [{ id, t0, t1, layout: "column"|"full"|"title",
  *                   modules: [{ id, type, rect:[x,y,w,h], props, enter?, at?, slot?, z? }] }],
  *     events:    [{ t, op, target, value? }],          target = "<moduleId>[.<entity>]"
- *     mascot:    { open, blink } | null
+ *     mascot:    { open, blink, talk2?, glance?, talkSprite?, talk?: [[s,e],...], aspect?, face? } | null
  *   }
  *
  * Every visual change is a tween/set on ONE paused timeline at an explicit time: seeking to
@@ -51,7 +51,7 @@
     DH: { rect: [20, 903, 290, 417], blinkDur: 0.133, hideOnFull: true, sway: 0 },
     LC: { rect: [36, 969, 260, 374], blinkDur: 0.2, hideOnFull: false, sway: 0.35, swayPeriod: 3.6 },
     // R5: 447x594 flush left at (0,783); blink 100-133 ms on a ~3.2 s loop; hidden on photo cards
-    DC: { rect: [0, 783, 447, 594], blinkDur: 0.12, hideOnFull: true, sway: 0, blinkGaps: [3.2, 3.1, 3.3, 3.2, 3.0, 3.4] },
+    DC: { rect: [0, 783, 447, 594], blinkDur: 0.12, hideOnFull: true, sway: 0, blinkGaps: [3.2, 3.1, 3.3, 3.2, 3.0, 3.4], alignX: 0.25, maxH: 525 }, // presenter clears the stage frame (bottom 840)
   };
 
   var MASCOT = {
@@ -278,18 +278,99 @@
 
   // ---- mascot: slide in on first column scaffold, ease-in exit before full-width, hard-cut
   // re-entry, deterministic blinks (SPEC 4.5) ----
+  // Presenter contract: cfg = { open, blink, talk2?, glance?, talkSprite?, talk?: [[start,end],...]
+  // (narration word intervals), aspect? (art w/h), face?: { eyes:[x,y,w,h], mouth:[x,y,w,h] }
+  // (fractions of the canvas) }. All sprites share one canvas and differ only on the face, so
+  // eye states (blink/glance) and mouth states (talk/talk2) are independent clipped overlays
+  // over `open`. Legacy art without `face` swaps whole frames (blink only).
+  function fitMascotBox(rect, aspect, alignX, maxH) {
+    if (!aspect) return rect;
+    var h = Math.min(rect[3], maxH || rect[3]);
+    var w = h * aspect;
+    if (w > rect[2]) {
+      w = rect[2];
+      h = w / aspect;
+    }
+    var x = rect[0] + (rect[2] - w) * (alignX === undefined ? 0.5 : alignX);
+    return [Math.round(x), Math.round(rect[1] + rect[3] - h), Math.round(w), Math.round(h)]; // feet on the rect bottom
+  }
+
+  function faceClip(r) {
+    // inset(top right bottom left) from a fractional [x, y, w, h] region
+    var pc = function (v) {
+      return (Math.max(0, v) * 100).toFixed(2) + "%";
+    };
+    return "inset(" + pc(r[1]) + " " + pc(1 - r[0] - r[2]) + " " + pc(1 - r[1] - r[3]) + " " + pc(r[0]) + ")";
+  }
+
+  /** Mouth flap from word intervals: talk 3 f / talk2 2 f alternating inside a word, closed in
+   * the gaps (>= 2 f) and for the last 2 f of a word that runs straight into the next one. */
+  function mouthStates(words, duration) {
+    var q = function (x) {
+      return Math.round(x / F) * F;
+    };
+    var ws = (words || [])
+      .filter(function (w) {
+        return w && isFinite(w[0]) && isFinite(w[1]) && w[1] > w[0];
+      })
+      .map(function (w) {
+        return [q(w[0]), q(w[1])];
+      })
+      .sort(function (a, b) {
+        return a[0] - b[0];
+      });
+    var out = [];
+    var closed = true;
+    var last = "c";
+    ws.forEach(function (w, i) {
+      var s = w[0];
+      var e = Math.min(w[1], duration);
+      var ns = i + 1 < ws.length ? ws[i + 1][0] : Infinity;
+      if (e - s < F - 1e-6) return;
+      var end = Math.min(e, ns);
+      var closeAt = end;
+      if (ns - e < 2 * F - 1e-6) closeAt = e - 2 * F >= s + 3 * F - 1e-6 ? e - 2 * F : null; // run-on word
+      // a run-on word starts on the other mouth shape so every word onset is a visible change
+      var st = closed || last !== "a" ? "a" : "b";
+      var t = s;
+      var stop = closeAt !== null ? closeAt : end;
+      while (t < stop - 1e-6) {
+        out.push([t, st]);
+        last = st;
+        t += st === "a" ? 3 * F : 2 * F;
+        st = st === "a" ? "b" : "a";
+      }
+      if (closeAt !== null) {
+        out.push([closeAt, "c"]);
+        closed = true;
+      } else closed = false;
+    });
+    return out;
+  }
+
   function buildMascot(ctx, layer, cfg, scaffolds, mp) {
     if (!cfg || !cfg.open) return;
     var tl = ctx.tl;
-    var box = cfg.rect || mp.rect; // placeholder art fitted to the profile's mascot column
+    var box = fitMascotBox(cfg.rect || mp.rect, cfg.aspect, mp.alignX, mp.maxH);
+    var face = cfg.face || null;
     var wrap = mk("div", "st-mascot", layer);
     Object.assign(wrap.style, rectStyle(box));
+    function sprite(src, cls, region) {
+      var im = mk("img", "st-mascot-img " + cls, wrap);
+      im.src = src;
+      if (region) im.style.clipPath = faceClip(region);
+      tl.set(im, { autoAlpha: 0 }, 0);
+      return im;
+    }
     var open = mk("img", "st-mascot-img", wrap);
     open.src = cfg.open;
-    var blink = mk("img", "st-mascot-img st-mascot-blink", wrap);
-    blink.src = cfg.blink || cfg.open;
+    var talkSrc = typeof cfg.talk === "string" ? cfg.talk : cfg.talkSprite;
+    var talkWords = Array.isArray(cfg.talk) ? cfg.talk : cfg.words;
+    var talk2 = face && cfg.talk2 ? sprite(cfg.talk2, "st-mascot-talk2", face.mouth) : null;
+    var talk = face && talkSrc ? sprite(talkSrc, "st-mascot-talk", face.mouth) : null;
+    var glanceImg = face && cfg.glance ? sprite(cfg.glance, "st-mascot-glance", face.eyes) : null;
+    var blink = sprite(cfg.blink || cfg.open, "st-mascot-blink", face ? face.eyes : null);
     tl.set(wrap, { autoAlpha: 0, x: 0 }, 0);
-    tl.set(blink, { autoAlpha: 0 }, 0);
 
     var shown = false;
     var everShown = false;
@@ -322,12 +403,22 @@
     var k = 0;
     while (t < ctx.duration - mp.blinkDur) {
       tl.set(blink, { autoAlpha: 1 }, t);
-      tl.set(open, { autoAlpha: 0 }, t);
       tl.set(blink, { autoAlpha: 0 }, t + mp.blinkDur);
-      tl.set(open, { autoAlpha: 1 }, t + mp.blinkDur);
       var gaps = mp.blinkGaps || MASCOT.blinkGaps;
       t += gaps[k++ % gaps.length];
     }
+
+    // mouth flap on the narration's word intervals (tl.set only: seek-safe)
+    if (talk && talkWords && talkWords.length) {
+      var cur = "c";
+      mouthStates(talkWords, ctx.duration).forEach(function (m) {
+        if (m[1] === cur) return;
+        cur = m[1];
+        tl.set(talk, { autoAlpha: cur === "a" ? 1 : 0 }, m[0]);
+        if (talk2) tl.set(talk2, { autoAlpha: cur === "b" ? 1 : 0 }, m[0]);
+      });
+    }
+    var glanceUntil = -1;
 
     // idle sway (LC-b / R4 only): finite yoyo repeats computed from the duration -- seek-safe
     if (mp.sway && visibleSpans.length) {
@@ -345,7 +436,19 @@
       api: {
         ops: {
           // R5: head-glance 21-27 px sideways and back, 433 ms ease-in-out, on hero / key-noun beats
+          // presenter art: eyes swap to the glance sprite (look up/right at the content);
+          // overlapping glances extend the hold instead of cutting it short
           glance: function (e) {
+            if (glanceImg) {
+              var hold = e.value && e.value.dur ? e.value.dur : 0.6;
+              var end = Math.min(ctx.duration, e.t + hold);
+              if (end <= glanceUntil) return;
+              // overlap: re-show at the instant the previous hold ends (later set wins at a tie)
+              tl.set(glanceImg, { autoAlpha: 1 }, e.t <= glanceUntil ? glanceUntil : e.t);
+              tl.set(glanceImg, { autoAlpha: 0 }, end);
+              glanceUntil = end;
+              return;
+            }
             var dx = e.value && e.value.dx ? e.value.dx : 24;
             tl.to(wrap, { x: dx, duration: 0.2165, ease: "sine.inOut" }, e.t);
             tl.to(wrap, { x: 0, duration: 0.2165, ease: "sine.inOut" }, e.t + 0.2165);

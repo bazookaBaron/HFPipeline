@@ -237,6 +237,55 @@ function buildCaptions(words, totalDuration, profile, accent) {
  * @param {string} [o.profile] "DH"
  * @param {string} [o.accent] caption shadow colour
  */
+// Root media layer: framework-timed <video> trims (and still holds) placed exactly over each
+// media window's body. Wrappers are UNTIMED (a timed <video> may not sit inside a timed element);
+// only wrappers are ever tweened (shrink FLIP), never the timed media elements.
+function buildMediaLayer(media) {
+  let track = 20;
+  return media
+    .map((m) =>
+      m.wrappers
+        .map((w, wi) => {
+          const [x, y, ww, hh] = w.rect;
+          const kids = m.items
+            .filter((it) => it.wrap === wi && it.dur > 0.02)
+            .map((it) => {
+              track += 1;
+              const common = `id="${it.id}" class="clip" data-start="${it.start.toFixed(3)}" data-duration="${it.dur.toFixed(3)}" data-track-index="${track}" style="position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover;"`;
+              return it.kind === "video"
+                ? `        <video ${common} src="${it.src}" data-media-start="${it.mediaStart.toFixed(3)}" data-volume="0" muted playsinline></video>`
+                : `        <img ${common} src="${it.src}" alt="" />`;
+            })
+            .join("\n");
+          const TONE = { amber: "#f5b544", red: "#f83c64", green: "#2ad56c", blue: "#4b9afb", cyan: "#5fe4e6", white: "#ffffff" };
+          const hl = (w.highlights || [])
+            .map((h, hi) => `        <div id="${w.id}_hl${hi}" class="hf-media-hl" style="position:absolute; left:${h.box[0]}%; top:${h.box[1]}%; width:${h.box[2]}%; height:${h.box[3]}%; border:4px solid ${TONE[h.tone] || h.tone}; border-radius:8px; box-shadow:0 0 0 2px rgba(0,0,0,.35); opacity:0;"></div>`)
+            .join("\n");
+          return `      <div id="${w.id}" class="hf-media-wrap" style="position:absolute; left:${x}px; top:${y}px; width:${ww}px; height:${hh}px; overflow:hidden; border-radius:0 0 ${w.radius}px ${w.radius}px; pointer-events:none;">
+${kids}
+${hl}
+      </div>`;
+        })
+        .join("\n")
+    )
+    .join("\n");
+}
+
+function mediaTweens(media) {
+  const lines = [];
+  media.forEach((m) =>
+    m.wrappers.forEach((w) => {
+      // highlight boxes drawn on the footage: 133 ms scale-in, off at unhighlight / run end
+      (w.highlights || []).forEach((h, hi) => {
+        lines.push(`      tl.fromTo("#${w.id}_hl${hi}", { opacity: 0, scale: 1.08 }, { opacity: 1, scale: 1, duration: 0.133, ease: "power2.out", immediateRender: false }, ${h.t});`);
+        lines.push(`      tl.set("#${w.id}_hl${hi}", { opacity: 0 }, ${h.t1});`);
+      });
+      w.tweens.forEach((tw) => lines.push(`      tl.to("#${w.id}", { scale: ${tw.scale}, transformOrigin: "${tw.origin[0]}px ${tw.origin[1]}px", duration: 0.433, ease: "power2.inOut" }, ${tw.t});`));
+    })
+  );
+  return lines.join("\n");
+}
+
 function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, words, profile = "DH", accent = "#4497ff", captionsOn = true }) {
   const specJson = JSON.stringify({ spec: JSON.stringify(spec), duration: Number(totalDuration.toFixed(3)) }).replace(/'/g, "&#39;");
   const narrationTag = narrationRelPath
@@ -260,6 +309,7 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/stage/profile-lc.js"></script>
     <script src="compositions/components/lib/stage/profile-dc.js"></script>
     <script src="compositions/components/lib/stage/modules-end.js"></script>
+    <script src="compositions/components/lib/stage/modules-media.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
@@ -286,6 +336,7 @@ ${narrationTag}
         class="clip"
         style="position:absolute; left:0; top:0; width:1080px; height:1920px;"
       ></div>
+${buildMediaLayer(spec.media || [])}
 ${captionsOn ? buildCaptions(words || [], totalDuration, profile, accent) : ""}
     </div>
     <script>
@@ -293,6 +344,7 @@ ${captionsOn ? buildCaptions(words || [], totalDuration, profile, accent) : ""}
       // Pad the root timeline to the full length (an empty root timeline let snapshot drop the
       // stage after ~1.8 s when no other timeline was registered; verified 2026-09-25).
       tl.set({}, {}, ${totalDuration.toFixed(3)});
+${mediaTweens(spec.media || [])}
       window.__timelines["${runId}"] = tl;
       tl.seek(0);
     </script>

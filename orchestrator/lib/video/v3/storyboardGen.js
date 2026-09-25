@@ -247,7 +247,7 @@ function autoFillGaps(sb) {
 
 function catalogText() {
   const mods = Object.entries(MODULES)
-    .filter(([k]) => !["browser", "console", "connector", "label"].includes(k))
+    .filter(([k]) => !["browser", "console", "connector", "label", "media"].includes(k)) // media: only via the promo scene until the media library lands in the generator
     .map(([k, m]) => `- ${k}: ${m.use}\n    props ${m.props}` + (Object.keys(m.ops || {}).length ? `\n    ops ${Object.entries(m.ops).map(([o, d]) => `${o} ${d}`).join("; ")}` : "") + (m.entities ? `\n    sub-targets ${m.entities}` : ""))
     .join("\n");
   return mods;

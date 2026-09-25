@@ -148,8 +148,18 @@ def main():
             continue  # quiet chip caption: no bright border to scan; bg checked above
         if profile == "LC":
             # paper caption (R4): box y 1452-1545; find the box edges from the fill vs the page
-            col = [px(raw, 540, y) for y in range(1400, 1600)]
-            box = [1400 + i for i, c in enumerate(col) if c[0] > 0xFB and c[1] > 0xF9 and c[2] > 0xF4]
+            # a row belongs to the paper box when >= 40 px across x 150-930 match the #FEFCF8 fill
+            # (a single centre column runs through the caption's dark text)
+            box = []
+            for y in range(1400, 1600):
+                n = 0
+                for x in range(150, 930, 2):
+                    c = px(raw, x, y)
+                    # encoded #FEFCF8 lands ~(250,250,245); the #F4F4ED page lands ~(242,242,233)
+                    if c[0] >= 247 and c[1] >= 247 and c[2] >= 240:
+                        n += 1
+                if n >= 20:
+                    box.append(y)
             if box and not (1449 <= box[0] <= 1456 and 1540 <= box[-1] <= 1549):
                 geo_fail.append(f"{s['id']}: LC caption box y {box[0]}-{box[-1]}, want 1452-1545")
             continue

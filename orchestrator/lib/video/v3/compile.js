@@ -99,6 +99,7 @@ function compileStoryboard(sb, timeline, opts = {}) {
       return out;
     });
     const out = { id: x.sc.id, template: x.sc.template, t0: round(x.t0), t1: round(t1), layout: built.layout, modules };
+    if (built.noPresenter) out.noPresenter = true; // e.g. the promo footage window spans the presenter's corner
     if (x.sc.transition) out.transition = x.sc.transition; // {out, in} scene transition into this scaffold (core TRANS_*)
     return out;
   });

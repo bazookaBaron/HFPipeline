@@ -58,7 +58,8 @@ function captionWords(words, brand = loadBrand()) {
         const toks = spoken.split(/\s+/);
         const seg = words.slice(i, i + toks.length);
         if (seg.length === toks.length && seg.every((x, k) => x.text.toLowerCase().replace(/[^a-z0-9]/g, "") === toks[k].toLowerCase().replace(/[^a-z0-9]/g, ""))) {
-          merged = { ...w, text: shown, end: seg[seg.length - 1].end };
+          // keep the last token's trailing punctuation so caption chunks still break at the sentence end
+          merged = { ...w, text: shown + (String(seg[seg.length - 1].text).match(/[.,!?;:]+$/) || [""])[0], end: seg[seg.length - 1].end };
           i += toks.length - 1;
           break;
         }

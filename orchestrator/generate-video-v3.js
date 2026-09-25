@@ -136,6 +136,7 @@ async function main() {
       const gen = await generateStoryboard(topic, { log, lengthSeconds, profile, previous: prev, extraProblems: readJson("problems") });
       sbPath = `${outPath}.storyboard.json`;
       fs.writeFileSync(sbPath, JSON.stringify(gen.storyboard, null, 1));
+      fs.rmSync(`${sbPath}.promo.json`, { force: true }); // a new storyboard gets a new promo pick
       metrics.set("script", { topic, attempts: gen.attempts.length, storyboard: sbPath });
     } catch (err) {
       if (err.last) fs.writeFileSync(`${outPath}.storyboard.failed.json`, JSON.stringify(err.last, null, 1));
@@ -153,10 +154,22 @@ async function main() {
     } catch (_) {
       gen = null;
     }
-    promo = await pickPromo(topic || sbTopic.topic || "", { generate: gen, log }).catch((err) => {
-      log(`promo skipped: ${err.message}`);
-      return null;
-    });
+    // the pick is saved beside the storyboard so a re-render (e.g. with a music bed) says the same line
+    const promoPath = `${sbPath}.promo.json`;
+    if (fs.existsSync(promoPath)) {
+      try {
+        promo = JSON.parse(fs.readFileSync(promoPath, "utf-8"));
+      } catch (_) {
+        promo = null;
+      }
+    }
+    if (!promo) {
+      promo = await pickPromo(topic || sbTopic.topic || "", { generate: gen, log }).catch((err) => {
+        log(`promo skipped: ${err.message}`);
+        return null;
+      });
+      if (promo) fs.writeFileSync(promoPath, JSON.stringify(promo, null, 1));
+    }
     if (promo) log(`promo: ${promo.clipId} -- "${promo.line}"`);
   }
   const sb = bool(args.endcard, true) ? appendEndcard(sbTopic, undefined, promo) : sbTopic;

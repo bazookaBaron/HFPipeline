@@ -85,6 +85,7 @@ function promoTemplate(sc) {
   const y = Math.max(380, Math.round(830 - h / 2));
   return {
     layout: "full",
+    noPresenter: true,
     modules: [
       { id: "promo_label", type: "micro", rect: [60, y - 58, 960, 26], props: { text: "ON VLOOMBOX.IN", align: "center" } },
       { id: "promo", type: "media", rect: [60, y, w, h], props: { kind: "video", src: p.src, poster: p.poster, lastFrame: p.lastFrame, clipDur: p.clipDur, head: p.title || "VLOOMBOX.IN", dot: "green", aspect: p.aspect } },

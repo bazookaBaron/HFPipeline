@@ -452,7 +452,7 @@
     var slideFrom = -(box[0] + box[2]);
     var visibleSpans = [];
     scaffolds.forEach(function (s, i) {
-      var want = s.layout === "column" || (!mp.hideOnFull && s.layout !== "title");
+      var want = !s.noPresenter && (s.layout === "column" || (!mp.hideOnFull && s.layout !== "title"));
       if (want && !shown) {
         if (!everShown || mp.slideReenter) {
           tl.fromTo(wrap, { autoAlpha: 1, x: slideFrom }, { x: 0, duration: MASCOT.enterDur, ease: "power2.out", immediateRender: false }, s.t0);

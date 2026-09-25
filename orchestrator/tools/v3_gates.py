@@ -103,6 +103,31 @@ def caption_rows(raw):
     return rows
 
 
+
+def caption_rows(raw, match):
+    box = []
+    for y in range(1400, 1600):
+        n = 0
+        for x in range(150, 930, 2):
+            if match(px(raw, x, y)):
+                n += 1
+        if n >= 20:
+            box.append(y)
+    return box
+
+
+def settled_caption(video, t, match, band):
+    """The midpoint frame can land on a caption chunk's pop-in (scaled chip); probe +-0.3 s for a settled one."""
+    for dt in (0.3, -0.3, 0.6):
+        raw = frame(video, t + dt)
+        if len(raw) < 1080 * 1920 * 3:
+            continue
+        box = caption_rows(raw, match)
+        if box and band[0] <= box[0] <= band[1] and band[2] <= box[-1] <= band[3]:
+            return box
+    return None
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--video", required=True)
@@ -189,6 +214,8 @@ def main():
                 if n >= 20:
                     box.append(y)
             if box and not (1435 <= box[0] <= 1446 and 1533 <= box[-1] <= 1546):
+                box = settled_caption(a.video, t, lambda c: c[0] >= 250 and c[1] >= 250 and c[2] >= 248, (1435, 1446, 1533, 1546)) or box
+            if box and not (1435 <= box[0] <= 1446 and 1533 <= box[-1] <= 1546):
                 geo_fail.append(f"{s['id']}: BR caption chip y {box[0]}-{box[-1]}, want 1440-1540")
             continue
         if profile == "DC":
@@ -207,6 +234,8 @@ def main():
                         n += 1
                 if n >= 20:
                     box.append(y)
+            if box and not (1449 <= box[0] <= 1456 and 1540 <= box[-1] <= 1549):
+                box = settled_caption(a.video, t, lambda c: c[0] >= 247 and c[1] >= 247 and c[2] >= 240, (1449, 1456, 1540, 1549)) or box
             if box and not (1449 <= box[0] <= 1456 and 1540 <= box[-1] <= 1549):
                 geo_fail.append(f"{s['id']}: LC caption box y {box[0]}-{box[-1]}, want 1452-1545")
             continue

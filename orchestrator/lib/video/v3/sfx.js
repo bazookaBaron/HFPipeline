@@ -55,7 +55,7 @@ function sfxCues(spec, duration) {
     prevLayout = s.layout;
   });
   (spec.events || []).forEach((e, i) => {
-    const SHOW = { line2: "tick", follow: "pop", site: "tick", type: "keys", click: "tick" };
+    const SHOW = { line2: "tick", follow: "pop", site: "tick", type: "keys", click: "tick", tag1: "blip", tag2: "blip", tag3: "blip" };
     const kind = e.op === "show" ? SHOW[(e.value && e.value.part) || ""] : KIND_OF[e.op];
     if (!kind) return;
     const c = { t: e.t, at: e.t, kind, var: i };

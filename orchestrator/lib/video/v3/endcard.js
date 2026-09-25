@@ -23,7 +23,7 @@ function appendEndcard(sb, brand = loadBrand()) {
   if (!ec.enabled || sb.sentences.some((s) => s.id === END_SENTENCE)) return sb;
   const out = JSON.parse(JSON.stringify(sb));
   out.sentences.push({ id: END_SENTENCE, text: ec.spoken });
-  out.scaffolds.push({ id: "endcard", template: "endcard", from: END_SENTENCE, slots: { props: { eyebrow: ec.eyebrow, lines: ec.lines, follow: ec.follow, site: ec.site, cta: ec.cta } } });
+  out.scaffolds.push({ id: "endcard", template: "endcard", from: END_SENTENCE, slots: { props: { eyebrow: ec.eyebrow, lines: ec.lines, follow: ec.follow, site: ec.site, cta: ec.cta, tags: ec.tags } } });
   out.events = (out.events || []).concat((ec.beats || []).map((b) => ({ sentence: END_SENTENCE, anchor: { text: b.word }, op: "show", target: "endcard", value: { part: b.part } })));
   return out;
 }

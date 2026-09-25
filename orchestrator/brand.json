@@ -1,9 +1,9 @@
 {
   "endcard": {
     "enabled": true,
-    "spoken": "Follow for more daily videos, and check out vloom box dot in.",
+    "spoken": "Follow for more daily videos, and check out vloom box dot in for daily tech job openings, referrals, and much more.",
     "captionAs": {
-      "vloom box dot in.": "vloombox.in"
+      "vloom box dot in": "vloombox.in"
     },
     "eyebrow": "Thanks for watching",
     "lines": [
@@ -31,9 +31,26 @@
         "part": "type"
       },
       {
-        "word": "in.",
+        "word": "in",
         "part": "click"
+      },
+      {
+        "word": "openings,",
+        "part": "tag1"
+      },
+      {
+        "word": "referrals,",
+        "part": "tag2"
+      },
+      {
+        "word": "more.",
+        "part": "tag3"
       }
+    ],
+    "tags": [
+      "Daily tech jobs",
+      "Referrals",
+      "Much more"
     ]
   },
   "handle": "",

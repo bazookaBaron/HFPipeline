@@ -29,6 +29,10 @@
     "html .st-endcard .e-caret{width:4px;height:44px;background:var(--st-blue);margin-left:-10px;}",
     "html .st-endcard .e-go{margin-left:auto;height:48px;padding:0 22px;border-radius:24px;background:var(--st-blue);color:#fff;font-size:20px;font-weight:800;letter-spacing:.14em;display:flex;align-items:center;}",
     "html .st-endcard .e-ptr{position:absolute;width:44px;height:52px;pointer-events:none;}",
+    "html .st-endcard .e-tags{margin-top:30px;display:flex;gap:14px;}",
+    "html .st-endcard .e-tag{height:56px;padding:0 24px;border-radius:28px;border:1.5px solid var(--x-252b33,#252b33);background:var(--x-0a0e13,#0a0e13);display:flex;align-items:center;font-size:24px;font-weight:700;color:var(--x-e6e9ed,#e6e9ed);white-space:nowrap;}",
+    "html .st-endcard .e-tag::before{content:'';width:10px;height:10px;border-radius:50%;background:var(--st-green);margin-right:12px;}",
+    "html [data-profile=LC] .st-endcard .e-tag{background:#fefcf8;border-color:#bcc3c2;color:#17232b;}",
     // chaptered profile: its accent is a light teal, so button text goes dark (AA contrast)
     "html [data-profile=DC] .st-endcard .e-btn,html [data-profile=DC] .st-endcard .e-go{color:#0b1016;}",
     "html [data-profile=DC] .st-endcard .e-btn .plus::before,html [data-profile=DC] .st-endcard .e-btn .plus::after{background:#0b1016;}",
@@ -86,6 +90,10 @@
       var txt = c.entity("url", div("e-txt", url, ""));
       var caret = div("e-caret", url);
       var go = c.entity("go", div("e-go", url, p.cta || "VISIT"));
+      var tagRow = (p.tags || []).length ? div("e-tags", el) : null;
+      var tags = (p.tags || []).map(function (tx, i) {
+        return c.entity("tag" + (i + 1), div("e-tag", tagRow, tx));
+      });
       var ptr = div("e-ptr", el);
       ptr.innerHTML = '<svg viewBox="0 0 22 26" width="44" height="52"><path d="M2 2 L2 21 L7 16 L11 24 L14.5 22.5 L10.5 14.6 L17.5 14.6 Z" fill="#fff" stroke="#111" stroke-width="1.6" stroke-linejoin="round"/></svg>';
       // pointer rests off to the lower right, then glides onto VISIT
@@ -98,6 +106,9 @@
         c.tl.set(parts[k], { autoAlpha: 0 }, 0);
       });
       c.tl.set([ptr, caret], { autoAlpha: 0 }, 0);
+      tags.forEach(function (tg) {
+        c.tl.set(tg, { autoAlpha: 0 }, 0);
+      });
       function rise(elm, t, dy) {
         c.tl.fromTo(elm, { autoAlpha: 0, y: dy || 19.5 }, { autoAlpha: 1, y: 0, duration: 0.133, ease: "power2.out", immediateRender: false }, t);
       }
@@ -110,7 +121,10 @@
           show: function (e) {
             var part = e.value && e.value.part;
             var t = e.t;
-            if (part === "line2") rise(l2, t, 24);
+            if (/^tag\d$/.test(part || "")) {
+              var tg = tags[Number(part.slice(3)) - 1];
+              if (tg) c.tl.fromTo(tg, { autoAlpha: 0, y: 12, scale: 0.94 }, { autoAlpha: 1, y: 0, scale: 1, duration: 0.167, ease: "power2.out", immediateRender: false }, t);
+            } else if (part === "line2") rise(l2, t, 24);
             else if (part === "follow") {
               // slam like the hero number (R2 E6): 1.15 -> 1 in 100 ms
               c.tl.fromTo(btn, { autoAlpha: 0.7, scale: 1.15 }, { autoAlpha: 1, scale: 1, duration: 0.1, ease: "sine.out", immediateRender: false }, t);

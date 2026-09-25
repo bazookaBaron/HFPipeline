@@ -67,8 +67,8 @@ function compileSlide(sb, slide, i, n) {
     const brand = loadBrand();
     const c = brand.carousel || {};
     const ec = brand.endcard || {};
-    mods.push({ id: "endcard", type: "endcard", rect: [60, 250, 960, 760], props: { eyebrow: c.eyebrow || ec.eyebrow, lines: c.lines || ec.lines, follow: ec.follow, site: ec.site, cta: ec.cta } });
-    ["line2", "follow", "site", "type"].forEach((part, k) => events.push({ t: 0.1 + k * 0.12, op: "show", target: "endcard", value: { part } }));
+    mods.push({ id: "endcard", type: "endcard", rect: [60, 250, 960, 760], props: { eyebrow: c.eyebrow || ec.eyebrow, lines: c.lines || ec.lines, follow: ec.follow, site: ec.site, cta: ec.cta, tags: ec.tags } });
+    ["line2", "follow", "site", "type", "tag1", "tag2", "tag3"].forEach((part, k) => events.push({ t: 0.1 + k * 0.12, op: "show", target: "endcard", value: { part } }));
     events.push({ t: 1.0, op: "show", target: "endcard", value: { part: "click" } });
   } else {
     let y = 150;

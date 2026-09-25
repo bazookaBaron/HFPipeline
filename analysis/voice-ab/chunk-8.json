@@ -1,0 +1,477 @@
+[
+  {
+    "word": "Why",
+    "start": 0.06,
+    "end": 0.24
+  },
+  {
+    "word": "does",
+    "start": 0.3,
+    "end": 0.44
+  },
+  {
+    "word": "your",
+    "start": 0.46,
+    "end": 0.621
+  },
+  {
+    "word": "hash",
+    "start": 0.641,
+    "end": 0.921
+  },
+  {
+    "word": "table's",
+    "start": 0.961,
+    "end": 1.381
+  },
+  {
+    "word": "O(1)",
+    "start": 1.501,
+    "end": 1.941
+  },
+  {
+    "word": "instant",
+    "start": 2.681,
+    "end": 3.061
+  },
+  {
+    "word": "lookup",
+    "start": 3.121,
+    "end": 3.501
+  },
+  {
+    "word": "suddenly",
+    "start": 4.002,
+    "end": 4.402
+  },
+  {
+    "word": "crawl",
+    "start": 4.462,
+    "end": 4.782
+  },
+  {
+    "word": "at",
+    "start": 4.902,
+    "end": 4.962
+  },
+  {
+    "word": "O(N)",
+    "start": 5.082,
+    "end": 5.402
+  },
+  {
+    "word": "speed",
+    "start": 6.002,
+    "end": 6.422
+  },
+  {
+    "word": "under",
+    "start": 6.663,
+    "end": 6.863
+  },
+  {
+    "word": "heavy",
+    "start": 6.923,
+    "end": 7.163
+  },
+  {
+    "word": "load?",
+    "start": 7.223,
+    "end": 7.523
+  },
+  {
+    "word": "The",
+    "start": 8.743,
+    "end": 8.823
+  },
+  {
+    "word": "culprit",
+    "start": 8.883,
+    "end": 9.343
+  },
+  {
+    "word": "is",
+    "start": 9.643,
+    "end": 9.724
+  },
+  {
+    "word": "a",
+    "start": 9.784,
+    "end": 9.824
+  },
+  {
+    "word": "hash",
+    "start": 9.864,
+    "end": 10.164
+  },
+  {
+    "word": "collision.",
+    "start": 10.224,
+    "end": 10.664
+  },
+  {
+    "word": "In",
+    "start": 11.564,
+    "end": 11.644
+  },
+  {
+    "word": "an",
+    "start": 11.684,
+    "end": 11.744
+  },
+  {
+    "word": "ideal",
+    "start": 11.964,
+    "end": 12.324
+  },
+  {
+    "word": "world,",
+    "start": 12.384,
+    "end": 12.704
+  },
+  {
+    "word": "every",
+    "start": 13.785,
+    "end": 14.105
+  },
+  {
+    "word": "string",
+    "start": 14.205,
+    "end": 14.625
+  },
+  {
+    "word": "key",
+    "start": 14.985,
+    "end": 15.285
+  },
+  {
+    "word": "passes",
+    "start": 15.385,
+    "end": 15.886
+  },
+  {
+    "word": "through",
+    "start": 16.106,
+    "end": 16.486
+  },
+  {
+    "word": "a",
+    "start": 16.646,
+    "end": 16.706
+  },
+  {
+    "word": "hash",
+    "start": 16.786,
+    "end": 17.086
+  },
+  {
+    "word": "function",
+    "start": 17.146,
+    "end": 17.566
+  },
+  {
+    "word": "that",
+    "start": 18.146,
+    "end": 18.326
+  },
+  {
+    "word": "generates",
+    "start": 18.426,
+    "end": 18.967
+  },
+  {
+    "word": "a",
+    "start": 19.027,
+    "end": 19.047
+  },
+  {
+    "word": "clean",
+    "start": 19.127,
+    "end": 19.467
+  },
+  {
+    "word": "integer",
+    "start": 19.627,
+    "end": 19.967
+  },
+  {
+    "word": "index",
+    "start": 20.027,
+    "end": 20.407
+  },
+  {
+    "word": "in",
+    "start": 21.027,
+    "end": 21.107
+  },
+  {
+    "word": "a",
+    "start": 21.147,
+    "end": 21.187
+  },
+  {
+    "word": "fixed",
+    "start": 21.307,
+    "end": 21.647
+  },
+  {
+    "word": "array.",
+    "start": 21.847,
+    "end": 22.248
+  },
+  {
+    "word": "So",
+    "start": 23.728,
+    "end": 23.848
+  },
+  {
+    "word": "what",
+    "start": 23.888,
+    "end": 24.028
+  },
+  {
+    "word": "happens",
+    "start": 24.068,
+    "end": 24.448
+  },
+  {
+    "word": "when",
+    "start": 25.029,
+    "end": 25.209
+  },
+  {
+    "word": "two",
+    "start": 25.309,
+    "end": 25.569
+  },
+  {
+    "word": "totally",
+    "start": 25.669,
+    "end": 26.009
+  },
+  {
+    "word": "different",
+    "start": 26.069,
+    "end": 26.409
+  },
+  {
+    "word": "user",
+    "start": 26.589,
+    "end": 26.849
+  },
+  {
+    "word": "IDs",
+    "start": 26.969,
+    "end": 27.409
+  },
+  {
+    "word": "produce",
+    "start": 27.609,
+    "end": 27.949
+  },
+  {
+    "word": "the",
+    "start": 27.989,
+    "end": 28.09
+  },
+  {
+    "word": "exact",
+    "start": 28.15,
+    "end": 28.47
+  },
+  {
+    "word": "same",
+    "start": 28.55,
+    "end": 28.79
+  },
+  {
+    "word": "modulo",
+    "start": 28.85,
+    "end": 29.33
+  },
+  {
+    "word": "remainder?",
+    "start": 29.39,
+    "end": 29.83
+  },
+  {
+    "word": "Both",
+    "start": 32.111,
+    "end": 32.371
+  },
+  {
+    "word": "keys",
+    "start": 32.471,
+    "end": 32.831
+  },
+  {
+    "word": "collide",
+    "start": 32.951,
+    "end": 33.431
+  },
+  {
+    "word": "in",
+    "start": 33.511,
+    "end": 33.591
+  },
+  {
+    "word": "the",
+    "start": 33.631,
+    "end": 33.711
+  },
+  {
+    "word": "same",
+    "start": 33.751,
+    "end": 33.991
+  },
+  {
+    "word": "bucket.",
+    "start": 34.071,
+    "end": 34.432
+  },
+  {
+    "word": "How",
+    "start": 35.532,
+    "end": 35.712
+  },
+  {
+    "word": "do",
+    "start": 35.752,
+    "end": 35.892
+  },
+  {
+    "word": "standard",
+    "start": 35.972,
+    "end": 36.492
+  },
+  {
+    "word": "implementations",
+    "start": 36.652,
+    "end": 37.633
+  },
+  {
+    "word": "handle",
+    "start": 38.453,
+    "end": 38.853
+  },
+  {
+    "word": "this",
+    "start": 39.113,
+    "end": 39.293
+  },
+  {
+    "word": "overflow?",
+    "start": 39.433,
+    "end": 39.973
+  },
+  {
+    "word": "Runtimes",
+    "start": 41.414,
+    "end": 42.054
+  },
+  {
+    "word": "store",
+    "start": 42.394,
+    "end": 42.774
+  },
+  {
+    "word": "colliding",
+    "start": 42.934,
+    "end": 43.395
+  },
+  {
+    "word": "elements",
+    "start": 43.475,
+    "end": 43.875
+  },
+  {
+    "word": "inside",
+    "start": 44.475,
+    "end": 44.975
+  },
+  {
+    "word": "a",
+    "start": 44.995,
+    "end": 45.015
+  },
+  {
+    "word": "linked",
+    "start": 45.255,
+    "end": 45.515
+  },
+  {
+    "word": "list",
+    "start": 45.615,
+    "end": 45.895
+  },
+  {
+    "word": "attached",
+    "start": 45.995,
+    "end": 46.456
+  },
+  {
+    "word": "to",
+    "start": 46.556,
+    "end": 46.656
+  },
+  {
+    "word": "that",
+    "start": 46.696,
+    "end": 46.856
+  },
+  {
+    "word": "single",
+    "start": 46.936,
+    "end": 47.236
+  },
+  {
+    "word": "bucket.",
+    "start": 47.296,
+    "end": 47.636
+  },
+  {
+    "word": "Now",
+    "start": 49.176,
+    "end": 49.436
+  },
+  {
+    "word": "what",
+    "start": 49.797,
+    "end": 49.917
+  },
+  {
+    "word": "does",
+    "start": 49.957,
+    "end": 50.117
+  },
+  {
+    "word": "look-up",
+    "start": 50.177,
+    "end": 50.717
+  },
+  {
+    "word": "look",
+    "start": 50.757,
+    "end": 50.957
+  },
+  {
+    "word": "like",
+    "start": 50.997,
+    "end": 51.217
+  },
+  {
+    "word": "under",
+    "start": 51.357,
+    "end": 51.557
+  },
+  {
+    "word": "the",
+    "start": 51.597,
+    "end": 51.677
+  },
+  {
+    "word": "hood?",
+    "start": 51.717,
+    "end": 51.977
+  }
+]

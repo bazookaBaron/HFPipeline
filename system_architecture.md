@@ -1,0 +1,13 @@
+# Codex workstream architecture note
+
+This branch adds independent subsystems without changing Claude-owned orchestration or composition files.
+
+`generate-video.js` (unchanged) can create one `voiceService` per video job. The Node client speaks line-delimited JSON to one Python worker, which holds F5-TTS and WhisperX resident. Each synthesis reply returns a WAV, backward-compatible timing JSON, trimmed word times, stable indices and sentence indices. Close the worker in `finally`; retry a worker crash at the **job** boundary, not by silently skipping a scene. The old `voiceSynth.js` path remains available for v1/fallback. Never interpret the 12 A/B files as an approved voice setting.
+
+After final video/audio composition, `audioMaster.masterVideo` applies the chosen speed to both streams, compresses audio, performs measured two-pass loudnorm, AAC encodes and independently measures the resulting MP4 with ebur128 and 20 ms digital-silence windows. Its benchmark meets −14 LUFS / LRA ≤1.5 / peak ≤−1 dBTP on one existing render. The output path must differ from the input path. This does not repair long source pauses.
+
+`pacing_gate.py` reads a finished video and emits measurable pixel-change and audio diagnostics, with per-run normalized exclusion rectangles for caption/mascot regions. Calibration against five references is inadequate for an automatic pass/fail threshold. Keep human visual QA or improve semantic classification and per-video masks before release gating. The variable called `max_semantic_hold_s` in its JSON currently measures a machine event gap, not semantic stillness; downstream consumers must not treat it as truth.
+
+The 30 licensed Lucide icon SVGs are packaged locally with provenance; `HFIcons.create(name, options)` builds an inline DOM node in browsers that load `icons.js`. The v2 CSS token file is an unwired proposed profile; neither asset changes existing output until Claude's owner integrates them. Five v1-compatible component corrections live only in their assigned directories and were verified in an isolated scratch composition.
+
+Integration order for Claude's owner: reconcile the v2 scene/timing contract; create one voice worker per job and consume shifted word times; run the final mix through audio mastering; feed output to diagnostics; render visual checkpoints and inspect; then decide whether to enable new tokens/icons by component. The current branch has not been merged or wired into the button-click production path, so it is not an autonomous-video acceptance pass.

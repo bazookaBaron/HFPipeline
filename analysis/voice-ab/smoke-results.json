@@ -1,0 +1,21 @@
+[
+  {
+    "case": "smoke",
+    "speed": 1.0,
+    "cold": true,
+    "elapsedSeconds": 374.74,
+    "durationSeconds": 2.005,
+    "realTimeFactor": 186.9,
+    "leadTrimSeconds": 0.843,
+    "tailTrimSeconds": 0.0,
+    "wordCount": 5,
+    "rawWpm": 149.6,
+    "postSpeed": 1.337,
+    "finalWpmEstimated": 200.0,
+    "asrText": "A hash collision slows look up.",
+    "wer": 0.4,
+    "audio": "C:\\Repos\\HFPipleine-codex\\analysis\\voice-ab\\smoke.wav",
+    "postAudio": "C:\\Repos\\HFPipleine-codex\\analysis\\voice-ab\\smoke-post.wav",
+    "text": "A hash collision slows lookup."
+  }
+]

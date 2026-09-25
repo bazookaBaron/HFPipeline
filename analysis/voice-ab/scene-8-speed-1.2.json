@@ -1,0 +1,102 @@
+[
+  {
+    "word": "This",
+    "start": 0.06,
+    "end": 0.22
+  },
+  {
+    "word": "exploit,",
+    "start": 0.3,
+    "end": 0.761
+  },
+  {
+    "word": "known",
+    "start": 1.002,
+    "end": 1.242
+  },
+  {
+    "word": "as",
+    "start": 1.302,
+    "end": 1.382
+  },
+  {
+    "word": "HashDoS,",
+    "start": 1.463,
+    "end": 2.044
+  },
+  {
+    "word": "pegs",
+    "start": 2.344,
+    "end": 2.605
+  },
+  {
+    "word": "server",
+    "start": 2.665,
+    "end": 3.046
+  },
+  {
+    "word": "CPU",
+    "start": 3.186,
+    "end": 3.727
+  },
+  {
+    "word": "cores",
+    "start": 3.787,
+    "end": 4.208
+  },
+  {
+    "word": "at",
+    "start": 4.268,
+    "end": 4.328
+  },
+  {
+    "word": "100%",
+    "start": 4.509,
+    "end": 5.19
+  },
+  {
+    "word": "capacity",
+    "start": 5.23,
+    "end": 5.792
+  },
+  {
+    "word": "just",
+    "start": 5.992,
+    "end": 6.192
+  },
+  {
+    "word": "parsing",
+    "start": 6.273,
+    "end": 6.673
+  },
+  {
+    "word": "a",
+    "start": 6.713,
+    "end": 6.754
+  },
+  {
+    "word": "single",
+    "start": 6.814,
+    "end": 7.114
+  },
+  {
+    "word": "malicious",
+    "start": 7.154,
+    "end": 7.575
+  },
+  {
+    "word": "HTTP",
+    "start": 7.716,
+    "end": 8.337
+  },
+  {
+    "word": "request",
+    "start": 8.537,
+    "end": 8.938
+  },
+  {
+    "word": "body.",
+    "start": 8.978,
+    "end": 9.319
+  }
+]

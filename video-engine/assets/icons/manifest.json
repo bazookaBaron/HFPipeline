@@ -1,0 +1,189 @@
+{
+  "source": "https://www.npmjs.com/package/lucide-static",
+  "package": "lucide-static",
+  "version": "1.48.0",
+  "license": "ISC (and MIT for Feather-derived icons)",
+  "licenseFile": "LICENSE",
+  "icons": {
+    "server": {
+      "file": "server.svg",
+      "source": "dist/esm/icons/server.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "database": {
+      "file": "database.svg",
+      "source": "dist/esm/icons/database.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "app-window": {
+      "file": "app-window.svg",
+      "source": "dist/esm/icons/app-window.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "laptop": {
+      "file": "laptop.svg",
+      "source": "dist/esm/icons/laptop.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "smartphone": {
+      "file": "smartphone.svg",
+      "source": "dist/esm/icons/smartphone.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "router": {
+      "file": "router.svg",
+      "source": "dist/esm/icons/router.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "cloud": {
+      "file": "cloud.svg",
+      "source": "dist/esm/icons/cloud.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "lock": {
+      "file": "lock.svg",
+      "source": "dist/esm/icons/lock.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "shield": {
+      "file": "shield.svg",
+      "source": "dist/esm/icons/shield.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "key": {
+      "file": "key.svg",
+      "source": "dist/esm/icons/key.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "file": {
+      "file": "file.svg",
+      "source": "dist/esm/icons/file.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "folder": {
+      "file": "folder.svg",
+      "source": "dist/esm/icons/folder.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "git-branch": {
+      "file": "git-branch.svg",
+      "source": "dist/esm/icons/git-branch.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "terminal": {
+      "file": "terminal.svg",
+      "source": "dist/esm/icons/terminal.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "users": {
+      "file": "users.svg",
+      "source": "dist/esm/icons/users.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "user": {
+      "file": "user.svg",
+      "source": "dist/esm/icons/user.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "rows-3": {
+      "file": "rows-3.svg",
+      "source": "dist/esm/icons/rows-3.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "database-zap": {
+      "file": "database-zap.svg",
+      "source": "dist/esm/icons/database-zap.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "globe": {
+      "file": "globe.svg",
+      "source": "dist/esm/icons/globe.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "cpu": {
+      "file": "cpu.svg",
+      "source": "dist/esm/icons/cpu.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "triangle-alert": {
+      "file": "triangle-alert.svg",
+      "source": "dist/esm/icons/triangle-alert.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "circle-check": {
+      "file": "circle-check.svg",
+      "source": "dist/esm/icons/circle-check.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "x": {
+      "file": "x.svg",
+      "source": "dist/esm/icons/x.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "clock": {
+      "file": "clock.svg",
+      "source": "dist/esm/icons/clock.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "zap": {
+      "file": "zap.svg",
+      "source": "dist/esm/icons/zap.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "package": {
+      "file": "package.svg",
+      "source": "dist/esm/icons/package.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "network": {
+      "file": "network.svg",
+      "source": "dist/esm/icons/network.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "monitor": {
+      "file": "monitor.svg",
+      "source": "dist/esm/icons/monitor.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "upload": {
+      "file": "upload.svg",
+      "source": "dist/esm/icons/upload.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    },
+    "download": {
+      "file": "download.svg",
+      "source": "dist/esm/icons/download.mjs",
+      "version": "1.48.0",
+      "license": "ISC (and MIT for Feather-derived icons)"
+    }
+  }
+}

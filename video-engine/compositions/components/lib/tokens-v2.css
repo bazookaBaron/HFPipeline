@@ -1,0 +1,34 @@
+/* Proposed C5 tokens from raster evidence in DESIGN_TOKENS.md.
+   Intentionally unwired. Values are render starting points, NOT recovered CSS. */
+:root {
+  --hf-v2-dark-bg: #090a0d;
+  --hf-v2-dark-surface: #12161e;
+  --hf-v2-dark-hud: #090d11;
+  --hf-v2-dark-blue-card: #0a1a31;
+  --hf-v2-dark-green-card: #032915;
+  --hf-v2-dark-fg: #f2f2f0;
+  --hf-v2-dark-muted: #a9b1bd;
+  --hf-v2-light-bg: #f3f3ec;
+  --hf-v2-light-card: #fffefa;
+  --hf-v2-light-subtle: #e9e8db;
+  --hf-v2-light-ink: #26313a;
+  --hf-v2-light-muted: #59626b;
+  --hf-v2-accent-cyan: #58e0f8;
+  --hf-v2-accent-blue: #5898f0;
+  --hf-v2-route-blue: #2860b8;
+  --hf-v2-route-purple: #7050a8;
+  --hf-v2-route-green: #188060;
+  --hf-v2-route-orange: #e87000;
+  --hf-v2-line-dark: #303943;
+  --hf-v2-line-light: #cbd2d0;
+  --hf-v2-glyph-serif: 9cqmin;
+  --hf-v2-glyph-display: 6.5cqmin;
+  --hf-v2-glyph-caption: 5cqmin;
+  --hf-v2-glyph-body: 2.8cqmin;
+  --hf-v2-glyph-label: 1.7cqmin;
+  --hf-v2-frame-inset: 5.6cqmin;
+  --hf-v2-card-pad: 2.2cqmin;
+  --hf-v2-card-gap: 1.8cqmin;
+  --hf-v2-card-radius: 1.3cqmin;
+  --hf-v2-line-width: 0.14cqmin;
+}

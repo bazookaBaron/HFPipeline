@@ -1,0 +1,112 @@
+[
+  {
+    "word": "Why",
+    "start": 0.06,
+    "end": 0.22
+  },
+  {
+    "word": "does",
+    "start": 0.26,
+    "end": 0.381
+  },
+  {
+    "word": "your",
+    "start": 0.421,
+    "end": 0.541
+  },
+  {
+    "word": "hash",
+    "start": 0.561,
+    "end": 0.761
+  },
+  {
+    "word": "table's",
+    "start": 0.801,
+    "end": 1.121
+  },
+  {
+    "word": "O(1)",
+    "start": 1.281,
+    "end": 1.741
+  },
+  {
+    "word": "instant",
+    "start": 2.222,
+    "end": 2.542
+  },
+  {
+    "word": "lookup",
+    "start": 2.642,
+    "end": 3.042
+  },
+  {
+    "word": "suddenly",
+    "start": 3.162,
+    "end": 3.522
+  },
+  {
+    "word": "crawl",
+    "start": 3.583,
+    "end": 3.843
+  },
+  {
+    "word": "at",
+    "start": 3.883,
+    "end": 3.943
+  },
+  {
+    "word": "O(N)",
+    "start": 4.043,
+    "end": 4.383
+  },
+  {
+    "word": "speed",
+    "start": 4.783,
+    "end": 5.063
+  },
+  {
+    "word": "under",
+    "start": 5.123,
+    "end": 5.324
+  },
+  {
+    "word": "heavy",
+    "start": 5.364,
+    "end": 5.604
+  },
+  {
+    "word": "load?",
+    "start": 5.664,
+    "end": 5.964
+  },
+  {
+    "word": "The",
+    "start": 6.664,
+    "end": 6.764
+  },
+  {
+    "word": "culprit",
+    "start": 6.825,
+    "end": 7.205
+  },
+  {
+    "word": "is",
+    "start": 7.245,
+    "end": 7.325
+  },
+  {
+    "word": "a",
+    "start": 7.365,
+    "end": 7.405
+  },
+  {
+    "word": "hash",
+    "start": 7.425,
+    "end": 7.645
+  },
+  {
+    "word": "collision.",
+    "start": 7.685,
+    "end": 8.045
+  }
+]

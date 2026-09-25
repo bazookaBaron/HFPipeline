@@ -107,11 +107,12 @@
             color: var(--hf-fg, #f4f5f7);
             white-space: nowrap;
             overflow: hidden;
-            flex: 0 1 auto;
+            flex: 1 1 auto;
             min-width: 0;
           }
           .ft-branch {
             flex: 0 0 auto;
+            max-width: 32%;
             font-weight: 700;
             white-space: nowrap;
             overflow: hidden;
@@ -281,9 +282,10 @@
             function layout() {
               var rootMin = Math.min(root.clientWidth, root.clientHeight) / 100;
               cardEls.forEach(function (card) {
-                var nameMax = card.el.clientWidth * (card.branchEl ? 0.42 : 0.7) || 200;
+                var family = "Inter, ui-sans-serif, system-ui, sans-serif";
+                var nameMax = Math.max(1, card.nameEl.clientWidth - 4) || 200;
                 HFTextFit.fitOrTruncate(card.nameEl, card.folder.name, {
-                  family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                  family: family,
                   weight: 700,
                   maxWidth: nameMax,
                   maxHeight: 1000,
@@ -291,16 +293,29 @@
                   minSize: 13,
                   maxLines: 1,
                 });
+                // The shared fitter counts a single unbroken token as one
+                // line even when its glyph width exceeds maxWidth. Folder
+                // names and branch paths commonly have no spaces.
+                var nameSize = parseFloat(card.nameEl.style.fontSize);
+                if (HFTextFit.measure(card.nameEl.textContent, 700, nameSize, family) > nameMax) {
+                  card.nameEl.textContent = HFTextFit.truncateToWidth(card.folder.name, 700, nameSize, family, nameMax);
+                }
                 if (card.branchEl) {
+                  var branchStyle = getComputedStyle(card.branchEl);
+                  var branchMax = Math.max(1, card.branchEl.clientWidth - parseFloat(branchStyle.paddingLeft) - parseFloat(branchStyle.paddingRight) - 4);
                   HFTextFit.fitOrTruncate(card.branchEl, card.folder.branchTag, {
-                    family: "Inter, ui-sans-serif, system-ui, sans-serif",
+                    family: family,
                     weight: 700,
-                    maxWidth: card.el.clientWidth * 0.4 || 160,
+                    maxWidth: branchMax,
                     maxHeight: 1000,
                     baseSize: branchCqmin * rootMin,
                     minSize: 10,
                     maxLines: 1,
                   });
+                  var branchSize = parseFloat(card.branchEl.style.fontSize);
+                  if (HFTextFit.measure(card.branchEl.textContent, 700, branchSize, family) > branchMax) {
+                    card.branchEl.textContent = HFTextFit.truncateToWidth(card.folder.branchTag, 700, branchSize, family, branchMax);
+                  }
                 }
                 if (card.secondaryEl) {
                   HFTextFit.fitOrTruncate(card.secondaryEl, card.folder.secondaryLine, {

@@ -26,6 +26,26 @@ const CAPTION_SKINS = {
     swap: "crossfade2",
     wordLag: 0.06,
   },
+  // DC "quiet chip" (R5): box y 1444.5-1548 (h 103.5), #090D11, 1.5 px #15191C, r 9, soft shadow;
+  // ~54 px w650; 2-state karaoke: active #FBFEFF, everything else #B0B4B9; swap = old chunk all-grey
+  // for 1 f, exactly 1 blank frame, new chunk grey with the active word white.
+  DC: {
+    top: 1444.5,
+    height: 103.5,
+    fontSize: 54,
+    weight: 650,
+    padX: 36,
+    fill: "#090d11",
+    border: "1.5px solid #15191c",
+    radius: 9,
+    shadow: () => "0 5px 6px #07080b",
+    past: "#b0b4b9",
+    now: "#fbfeff",
+    next: "#b0b4b9",
+    maxWords: 4,
+    swap: "blank",
+    wordLag: 0.0,
+  },
   // LC "paper" (R4): box y 1452-1545 (h 94.5), #FEFCF8, 1.5 px #C5C7C2, r 12, soft shadow ~7.5 px
   // down; 50 px w800; spoken #13232D / active #1D5EBD / upcoming #425058; swap = old chunk exits in
   // 1 f (scale .87 + fade), 1 blank frame, new chunk pops .985 -> 1.015 -> 1 over 3 f.
@@ -160,7 +180,17 @@ function buildCaptions(words, totalDuration, profile, accent) {
               var L = lines[i];
               var on = c.start;
               var next = CHUNKS[i + 1];
-              if (SWAP === "pop") {
+              if (SWAP === "blank") {
+                // R5: old chunk turns all-grey for 1 f, then exactly 1 blank frame, then the new chunk
+                var inB = i === 0 ? on : on + F;
+                capTl.set(L.el, { opacity: 1 }, inB);
+                if (next) {
+                  L.spans.forEach(function (sp) {
+                    capTl.set(sp, { attr: { "data-s": "past" } }, Math.max(inB + F, next.start - F));
+                  });
+                  capTl.set(L.el, { opacity: 0 }, next.start);
+                }
+              } else if (SWAP === "pop") {
                 // R4: exit 1 f (scale .87 + fade), 1 blank frame, new chunk .985 -> 1.015 -> 1
                 var inAt = i === 0 ? on : on + F;
                 capTl.set(L.el, { opacity: 1, scale: 0.985 }, inAt);
@@ -176,7 +206,7 @@ function buildCaptions(words, totalDuration, profile, accent) {
                 capTl.set(L.el, { opacity: 0.3 }, on);
                 capTl.set(L.el, { opacity: 1 }, on + F);
               }
-              if (SWAP === "pop") {
+              if (SWAP === "pop" || SWAP === "blank") {
                 if (!next) capTl.set(L.el, { opacity: 0 }, Math.min(${totalDuration.toFixed(3)} - F, c.end + 0.4));
               } else if (next) {
                 capTl.set(L.el, { opacity: 0.4 }, Math.max(on + F, next.start - F));
@@ -228,6 +258,7 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/stage/modules-dh4.js"></script>
     <script src="compositions/components/lib/stage/theme-lc.js"></script>
     <script src="compositions/components/lib/stage/profile-lc.js"></script>
+    <script src="compositions/components/lib/stage/profile-dc.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }

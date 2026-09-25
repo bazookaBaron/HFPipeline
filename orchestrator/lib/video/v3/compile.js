@@ -23,7 +23,8 @@ const { findAnchorIndex } = require("./timeline");
 const { TEMPLATES: DH_TEMPLATES } = require("./templates-dh");
 const { GENERIC_TEMPLATES } = require("./templates-generic");
 const { LC_TEMPLATES } = require("./templates-lc");
-const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES };
+const { DC_TEMPLATES } = require("./templates-dc");
+const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES, ...DC_TEMPLATES };
 
 // Seconds a beat fires before its word onset. Refs land visuals on the audible word or up to
 // ~250 ms before it (SPEC 7.2, ASR bias verified); our word times are forced-aligned on our
@@ -103,6 +104,24 @@ function compileStoryboard(sb, timeline, opts = {}) {
     scaffolds.forEach((s, i) => {
       s.modules.unshift({ id: "lchead", type: "lcHeader", rect: [70, 224, 938, 55], props: { kicker, counter: `01 — ${total}` }, enter: "none", at: 0 });
       if (i > 0) chromeEvents.push({ t: s.t0, op: "counter", target: "lchead", value: { text: `${String(i + 1).padStart(2, "0")} — ${total}` } });
+    });
+  }
+
+  // ---- DC chrome: chapter label + 10-seg progress (1-frame swap with the content, R5) and the
+  // stage subheader switching on every sub-state ----
+  if ((sb.profile || "DH") === "DC") {
+    let chapter = null;
+    let idx = 0;
+    scaffolds.forEach((s, i) => {
+      const src = sb.scaffolds[i];
+      const name = String(src.chapter || chapter || "").toUpperCase();
+      if (name !== chapter) {
+        chapter = name;
+        idx = Math.min(10, idx + 1);
+        if (i > 0) chromeEvents.push({ t: s.t0, op: "chapter", target: "dcchrome", value: { label: name, index: idx } });
+      }
+      s.modules.unshift({ id: "dcchrome", type: "dcChrome", rect: [60, 204, 960, 40], props: { label: String(sb.scaffolds[0].chapter || "").toUpperCase(), index: 1 }, enter: "none", at: 0 });
+      if (i > 0) chromeEvents.push({ t: s.t0, op: "sub", target: "dcstage", value: { text: (src.slots && src.slots.sub) || "" } });
     });
   }
 

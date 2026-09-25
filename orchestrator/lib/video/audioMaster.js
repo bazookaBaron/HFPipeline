@@ -81,7 +81,7 @@ async function silencePercentage(filePath, log) {
 }
 
 /** Speed the finished mix, master to -14 LUFS / <=1.5 LU / -1 dBTP, and measure output. */
-async function masterVideo({ inputPath, outputPath, speed = 1, log = () => {} }) {
+async function masterVideo({ inputPath, outputPath, speed = 1, log = () => {}, peakRequest: peakOverride }) {
   if (!inputPath || !outputPath) throw new TypeError("inputPath and outputPath are required");
   if (path.resolve(inputPath).toLowerCase() === path.resolve(outputPath).toLowerCase()) {
     throw new Error("inputPath and outputPath must differ");
@@ -92,7 +92,7 @@ async function masterVideo({ inputPath, outputPath, speed = 1, log = () => {} })
   // Compress peaks before normalization; loudnorm alone cannot reduce this mix's LRA enough.
   const audioChain = `${filters.audio},acompressor=threshold=0.05:ratio=3:attack=5:release=100`;
   // Allow headroom for AAC's post-encode true-peak overshoot.
-  const peakRequest = -1.5;
+  const peakRequest = peakOverride !== undefined ? peakOverride : -1.5;
   const first = await run(["-hide_banner", "-i", inputPath, "-filter_complex",
     `[0:a]${audioChain},loudnorm=I=-14:LRA=${lraRequest}:TP=${peakRequest}:print_format=json[a]`, "-map", "[a]", "-f", "null", "-"], log);
   assertSuccess(first, "loudnorm analysis");

@@ -18,6 +18,15 @@ LC = {
     "lra_max": 1.6,
     "tp_max": -0.9,
 }
+DC = {
+    "beats_per_min": (55, 100),      # R5 73.5
+    "max_visual_gap_s": 3.2,         # R5 2.73 (0 gaps > 3 s)
+    "scaffold_life_median_s": (1.6, 5.0),  # R5 sub-states mean 2.6 s, scaffolds median 3.3 s
+    "wpm": (170, 225),               # R5 176
+    "lufs": (-14.4, -13.8),
+    "lra_max": 1.6,
+    "tp_max": -0.9,
+}
 DH = {
     "beats_per_min": (50, 100),      # R1 79.7-93.3, R2 67-72.9 (visual beats incl. cuts/entrances/events)
     "max_visual_gap_s": 3.8,         # R1 3.83 (every longer hold has motion), R2 3.12
@@ -85,7 +94,7 @@ def main():
     tl = json.load(open(a.timeline, encoding="utf-8"))
     spec, timeline = tl["spec"], tl["timeline"]
     profile = spec.get("profile", "DH")
-    B = LC if profile == "LC" else DH
+    B = LC if profile == "LC" else DC if profile == "DC" else DH
     total = timeline["totalSeconds"]
     gates = []
 
@@ -132,9 +141,11 @@ def main():
         if len(raw) < 1080 * 1920 * 3:
             geo_fail.append(f"{s['id']}: no frame at {t:.2f}")
             continue
-        bgc = (0xF4, 0xF4, 0xED) if profile == "LC" else (0, 0, 0)
+        bgc = (0xF4, 0xF4, 0xED) if profile == "LC" else (0x09, 0x0A, 0x0D) if profile == "DC" else (0, 0, 0)
         if not near(px(raw, 4, 4), bgc, 6) or not near(px(raw, 4, 1915), bgc, 6):
             geo_fail.append(f"{s['id']}: background {px(raw, 4, 4)} at corners, want {bgc}")
+        if profile == "DC":
+            continue  # quiet chip caption: no bright border to scan; bg checked above
         if profile == "LC":
             # paper caption (R4): box y 1452-1545; find the box edges from the fill vs the page
             col = [px(raw, 540, y) for y in range(1400, 1600)]

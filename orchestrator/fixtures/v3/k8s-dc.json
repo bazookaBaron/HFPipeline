@@ -1,0 +1,140 @@
+{
+ "version": "storyboard.v3",
+ "profile": "DC",
+ "topic": "What Kubernetes actually does",
+ "entities": {},
+ "sentences": [
+  { "id": "s1", "text": "Everyone runs Kubernetes, but what does it actually do?" },
+  { "id": "s2", "text": "Picture three hundred containers spread across forty machines." },
+  { "id": "s3", "text": "Machines crash, traffic spikes, and new versions ship every hour." },
+  { "id": "s4", "text": "Doing that by hand means someone is always awake at three in the morning." },
+  { "id": "s5", "text": "Kubernetes flips the job around: you describe what you want, not how to get it." },
+  { "id": "s6", "text": "Three replicas of the checkout service, each with two gigabytes of memory." },
+  { "id": "s7", "text": "The scheduler reads that wish and finds nodes with room for every copy." },
+  { "id": "s8", "text": "Then a control loop compares what you asked for with what is running." },
+  { "id": "s9", "text": "When node seven dies, two replicas vanish with it." },
+  { "id": "s10", "text": "The loop notices the gap within seconds and starts two fresh copies elsewhere." },
+  { "id": "s11", "text": "Nobody gets paged; the cluster simply heals back to three." },
+  { "id": "s12", "text": "That is the whole idea: declare the goal, and let a loop keep it true." }
+ ],
+ "scaffolds": [
+  { "id": "a1", "template": "sub", "from": "s1", "chapter": "The problem", "slots": {
+    "sub": "WHAT EVERYONE RUNS",
+    "hero": { "props": { "text": "KUBERNETES", "kicker": "BUT WHAT DOES IT DO?", "size": 150 } },
+    "panel": { "type": "panel", "props": { "title": "IN PRODUCTION", "rows": [
+      { "text": "companies using it", "value": "60%+" }, { "text": "open source since", "value": "2014" } ] } } } },
+  { "id": "a2", "template": "sub", "from": "s2", "chapter": "The problem", "slots": {
+    "sub": "THE FLEET",
+    "stage": [ { "id": "fleet", "type": "chips", "h": 440, "props": { "cols": 8, "rows": 5, "gap": 12, "tone": "cyan" } } ],
+    "panel": { "type": "panel", "props": { "title": "THE FLEET", "rows": [
+      { "text": "containers", "value": "300" }, { "text": "machines", "value": "40" } ] } } } },
+  { "id": "a3", "template": "sub", "from": "s3", "chapter": "The problem", "slots": {
+    "sub": "WHAT GOES WRONG",
+    "stage": [ { "id": "wrong", "type": "nodes", "h": 440, "props": { "nodes": [
+      { "id": "crash", "icon": "triangle-alert", "label": "node down", "x": 0.2, "y": 0.45, "tone": "pink", "lit": false },
+      { "id": "spike", "icon": "zap", "label": "traffic spike", "x": 0.5, "y": 0.45, "tone": "amber", "lit": false },
+      { "id": "ship", "icon": "package", "label": "new version", "x": 0.8, "y": 0.45, "tone": "cyan", "lit": false } ], "edges": [] } } ],
+    "panel": { "type": "panel", "props": { "title": "EVERY HOUR", "rows": [
+      { "text": "deploys", "value": "12" }, { "text": "failed nodes", "value": "1-2" } ] } } } },
+  { "id": "a4", "template": "sub", "from": "s4", "chapter": "The problem", "slots": {
+    "sub": "BY HAND",
+    "hero": { "props": { "text": "3:00 AM", "kicker": "SOMEONE IS ALWAYS AWAKE", "size": 150, "tone": "amber" } },
+    "panel": { "type": "panel", "props": { "title": "ON CALL", "rows": [
+      { "text": "pages per week", "value": "14" }, { "text": "manual restarts", "value": "38" } ] } } } },
+  { "id": "b1", "template": "sub", "from": "s5", "chapter": "Desired state", "slots": {
+    "sub": "DESCRIBE, DON'T INSTRUCT",
+    "stage": [ { "id": "manifest", "type": "code", "props": { "name": "checkout.yaml", "lines": [
+      { "text": "kind: Deployment" }, { "text": "replicas: 3", "hidden": true }, { "text": "memory: 2Gi", "hidden": true }, { "text": "image: checkout:v4.2", "hidden": true } ] } } ],
+    "panel": { "type": "panel", "props": { "title": "YOU WRITE", "rows": [
+      { "text": "what you want", "value": "YES" }, { "text": "how to get it", "value": "NO" } ] } } } },
+  { "id": "b2", "template": "sub", "from": "s6", "chapter": "Desired state", "slots": {
+    "sub": "THE WISH",
+    "stage": [ { "id": "wish", "type": "table", "props": { "columns": [{ "label": "replica" }, { "label": "memory", "num": true }, { "label": "status" }],
+      "rows": [["checkout-1", "2 Gi", "wanted"], ["checkout-2", "2 Gi", "wanted"], ["checkout-3", "2 Gi", "wanted"]], "hiddenRows": [1, 2, 3] } } ],
+    "panel": { "type": "panel", "props": { "title": "DESIRED", "rows": [
+      { "text": "replicas", "value": "3" }, { "text": "memory each", "value": "2 Gi" } ] } } } },
+  { "id": "b3", "template": "sub", "from": "s7", "chapter": "Desired state", "slots": {
+    "sub": "THE SCHEDULER",
+    "stage": [ { "id": "sched", "type": "nodes", "h": 460, "props": { "nodes": [
+      { "id": "api", "icon": "cpu", "label": "scheduler", "x": 0.5, "y": 0.2, "tone": "cyan" },
+      { "id": "n3", "icon": "server", "label": "node-3", "x": 0.2, "y": 0.75, "tone": "cyan", "lit": false },
+      { "id": "n7", "icon": "server", "label": "node-7", "x": 0.5, "y": 0.75, "tone": "cyan", "lit": false },
+      { "id": "n9", "icon": "server", "label": "node-9", "x": 0.8, "y": 0.75, "tone": "cyan", "lit": false } ],
+      "edges": [ { "from": "api", "to": "n3", "drawn": false }, { "from": "api", "to": "n7", "drawn": false }, { "from": "api", "to": "n9", "drawn": false } ] } } ],
+    "panel": { "type": "panel", "props": { "title": "PLACEMENT", "rows": [
+      { "text": "free memory checked", "value": "40 nodes" }, { "text": "copies placed", "value": "3 / 3" } ] } } } },
+  { "id": "c1", "template": "sub", "from": "s8", "chapter": "The loop", "slots": {
+    "sub": "ASKED VS RUNNING",
+    "stage": [ { "id": "loop", "type": "compare", "props": { "hidden": true,
+      "left": { "title": "ASKED FOR", "tone": "cyan", "rows": ["3 replicas", "2 Gi each"] },
+      "right": { "title": "RUNNING", "tone": "cyan", "rows": ["3 replicas", "2 Gi each"] } } } ],
+    "panel": { "type": "panel", "props": { "title": "CONTROL LOOP", "rows": [
+      { "text": "checks every", "value": "10 s" }, { "text": "difference", "value": "0" } ] } } } },
+  { "id": "c2", "template": "sub", "from": "s9", "chapter": "The loop", "slots": {
+    "sub": "NODE 7 DIES",
+    "stage": [ { "id": "dead", "type": "table", "props": { "columns": [{ "label": "replica" }, { "label": "node" }, { "label": "status" }],
+      "rows": [["checkout-1", "node-3", "running"], ["checkout-2", "node-7", "running"], ["checkout-3", "node-7", "running"]] } } ],
+    "panel": { "type": "panel", "props": { "title": "RUNNING NOW", "rows": [
+      { "text": "replicas", "value": "3" }, { "text": "asked for", "value": "3" } ] } } } },
+  { "id": "c3", "template": "sub", "from": "s10", "chapter": "The loop", "slots": {
+    "sub": "THE GAP CLOSES",
+    "stage": [ { "id": "heal", "type": "nodes", "h": 460, "props": { "nodes": [
+      { "id": "loop", "icon": "cpu", "label": "controller", "x": 0.5, "y": 0.2, "tone": "cyan" },
+      { "id": "n3", "icon": "server", "label": "node-3", "x": 0.2, "y": 0.75, "tone": "cyan" },
+      { "id": "n9", "icon": "server", "label": "node-9", "x": 0.5, "y": 0.75, "tone": "cyan", "lit": false },
+      { "id": "n12", "icon": "server", "label": "node-12", "x": 0.8, "y": 0.75, "tone": "cyan", "lit": false } ],
+      "edges": [ { "from": "loop", "to": "n9", "drawn": false }, { "from": "loop", "to": "n12", "drawn": false } ] } } ],
+    "panel": { "type": "panel", "props": { "title": "RECONCILE", "rows": [
+      { "text": "missing", "value": "2" }, { "text": "started", "value": "2" } ] } } } },
+  { "id": "d1", "template": "sub", "from": "s11", "chapter": "The payoff", "slots": {
+    "sub": "NOBODY PAGED",
+    "hero": { "props": { "text": "BACK TO 3", "kicker": "HEALED IN 11 SECONDS", "size": 150, "tone": "teal" } },
+    "panel": { "type": "panel", "props": { "title": "INCIDENT", "rows": [
+      { "text": "humans involved", "value": "0" }, { "text": "downtime", "value": "0 s" } ] } } } },
+  { "id": "d2", "template": "sub", "from": "s12", "chapter": "The payoff", "slots": {
+    "sub": "THE WHOLE IDEA",
+    "stage": [ { "id": "idea", "type": "layers", "h": 360, "props": { "layers": [
+      { "title": "declare the goal", "desc": "yaml", "tone": "cyan", "hidden": true },
+      { "title": "a loop compares", "desc": "every 10 s", "tone": "cyan", "hidden": true },
+      { "title": "the gap closes", "desc": "by itself", "tone": "cyan", "hidden": true } ] } } ],
+    "panel": { "type": "panel", "props": { "title": "KUBERNETES", "rows": [
+      { "text": "you own", "value": "the goal" }, { "text": "it owns", "value": "the work" } ] } } } }
+ ],
+ "events": [
+  { "sentence": "s1", "anchor": { "text": "Kubernetes," }, "op": "glance", "target": "mascot" },
+  { "sentence": "s2", "anchor": { "text": "containers" }, "op": "fill", "target": "fleet", "value": { "stagger": 0.015 } },
+  { "sentence": "s3", "anchor": { "text": "crash," }, "op": "light", "target": "wrong", "value": { "node": "crash" } },
+  { "sentence": "s3", "anchor": { "text": "spikes," }, "op": "light", "target": "wrong", "value": { "node": "spike" } },
+  { "sentence": "s3", "anchor": { "text": "versions" }, "op": "light", "target": "wrong", "value": { "node": "ship" } },
+  { "sentence": "s4", "anchor": { "text": "awake" }, "op": "glance", "target": "mascot" },
+  { "sentence": "s5", "anchor": { "text": "describe" }, "op": "type", "target": "manifest", "value": { "line": 2 } },
+  { "sentence": "s5", "anchor": { "text": "want," }, "op": "type", "target": "manifest", "value": { "line": 3 } },
+  { "sentence": "s5", "anchor": { "text": "how" }, "op": "type", "target": "manifest", "value": { "line": 4 } },
+  { "sentence": "s6", "anchor": { "text": "Three" }, "op": "rowIn", "target": "wish", "value": { "row": 1 } },
+  { "sentence": "s6", "anchor": { "text": "checkout" }, "op": "rowIn", "target": "wish", "value": { "row": 2 } },
+  { "sentence": "s6", "anchor": { "text": "service," }, "op": "rowIn", "target": "wish", "value": { "row": 3 } },
+  { "sentence": "s6", "anchor": { "text": "gigabytes" }, "op": "cell", "target": "wish", "value": { "row": 1, "col": 2, "text": "2 Gi", "hl": true } },
+  { "sentence": "s7", "anchor": { "text": "reads" }, "op": "draw", "target": "sched", "value": { "from": "api", "to": "n3" } },
+  { "sentence": "s7", "anchor": { "text": "finds" }, "op": "draw", "target": "sched", "value": { "from": "api", "to": "n7" } },
+  { "sentence": "s7", "anchor": { "text": "nodes" }, "op": "draw", "target": "sched", "value": { "from": "api", "to": "n9" } },
+  { "sentence": "s7", "anchor": { "text": "room" }, "op": "light", "target": "sched", "value": { "node": "n3" } },
+  { "sentence": "s7", "anchor": { "text": "every" }, "op": "light", "target": "sched", "value": { "node": "n7" } },
+  { "sentence": "s7", "anchor": { "text": "copy." }, "op": "light", "target": "sched", "value": { "node": "n9" } },
+  { "sentence": "s8", "anchor": { "text": "compares" }, "op": "rowIn", "target": "loop", "value": { "side": "left", "row": 1 } },
+  { "sentence": "s8", "anchor": { "text": "asked" }, "op": "rowIn", "target": "loop", "value": { "side": "left", "row": 2 } },
+  { "sentence": "s8", "anchor": { "text": "what", "occurrence": 2 }, "op": "rowIn", "target": "loop", "value": { "side": "right", "row": 1 } },
+  { "sentence": "s8", "anchor": { "text": "running." }, "op": "rowIn", "target": "loop", "value": { "side": "right", "row": 2 } },
+  { "sentence": "s9", "anchor": { "text": "dies," }, "op": "rowTone", "target": "dead", "value": { "row": 2, "tone": "pink" } },
+  { "sentence": "s9", "anchor": { "text": "two" }, "op": "rowTone", "target": "dead", "value": { "row": 3, "tone": "pink" } },
+  { "sentence": "s9", "anchor": { "text": "vanish" }, "op": "rowStrike", "target": "dead", "value": { "row": 2 } },
+  { "sentence": "s9", "anchor": { "text": "it." }, "op": "rowStrike", "target": "dead", "value": { "row": 3 } },
+  { "sentence": "s10", "anchor": { "text": "notices" }, "op": "draw", "target": "heal", "value": { "from": "loop", "to": "n9" } },
+  { "sentence": "s10", "anchor": { "text": "seconds" }, "op": "draw", "target": "heal", "value": { "from": "loop", "to": "n12" } },
+  { "sentence": "s10", "anchor": { "text": "fresh" }, "op": "light", "target": "heal", "value": { "node": "n9" } },
+  { "sentence": "s10", "anchor": { "text": "elsewhere." }, "op": "light", "target": "heal", "value": { "node": "n12" } },
+  { "sentence": "s11", "anchor": { "text": "heals" }, "op": "glance", "target": "mascot" },
+  { "sentence": "s12", "anchor": { "text": "declare" }, "op": "dropIn", "target": "idea", "value": { "layer": 1 } },
+  { "sentence": "s12", "anchor": { "text": "loop" }, "op": "dropIn", "target": "idea", "value": { "layer": 2 } },
+  { "sentence": "s12", "anchor": { "text": "true." }, "op": "dropIn", "target": "idea", "value": { "layer": 3 } }
+ ]
+}

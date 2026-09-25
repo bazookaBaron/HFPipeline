@@ -123,6 +123,14 @@ function fitBlock(fills, w, avail) {
   const used = () => list.reduce((a, f) => a + f.h, 0) + Math.max(0, list.length - 1) * BAND.gap;
   let slack = avail - used();
   const str = list.filter((f) => STRETCH.has(f.type) && !f.fixed);
+  if (slack < 0 && str.length) {
+    // overflow: shrink stretchable modules (diagrams, grids, charts) by up to 30% before failing
+    const base = str.reduce((a, f) => a + f.h, 0);
+    const cut = Math.min(-slack, base * 0.3);
+    str.forEach((f) => (f.h = Math.floor(f.h - (cut * f.h) / base)));
+    slack = avail - used();
+    return { list, slack };
+  }
   if (slack > 0 && str.length) {
     const base = str.reduce((a, f) => a + f.h, 0);
     const grow = Math.min(slack, base * (STRETCH_MAX - 1));
@@ -143,7 +151,10 @@ function stack(sc, entities) {
     // one block: top modules then bottom modules, stretched then centred
     const all = (s.top || []).concat(s.bottom || []);
     const { list, slack } = fitBlock(all, w, BAND.bottom - topY);
-    if (slack < -1) throw new Error(`scaffold ${sc.id}: content needs ${Math.round(BAND.bottom - topY - slack)} px but the band is ${BAND.bottom - topY} px (overflow ${Math.round(-slack)} px)`);
+    if (slack < -1) {
+      const parts = list.map((f) => `${f.id || f.type} (${f.type}) ${Math.round(f.h)} px`).join(", ");
+      throw new Error(`scaffold ${sc.id}: content needs ${Math.round(BAND.bottom - topY - slack)} px but the band is ${BAND.bottom - topY} px (overflow ${Math.round(-slack)} px); modules: ${parts} + ${BAND.gap} px gaps. Remove one module, drop rows/lines, or set a smaller "h" on a diagram`);
+    }
     const blk = place(sc, list, x, w, topY + Math.max(0, Math.round(slack / 2)), "down", "m");
     return { layout: full ? "full" : "column", modules: mods.concat(blk.mods) };
   }

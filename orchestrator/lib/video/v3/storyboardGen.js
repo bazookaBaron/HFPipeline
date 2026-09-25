@@ -18,6 +18,7 @@ const EXAMPLE_PATH = path.join(FIX, "cdn-dh.json");
 // scene-cut (R3/R4). Bands are for the synthetic timeline, slightly tighter than the render gates.
 const PROFILES = {
   DH: { example: EXAMPLE_PATH, templates: ["opener", "stack", "hero"], bpm: [62, 100], maxGap: 3.3, lifeMedian: [2.0, 6.0], nodeX: [0.1, 0.9], forbiddenOps: [] },
+  DC: { example: path.join(FIX, "k8s-dc.json"), templates: ["sub"], bpm: [58, 100], maxGap: 3.0, lifeMedian: [1.8, 4.6], nodeX: [0.14, 0.86], forbiddenOps: ["count", "slam"] },
   LC: { example: path.join(FIX, "oauth-lc.json"), templates: ["scene"], bpm: [48, 95], maxGap: 4.0, lifeMedian: [3.0, 7.0], nodeX: [0.2, 0.8], forbiddenOps: ["strike", "rowStrike", "count", "slam"] },
 };
 
@@ -90,9 +91,15 @@ function validate(sb, opts = {}) {
   sb.scaffolds.forEach((sc) => {
     if (!genericOnly.has(sc.template)) P.push(`scaffold ${sc.id}: template must be one of ${PR.templates.join("|")} for profile ${sb.profile}`);
     if (sb.profile === "LC" && !(sc.slots && sc.slots.title)) P.push(`scene ${sc.id}: every LC scene needs slots.title (and a subtitle)`);
+    if (sb.profile === "DC") {
+      if (!sc.chapter) P.push(`sub-state ${sc.id}: needs a chapter name`);
+      if (!(sc.slots && (sc.slots.hero || (sc.slots.stage || []).length))) P.push(`sub-state ${sc.id}: needs slots.hero or one module in slots.stage`);
+      if (!(sc.slots && sc.slots.panel)) P.push(`sub-state ${sc.id}: needs slots.panel (the info panel beside the mascot)`);
+    }
     const mods = []
       .concat((sc.slots && sc.slots.top) || [])
-      .concat((sc.slots && sc.slots.bottom) || []);
+      .concat((sc.slots && sc.slots.bottom) || [])
+      .concat((sc.slots && sc.slots.stage) || []);
     mods.forEach((m) => {
       if (!MODULES[m.type]) P.push(`scaffold ${sc.id}: unknown module type "${m.type}"`);
       if (!m.id) P.push(`scaffold ${sc.id}: every module in top/bottom needs an id (events target it)`);
@@ -106,8 +113,9 @@ function validate(sb, opts = {}) {
       if (m.type === "panel" && (p.rows || []).length > 6) P.push(`${m.id}: panel has more than 6 rows`);
     });
   });
-  if (sb.profile !== "LC" && sb.scaffolds[0].template !== "opener") P.push("the first scaffold must be an opener (hook headline)");
-  if (!((sb.scaffolds[0].slots || {}).top || []).length) P.push("the first scene needs a visual module in slots.top (R3: the full answer is on screen by 1.5 s) so frame 0 is not just text");
+  if (sb.profile === "DH" && sb.scaffolds[0].template !== "opener") P.push("the first scaffold must be an opener (hook headline)");
+  const s0 = sb.scaffolds[0].slots || {};
+  if (!((s0.top || []).length || (s0.stage || []).length || s0.hero)) P.push("the first scene needs a visual module in slots.top (R3: the full answer is on screen by 1.5 s) so frame 0 is not just text");
   // density: refs fill 20-40% of the frame with 2-5 modules; a lone small card reads as empty
   const { preferred } = require("./templates-generic");
   sb.scaffolds.forEach((sc) => {
@@ -138,7 +146,7 @@ function validate(sb, opts = {}) {
   (sb.events || []).forEach((e, i) => {
     const mod = String(e.target || "").split(".")[0];
     const type = typeOf[mod];
-    const ops = mod === "hud" ? Object.assign({}, HUD.ops, knownOps("hud")) : knownOps(type);
+    const ops = mod === "hud" ? Object.assign({}, HUD.ops, knownOps("hud")) : mod === "mascot" ? { glance: 1, punch: 1 } : knownOps(type);
     if (!ops[e.op]) P.push(`event[${i}] op "${e.op}" is not available on ${mod} (${type}); allowed: ${Object.keys(ops).join(", ")}`);
     if (PR.forbiddenOps.indexOf(e.op) >= 0) P.push(`event[${i}] op "${e.op}" is not part of the ${sb.profile} style (refs never use it); use an append/reveal/tone instead`);
   });
@@ -164,6 +172,9 @@ function validate(sb, opts = {}) {
   return P;
 }
 
+// module heights (px) used by the layout -- lets the model plan a scene that fits
+const HEIGHTS = "MODULE HEIGHTS (px): panel = 74 + 58 x rows (with title); table = 46 + 60 x rows; kpis = 124 (150 with a bar); code = 70 + 42 x lines; compare = 78 + 50 x rows; bars = 64 x items - 10; steps 84; note 80; stat 110; banner 117; chart 280; stamp 150; timeline 100 (150 with captions); layers = 84 x layers - 12; letters 260; nodes / chips / tree = their h (defaults 420 / 186 / 380, shrinkable by 30%); modules are separated by 19 px gaps (30 px in LC). Column band: 890 px (with label) / 964 px (without); full band: 960 px; LC scene: 716 px; DC stage: 494 px.";
+
 function catalogText() {
   const mods = Object.entries(MODULES)
     .filter(([k]) => !["browser", "console", "connector", "label"].includes(k))
@@ -183,10 +194,20 @@ const LC_GRAMMAR = `VISUAL GRAMMAR (measured, light scene-cut style: warm off-wh
 - Scenes carry 1-3 modules, 360-700 px of content in total (the column is 690 px wide, 716 px tall under the title).
 - Every sentence gets 1-4 events; visual beats ~55-85 per minute; never more than 4 s without a visual change.`;
 
+const DC_GRAMMAR = `VISUAL GRAMMAR (measured, dark chaptered style: near-black, a framed stage, serif hero words)
+- profile "DC". Every scaffold uses template "sub" (a sub-state). A new sub-state on (almost) every sentence, ~2-3 s each, grouped into 3-5 chapters by the "chapter" field (the header shows the chapter + a progress bar).
+- Each sub-state: slots.sub (caps breadcrumb), ONE stage visual (slots.hero serif word with a mono kicker, OR one module in slots.stage), and slots.panel (2-3 key/value facts beside the presenter).
+- Use a hero sub-state for the named concepts and big numbers (every ~15-20 s); diagrams/tables/layers for mechanisms.
+- Word-anchored lighting: nodes start lit:false and 'light' on each spoken noun; tables reveal/tint rows on their words; layers dropIn per item; strikes allowed for "not this".
+- NEVER count numbers up. Colour = domain: cyan/teal = the platform/connected, amber = question/AI/attention, pink = entities/failure. Mostly monochrome; one lit accent at a time.
+- On hero beats add {"op":"glance","target":"mascot"} on the hero word (the presenter glances).
+- Every sentence gets 1-4 events; ~70-90 visual beats per minute; never more than 3 s without a change.`;
+
 function buildPrompt(topic, opts = {}) {
-  const profile = opts.profile === "LC" ? "LC" : "DH";
+  const profile = opts.profile === "LC" ? "LC" : opts.profile === "DC" ? "DC" : "DH";
   const example = fs.readFileSync(PROFILES[profile].example, "utf-8");
   if (profile === "LC") return buildPromptLC(topic, opts, example);
+  if (profile === "DC") return buildPromptLC(topic, opts, example, "DC");
   return `You write storyboards for 45-55 second vertical tech-explainer shorts in ONE precise house style
 (dark UI-on-black, measured from reference reels). Output ONLY a JSON object of shape storyboard.v3.
 
@@ -217,6 +238,7 @@ ${Object.entries(TEMPLATE_DOCS).map(([k, v]) => `- ${k}: ${v}`).join("\n")}
 
 MODULES (type -> use, props, ops)
 ${catalogText()}
+${HEIGHTS}
 
 HUD (optional, in entities.hud, persists across stack/hero scaffolds): ${HUD.props}; ops ${Object.entries(HUD.ops).map(([o, d]) => `${o} ${d}`).join("; ")}
 Generic ops on any sub-target: reveal, remove, text{text}, tone{tone}, retype{text}, count{to,from?,dur?}, strike{tone?}, slam, highlight{hold?}, dim, undim.
@@ -234,10 +256,11 @@ ${example}
 Return the storyboard.v3 JSON for the TOPIC now.`;
 }
 
-function buildPromptLC(topic, opts, example) {
+function buildPromptLC(topic, opts, example, prof) {
+  const P = prof || "LC";
   const mods = catalogText();
   return `You write storyboards for 45-55 second vertical tech-explainer shorts in ONE precise house style
-(light, editorial, measured from reference reels). Output ONLY a JSON object of shape storyboard.v3 with "profile": "LC".
+(${P === "DC" ? "dark, chaptered, cinematic" : "light, editorial"}, measured from reference reels). Output ONLY a JSON object of shape storyboard.v3 with "profile": "${P}".
 
 TOPIC: ${topic}
 ${opts.audience ? `AUDIENCE: ${opts.audience}
@@ -248,18 +271,19 @@ NARRATION RULES
 - Spell every number as spoken words in the narration; the visuals carry digits.
 - Realistic, consistent specifics (hosts, IDs, paths, versions) reused across scenes.
 
-${LC_GRAMMAR}
+${P === "DC" ? DC_GRAMMAR : LC_GRAMMAR}
 
 TEMPLATE
-- scene: ${TEMPLATE_DOCS.scene}
+- ${P === "DC" ? "sub: " + TEMPLATE_DOCS.sub : "scene: " + TEMPLATE_DOCS.scene}
 
 MODULES (type -> use, props, ops)
 ${mods}
+${HEIGHTS}
 Generic ops on any sub-target: reveal, remove, text{text}, tone{tone}, retype{text}, highlight{hold?}.
 
 EVENTS
 { "sentence": "<sentence id>", "anchor": {"text": "<ONE word copied from that sentence>", "occurrence"?: n}, "op": "<op>", "target": "<module id>[.<sub-target>]", "value"?: {...} }
-- The target module must be on screen at that sentence (its scene spans it). Modules/footnotes may enter on a word with "anchor" (add "sentence" when the word is in a later sentence of the same scene).
+- The target module must be on screen at that sentence (its scene/sub-state spans it); "mascot" is always a valid target for glance. Modules/footnotes may enter on a word with "anchor" (add "sentence" when the word is in a later sentence of the same scene).
 
 TONES ${TONES.join(", ")}.  ICONS ${ICONS.join(", ")}.
 
@@ -271,12 +295,13 @@ Return the storyboard.v3 JSON for the TOPIC now.`;
 
 /** pick the reference style that fits the topic (SPEC 1.2): DH systems/incidents, LC workflows/building */
 async function chooseProfile(topic, generate) {
-  const r = await generate(`Two house styles exist for a 50-second tech explainer.
+  const r = await generate(`Three house styles exist for a 50-second tech explainer.
 DH: dark dashboard world -- systems under load, incidents, traffic, deployments, infrastructure, attacks, performance, "how X works at scale".
 LC: light editorial paper -- building a feature step by step, developer tools and workflows, protocols explained as a sequence of steps, data formats, "how to design X".
+DC: dark chaptered documentary -- what a company / platform / product actually is and does, big concepts in named chapters, "what does X actually do".
 TOPIC: ${topic}
-Answer as JSON {"profile": "DH" | "LC", "reason": "<one short clause>"}.`);
-  return r && (r.profile === "LC" || r.profile === "DH") ? r.profile : "DH";
+Answer as JSON {"profile": "DH" | "LC" | "DC", "reason": "<one short clause>"}.`);
+  return r && ["LC", "DH", "DC"].indexOf(r.profile) >= 0 ? r.profile : "DH";
 }
 
 function cadenceSummary(sb) {

@@ -123,6 +123,7 @@ async function main() {
       fs.writeFileSync(sbPath, JSON.stringify(gen.storyboard, null, 1));
       metrics.set("script", { topic, attempts: gen.attempts.length, storyboard: sbPath });
     } catch (err) {
+      if (err.last) fs.writeFileSync(`${outPath}.storyboard.failed.json`, JSON.stringify(err.last, null, 1));
       return die("script", `storyboard generation failed: ${err.message}`, err);
     }
   }
@@ -225,6 +226,13 @@ async function main() {
   let mastered;
   try {
     mastered = await masterVideo({ inputPath: draftPath, outputPath: outPath, speed: 1, log });
+    // AAC can overshoot the limiter target; re-master with more headroom until TP <= -1 dBTP (refs -0.5..-1.1)
+    for (const req of [-2.5, -3.5]) {
+      const tp = mastered && mastered.stats ? mastered.stats.truePeakDbtp : null;
+      if (tp === null || tp === undefined || tp <= -1.0) break;
+      log(`true peak ${tp} dBTP > -1.0: re-mastering with TP request ${req}`);
+      mastered = await masterVideo({ inputPath: draftPath, outputPath: outPath, speed: 1, log, peakRequest: req });
+    }
   } catch (err) {
     return die("post", `mastering failed: ${err.message}`, err);
   }

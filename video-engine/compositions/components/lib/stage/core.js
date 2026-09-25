@@ -50,6 +50,8 @@
   var MASCOT_PROFILE = {
     DH: { rect: [20, 903, 290, 417], blinkDur: 0.133, hideOnFull: true, sway: 0 },
     LC: { rect: [36, 969, 260, 374], blinkDur: 0.2, hideOnFull: false, sway: 0.35, swayPeriod: 3.6 },
+    // R5: 447x594 flush left at (0,783); blink 100-133 ms on a ~3.2 s loop; hidden on photo cards
+    DC: { rect: [0, 783, 447, 594], blinkDur: 0.12, hideOnFull: true, sway: 0, blinkGaps: [3.2, 3.1, 3.3, 3.2, 3.0, 3.4] },
   };
 
   var MASCOT = {
@@ -323,7 +325,8 @@
       tl.set(open, { autoAlpha: 0 }, t);
       tl.set(blink, { autoAlpha: 0 }, t + mp.blinkDur);
       tl.set(open, { autoAlpha: 1 }, t + mp.blinkDur);
-      t += MASCOT.blinkGaps[k++ % MASCOT.blinkGaps.length];
+      var gaps = mp.blinkGaps || MASCOT.blinkGaps;
+      t += gaps[k++ % gaps.length];
     }
 
     // idle sway (LC-b / R4 only): finite yoyo repeats computed from the duration -- seek-safe
@@ -341,6 +344,12 @@
       el: wrap,
       api: {
         ops: {
+          // R5: head-glance 21-27 px sideways and back, 433 ms ease-in-out, on hero / key-noun beats
+          glance: function (e) {
+            var dx = e.value && e.value.dx ? e.value.dx : 24;
+            tl.to(wrap, { x: dx, duration: 0.2165, ease: "sine.inOut" }, e.t);
+            tl.to(wrap, { x: 0, duration: 0.2165, ease: "sine.inOut" }, e.t + 0.2165);
+          },
           punch: function (e) {
             var s = e.value && e.value.scale ? e.value.scale : 1.19;
             tl.set(wrap, { transformOrigin: "50% 100%", scale: s }, e.t);
@@ -493,6 +502,11 @@
     DH: {
       tone: { blue: "#4b9afb", green: "#2ad56c", red: "#ff375c", amber: "#fcba48", purple: "#a77bfb", cyan: "#50dbf2", orange: "#f57201", pink: "#e0457b", white: "#f1f5fd", grey: "#8b9098" },
       tint: { blue: ["#091931", "#29456d"], green: ["#032815", "#225d40"], red: ["#3f0b14", "#893c45"], amber: ["#3b2600", "#513b17"], purple: ["#201336", "#4a3470"], cyan: ["#0a3a49", "#517c8a"], orange: ["#3a1c02", "#6b3a12"], pink: ["#3a0d1f", "#7a2c4b"], grey: ["#0b0f14", "#2a2f35"] },
+    },
+    // DC (R5): teal = platform/connected, amber = AI/question, pink = entities; no green/red state system
+    DC: {
+      tone: { blue: "#8fd0e6", green: "#8fd0e6", red: "#c88696", amber: "#eec684", purple: "#c88696", cyan: "#8fd0e6", orange: "#eec684", pink: "#c88696", white: "#ffffff", grey: "#90959c" },
+      tint: { blue: ["#0a2632", "#254850"], green: ["#0a2632", "#254850"], red: ["#2a1519", "#513539"], amber: ["#281f12", "#5a4a30"], purple: ["#2a1519", "#513539"], cyan: ["#0a2632", "#2f5c6c"], orange: ["#281f12", "#5a4a30"], pink: ["#2a1519", "#513539"], grey: ["#10141a", "#21252b"] },
     },
     LC: {
       tone: { blue: "#1766da", green: "#187a5b", red: "#b23a3f", amber: "#9a6414", purple: "#6d4ea5", cyan: "#1f6f8b", orange: "#b14b30", pink: "#a33a63", white: "#17232b", grey: "#626667" },

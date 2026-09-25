@@ -15,6 +15,11 @@
   var SVG = "http://www.w3.org/2000/svg";
 
   var CSS = [
+    // bundled mono (R1/R2 data face; OFL, assets/fonts/jetbrains-mono) -- deterministic on any machine
+    "@font-face{font-family:'JetBrains Mono';font-weight:400;font-style:normal;src:url('assets/fonts/jetbrains-mono/JetBrainsMono-Regular.woff2') format('woff2');}",
+    "@font-face{font-family:'JetBrains Mono';font-weight:500;font-style:normal;src:url('assets/fonts/jetbrains-mono/JetBrainsMono-Medium.woff2') format('woff2');}",
+    "@font-face{font-family:'JetBrains Mono';font-weight:700;font-style:normal;src:url('assets/fonts/jetbrains-mono/JetBrainsMono-Bold.woff2') format('woff2');}",
+    "@font-face{font-family:'JetBrains Mono';font-weight:800;font-style:normal;src:url('assets/fonts/jetbrains-mono/JetBrainsMono-ExtraBold.woff2') format('woff2');}",
     // tokens (SPEC 2.1 DH canonical, R2 values)
     ":root{--st-bg:#000;--st-surface:#090d11;--st-border:#15191d;--st-text:#f1f5fd;--st-text2:#c9d0d6;--st-muted:#8b9098;--st-micro:#7e848b;",
     "--st-blue:#4b9afb;--st-blue-hd:#68a1e9;--st-blue-fill:#091931;--st-blue-line:#29456d;--st-blue-txt:#6ea8ff;",

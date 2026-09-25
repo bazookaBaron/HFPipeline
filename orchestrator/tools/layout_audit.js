@@ -35,6 +35,7 @@ const LIBS = [
   "compositions/components/lib/stage/modules-end.js",
   "compositions/components/lib/stage/modules-carousel.js",
   "compositions/components/lib/stage/modules-media.js",
+  "compositions/components/lib/stage/modules-p2.js",
 ];
 
 function harnessHtml(spec, duration, frame = { w: 1080, h: 1920 }) {

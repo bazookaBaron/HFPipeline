@@ -27,7 +27,7 @@ const GENERIC_OPS = {
 const MODULES = {
   label: { use: "section label, caps, centred (templates add it from slots.label)", props: "{text, tone?}", ops: {} },
   micro: { use: "tracked caps eyebrow/kicker line", props: "{text, align?: left|center|right, tone?: amber, size?: xl}", ops: {} },
-  headline: { use: "1-2 line huge caps headline (hook, climax, summary)", props: "{lines: [string | {text, tone}], size?: 107, pitch?: 123}", ops: {} },
+  headline: { use: "1-2 line huge caps headline (hook, climax, summary); with dim:true it is pre-shown at 22% and lights word by word", props: "{lines: [string | {text, tone}], size?: 107, pitch?: 123, dim?: true}", ops: { light: "{line, word?} dim -> lit (dim headlines)", recolour: "{line, word?, tone} keyword recolour" } },
   hero: { use: "hero number/word slam, right-aligned (a spoken number or key word)", props: "{text, tone?, size?: 118-150}", ops: {} },
   pill: { use: "small floating annotation pill", props: "{text, tone?, dot?}", ops: {} },
   banner: { use: "alert / rule card 117 px: eyebrow + big title + sub", props: "{eyebrow?, title, sub?, tone?: red|purple|amber, mono?}", ops: {} },
@@ -115,6 +115,7 @@ const MODULES = {
   },
   browser: { use: "browser window with a product grid that can fail to an error page", props: "{url, errorCode?, errorMsg?, cols?, rows?}", ops: { fail: "" }, entities: "tile<N>, grid, error" },
   console: { use: "test console window with checklist rows", props: "{url, chip?, rows: [{path, status?, state?}]}", ops: { check: "{row, state?: pass|fail, status?}" } },
+  chapterTabs: { use: "persistent chapter bar: 3-4 equal tabs (icon + caps word), one active per chapter, or a cumulative recap that lights each tab on its noun", props: "{items: [{text (<= 10 chars), icon?, tone?}] (3-4), active? (1-based), mode?: single|cumulative}", ops: { activate: "{i} (single: others off)", light: "{i}" } },
   media: {
     use: "app-style window showing REAL footage or a screenshot (screen recording, product demo, photo) inside the reel; muted, cover fit, trims cut ~100 ms before the phrase they illustrate",
     props: "{kind: video|image, src (library asset), poster?, head? (caps window label e.g. 'VLOOMBOX.IN · JOBS'), dot?: red|amber|green|none, aspect? (default 16/9), trims?: [{in (s), at?: {text: word}}] (video), focus?: [x%, y%] (image)}",

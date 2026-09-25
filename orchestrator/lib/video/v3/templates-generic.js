@@ -86,6 +86,8 @@ function preferred(fill, w) {
       return 260;
     case "slot":
       return p.h || 110;
+    case "chapterTabs":
+      return 56;
     case "media": {
       // window = 40.5 px header + body at the source aspect (default 16:9) + 3 px border
       const ar = Number(p.aspect) > 0 ? Number(p.aspect) : 16 / 9;

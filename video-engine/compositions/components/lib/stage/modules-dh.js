@@ -449,15 +449,53 @@
         var wpx = global.HFTextFit ? global.HFTextFit.measure(txt, 800, size, "Inter, ui-sans-serif, system-ui, sans-serif") - 0.03 * size * txt.length : txt.length * 0.68 * size;
         if (wpx > maxW) size = Math.floor((size * maxW) / wpx);
       });
+      var wordSpans = [];
       var lines = (p.lines || []).map(function (ln, i) {
-        var d = div("hl", el, typeof ln === "string" ? ln : ln.text);
+        var txt = typeof ln === "string" ? ln : ln.text;
+        var d = div("hl", el, p.dim ? undefined : txt);
+        if (p.dim) {
+          // R8 N7: the headline is pre-shown at ~22% and lights word by word on its words
+          wordSpans[i] = String(txt || "").split(/\s+/).map(function (w, wi, arr) {
+            var sp = document.createElement("span");
+            sp.textContent = w;
+            sp.style.opacity = "0.22";
+            d.appendChild(sp);
+            if (wi < arr.length - 1) d.appendChild(document.createTextNode(" "));
+            return sp;
+          });
+        }
         d.style.fontSize = size + "px";
         d.style.height = pitch + "px";
         if (ln.tone) d.setAttribute("data-tone", ln.tone);
         c.entity("l" + (i + 1), d);
         return d;
       });
+      function pickWords(v) {
+        var li = Math.max(0, ((v && v.line) || 1) - 1);
+        var ws = wordSpans[li] || [];
+        if (v && v.word !== undefined) {
+          var k = typeof v.word === "number" ? v.word - 1 : ws.findIndex(function (sp) {
+            return sp.textContent.toLowerCase().replace(/[^a-z0-9]/g, "") === String(v.word).toLowerCase().replace(/[^a-z0-9]/g, "");
+          });
+          return ws[k] ? [ws[k]] : [];
+        }
+        return ws;
+      }
       return {
+        ops: {
+          // dim -> lit in 2-3 frames (R8 29.633 / 30.43)
+          light: function (e) {
+            var ws = pickWords(e.value);
+            if (!ws.length) throw new Error("headline light: no such line/word");
+            c.tl.to(ws, { opacity: 1, duration: 0.08, ease: "none" }, e.t);
+          },
+          // keyword recolour grey -> accent in 1-2 frames (R7 keywordHeadline)
+          recolour: function (e) {
+            var ws = pickWords(e.value);
+            var col = HF.tone((e.value && e.value.tone) || "blue");
+            c.tl.to(ws.length ? ws : lines, { color: col, opacity: 1, duration: 0.05, ease: "none" }, e.t);
+          },
+        },
         enter: function (t) {
           lines.forEach(function (d, i) {
             var at = Array.isArray(p.lineAt) && p.lineAt[i] !== undefined ? p.lineAt[i] : i * 0.1; // R2 E5: 100 ms stagger

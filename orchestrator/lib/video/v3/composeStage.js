@@ -68,6 +68,46 @@ const CAPTION_SKINS = {
   },
 };
 
+// R6/R7 "marker": white chip, no border, soft shadow, 56 px w800, the ACTIVE word sits on a yellow
+// highlighter box #FDE587 (1-f word hops), 4 words, 0.95 -> 1.007 -> 1 pop on chunk swap.
+CAPTION_SKINS.marker = {
+  top: 1440,
+  height: 100,
+  fontSize: 56,
+  weight: 800,
+  padX: 30,
+  fill: "#ffffff",
+  border: "0",
+  radius: 14,
+  shadow: () => "0 6px 18px rgba(20,20,10,.14)",
+  past: "#15181c",
+  now: "#15181c",
+  next: "#15181c",
+  nowCss: "background:#fde587; border-radius:6px; box-shadow:0 0 0 5px #fde587;",
+  maxWords: 4,
+  swap: "pop",
+  wordLag: 0.007,
+};
+// R8 "chip-cyan": rounded dark chip r 9, #070c10, 1.5 px #15181a, no hard shadow, medium weight;
+// active cyan #5fe4e6, spoken #f0f4f6, upcoming #9a9eaa.
+CAPTION_SKINS.chipCyan = {
+  top: 1430,
+  height: 104,
+  fontSize: 56,
+  weight: 600,
+  padX: 34,
+  fill: "#070c10",
+  border: "1.5px solid #15181a",
+  radius: 9,
+  shadow: () => "none",
+  past: "#f0f4f6",
+  now: "#5fe4e6",
+  next: "#9a9eaa",
+  maxWords: 4,
+  swap: "crossfade2",
+  wordLag: 0.04,
+};
+
 const F = 1 / 30;
 
 /** Chunk words into caption phrases: <= maxWords, break after sentence/clause punctuation. */
@@ -97,8 +137,8 @@ function chunkWords(words, maxWords) {
   return out;
 }
 
-function buildCaptions(words, totalDuration, profile, accent) {
-  const skin = CAPTION_SKINS[profile] || CAPTION_SKINS.DH;
+function buildCaptions(words, totalDuration, profile, accent, skinName) {
+  const skin = CAPTION_SKINS[skinName] || CAPTION_SKINS[profile] || CAPTION_SKINS.DH;
   if (!words.length) return "";
   const chunks = chunkWords(words, skin.maxWords).map((g) => ({
     start: g[0].start,
@@ -142,7 +182,7 @@ function buildCaptions(words, totalDuration, profile, accent) {
             opacity: 0;
           }
           #captions-comp .cap3 span span { color: ${skin.next}; }
-          #captions-comp .cap3 span span[data-s="now"] { color: ${skin.now}; }
+          #captions-comp .cap3 span span[data-s="now"] { color: ${skin.now}; ${skin.nowCss || ""} }
           #captions-comp .cap3 span span[data-s="past"] { color: ${skin.past}; }
         </style>
         <script>
@@ -286,7 +326,7 @@ function mediaTweens(media) {
   return lines.join("\n");
 }
 
-function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, words, profile = "DH", accent = "#4497ff", captionsOn = true }) {
+function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, words, profile = "DH", accent = "#4497ff", captionsOn = true, captionSkin }) {
   const specJson = JSON.stringify({ spec: JSON.stringify(spec), duration: Number(totalDuration.toFixed(3)) }).replace(/'/g, "&#39;");
   const narrationTag = narrationRelPath
     ? `      <audio id="narration-audio" class="clip" data-start="0" data-track-index="0" src="${narrationRelPath}"></audio>`
@@ -310,6 +350,7 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/stage/profile-dc.js"></script>
     <script src="compositions/components/lib/stage/modules-end.js"></script>
     <script src="compositions/components/lib/stage/modules-media.js"></script>
+    <script src="compositions/components/lib/stage/modules-p2.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
@@ -337,7 +378,7 @@ ${narrationTag}
         style="position:absolute; left:0; top:0; width:1080px; height:1920px;"
       ></div>
 ${buildMediaLayer(spec.media || [])}
-${captionsOn ? buildCaptions(words || [], totalDuration, profile, accent) : ""}
+${captionsOn ? buildCaptions(words || [], totalDuration, profile, accent, captionSkin) : ""}
     </div>
     <script>
       const tl = gsap.timeline({ paused: true });

@@ -28,7 +28,7 @@ async function main() {
   const fx = JSON.parse(fs.readFileSync(specPath, "utf-8"));
   const runId = "preview-" + path.basename(specPath, ".json").replace(/[^a-zA-Z0-9_-]/g, "-");
   const words = arg("words") ? JSON.parse(fs.readFileSync(path.resolve(arg("words")), "utf-8")) : fx.words || [];
-  const html = buildStageComposition({ runId, totalDuration: fx.duration, spec: fx.spec, words, profile: fx.profile || "DH", accent: fx.accent || "#4497ff", captionsOn: words.length > 0 });
+  const html = buildStageComposition({ runId, totalDuration: fx.duration, spec: fx.spec, words, profile: fx.profile || "DH", accent: fx.accent || "#4497ff", captionsOn: words.length > 0, captionSkin: arg("caption-skin") || fx.captionSkin });
   const comp = path.join(VIDEO_ENGINE_DIR, "generated", runId + ".html");
   fs.mkdirSync(path.dirname(comp), { recursive: true });
   fs.writeFileSync(comp, html, "utf-8");

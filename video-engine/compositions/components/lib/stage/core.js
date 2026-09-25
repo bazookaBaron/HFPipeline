@@ -36,6 +36,30 @@
     slam: { dur: 0.1, scale: 1.15, ease: "sine.out", from: 0.7 }, // R2 E6: 1.15/1.09/1.02/1.00 per frame, opacity 70%->100%
   };
 
+  // Scene transitions between content stacks, measured on R6 (design/R6/AUDIT.md §5.5):
+  // outgoing cards leave over the mascot (content layer raised), incoming cards enter.
+  var TRANS_OUT = {
+    pushLeft: { dur: 0.2, ease: "power3.in", stagger: 0.05, to: { x: -900 } },
+    dropOut: { dur: 0.233, ease: "power2.in", to: { y: 700 } },
+    exitRight: { dur: 0.2, ease: "power2.in", to: { x: 600, autoAlpha: 0 } },
+    driftLeft: { dur: 0.267, ease: "power2.out", to: { x: -60, autoAlpha: 0.6 } },
+    tumble: {
+      dur: 0.233,
+      ease: "power2.in",
+      stagger: 0.033,
+      to: function (k) {
+        return { rotation: k % 2 ? 16 : -14, x: -140 - 40 * k, y: 620 };
+      },
+    },
+  };
+  var TRANS_IN = {
+    riseIn: { dur: 0.333, ease: "power3.out", stagger: 0.033, from: { y: 700 }, to: { y: 0 } },
+    slideInRight: { dur: 0.3, ease: "expo.out", stagger: 0.05, from: { x: 540, autoAlpha: 0 }, to: { x: 0, autoAlpha: 1 } },
+    cover: { dur: 0.267, ease: "power3.out", from: { x: 1080 }, to: { x: 0 } },
+    popRise: { dur: 0.3, ease: "power2.out", stagger: 0.05, from: { y: 28, autoAlpha: 0 }, to: { y: 0, autoAlpha: 1 } },
+    afterPush: { dur: 0.3, ease: "power3.out", gap: F, stagger: 0.05, from: { x: 480, autoAlpha: 0 }, to: { x: 0, autoAlpha: 1 } },
+  };
+
   // per-profile entrance overrides (SPEC 6: LC riseFade 22 px / 233 ms, R3 E1)
   var PROFILE_RECIPES = {
     LC: {
@@ -104,8 +128,19 @@
             exit: m.exit || "cut",
             scaffold: si,
             index: mi,
+            // scene transition INTO this scaffold (R6 §5.5): its entrance kind
+            tin: s.transition && s.transition["in"] && si > 0 ? s.transition["in"] : null,
           });
         }
+      });
+    });
+    // a run that ends where the next scaffold starts with a transition leaves with its exit kind
+    order.forEach(function (id) {
+      mods[id].runs.forEach(function (run) {
+        var next = scaffolds.find(function (s) {
+          return Math.abs(s.t0 - run.t1) < 1e-4;
+        });
+        run.tout = next && next.transition && next.transition.out ? next.transition.out : null;
       });
     });
     return { mods: mods, order: order };
@@ -138,6 +173,9 @@
     var content = mk("div", "st-content", root);
     var mascotLayer = mk("div", "st-mascot-layer", root);
     var chrome = mk("div", "st-chrome", root);
+    content.style.zIndex = "1";
+    mascotLayer.style.zIndex = "2";
+    chrome.style.zIndex = "3";
     bg.setAttribute("data-profile", spec.profile || "DH");
 
     var ctx = {
@@ -197,7 +235,14 @@
           if (m.api.place) m.api.place(r.rect, r.t, r.layout, ri === 0);
         });
         if (run.rects.length && m.rec.runs.indexOf(run) > 0) tl.set(el, rectStyle(run.rects[0].rect), run.cut);
-        if (m.api.enter && run.enter !== "none") {
+        var TI = run.tin && TRANS_IN[run.tin];
+        if (TI && m.impl.layer !== "chrome" && m.type !== "media") {
+          // scene transition entrance replaces the element recipe (children may still animate)
+          var tt = run.cut + (TI.gap || 0) + (TI.stagger || 0) * (run.index || 0);
+          tl.set(el, { autoAlpha: 1 }, tt);
+          tl.fromTo(el, TI.from, Object.assign({ duration: TI.dur, ease: TI.ease, immediateRender: false }, TI.to), tt);
+          if (m.api.enter && run.enter !== "none") m.api.enter(tt, "none", run);
+        } else if (m.api.enter && run.enter !== "none") {
           tl.set(el, { autoAlpha: 1 }, t0);
           m.api.enter(t0, recipeName, run);
         } else if (!recipe) {
@@ -217,7 +262,17 @@
         }
         if (run.t1 < duration - 1e-3) {
           var exitKind = run.exit !== "cut" ? run.exit : m.impl.exit || "cut";
-          if (m.api.exit && exitKind !== "cut") m.api.exit(run.t1, exitKind);
+          var TO = run.tout && TRANS_OUT[run.tout];
+          if (TO && m.impl.layer !== "chrome" && m.type !== "media") {
+            // scene transition exit: the whole card moves (over the mascot), then is hidden
+            var k = run.index || 0;
+            var ts = run.t1 - TO.dur - (TO.stagger || 0) * k;
+            tl.to(el, Object.assign({ duration: TO.dur, ease: TO.ease }, typeof TO.to === "function" ? TO.to(k) : TO.to), Math.max(run.t0, ts));
+            tl.set(el, { autoAlpha: 0 }, run.t1);
+            tl.set(el, { x: 0, y: 0, rotation: 0 }, run.t1 + F);
+            tl.set(content, { zIndex: 4 }, Math.max(0, ts));
+            tl.set(content, { zIndex: 1 }, run.t1 + 0.4);
+          } else if (m.api.exit && exitKind !== "cut") m.api.exit(run.t1, exitKind);
           else tl.set(el, { autoAlpha: 0 }, run.t1);
         }
       });

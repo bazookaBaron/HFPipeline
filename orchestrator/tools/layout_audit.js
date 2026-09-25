@@ -143,8 +143,11 @@ function probeTimes(spec, duration) {
     const t0 = s.t0, t1 = Math.min(s.t1, duration);
     if (!(t1 > t0)) continue;
     ts.add(+Math.min(t0 + 0.6, (t0 + t1) / 2).toFixed(3));
-    ts.add(+Math.max(t0, t1 - 0.12).toFixed(3));
-    for (const e of spec.events || []) if (e.t >= t0 && e.t < t1 - 0.5) ts.add(+Math.min(e.t + 0.45, t1 - 0.12).toFixed(3));
+    // a scene transition moves cards off-frame on purpose: probe before the exit starts
+    const nxt = (spec.scaffolds || []).find((x) => Math.abs(x.t0 - s.t1) < 1e-4);
+    const tail = nxt && nxt.transition && nxt.transition.out ? 0.55 : 0.12;
+    ts.add(+Math.max(t0, t1 - tail).toFixed(3));
+    for (const e of spec.events || []) if (e.t >= t0 && e.t < t1 - 0.5) ts.add(+Math.min(e.t + 0.45, t1 - tail).toFixed(3));
   }
   return [...ts].sort((a, b) => a - b);
 }

@@ -96,7 +96,9 @@ function compileStoryboard(sb, timeline, opts = {}) {
       }
       return out;
     });
-    return { id: x.sc.id, template: x.sc.template, t0: round(x.t0), t1: round(t1), layout: built.layout, modules };
+    const out = { id: x.sc.id, template: x.sc.template, t0: round(x.t0), t1: round(t1), layout: built.layout, modules };
+    if (x.sc.transition) out.transition = x.sc.transition; // {out, in} scene transition into this scaffold (core TRANS_*)
+    return out;
   });
 
   // ---- LC chrome: persistent header (kicker + "NN - NN" scene counter stepping on every cut) ----

@@ -22,7 +22,8 @@
 const { findAnchorIndex } = require("./timeline");
 const { TEMPLATES: DH_TEMPLATES } = require("./templates-dh");
 const { GENERIC_TEMPLATES } = require("./templates-generic");
-const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES };
+const { LC_TEMPLATES } = require("./templates-lc");
+const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES };
 
 // Seconds a beat fires before its word onset. Refs land visuals on the audible word or up to
 // ~250 ms before it (SPEC 7.2, ASR bias verified); our word times are forced-aligned on our
@@ -94,6 +95,17 @@ function compileStoryboard(sb, timeline, opts = {}) {
     return { id: x.sc.id, template: x.sc.template, t0: round(x.t0), t1: round(t1), layout: built.layout, modules };
   });
 
+  // ---- LC chrome: persistent header (kicker + "NN - NN" scene counter stepping on every cut) ----
+  const chromeEvents = [];
+  if ((sb.profile || "DH") === "LC") {
+    const total = String(scaffolds.length).padStart(2, "0");
+    const kicker = (sb.entities && sb.entities.kicker) || String(sb.topic || "").toUpperCase().replace(/\s+/g, " ").slice(0, 34);
+    scaffolds.forEach((s, i) => {
+      s.modules.unshift({ id: "lchead", type: "lcHeader", rect: [70, 224, 938, 55], props: { kicker, counter: `01 — ${total}` }, enter: "none", at: 0 });
+      if (i > 0) chromeEvents.push({ t: s.t0, op: "counter", target: "lchead", value: { text: `${String(i + 1).padStart(2, "0")} — ${total}` } });
+    });
+  }
+
   // ---- events ----
   const events = (sb.events || []).map((ev, i) => {
     const w = wordTime(ev.sentence, ev.anchor, `event[${i}] ${ev.op}`);
@@ -110,6 +122,7 @@ function compileStoryboard(sb, timeline, opts = {}) {
     return { t, op: ev.op, target: ev.target, value: ev.value, word: w.text, wordIndex: w.i };
   });
 
+  events.push(...chromeEvents);
   return {
     profile: sb.profile || "DH",
     mascot: opts.mascot === false ? null : { open: "assets/mascot/sb_open.png", blink: "assets/mascot/sb_blink.png" },

@@ -26,6 +26,26 @@ const CAPTION_SKINS = {
     swap: "crossfade2",
     wordLag: 0.06,
   },
+  // LC "paper" (R4): box y 1452-1545 (h 94.5), #FEFCF8, 1.5 px #C5C7C2, r 12, soft shadow ~7.5 px
+  // down; 50 px w800; spoken #13232D / active #1D5EBD / upcoming #425058; swap = old chunk exits in
+  // 1 f (scale .87 + fade), 1 blank frame, new chunk pops .985 -> 1.015 -> 1 over 3 f.
+  LC: {
+    top: 1452,
+    height: 94.5,
+    fontSize: 50,
+    weight: 800,
+    padX: 34,
+    fill: "#fefcf8",
+    border: "1.5px solid #c5c7c2",
+    radius: 12,
+    shadow: () => "0 7.5px 7px #dde3e9",
+    past: "#13232d",
+    now: "#1d5ebd",
+    next: "#425058",
+    maxWords: 3,
+    swap: "pop",
+    wordLag: 0.07,
+  },
 };
 
 const F = 1 / 30;
@@ -85,6 +105,7 @@ function buildCaptions(words, totalDuration, profile, accent) {
             top: ${skin.top}px;
             height: ${skin.height}px;
             transform: translateX(-50%);
+            transform-origin: 50% 50%;
             display: flex;
             align-items: center;
             white-space: nowrap;
@@ -109,6 +130,7 @@ function buildCaptions(words, totalDuration, profile, accent) {
             "use strict";
             var CHUNKS = ${json};
             var F = ${F};
+            var SWAP = "${skin.swap}";
             var root = document.getElementById("captions-comp");
             var FAMILY = "Inter, ui-sans-serif, system-ui, sans-serif";
             var capTl = gsap.timeline({ paused: true });
@@ -138,13 +160,25 @@ function buildCaptions(words, totalDuration, profile, accent) {
               var L = lines[i];
               var on = c.start;
               var next = CHUNKS[i + 1];
-              // R2 E12: old chunk dims for 1 frame, new chunk at ~30% then full (2-frame crossfade).
-              if (i === 0) capTl.set(L.el, { opacity: 1 }, on);
+              if (SWAP === "pop") {
+                // R4: exit 1 f (scale .87 + fade), 1 blank frame, new chunk .985 -> 1.015 -> 1
+                var inAt = i === 0 ? on : on + F;
+                capTl.set(L.el, { opacity: 1, scale: 0.985 }, inAt);
+                capTl.set(L.el, { scale: 1.015 }, inAt + F);
+                capTl.set(L.el, { scale: 1 }, inAt + 2 * F);
+                if (next) {
+                  capTl.set(L.el, { opacity: 0.35, scale: 0.87 }, Math.max(inAt + 3 * F, next.start - F));
+                  capTl.set(L.el, { opacity: 0 }, next.start);
+                }
+              } else if (i === 0) capTl.set(L.el, { opacity: 1 }, on);
               else {
+                // R2 E12: old chunk dims for 1 frame, new chunk at ~30% then full (2-frame crossfade).
                 capTl.set(L.el, { opacity: 0.3 }, on);
                 capTl.set(L.el, { opacity: 1 }, on + F);
               }
-              if (next) {
+              if (SWAP === "pop") {
+                if (!next) capTl.set(L.el, { opacity: 0 }, Math.min(${totalDuration.toFixed(3)} - F, c.end + 0.4));
+              } else if (next) {
                 capTl.set(L.el, { opacity: 0.4 }, Math.max(on + F, next.start - F));
                 capTl.set(L.el, { opacity: 0 }, next.start);
               } else {
@@ -192,6 +226,8 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/icons.js"></script>
     <script src="compositions/components/lib/stage/modules-dh3.js"></script>
     <script src="compositions/components/lib/stage/modules-dh4.js"></script>
+    <script src="compositions/components/lib/stage/theme-lc.js"></script>
+    <script src="compositions/components/lib/stage/profile-lc.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }

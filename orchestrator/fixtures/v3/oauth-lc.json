@@ -1,0 +1,922 @@
+{
+ "version": "storyboard.v3",
+ "profile": "LC",
+ "topic": "How OAuth login works",
+ "entities": {
+  "kicker": "SECURITY / OAUTH 2.0"
+ },
+ "sentences": [
+  {
+   "id": "s1",
+   "text": "Here's what really happens when you click sign in with Google."
+  },
+  {
+   "id": "s2",
+   "text": "The app never sees your password; it sends you to Google instead."
+  },
+  {
+   "id": "s3",
+   "text": "You log in there, and Google asks if the app may read your email address."
+  },
+  {
+   "id": "s3b",
+   "text": "Your password stays between you and Google the entire time."
+  },
+  {
+   "id": "s4",
+   "text": "When you agree, Google redirects back with a short lived code."
+  },
+  {
+   "id": "s5",
+   "text": "The app's server trades that code for an access token, over a private channel."
+  },
+  {
+   "id": "s5b",
+   "text": "From then on, the app sends that token with every request to Google's API."
+  },
+  {
+   "id": "s6",
+   "text": "The token expires in one hour and only covers the scopes you approved."
+  },
+  {
+   "id": "s7",
+   "text": "So if the app is hacked, the attacker gets a narrow key, not your password."
+  },
+  {
+   "id": "s8",
+   "text": "That is the whole trick: delegate access, never share the secret."
+  },
+  {
+   "id": "s9",
+   "text": "Next time you see that button, you'll know exactly what it does."
+  }
+ ],
+ "scaffolds": [
+  {
+   "id": "sc1",
+   "template": "scene",
+   "from": "s1",
+   "slots": {
+    "title": "Sign in with Google",
+    "subtitle": "what happens in the two seconds after you click",
+    "top": [
+     {
+      "id": "flow",
+      "type": "nodes",
+      "h": 440,
+      "props": {
+       "nodes": [
+        {
+         "id": "you",
+         "icon": "user",
+         "label": "you",
+         "x": 0.2,
+         "y": 0.22,
+         "tone": "blue"
+        },
+        {
+         "id": "app",
+         "icon": "app-window",
+         "label": "notes.app",
+         "x": 0.8,
+         "y": 0.22,
+         "tone": "purple"
+        },
+        {
+         "id": "google",
+         "icon": "shield",
+         "label": "accounts.google",
+         "x": 0.5,
+         "y": 0.78,
+         "tone": "green",
+         "lit": false
+        }
+       ],
+       "edges": [
+        {
+         "from": "you",
+         "to": "app",
+         "shape": "straight",
+         "drawn": false
+        },
+        {
+         "from": "app",
+         "to": "google",
+         "shape": "elbow",
+         "drawn": false,
+         "tone": "blue"
+        }
+       ]
+      }
+     },
+     {
+      "id": "hookNote",
+      "type": "note",
+      "props": {
+       "text": "no password ever reaches the app",
+       "tone": "green"
+      },
+      "anchor": {
+       "text": "Google."
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sc2",
+   "template": "scene",
+   "from": "s2",
+   "slots": {
+    "title": "The redirect",
+    "subtitle": "the app hands you to the identity provider",
+    "top": [
+     {
+      "id": "req",
+      "type": "code",
+      "props": {
+       "name": "GET /authorize",
+       "lines": [
+        {
+         "text": "accounts.google.com/o/oauth2/auth"
+        },
+        {
+         "text": "?client_id=notes-app-4192",
+         "hidden": true
+        },
+        {
+         "text": "&scope=email",
+         "hidden": true
+        },
+        {
+         "text": "&redirect_uri=notes.app/cb",
+         "hidden": true
+        },
+        {
+         "text": "&state=af0ifjsldkj",
+         "hidden": true
+        }
+       ]
+      }
+     },
+     {
+      "id": "pwNote",
+      "type": "note",
+      "props": {
+       "text": "the password box lives on google.com",
+       "tone": "green"
+      },
+      "anchor": {
+       "text": "instead."
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sc2b",
+   "template": "scene",
+   "from": "s3",
+   "slots": {
+    "title": "Consent",
+    "subtitle": "you decide what the app may see",
+    "top": [
+     {
+      "id": "consent",
+      "type": "panel",
+      "props": {
+       "title": "consent screen",
+       "icon": "shield",
+       "iconTone": "green",
+       "rows": [
+        {
+         "text": "notes.app wants to:",
+         "hidden": true
+        },
+        {
+         "text": "read your email address",
+         "icon": "circle-check",
+         "iconTone": "green",
+         "hidden": true
+        },
+        {
+         "text": "nothing else",
+         "icon": "lock",
+         "iconTone": "blue",
+         "hidden": true
+        }
+       ]
+      }
+     },
+     {
+      "id": "asks",
+      "type": "kpis",
+      "props": {
+       "items": [
+        {
+         "eyebrow": "SCOPES ASKED",
+         "value": "1",
+         "sub": "EMAIL ONLY",
+         "tone": "blue"
+        },
+        {
+         "eyebrow": "PASSWORDS SEEN BY APP",
+         "value": "0",
+         "sub": "EVER",
+         "tone": "green"
+        }
+       ]
+      }
+     }
+    ],
+    "footnote": {
+     "text": "Google, not the app, shows the password box",
+     "anchor": {
+      "text": "address.",
+      "sentence": "s3"
+     }
+    }
+   }
+  },
+  {
+   "id": "sc3",
+   "template": "scene",
+   "from": "s4",
+   "slots": {
+    "title": "Code, then token",
+    "subtitle": "two hops, one of them private",
+    "top": [
+     {
+      "id": "hops",
+      "type": "nodes",
+      "h": 370,
+      "props": {
+       "nodes": [
+        {
+         "id": "google",
+         "icon": "shield",
+         "label": "google",
+         "x": 0.2,
+         "y": 0.2,
+         "tone": "green"
+        },
+        {
+         "id": "browser",
+         "icon": "monitor",
+         "label": "browser",
+         "x": 0.8,
+         "y": 0.2,
+         "tone": "blue"
+        },
+        {
+         "id": "server",
+         "icon": "server",
+         "label": "notes.app api",
+         "x": 0.8,
+         "y": 0.8,
+         "tone": "purple",
+         "lit": false
+        }
+       ],
+       "edges": [
+        {
+         "from": "google",
+         "to": "browser",
+         "label": "code=4/0Ab",
+         "shape": "straight",
+         "drawn": false,
+         "tone": "blue"
+        },
+        {
+         "from": "browser",
+         "to": "server",
+         "shape": "elbow",
+         "drawn": false,
+         "tone": "blue"
+        },
+        {
+         "from": "server",
+         "to": "google",
+         "label": "back channel",
+         "shape": "elbow",
+         "drawn": false,
+         "tone": "purple"
+        }
+       ]
+      }
+     },
+     {
+      "id": "tok",
+      "type": "table",
+      "props": {
+       "columns": [
+        {
+         "label": "field"
+        },
+        {
+         "label": "value",
+         "w": 1.4
+        }
+       ],
+       "rows": [
+        [
+         "access_token",
+         "ya29.a0Af…"
+        ],
+        [
+         "expires_in",
+         "3600"
+        ],
+        [
+         "scope",
+         "email"
+        ]
+       ],
+       "hiddenRows": [
+        1,
+        2,
+        3
+       ]
+      }
+     },
+     {
+      "id": "bearer",
+      "type": "note",
+      "props": {
+       "text": "Authorization: Bearer ya29...",
+       "tone": "blue",
+       "mark": "check"
+      },
+      "anchor": {
+       "text": "every",
+       "sentence": "s5b"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "sc4",
+   "template": "scene",
+   "from": "s6",
+   "slots": {
+    "title": "A narrow key",
+    "subtitle": "limited in time and in reach",
+    "display": {
+     "props": {
+      "text": "1 hour",
+      "tone": "blue"
+     },
+     "anchor": {
+      "text": "one"
+     }
+    },
+    "top": [
+     {
+      "id": "scopes",
+      "type": "bars",
+      "props": {
+       "filled": false,
+       "items": [
+        {
+         "label": "email",
+         "value": 100,
+         "display": "granted",
+         "tone": "green"
+        },
+        {
+         "label": "contacts",
+         "value": 0,
+         "display": "denied",
+         "tone": "red"
+        },
+        {
+         "label": "drive files",
+         "value": 0,
+         "display": "denied",
+         "tone": "red"
+        }
+       ]
+      }
+     },
+     {
+      "id": "blast",
+      "type": "compare",
+      "props": {
+       "hidden": true,
+       "left": {
+        "title": "PASSWORD LEAKED",
+        "tone": "red",
+        "rows": [
+         "every Google service",
+         "until you notice"
+        ]
+       },
+       "right": {
+        "title": "TOKEN LEAKED",
+        "tone": "green",
+        "rows": [
+         "email address only",
+         "dead in one hour"
+        ]
+       }
+      }
+     }
+    ],
+    "footnote": {
+     "text": "a hacked app leaks a key, not your password",
+     "anchor": {
+      "text": "password.",
+      "sentence": "s7"
+     }
+    }
+   }
+  },
+  {
+   "id": "sc5",
+   "template": "scene",
+   "from": "s8",
+   "slots": {
+    "title": "Delegate, don't share",
+    "subtitle": "OAuth in one sentence",
+    "top": [
+     {
+      "id": "sum",
+      "type": "steps",
+      "props": {
+       "items": [
+        "REDIRECT",
+        "CONSENT",
+        "CODE",
+        "TOKEN"
+       ],
+       "tone": "blue"
+      }
+     },
+     {
+      "id": "sumKpis",
+      "type": "kpis",
+      "props": {
+       "items": [
+        {
+         "eyebrow": "PASSWORDS SHARED",
+         "value": "0",
+         "sub": "WITH THE APP",
+         "tone": "green"
+        },
+        {
+         "eyebrow": "TOKEN LIFETIME",
+         "value": "60 min",
+         "sub": "THEN IT EXPIRES",
+         "tone": "blue"
+        }
+       ]
+      }
+     },
+     {
+      "id": "holds",
+      "type": "panel",
+      "props": {
+       "title": "what notes.app keeps",
+       "icon": "lock",
+       "iconTone": "blue",
+       "rows": [
+        {
+         "text": "access token",
+         "mono": true,
+         "status": "1 HOUR",
+         "tone": "green",
+         "hidden": true
+        },
+        {
+         "text": "refresh token",
+         "mono": true,
+         "status": "REVOCABLE",
+         "tone": "amber",
+         "hidden": true
+        },
+        {
+         "text": "your password",
+         "mono": true,
+         "status": "NEVER",
+         "tone": "red",
+         "hidden": true
+        }
+       ]
+      }
+     }
+    ],
+    "footnote": {
+     "text": "delegate access, never share the secret",
+     "anchor": {
+      "text": "secret."
+     }
+    }
+   }
+  }
+ ],
+ "events": [
+  {
+   "sentence": "s1",
+   "anchor": {
+    "text": "click"
+   },
+   "op": "draw",
+   "target": "flow",
+   "value": {
+    "from": "you",
+    "to": "app"
+   }
+  },
+  {
+   "sentence": "s1",
+   "anchor": {
+    "text": "sign"
+   },
+   "op": "packet",
+   "target": "flow",
+   "value": {
+    "from": "you",
+    "to": "app",
+    "tone": "blue",
+    "icon": "user"
+   }
+  },
+  {
+   "sentence": "s1",
+   "anchor": {
+    "text": "Google."
+   },
+   "op": "draw",
+   "target": "flow",
+   "value": {
+    "from": "app",
+    "to": "google"
+   }
+  },
+  {
+   "sentence": "s1",
+   "anchor": {
+    "text": "Google."
+   },
+   "op": "light",
+   "target": "flow",
+   "value": {
+    "node": "google"
+   }
+  },
+  {
+   "sentence": "s2",
+   "anchor": {
+    "text": "password;"
+   },
+   "op": "type",
+   "target": "req",
+   "value": {
+    "line": 2
+   }
+  },
+  {
+   "sentence": "s2",
+   "anchor": {
+    "text": "Google"
+   },
+   "op": "type",
+   "target": "req",
+   "value": {
+    "line": 3
+   }
+  },
+  {
+   "sentence": "s2",
+   "anchor": {
+    "text": "instead."
+   },
+   "op": "type",
+   "target": "req",
+   "value": {
+    "line": 4
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "asks"
+   },
+   "op": "rowIn",
+   "target": "consent",
+   "value": {
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "read"
+   },
+   "op": "rowIn",
+   "target": "consent",
+   "value": {
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "email"
+   },
+   "op": "rowIn",
+   "target": "consent",
+   "value": {
+    "row": 3
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "redirects"
+   },
+   "op": "draw",
+   "target": "hops",
+   "value": {
+    "from": "google",
+    "to": "browser"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "code."
+   },
+   "op": "packet",
+   "target": "hops",
+   "value": {
+    "from": "google",
+    "to": "browser",
+    "tone": "blue",
+    "icon": "key",
+    "loops": 2
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "server"
+   },
+   "op": "draw",
+   "target": "hops",
+   "value": {
+    "from": "browser",
+    "to": "server"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "trades"
+   },
+   "op": "light",
+   "target": "hops",
+   "value": {
+    "node": "server"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "access"
+   },
+   "op": "rowIn",
+   "target": "tok",
+   "value": {
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "token,"
+   },
+   "op": "rowIn",
+   "target": "tok",
+   "value": {
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "private"
+   },
+   "op": "draw",
+   "target": "hops",
+   "value": {
+    "from": "server",
+    "to": "google"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "channel."
+   },
+   "op": "rowIn",
+   "target": "tok",
+   "value": {
+    "row": 3
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "scopes"
+   },
+   "op": "fill",
+   "target": "scopes",
+   "value": {
+    "item": 1
+   }
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "approved."
+   },
+   "op": "fill",
+   "target": "scopes"
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "hacked,"
+   },
+   "op": "rowIn",
+   "target": "blast",
+   "value": {
+    "side": "left",
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "attacker"
+   },
+   "op": "rowIn",
+   "target": "blast",
+   "value": {
+    "side": "left",
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "narrow"
+   },
+   "op": "rowIn",
+   "target": "blast",
+   "value": {
+    "side": "right",
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "key,"
+   },
+   "op": "rowIn",
+   "target": "blast",
+   "value": {
+    "side": "right",
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "not"
+   },
+   "op": "pick",
+   "target": "blast",
+   "value": {
+    "side": "right"
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "whole"
+   },
+   "op": "activate",
+   "target": "sum",
+   "value": {
+    "step": 1
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "trick:"
+   },
+   "op": "activate",
+   "target": "sum",
+   "value": {
+    "step": 2
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "delegate"
+   },
+   "op": "activate",
+   "target": "sum",
+   "value": {
+    "step": 3
+   }
+  },
+  {
+   "sentence": "s8",
+   "anchor": {
+    "text": "access,"
+   },
+   "op": "activate",
+   "target": "sum",
+   "value": {
+    "step": 4
+   }
+  },
+  {
+   "sentence": "s3b",
+   "anchor": {
+    "text": "password"
+   },
+   "op": "tone",
+   "target": "asks",
+   "value": {
+    "item": 2,
+    "tone": "green"
+   }
+  },
+  {
+   "sentence": "s5b",
+   "anchor": {
+    "text": "token"
+   },
+   "op": "packet",
+   "target": "hops",
+   "value": {
+    "from": "server",
+    "to": "google",
+    "tone": "purple",
+    "icon": "key"
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "button,"
+   },
+   "op": "rowIn",
+   "target": "holds",
+   "value": {
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "know"
+   },
+   "op": "rowIn",
+   "target": "holds",
+   "value": {
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "does."
+   },
+   "op": "rowIn",
+   "target": "holds",
+   "value": {
+    "row": 3
+   }
+  },
+  {
+   "sentence": "s2",
+   "anchor": {
+    "text": "sends"
+   },
+   "op": "type",
+   "target": "req",
+   "value": {
+    "line": 5
+   }
+  }
+ ]
+}

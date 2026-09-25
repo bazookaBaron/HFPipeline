@@ -20,5 +20,5 @@ const sentenceTimes = sb.sentences.map((s) => {
 });
 const total = +(t + 0.3).toFixed(3);
 const spec = compileStoryboard(sb, { sentenceTimes, words, totalSeconds: total });
-fs.writeFileSync(process.argv[3], JSON.stringify({ duration: total, profile: "DH", spec, words }, null, 1));
+fs.writeFileSync(process.argv[3], JSON.stringify({ duration: total, profile: sb.profile || "DH", spec, words }, null, 1));
 console.log(JSON.stringify({ total, scaffolds: spec.scaffolds.map((s) => [s.id, s.t0, s.t1, s.layout]), events: spec.events.length }));

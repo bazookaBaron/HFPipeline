@@ -9,9 +9,18 @@ hard gate fails. `repair` names the stage that must redo work (storyboard / audi
 """
 import argparse, json, subprocess, sys, statistics
 
+LC = {
+    "beats_per_min": (45, 95),       # R3 69.6, R4 50.9
+    "max_visual_gap_s": 4.5,         # R3 4.0; R4 holds to 8.3 s only with a live packet loop
+    "scaffold_life_median_s": (2.5, 7.0),  # R3 4.2, R4 5.0
+    "wpm": (176, 225),
+    "lufs": (-14.4, -13.8),
+    "lra_max": 1.6,
+    "tp_max": -0.9,
+}
 DH = {
     "beats_per_min": (50, 100),      # R1 79.7-93.3, R2 67-72.9 (visual beats incl. cuts/entrances/events)
-    "max_gap_s": 3.8,                # R1 3.83 (every longer hold has motion), R2 3.12
+    "max_visual_gap_s": 3.8,         # R1 3.83 (every longer hold has motion), R2 3.12
     "scaffold_life_median_s": (2.0, 8.4),  # R1 3.4 (scaffold every 3.4 s), R2 layout life median 8.4
     "wpm": (176, 225),               # refs 176-221
     "lufs": (-14.4, -13.8),          # refs -14.1..-14.2
@@ -75,6 +84,8 @@ def main():
     a = ap.parse_args()
     tl = json.load(open(a.timeline, encoding="utf-8"))
     spec, timeline = tl["spec"], tl["timeline"]
+    profile = spec.get("profile", "DH")
+    B = LC if profile == "LC" else DH
     total = timeline["totalSeconds"]
     gates = []
 
@@ -86,16 +97,16 @@ def main():
     bpm = len(beats) / total * 60
     gaps = [b - a for a, b in zip([0.0] + beats, beats + [total])]
     lives = [s["t1"] - s["t0"] for s in spec["scaffolds"]]
-    gate("beats_per_min", DH["beats_per_min"][0] <= bpm <= DH["beats_per_min"][1], round(bpm, 1), DH["beats_per_min"], repair="storyboard")
-    gate("max_visual_gap_s", max(gaps) <= DH["max_gap_s"], round(max(gaps), 2), f"<= {DH['max_gap_s']}", repair="storyboard")
+    gate("beats_per_min", B["beats_per_min"][0] <= bpm <= B["beats_per_min"][1], round(bpm, 1), B["beats_per_min"], repair="storyboard")
+    gate("max_visual_gap_s", max(gaps) <= B["max_visual_gap_s"], round(max(gaps), 2), f"<= {B['max_visual_gap_s']}", repair="storyboard")
     med = statistics.median(lives)
-    gate("scaffold_life_median_s", DH["scaffold_life_median_s"][0] <= med <= DH["scaffold_life_median_s"][1], round(med, 2), DH["scaffold_life_median_s"], repair="storyboard")
+    gate("scaffold_life_median_s", B["scaffold_life_median_s"][0] <= med <= B["scaffold_life_median_s"][1], round(med, 2), B["scaffold_life_median_s"], repair="storyboard")
     first = [b for b in beats if b <= 1.0]
     gate("hook_beats_first_1s", len(first) >= 2, len(first), ">= 2 (refs >= 3)", hard=False)
 
     # ---- pace ----
     wpm = len(timeline["words"]) / total * 60
-    gate("delivered_wpm", DH["wpm"][0] <= wpm <= DH["wpm"][1], round(wpm, 1), DH["wpm"], repair="audio")
+    gate("delivered_wpm", B["wpm"][0] <= wpm <= B["wpm"][1], round(wpm, 1), B["wpm"], repair="audio")
 
     # ---- loudness (from the master stats recorded in metrics, else measure) ----
     stats = None
@@ -106,9 +117,9 @@ def main():
             stats = None
     if stats:
         I, lra, tp = stats.get("integratedLufs"), stats.get("loudnessRangeLu"), stats.get("truePeakDbtp")
-        gate("integrated_lufs", I is not None and DH["lufs"][0] <= I <= DH["lufs"][1], I, DH["lufs"], repair="audio")
-        gate("loudness_range_lu", lra is not None and lra <= DH["lra_max"], lra, f"<= {DH['lra_max']}", repair="audio")
-        gate("true_peak_dbtp", tp is not None and tp <= DH["tp_max"], tp, f"<= {DH['tp_max']}", repair="audio")
+        gate("integrated_lufs", I is not None and B["lufs"][0] <= I <= B["lufs"][1], I, B["lufs"], repair="audio")
+        gate("loudness_range_lu", lra is not None and lra <= B["lra_max"], lra, f"<= {B['lra_max']}", repair="audio")
+        gate("true_peak_dbtp", tp is not None and tp <= B["tp_max"], tp, f"<= {B['tp_max']}", repair="audio")
         gate("silence_below_-60_pct", True, stats.get("silenceBelowMinus60Pct"), "refs 0.1-0.2 (diagnostic: no music bed by decision)", hard=False)
     else:
         gate("loudness_stats_present", False, None, "metrics.audio required", repair="audio")
@@ -121,8 +132,16 @@ def main():
         if len(raw) < 1080 * 1920 * 3:
             geo_fail.append(f"{s['id']}: no frame at {t:.2f}")
             continue
-        if not near(px(raw, 4, 4), (0, 0, 0), 6) or not near(px(raw, 4, 1915), (0, 0, 0), 6):
-            geo_fail.append(f"{s['id']}: background not black at corners")
+        bgc = (0xF4, 0xF4, 0xED) if profile == "LC" else (0, 0, 0)
+        if not near(px(raw, 4, 4), bgc, 6) or not near(px(raw, 4, 1915), bgc, 6):
+            geo_fail.append(f"{s['id']}: background {px(raw, 4, 4)} at corners, want {bgc}")
+        if profile == "LC":
+            # paper caption (R4): box y 1452-1545; find the box edges from the fill vs the page
+            col = [px(raw, 540, y) for y in range(1400, 1600)]
+            box = [1400 + i for i, c in enumerate(col) if c[0] > 0xFB and c[1] > 0xF9 and c[2] > 0xF4]
+            if box and not (1449 <= box[0] <= 1456 and 1540 <= box[-1] <= 1549):
+                geo_fail.append(f"{s['id']}: LC caption box y {box[0]}-{box[-1]}, want 1452-1545")
+            continue
         if any(m["id"] == "hud" for m in s["modules"]):
             if not near(px(raw, 72, 270), (9, 13, 17), 8):
                 geo_fail.append(f"{s['id']}: HUD fill {px(raw, 72, 270)} at (72,270), want #090d11")
@@ -133,7 +152,7 @@ def main():
                 geo_fail.append(f"{s['id']}: caption top border y {top}, want 1416+-3")
             if not (1526 <= bot <= 1536):
                 geo_fail.append(f"{s['id']}: caption bottom border y {bot}, want ~1531")
-    gate("frame_geometry", not geo_fail, geo_fail or "all scaffolds", "bg #000, HUD #090d11 @y235-305, caption box y1416-1532", repair="render")
+    gate("frame_geometry", not geo_fail, geo_fail or "all scaffolds", "DH: bg #000, HUD #090d11 @y235-305, caption y1416-1532; LC: bg #F4F4ED, caption y1452-1545", repair="render")
 
     hard_fail = [g for g in gates if g["hard"] and not g["ok"]]
     out = {"ok": not hard_fail, "gates": gates, "repair": sorted(set(g["repair"] for g in hard_fail if g["repair"]))}

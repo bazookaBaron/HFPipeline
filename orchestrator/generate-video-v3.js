@@ -116,7 +116,9 @@ async function main() {
     // --previous/--problems feed a failed render's gate results back into the repair loop.
     try {
       const readJson = (k) => (typeof args[k] === "string" ? JSON.parse(fs.readFileSync(path.resolve(args[k]), "utf-8")) : undefined);
-      const gen = await generateStoryboard(topic, { log, lengthSeconds, previous: readJson("previous"), extraProblems: readJson("problems") });
+      const prev = readJson("previous");
+      const profile = prev ? prev.profile : typeof args.profile === "string" ? args.profile : "auto";
+      const gen = await generateStoryboard(topic, { log, lengthSeconds, profile, previous: prev, extraProblems: readJson("problems") });
       sbPath = `${outPath}.storyboard.json`;
       fs.writeFileSync(sbPath, JSON.stringify(gen.storyboard, null, 1));
       metrics.set("script", { topic, attempts: gen.attempts.length, storyboard: sbPath });

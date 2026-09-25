@@ -124,6 +124,7 @@ const HUD = { props: "{host (mono, e.g. api.shop.io), env (pill text), envTone, 
 const TEMPLATES = {
   opener: "no HUD, no mascot. slots: eyebrow? {props:{text}}, headline {props:{lines, size?}}, top? [modules], footer? {props:{text, size?:xl}}. Use for the hook (first scaffold) and the summary (last).",
   stack: "HUD + optional label + a block of 1-3 modules (slots.top: [...], slots.bottom?: [...]). layout: 'column' (mascot beside, width 690) or 'full' (mascot hidden, width 960; use for climaxes, wide diagrams, compare). Heights are automatic; everything must fit 890 px (column) / 960 px (full).",
+  scene: "LC only. slots: title (string, <= 22 chars, sentence case), subtitle (string, <= 44 chars, lower case), display? {props:{text, tone}, anchor} (one big number/word), top: [1-3 modules, total 360-700 px], footnote? {text, anchor} (the takeaway, on the scene's last beat). Every scene is rebuilt from empty; nothing persists.",
   hero: "HUD + optional label + slots.hero {id?, props:{text, tone, size?}, anchor} + slots.kicker? {props:{text}, anchor?} + slots.top? [1 small module]. For one spoken number/word that must land big.",
 };
 

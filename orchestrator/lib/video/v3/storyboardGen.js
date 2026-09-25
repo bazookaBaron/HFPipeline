@@ -11,7 +11,15 @@ const path = require("path");
 const { compileStoryboard, TEMPLATES } = require("./compile");
 const { MODULES, HUD, TEMPLATES: TEMPLATE_DOCS, TONES, ICONS, knownOps } = require("./catalog");
 
-const EXAMPLE_PATH = path.join(__dirname, "..", "..", "..", "fixtures", "v3", "cdn-dh.json");
+const FIX = path.join(__dirname, "..", "..", "..", "fixtures", "v3");
+const EXAMPLE_PATH = path.join(FIX, "cdn-dh.json");
+
+// Per-profile grammar (SPEC.md 1.2/1.3, 7.1): DH = dark HUD/persistent (R1/R2), LC = light
+// scene-cut (R3/R4). Bands are for the synthetic timeline, slightly tighter than the render gates.
+const PROFILES = {
+  DH: { example: EXAMPLE_PATH, templates: ["opener", "stack", "hero"], bpm: [62, 100], maxGap: 3.3, lifeMedian: [2.0, 6.0], nodeX: [0.1, 0.9], forbiddenOps: [] },
+  LC: { example: path.join(FIX, "oauth-lc.json"), templates: ["scene"], bpm: [48, 95], maxGap: 4.0, lifeMedian: [3.0, 7.0], nodeX: [0.2, 0.8], forbiddenOps: ["strike", "rowStrike", "count", "slam"] },
+};
 
 // synthetic pacing that approximates the delivered pace (215 wpm incl. 0.2 s sentence gaps)
 const SYN = { word: 0.255, gap: 0.2 };
@@ -77,9 +85,11 @@ function validate(sb, opts = {}) {
   if (nWords < WORDS[0] || nWords > WORDS[1]) P.push(`total narration is ${nWords} words; target ${WORDS[0]}-${WORDS[1]} (${opts.lengthSeconds || 45} s at ~215 wpm)`);
   if (sb.sentences.length < BANDS.sentences[0] || sb.sentences.length > BANDS.sentences[1]) P.push(`${sb.sentences.length} sentences; use ${BANDS.sentences[0]}-${BANDS.sentences[1]}`);
   if (!Array.isArray(sb.scaffolds) || !sb.scaffolds.length) return P.concat(["scaffolds[] missing"]);
-  const genericOnly = new Set(["opener", "stack", "hero"]);
+  const PR = PROFILES[sb.profile] || PROFILES.DH;
+  const genericOnly = new Set(PR.templates);
   sb.scaffolds.forEach((sc) => {
-    if (!genericOnly.has(sc.template)) P.push(`scaffold ${sc.id}: template must be one of opener|stack|hero`);
+    if (!genericOnly.has(sc.template)) P.push(`scaffold ${sc.id}: template must be one of ${PR.templates.join("|")} for profile ${sb.profile}`);
+    if (sb.profile === "LC" && !(sc.slots && sc.slots.title)) P.push(`scene ${sc.id}: every LC scene needs slots.title (and a subtitle)`);
     const mods = []
       .concat((sc.slots && sc.slots.top) || [])
       .concat((sc.slots && sc.slots.bottom) || []);
@@ -89,23 +99,24 @@ function validate(sb, opts = {}) {
       const p = m.props || {};
       if (m.type === "nodes") {
         (p.nodes || []).forEach((n) => {
-          if (!(n.x >= 0.1 && n.x <= 0.9 && n.y >= 0.1 && n.y <= 0.86)) P.push(`${m.id}: node ${n.id} x/y out of range`);
+          if (!(n.x >= PR.nodeX[0] && n.x <= PR.nodeX[1] && n.y >= 0.1 && n.y <= 0.86)) P.push(`${m.id}: node ${n.id} x/y out of range (x ${PR.nodeX.join("-")}, y 0.1-0.86)`);
           if (n.icon && ICONS.indexOf(n.icon) < 0) P.push(`${m.id}: node ${n.id} icon "${n.icon}" not in the icon set`);
         });
       }
       if (m.type === "panel" && (p.rows || []).length > 6) P.push(`${m.id}: panel has more than 6 rows`);
     });
   });
-  if (sb.scaffolds[0].template !== "opener") P.push("the first scaffold must be an opener (hook headline)");
-  if (sb.scaffolds[0].template === "opener" && !((sb.scaffolds[0].slots || {}).top || []).length) P.push("the opener hook needs one visual module in slots.top under the headline (e.g. kpis, nodes, compare, chips) so frame 0 is not just text");
+  if (sb.profile !== "LC" && sb.scaffolds[0].template !== "opener") P.push("the first scaffold must be an opener (hook headline)");
+  if (!((sb.scaffolds[0].slots || {}).top || []).length) P.push("the first scene needs a visual module in slots.top (R3: the full answer is on screen by 1.5 s) so frame 0 is not just text");
   // density: refs fill 20-40% of the frame with 2-5 modules; a lone small card reads as empty
   const { preferred } = require("./templates-generic");
   sb.scaffolds.forEach((sc) => {
-    if (sc.template !== "stack") return;
+    if (sc.template !== "stack" && sc.template !== "scene") return;
     const w = sc.layout === "full" ? 960 : 690;
     const mods = [].concat((sc.slots && sc.slots.top) || [], (sc.slots && sc.slots.bottom) || []);
     const h = mods.reduce((a, m) => a + (m.h || preferred(m, w)), 0) + Math.max(0, mods.length - 1) * 19;
-    const need = sc.layout === "full" ? 560 : 600; // R2 carrier+slot fills ~960 px; refs 2-5 modules per frame
+    // DH: R2 carrier+slot fills ~960 px; LC: R4 content 549-1265 at 20-24% of the frame
+    const need = sc.template === "scene" ? 360 : sc.layout === "full" ? 560 : 600;
     if (mods.length && h < need) P.push(`scaffold ${sc.id}: only ${Math.round(h)} px of content; the frame reads empty. Add modules (nodes 420+, table, panel with 3-5 rows, kpis, note) to reach at least ${need} px`);
     mods.forEach((m) => {
       if (m.type === "panel" && (m.props && m.props.rows || []).length < 3) P.push(`scaffold ${sc.id}: panel ${m.id} has fewer than 3 rows; use 3-5 rows or a different module`);
@@ -129,6 +140,7 @@ function validate(sb, opts = {}) {
     const type = typeOf[mod];
     const ops = mod === "hud" ? Object.assign({}, HUD.ops, knownOps("hud")) : knownOps(type);
     if (!ops[e.op]) P.push(`event[${i}] op "${e.op}" is not available on ${mod} (${type}); allowed: ${Object.keys(ops).join(", ")}`);
+    if (PR.forbiddenOps.indexOf(e.op) >= 0) P.push(`event[${i}] op "${e.op}" is not part of the ${sb.profile} style (refs never use it); use an append/reveal/tone instead`);
   });
   // cadence (SPEC 7.1, DH)
   const b = beats(spec);
@@ -136,15 +148,15 @@ function validate(sb, opts = {}) {
   const bpm = (b.length / T) * 60;
   const gaps = [0].concat(b).map((x, i, a) => (i + 1 < a.length ? [a[i + 1] - x, x] : [T - x, x]));
   const worst = gaps.reduce((m, g) => (g[0] > m[0] ? g : m), [0, 0]);
-  if (bpm < BANDS.bpm[0]) P.push(`only ${bpm.toFixed(0)} visual beats/min; add word-anchored events (target ${BANDS.bpm[0]}-${BANDS.bpm[1]})`);
-  if (bpm > BANDS.bpm[1]) P.push(`${bpm.toFixed(0)} beats/min is too busy (max ${BANDS.bpm[1]})`);
-  if (worst[0] > BANDS.maxGap) {
+  if (bpm < PR.bpm[0]) P.push(`only ${bpm.toFixed(0)} visual beats/min; add word-anchored events (target ${PR.bpm[0]}-${PR.bpm[1]})`);
+  if (bpm > PR.bpm[1]) P.push(`${bpm.toFixed(0)} beats/min is too busy (max ${PR.bpm[1]})`);
+  if (worst[0] > PR.maxGap) {
     const s = tl.sentenceTimes.find((st) => st.start <= worst[1] + worst[0] && st.end >= worst[1]);
-    P.push(`no visual change for ${worst[0].toFixed(1)} s starting at ${worst[1].toFixed(1)} s (around sentence ${s ? s.id : "?"}); add an event or a new scaffold there (max ${BANDS.maxGap} s)`);
+    P.push(`no visual change for ${worst[0].toFixed(1)} s starting at ${worst[1].toFixed(1)} s (around sentence ${s ? s.id : "?"}); add an event or a new scaffold there (max ${PR.maxGap} s)`);
   }
   const lives = spec.scaffolds.map((s) => s.t1 - s.t0).sort((a, c) => a - c);
   const med = lives[Math.floor(lives.length / 2)];
-  if (med > BANDS.lifeMedian[1]) P.push(`scaffolds last ${med.toFixed(1)} s (median); change scaffold every 3-6 s`);
+  if (med > PR.lifeMedian[1]) P.push(`scaffolds last ${med.toFixed(1)} s (median); change scaffold every ${PR.lifeMedian[0]}-${PR.lifeMedian[1]} s`);
   const evSent = new Set((sb.events || []).map((e) => e.sentence));
   sb.sentences.slice(1, -1).forEach((s) => {
     if (!evSent.has(s.id) && !sb.scaffolds.some((sc) => sc.from === s.id)) P.push(`sentence ${s.id} has no event and starts no scaffold`);
@@ -160,8 +172,21 @@ function catalogText() {
   return mods;
 }
 
+const LC_GRAMMAR = `VISUAL GRAMMAR (measured, light scene-cut style: warm off-white paper, ivory window cards)
+- profile "LC". Every scaffold uses template "scene"; a new scene every 4-5 s (1-2 sentences); each scene is rebuilt from empty after a hard cut, with a title + subtitle.
+- entities.kicker: a mono caps breadcrumb for the header, e.g. "SECURITY / OAUTH 2.0" (<= 32 chars).
+- Build order inside a scene: title -> modules (+50 ms) -> word-anchored reveals -> connector draws -> packets -> the footnote takeaway last.
+- APPEND-ONLY state: reveal / rowIn / nodeIn / light / draw / packet / activate / fill / tone / type. NEVER strike, never count numbers up (show the final number; use a scene display for the key number).
+- Diagrams: nodes are window cards (x 0.2-0.8), connectors "elbow" or "straight", drawn on the flow word, then a packet travels them.
+- Lists/tables reveal one row per spoken item; a footnote on most scenes states the takeaway in <= 44 chars.
+- Colour = role: blue = data/the main path, purple = metadata/secondary, green = success/control, red = cost/failure, amber = warning. Max 3 hues per scene.
+- Scenes carry 1-3 modules, 360-700 px of content in total (the column is 690 px wide, 716 px tall under the title).
+- Every sentence gets 1-4 events; visual beats ~55-85 per minute; never more than 4 s without a visual change.`;
+
 function buildPrompt(topic, opts = {}) {
-  const example = fs.readFileSync(EXAMPLE_PATH, "utf-8");
+  const profile = opts.profile === "LC" ? "LC" : "DH";
+  const example = fs.readFileSync(PROFILES[profile].example, "utf-8");
+  if (profile === "LC") return buildPromptLC(topic, opts, example);
   return `You write storyboards for 45-55 second vertical tech-explainer shorts in ONE precise house style
 (dark UI-on-black, measured from reference reels). Output ONLY a JSON object of shape storyboard.v3.
 
@@ -207,6 +232,51 @@ WORKED EXAMPLE (different topic; follow its density and structure, not its conte
 ${example}
 
 Return the storyboard.v3 JSON for the TOPIC now.`;
+}
+
+function buildPromptLC(topic, opts, example) {
+  const mods = catalogText();
+  return `You write storyboards for 45-55 second vertical tech-explainer shorts in ONE precise house style
+(light, editorial, measured from reference reels). Output ONLY a JSON object of shape storyboard.v3 with "profile": "LC".
+
+TOPIC: ${topic}
+${opts.audience ? `AUDIENCE: ${opts.audience}
+` : ""}
+NARRATION RULES
+- ${BANDS.sentences[0]}-${BANDS.sentences[1]} sentences, ${wordBand(opts.lengthSeconds).join("-")} words total, max 24 words per sentence, conversational, concrete.
+- Structure: hook -> the concrete situation -> the mechanism step by step -> an edge case or trade-off -> the payoff -> a 1-sentence summary.
+- Spell every number as spoken words in the narration; the visuals carry digits.
+- Realistic, consistent specifics (hosts, IDs, paths, versions) reused across scenes.
+
+${LC_GRAMMAR}
+
+TEMPLATE
+- scene: ${TEMPLATE_DOCS.scene}
+
+MODULES (type -> use, props, ops)
+${mods}
+Generic ops on any sub-target: reveal, remove, text{text}, tone{tone}, retype{text}, highlight{hold?}.
+
+EVENTS
+{ "sentence": "<sentence id>", "anchor": {"text": "<ONE word copied from that sentence>", "occurrence"?: n}, "op": "<op>", "target": "<module id>[.<sub-target>]", "value"?: {...} }
+- The target module must be on screen at that sentence (its scene spans it). Modules/footnotes may enter on a word with "anchor" (add "sentence" when the word is in a later sentence of the same scene).
+
+TONES ${TONES.join(", ")}.  ICONS ${ICONS.join(", ")}.
+
+WORKED EXAMPLE (different topic; follow its density and structure, not its content):
+${example}
+
+Return the storyboard.v3 JSON for the TOPIC now.`;
+}
+
+/** pick the reference style that fits the topic (SPEC 1.2): DH systems/incidents, LC workflows/building */
+async function chooseProfile(topic, generate) {
+  const r = await generate(`Two house styles exist for a 50-second tech explainer.
+DH: dark dashboard world -- systems under load, incidents, traffic, deployments, infrastructure, attacks, performance, "how X works at scale".
+LC: light editorial paper -- building a feature step by step, developer tools and workflows, protocols explained as a sequence of steps, data formats, "how to design X".
+TOPIC: ${topic}
+Answer as JSON {"profile": "DH" | "LC", "reason": "<one short clause>"}.`);
+  return r && (r.profile === "LC" || r.profile === "DH") ? r.profile : "DH";
 }
 
 function cadenceSummary(sb) {
@@ -264,6 +334,15 @@ function loadGemini() {
 async function generateStoryboard(topic, opts = {}) {
   const generate = opts.generate || loadGemini();
   const log = opts.log || (() => {});
+  if (!opts.profile || opts.profile === "auto") {
+    try {
+      opts = { ...opts, profile: await chooseProfile(topic, generate) };
+    } catch (err) {
+      if (/(401|402|403)|credits are depleted|API key not valid|PERMISSION_DENIED/i.test(err.message)) throw new Error(`model unavailable (not retried): ${err.message}`);
+      opts = { ...opts, profile: "DH" };
+    }
+    log(`profile: ${opts.profile}`);
+  }
   const max = opts.maxAttempts || 4;
   const attempts = [];
   let raw = opts.previous || null;
@@ -286,7 +365,7 @@ async function generateStoryboard(topic, opts = {}) {
       continue;
     }
     if (raw && !raw.version) raw.version = "storyboard.v3";
-    if (raw && !raw.profile) raw.profile = "DH";
+    if (raw) raw.profile = opts.profile; // the chosen style is authoritative
     problems = validate(raw, opts);
     attempts.push({ problems });
     problems.forEach((p) => log(`  - ${p}`));

@@ -36,6 +36,22 @@
     slam: { dur: 0.1, scale: 1.15, ease: "sine.out", from: 0.7 }, // R2 E6: 1.15/1.09/1.02/1.00 per frame, opacity 70%->100%
   };
 
+  // per-profile entrance overrides (SPEC 6: LC riseFade 22 px / 233 ms, R3 E1)
+  var PROFILE_RECIPES = {
+    LC: {
+      fade: { dur: 0.233, y: 22, ease: "power2.out" },
+      rise: { dur: 0.233, y: 22, ease: "power2.out" },
+      settle: { dur: 0.233, y: 22, ease: "power2.out" },
+      riseMid: { dur: 0.233, y: 22, ease: "power2.out" },
+    },
+  };
+  // per-profile mascot (SPEC 4.5): DH slides + hides on full width; LC never hides, blinks 200 ms
+  // every ~4.6-5.0 s and sways (R4: 3.6 s period, ~1.7 px at the head, pivot at the feet)
+  var MASCOT_PROFILE = {
+    DH: { rect: [20, 903, 290, 417], blinkDur: 0.133, hideOnFull: true, sway: 0 },
+    LC: { rect: [36, 969, 260, 374], blinkDur: 0.2, hideOnFull: false, sway: 0.35, swayPeriod: 3.6 },
+  };
+
   var MASCOT = {
     enterDur: 0.367, // R2 E1: 11 f ease-out
     exitDur: 0.3, // R2 E2/E2c: 7-10 f ease-in
@@ -104,6 +120,18 @@
       return a.t0 - b.t0;
     });
 
+    var profile = spec.profile || "DH";
+    root.setAttribute("data-profile", profile);
+    var saved = {};
+    Object.keys(RECIPES).forEach(function (k) {
+      saved[k] = RECIPES[k];
+    });
+    var ov = PROFILE_RECIPES[profile] || {};
+    Object.keys(ov).forEach(function (k) {
+      RECIPES[k] = ov[k];
+    });
+    global.HFStage.profile = profile;
+    applyTheme(profile);
     var bg = mk("div", "st-bg", root);
     var content = mk("div", "st-content", root);
     var mascotLayer = mk("div", "st-mascot-layer", root);
@@ -193,7 +221,7 @@
       });
     });
 
-    buildMascot(ctx, mascotLayer, spec.mascot, scaffolds);
+    buildMascot(ctx, mascotLayer, spec.mascot, scaffolds, MASCOT_PROFILE[profile] || MASCOT_PROFILE.DH);
 
     // ---- events ----
     var events = (spec.events || []).slice().sort(function (a, b) {
@@ -221,18 +249,37 @@
       gen.apply(ctx, e, el);
     });
 
+    Object.keys(saved).forEach(function (k) {
+      RECIPES[k] = saved[k];
+    });
     root.setAttribute("data-stage-modules", String(Object.keys(ctx.modules).length));
     root.setAttribute("data-stage-events", String(events.length));
     if (problems.length) root.setAttribute("data-stage-problems", problems.join(" | "));
     return { problems: problems, ctx: ctx };
   }
 
+  /** profile colour overrides: HF.themes[profile] maps dark hex -> profile hex for --x-<hex> */
+  function applyTheme(profile) {
+    var map = global.HFStage.themes && global.HFStage.themes[profile];
+    var id = "st-theme-" + profile;
+    if (!map || document.getElementById(id)) return;
+    var decl = Object.keys(map)
+      .map(function (k) {
+        return "--x-" + k + ":" + map[k] + ";";
+      })
+      .join("");
+    var st = document.createElement("style");
+    st.id = id;
+    st.textContent = "html [data-profile=" + profile + "]{" + decl + "}";
+    document.head.appendChild(st);
+  }
+
   // ---- mascot: slide in on first column scaffold, ease-in exit before full-width, hard-cut
   // re-entry, deterministic blinks (SPEC 4.5) ----
-  function buildMascot(ctx, layer, cfg, scaffolds) {
+  function buildMascot(ctx, layer, cfg, scaffolds, mp) {
     if (!cfg || !cfg.open) return;
     var tl = ctx.tl;
-    var box = cfg.rect || [20, 903, 290, 417]; // placeholder art fitted to the mascot column, feet y 1320
+    var box = cfg.rect || mp.rect; // placeholder art fitted to the profile's mascot column
     var wrap = mk("div", "st-mascot", layer);
     Object.assign(wrap.style, rectStyle(box));
     var open = mk("img", "st-mascot-img", wrap);
@@ -247,7 +294,7 @@
     var slideFrom = -(box[0] + box[2]);
     var visibleSpans = [];
     scaffolds.forEach(function (s, i) {
-      var want = s.layout === "column";
+      var want = s.layout === "column" || (!mp.hideOnFull && s.layout !== "title");
       if (want && !shown) {
         if (!everShown) {
           tl.fromTo(wrap, { autoAlpha: 1, x: slideFrom }, { x: 0, duration: MASCOT.enterDur, ease: "power2.out", immediateRender: false }, s.t0);
@@ -271,12 +318,21 @@
     // blinks, free-running from the first appearance
     var t = (visibleSpans.length ? visibleSpans[0][0] : 0) + 2.1;
     var k = 0;
-    while (t < ctx.duration - MASCOT.blinkDur) {
+    while (t < ctx.duration - mp.blinkDur) {
       tl.set(blink, { autoAlpha: 1 }, t);
       tl.set(open, { autoAlpha: 0 }, t);
-      tl.set(blink, { autoAlpha: 0 }, t + MASCOT.blinkDur);
-      tl.set(open, { autoAlpha: 1 }, t + MASCOT.blinkDur);
+      tl.set(blink, { autoAlpha: 0 }, t + mp.blinkDur);
+      tl.set(open, { autoAlpha: 1 }, t + mp.blinkDur);
       t += MASCOT.blinkGaps[k++ % MASCOT.blinkGaps.length];
+    }
+
+    // idle sway (LC-b / R4 only): finite yoyo repeats computed from the duration -- seek-safe
+    if (mp.sway && visibleSpans.length) {
+      var t0s = visibleSpans[0][0];
+      var half = mp.swayPeriod / 2;
+      var reps = Math.max(0, Math.floor((ctx.duration - t0s) / half) - 1);
+      tl.set(wrap, { transformOrigin: "50% 100%", rotation: -mp.sway / 2 }, t0s);
+      tl.to(wrap, { rotation: mp.sway / 2, duration: half, ease: "sine.inOut", repeat: reps, yoyo: true, immediateRender: false }, t0s);
     }
 
     // punch: scale about the feet (R1 slam beats), requested by events targeting "mascot"
@@ -432,7 +488,37 @@
     },
   };
 
+  // ---- profile palettes (SPEC 2.1 dark R1/R2, 2.2 light R3/R4) ----
+  var PALETTE = {
+    DH: {
+      tone: { blue: "#4b9afb", green: "#2ad56c", red: "#ff375c", amber: "#fcba48", purple: "#a77bfb", cyan: "#50dbf2", orange: "#f57201", pink: "#e0457b", white: "#f1f5fd", grey: "#8b9098" },
+      tint: { blue: ["#091931", "#29456d"], green: ["#032815", "#225d40"], red: ["#3f0b14", "#893c45"], amber: ["#3b2600", "#513b17"], purple: ["#201336", "#4a3470"], cyan: ["#0a3a49", "#517c8a"], orange: ["#3a1c02", "#6b3a12"], pink: ["#3a0d1f", "#7a2c4b"], grey: ["#0b0f14", "#2a2f35"] },
+    },
+    LC: {
+      tone: { blue: "#1766da", green: "#187a5b", red: "#b23a3f", amber: "#9a6414", purple: "#6d4ea5", cyan: "#1f6f8b", orange: "#b14b30", pink: "#a33a63", white: "#17232b", grey: "#626667" },
+      tint: { blue: ["#e5eef9", "#b9cdeb"], green: ["#ddf2e7", "#a9d3bc"], red: ["#fae4da", "#e3b1a0"], amber: ["#f7f1e7", "#dcc7a0"], purple: ["#eae6f2", "#c6b9dd"], cyan: ["#e0eef3", "#a8cbd8"], orange: ["#fae4da", "#e3b1a0"], pink: ["#f6e3ea", "#ddb3c3"], grey: ["#f1f2ec", "#d2d6d3"] },
+    },
+  };
+  function pal() {
+    return PALETTE[global.HFStage.profile] || PALETTE.DH;
+  }
+
   global.HFStage = global.HFStage || { modules: {} };
+  global.HFStage.PALETTE = PALETTE;
+  // unknown / missing tone -> undefined, so callers keep their own fallback
+  global.HFStage.tone = function (name) {
+    return pal().tone[name];
+  };
+  global.HFStage.tint = function (name) {
+    return pal().tint[name] || pal().tint.grey;
+  };
+  // literal colour -> the current profile's equivalent (HF.themes[profile] map), else unchanged
+  global.HFStage.col = function (hex) {
+    var th = global.HFStage.themes && global.HFStage.themes[global.HFStage.profile];
+    var k = String(hex).replace("#", "").toLowerCase();
+    if (k.length === 3) k = k[0] + k[0] + k[1] + k[1] + k[2] + k[2];
+    return (th && th[k]) || hex;
+  };
   global.HFStage.build = build;
   global.HFStage.RECIPES = RECIPES;
   global.HFStage.F = F;

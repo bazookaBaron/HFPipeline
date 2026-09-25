@@ -202,4 +202,4 @@ function opener(sc, entities) {
   return { layout: "title", modules: mods.concat(rest.mods) };
 }
 
-module.exports = { GENERIC_TEMPLATES: { stack, hero, opener }, preferred, BAND };
+module.exports = { GENERIC_TEMPLATES: { stack, hero, opener }, preferred, BAND, fitBlock, place };

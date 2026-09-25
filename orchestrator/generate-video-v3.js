@@ -29,6 +29,7 @@ const { planNarration } = require("./lib/video/v3/timeline");
 const { assembleNarration } = require("./lib/video/v3/narration");
 const { compileStoryboard } = require("./lib/video/v3/compile");
 const { buildStageComposition } = require("./lib/video/v3/composeStage");
+const { mixSfx } = require("./lib/video/v3/sfx");
 const { masterVideo } = require("./lib/video/audioMaster");
 const { generateStoryboard } = require("./lib/video/v3/storyboardGen");
 
@@ -98,8 +99,19 @@ async function main() {
   // "worker" keeps F5/WhisperX loaded across sentences (Codex C1); "legacy" spawns per sentence.
   const voiceMode = args.voice === "legacy" ? "legacy" : "worker";
   // cloned voice from the control panel (both or neither)
-  const refAudio = typeof args["ref-audio"] === "string" && typeof args["ref-text"] === "string" ? path.resolve(args["ref-audio"]) : null;
-  const refText = refAudio ? args["ref-text"] : null;
+  // default: the consent-confirmed "narrator" clone (voice-pipeline/voices/narrator, copied from
+  // script-to-video-pipeline); --voice-profile stock uses F5's built-in example voice instead
+  let refAudio = typeof args["ref-audio"] === "string" && typeof args["ref-text"] === "string" ? path.resolve(args["ref-audio"]) : null;
+  let refText = refAudio ? args["ref-text"] : null;
+  if (!refAudio && args["voice-profile"] !== "stock") {
+    const dir = path.resolve(__dirname, "..", "voice-pipeline", "voices", typeof args["voice-profile"] === "string" ? args["voice-profile"] : "narrator");
+    const prof = fs.existsSync(path.join(dir, "profile.json")) ? JSON.parse(fs.readFileSync(path.join(dir, "profile.json"), "utf-8")) : null;
+    if (prof && prof.status === "active" && prof.consent_confirmed && fs.existsSync(path.join(dir, prof.reference_audio))) {
+      refAudio = path.join(dir, prof.reference_audio);
+      refText = prof.reference_text;
+    }
+  }
+  log(`voice: ${refAudio ? "cloned " + path.basename(path.dirname(refAudio)) + "/" + path.basename(refAudio) : "F5 stock example"}`);
   const accent = typeof args.accent === "string" && /^#[0-9a-fA-F]{6}$/.test(args.accent) ? args.accent : "#4497ff";
   const lengthSeconds = Number(args["length-seconds"]) || 45;
 
@@ -200,11 +212,33 @@ async function main() {
   } catch (err) {
     return die("compose", `compile failed: ${err.message}`, err);
   }
+  // layout gate on the REAL timing (hard): overlaps / overflow / renderer build errors
+  try {
+    const { auditLayout, describe } = require("./tools/layout_audit");
+    const la = await auditLayout({ spec, duration: timeline.totalSeconds, log });
+    const bad = la.problems.map((p) => "layout " + describe(p)).concat(la.buildProblems.map((p) => "renderer: " + p));
+    if (bad.length) return die("compose", `layout audit failed: ${bad.join(" | ")}`);
+  } catch (err) {
+    if (/layout audit failed/.test(err.message)) throw err;
+    log(`layout audit skipped: ${err.message}`);
+  }
+  // ---- SFX: synthesized cues on every visual change, mixed under the voice (tools/sfx_mix.py) ----
+  let audioRel = narrationRel;
+  if (bool(args.sfx, true)) {
+    try {
+      const mixRel = narrationRel.replace(/narration\.wav$/, "narration-sfx.wav");
+      const sfx = mixSfx({ spec, duration: timeline.totalSeconds, narrationWav: path.join(VIDEO_ENGINE_DIR, narrationRel), outWav: path.join(VIDEO_ENGINE_DIR, mixRel), log });
+      metrics.set("sfx", { cues: sfx.cues.length });
+      audioRel = mixRel;
+    } catch (err) {
+      return die("compose", err.message, err);
+    }
+  }
   const timelinePath = `${outPath}.timeline.json`;
   fs.writeFileSync(timelinePath, JSON.stringify({ runId, speed, timeline, spec }, null, 1));
   const compositionPath = path.join(VIDEO_ENGINE_DIR, "generated", `${runId}.html`);
   fs.mkdirSync(path.dirname(compositionPath), { recursive: true });
-  fs.writeFileSync(compositionPath, buildStageComposition({ runId, totalDuration: timeline.totalSeconds, spec, narrationRelPath: narrationRel, words: timeline.words, profile: sb.profile || "DH", accent, captionsOn }), "utf-8");
+  fs.writeFileSync(compositionPath, buildStageComposition({ runId, totalDuration: timeline.totalSeconds, spec, narrationRelPath: audioRel, words: timeline.words, profile: sb.profile || "DH", accent, captionsOn }), "utf-8");
   log(`composition -> ${compositionPath}`);
 
   // ---- check ----

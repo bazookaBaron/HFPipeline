@@ -64,7 +64,7 @@ async function main() {
         failure = JSON.parse(fs.readFileSync(`${outPath}.metrics.json`, "utf-8")).failure;
       } catch (_) {}
       const sbFile = `${outPath}.storyboard.json`;
-      const repairable = failure && failure.stage === "compose" && /not on screen|anchor|scaffold|overflow|content (needs|runs)|unknown/.test(failure.message || "");
+      const repairable = failure && failure.stage === "compose" && /not on screen|anchor|scaffold|overflow|content (needs|runs)|unknown|layout audit/.test(failure.message || "");
       if (repairable && fs.existsSync(sbFile) && r < rounds) {
         previous = sbFile;
         problems = `${outPath}.problems.json`;

@@ -334,6 +334,68 @@
     },
   };
 
+  // Node footprints (px, before scale): LC window card 250x150 centred on (x, y); dark tile
+  // 96x96 centred on (x, y) with the mono label (0.6 em/glyph) and caps sub below it.
+  function nodeBox(n, lc) {
+    if (lc) return { w: 250, h: 150, up: 75 };
+    var lab = String(n.label || n.id).length * 0.6 * 18;
+    var sub = n.sub ? String(n.sub).length * (0.62 + 0.16) * 12 : 0;
+    return { w: Math.max(96, lab, sub), h: 48 + 10 + 22 + (n.sub ? 18 : 0) + 48, up: 48 };
+  }
+  // Deterministic overlap removal: storyboards give node centres as fractions of the rect, which
+  // can put cards on top of each other (rebase pilot: 250 px cards 30% of 700 px apart). Push
+  // overlapping pairs apart along their dominant axis and clamp inside the rect; if the rect is
+  // too small for the cards at full size, shrink them (k) until they fit (min 0.6).
+  function layoutNodes(nodes, w, h, lc) {
+    var G = lc ? 24 : 20;
+    var k = 1;
+    var pos;
+    for (var attempt = 0; attempt < 6; attempt++) {
+      var boxes = nodes.map(function (n) {
+        var b = nodeBox(n, lc);
+        return { w: b.w * k, h: b.h * k, up: b.up * k };
+      });
+      pos = nodes.map(function (n) {
+        return { x: (Number(n.x) || 0.5) * w, y: (Number(n.y) || 0.5) * h };
+      });
+      var clamp = function (i) {
+        var b = boxes[i];
+        pos[i].x = Math.max(b.w / 2, Math.min(w - b.w / 2, pos[i].x));
+        pos[i].y = Math.max(b.up, Math.min(h - (b.h - b.up), pos[i].y));
+      };
+      var overlapped = false;
+      for (var it = 0; it < 80; it++) {
+        overlapped = false;
+        for (var i = 0; i < pos.length; i++) clamp(i);
+        for (var a = 0; a < pos.length; a++)
+          for (var b2 = a + 1; b2 < pos.length; b2++) {
+            var A = boxes[a], B = boxes[b2];
+            var dx = pos[b2].x - pos[a].x;
+            var cyA = pos[a].y - A.up + A.h / 2, cyB = pos[b2].y - B.up + B.h / 2;
+            var dy = cyB - cyA;
+            var ox = (A.w + B.w) / 2 + G - Math.abs(dx);
+            var oy = (A.h + B.h) / 2 + G - Math.abs(dy);
+            if (ox <= 0.5 || oy <= 0.5) continue;
+            overlapped = true;
+            if (Math.abs(dx) * (A.h + B.h) >= Math.abs(dy) * (A.w + B.w)) {
+              var sx = dx === 0 ? 1 : Math.sign(dx);
+              pos[a].x -= (sx * ox) / 2;
+              pos[b2].x += (sx * ox) / 2;
+            } else {
+              var sy = dy === 0 ? 1 : Math.sign(dy);
+              pos[a].y -= (sy * oy) / 2;
+              pos[b2].y += (sy * oy) / 2;
+            }
+          }
+        if (!overlapped) break;
+      }
+      for (var j = 0; j < pos.length; j++) clamp(j);
+      if (!overlapped || k <= 0.6) break;
+      k = Math.max(0.6, k * 0.88);
+    }
+    return { pos: pos, k: k, below: [22 * k] };
+  }
+
   // =============== node diagram (G1 + G2 + G3) ===============
   // props {nodes:[{id, icon, label, sub?, x, y (0-1 of rect, node centre), tone?, lit?, hidden?}],
   //        edges:[{from, to, label?, style?: "solid"|"dashed", shape?: "curve"|"elbow"|"straight", drawn?}]}
@@ -345,8 +407,11 @@
       var h = H(el);
       var s = svgEl("svg", { viewBox: "0 0 " + w + " " + h }, el);
       var byId = {};
-      (p.nodes || []).forEach(function (n) {
-        byId[n.id] = { x: n.x * w, y: n.y * h, n: n };
+      var LCW = HF.profile === "LC";
+      var lay = layoutNodes(p.nodes || [], w, h, LCW);
+      var k = lay.k;
+      (p.nodes || []).forEach(function (n, i) {
+        byId[n.id] = { x: lay.pos[i].x, y: lay.pos[i].y, n: n };
       });
       var edges = {};
       (p.edges || []).forEach(function (e) {
@@ -361,20 +426,20 @@
         if (LCN) {
           // window-card nodes (R4): leave from the card edge
           if (horiz) {
-            ax += Math.sign(dx) * 128;
-            bx -= Math.sign(dx) * 128;
+            ax += Math.sign(dx) * 128 * k;
+            bx -= Math.sign(dx) * 128 * k;
           } else {
-            ay += Math.sign(dy) * 78;
-            by -= Math.sign(dy) * 78;
+            ay += Math.sign(dy) * 78 * k;
+            by -= Math.sign(dy) * 78 * k;
           }
         } else {
-          var pad = 57;
+          var pad = 57 * k;
           if (horiz) {
             ax += Math.sign(dx) * pad;
             bx -= Math.sign(dx) * pad;
           } else {
-            ay += Math.sign(dy) * (pad + (dy > 0 ? 22 : 0));
-            by -= Math.sign(dy) * (pad + (dy > 0 ? 0 : 22));
+            ay += Math.sign(dy) * (pad + (dy > 0 ? lay.below[0] : 0));
+            by -= Math.sign(dy) * (pad + (dy > 0 ? 0 : lay.below[0]));
           }
         }
         var d;
@@ -418,7 +483,9 @@
           div("w-d", bar);
           div("w-d", bar);
           div("w-d", bar);
-          div("w-l", bar, n.sub || n.id);
+          var wl = div("w-l", bar, n.sub || n.id);
+          // title-bar text: 15 px mono (0.6 em/glyph) in the ~160 px after the dots
+          wl.style.fontSize = Math.min(15, Math.floor(160 / Math.max(1, String(n.sub || n.id).length * 0.6))) + "px";
           var body = div("w-body", ne);
           var t = div("n-tile", body);
           var ic = icon(n.icon || "server", 26);
@@ -426,7 +493,8 @@
           var lab = div("n-lab", body, n.label || n.id);
           // fit the name into the card body (250 - padding - icon): ~0.58 em per Inter-800 glyph
           var lt = String(n.label || n.id);
-          lab.style.fontSize = Math.min(26, Math.floor(150 / Math.max(1, lt.length * 0.58))) + "px";
+          var lw26 = global.HFTextFit ? global.HFTextFit.measure(lt, 800, 26, "Inter, ui-sans-serif, system-ui, sans-serif") : lt.length * 0.62 * 26;
+          lab.style.fontSize = Math.min(26, Math.floor((26 * 148) / Math.max(1, lw26))) + "px";
         } else {
         ne.style.left = byId[n.id].x - 80 + "px";
         ne.style.top = byId[n.id].y - 48 + "px";
@@ -437,6 +505,7 @@
         div("n-lab", ne, n.label || n.id);
         if (n.sub) div("n-sub", ne, n.sub);
         }
+        if (k < 1) gsap.set(ne, { scale: k, transformOrigin: LCW ? "50% 50%" : "50% 48px" });
         tint(ne, "n", n.tone || "cyan");
         if (n.lit !== false) ne.setAttribute("data-lit", "1");
         if (n.hidden) hideAtZero(c.tl, ne);

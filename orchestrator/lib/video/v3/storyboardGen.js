@@ -31,6 +31,22 @@ function tokens(t) {
   return String(t).split(/\s+/).filter(Boolean);
 }
 
+// Real-DOM layout audit (tools/layout_audit.js) on synthetic timings: overlapping cards, text off
+// the frame / out of its card / under the presenter, and renderer build errors, fed back to the model.
+async function layoutProblems(sb, opts, log) {
+  if (opts.layoutAudit === false) return [];
+  try {
+    const { auditLayout, describe } = require("../../../tools/layout_audit");
+    const tl = syntheticTimeline(sb);
+    const spec = compileStoryboard(sb, tl, { mascot: true });
+    const r = await auditLayout({ spec, duration: tl.totalSeconds, log });
+    return r.problems.map((p) => "layout " + describe(p)).concat(r.buildProblems.map((p) => "renderer: " + p));
+  } catch (err) {
+    log(`  (layout audit skipped: ${err.message})`);
+    return [];
+  }
+}
+
 function syntheticTimeline(sb) {
   let t = 0.12;
   const words = [];
@@ -448,6 +464,7 @@ async function generateStoryboard(topic, opts = {}) {
     if (raw && !raw.version) raw.version = "storyboard.v3";
     if (raw) raw.profile = opts.profile; // the chosen style is authoritative
     problems = validate(raw, opts);
+    if (!problems.length) problems = await layoutProblems(raw, opts, log);
     attempts.push({ problems });
     problems.forEach((p) => log(`  - ${p}`));
     if (!problems.length) return { storyboard: raw, attempts };
@@ -455,7 +472,8 @@ async function generateStoryboard(topic, opts = {}) {
   // last resort for pure cadence near-misses (long holds only): deterministic emphasis beats
   if (raw && problems.length && problems.every((p) => /^no visual change for/.test(p))) {
     const n = autoFillGaps(raw);
-    const again = n ? validate(raw, opts) : problems;
+    let again = n ? validate(raw, opts) : problems;
+    if (n && !again.length) again = await layoutProblems(raw, opts, log);
     log(`auto-filled ${n} long hold(s) with emphasis beats; ${again.length} problem(s) left`);
     if (!again.length) return { storyboard: raw, attempts };
     problems = again;

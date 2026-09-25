@@ -441,6 +441,14 @@
       el.classList.add("st-headline");
       var size = p.size || 107; // cap 78 (R2 "SWITCH THE / TRAFFIC")
       var pitch = p.pitch || 123;
+      // fit every line inside the module width (a 21-glyph line at 95 px ran off the 1080 frame):
+      // canvas-measured Inter 800 caps, minus the -0.03 em tracking, one size for all lines
+      var maxW = parseFloat(el.style.width) || 1000;
+      (p.lines || []).forEach(function (ln) {
+        var txt = String(typeof ln === "string" ? ln : ln.text || "").toUpperCase();
+        var wpx = global.HFTextFit ? global.HFTextFit.measure(txt, 800, size, "Inter, ui-sans-serif, system-ui, sans-serif") - 0.03 * size * txt.length : txt.length * 0.68 * size;
+        if (wpx > maxW) size = Math.floor((size * maxW) / wpx);
+      });
       var lines = (p.lines || []).map(function (ln, i) {
         var d = div("hl", el, typeof ln === "string" ? ln : ln.text);
         d.style.fontSize = size + "px";

@@ -118,8 +118,19 @@
       ax.style.top = y + "px";
       var pr = div("tl-pr", el);
       Object.assign(pr.style, { top: y - 0.75 + "px", width: w + "px" });
+      // end ticks sit far enough in that their centred label/caption stays inside the card
+      // (stripe pilot: "CARD CHARGED" centred on x=30 spilled 42 px out)
+      var capW = (w / Math.max(1, n)) * 1.1;
+      function half(tk) {
+        if (!tk) return 30;
+        var lw = String(tk.label || "").length * 0.6 * 17;
+        var cw = tk.caption ? Math.min(capW, String(tk.caption).length * 0.74 * 15) : 0;
+        return Math.max(30, lw / 2, cw / 2) + 4;
+      }
+      var padL = Math.min(w / 4, half(ticks[0]));
+      var padR = Math.min(w / 4, half(ticks[n - 1]));
       var xs = ticks.map(function (_, i) {
-        return n > 1 ? 30 + ((w - 60) * i) / (n - 1) : w / 2;
+        return n > 1 ? padL + ((w - padL - padR) * i) / (n - 1) : w / 2;
       });
       var start = p.progress ? xs[Math.min(n - 1, p.progress - 1)] : 0;
       pr.style.transform = "scaleX(" + start / w + ")";

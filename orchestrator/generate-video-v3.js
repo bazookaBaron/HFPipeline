@@ -30,6 +30,7 @@ const { assembleNarration } = require("./lib/video/v3/narration");
 const { compileStoryboard } = require("./lib/video/v3/compile");
 const { buildStageComposition } = require("./lib/video/v3/composeStage");
 const { mixSfx } = require("./lib/video/v3/sfx");
+const { appendEndcard, stripEndcard, captionWords } = require("./lib/video/v3/endcard");
 const { masterVideo } = require("./lib/video/audioMaster");
 const { generateStoryboard } = require("./lib/video/v3/storyboardGen");
 
@@ -139,7 +140,9 @@ async function main() {
       return die("script", `storyboard generation failed: ${err.message}`, err);
     }
   }
-  const sb = JSON.parse(fs.readFileSync(sbPath, "utf-8"));
+  // the fixed channel ending (brand.json) rides after the topic; the saved storyboard stays topic-only
+  const sbTopic = stripEndcard(JSON.parse(fs.readFileSync(sbPath, "utf-8")));
+  const sb = bool(args.endcard, true) ? appendEndcard(sbTopic) : sbTopic;
   if (sb.version !== "storyboard.v3") return die("script", `expected storyboard.v3, got ${sb.version}`);
   metrics.set("counts", { sentences: sb.sentences.length, scaffolds: sb.scaffolds.length, events: (sb.events || []).length });
 
@@ -238,7 +241,7 @@ async function main() {
   fs.writeFileSync(timelinePath, JSON.stringify({ runId, speed, timeline, spec }, null, 1));
   const compositionPath = path.join(VIDEO_ENGINE_DIR, "generated", `${runId}.html`);
   fs.mkdirSync(path.dirname(compositionPath), { recursive: true });
-  fs.writeFileSync(compositionPath, buildStageComposition({ runId, totalDuration: timeline.totalSeconds, spec, narrationRelPath: audioRel, words: timeline.words, profile: sb.profile || "DH", accent, captionsOn }), "utf-8");
+  fs.writeFileSync(compositionPath, buildStageComposition({ runId, totalDuration: timeline.totalSeconds, spec, narrationRelPath: audioRel, words: captionWords(timeline.words), profile: sb.profile || "DH", accent, captionsOn }), "utf-8");
   log(`composition -> ${compositionPath}`);
 
   // ---- check ----

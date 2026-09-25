@@ -25,7 +25,7 @@ const jobs = require("./jobs");
 
 const CAROUSEL_ENGINE_DIR = path.resolve(__dirname, "..", "..", "carousel-engine");
 const ORCHESTRATOR_DIR = path.resolve(__dirname, "..", "..", "orchestrator");
-const ORCHESTRATOR_ENTRY = path.join(ORCHESTRATOR_DIR, "generate-carousel.js");
+const ORCHESTRATOR_ENTRY = path.join(ORCHESTRATOR_DIR, "make-carousel.js");
 const RENDERS_DIR = path.join(__dirname, "..", "data", "renders");
 
 function carouselEngineReady() {
@@ -66,15 +66,19 @@ function runCarouselRender(jobId, config) {
   const accentColor = (config && config.accentColor) || undefined;
   const brandHandle = (config && config.brandHandle) || undefined;
 
-  const args = ["generate-carousel.js", "--topic", topic, "--run-id", jobId, "--out-dir", outDir];
+  // v3: same card library + styles as the videos, brand end slide (orchestrator/make-carousel.js)
+  const args = ["make-carousel.js", "--topic", topic, "--run-id", jobId, "--out-dir", outDir];
+  const profile = config && ["DH", "LC", "DC"].includes(config.profile) ? config.profile : "auto";
+  args.push("--profile", profile);
   if (accentColor) args.push("--accent", accentColor);
   if (brandHandle) args.push("--handle", brandHandle);
 
-  jobs.appendLog(jobId, "meta", `$ node generate-carousel.js --topic "${topic}" --run-id ${jobId} --out-dir ${outDir}` + (accentColor ? ` --accent ${accentColor}` : "") + (brandHandle ? ` --handle ${brandHandle}` : ""));
+  jobs.appendLog(jobId, "meta", `$ node ${args.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(" ")}`);
   jobs.appendLog(jobId, "meta", `cwd: ${ORCHESTRATOR_DIR}`);
 
   return new Promise((resolve) => {
-    const child = spawn("node", args, { cwd: ORCHESTRATOR_DIR, shell: true, windowsHide: true });
+    // no shell: a multi-word --topic must stay one argv entry (shell:true split it on Windows)
+    const child = spawn("node", args, { cwd: ORCHESTRATOR_DIR, windowsHide: true });
 
     let stdoutTail = ""; // last non-empty stdout line seen so far -- the orchestrator's contract
     // is exactly one final JSON line on stdout, on success only.

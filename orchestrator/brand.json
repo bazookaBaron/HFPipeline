@@ -1,0 +1,47 @@
+{
+  "endcard": {
+    "enabled": true,
+    "spoken": "Follow for more daily videos, and check out vloom box dot in.",
+    "captionAs": {
+      "vloom box dot in.": "vloombox.in"
+    },
+    "eyebrow": "Thanks for watching",
+    "lines": [
+      "Follow for more",
+      "daily videos"
+    ],
+    "follow": "Follow",
+    "site": "vloombox.in",
+    "cta": "VISIT",
+    "beats": [
+      {
+        "word": "daily",
+        "part": "line2"
+      },
+      {
+        "word": "videos,",
+        "part": "follow"
+      },
+      {
+        "word": "check",
+        "part": "site"
+      },
+      {
+        "word": "vloom",
+        "part": "type"
+      },
+      {
+        "word": "in.",
+        "part": "click"
+      }
+    ]
+  },
+  "handle": "",
+  "carousel": {
+    "eyebrow": "Save this for later",
+    "lines": [
+      "Follow for more",
+      "daily posts"
+    ]
+  }
+}

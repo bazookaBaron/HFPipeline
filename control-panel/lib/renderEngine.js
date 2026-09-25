@@ -93,6 +93,7 @@ function runCsExplainerRender(jobId, config) {
   if (accentColor && /^#[0-9a-fA-F]{6}$/.test(accentColor)) args.push("--accent", accentColor);
   const profile = config && ["DH", "LC", "DC"].includes(config.profile) ? config.profile : "auto";
   args.push("--profile", profile);
+  args.push("--captions", String(captionsOn), "--sfx", String(sfxOn), "--endcard", String(!(config && config.endcardOn === false)));
 
   const voiceProfile = voiceUpload.activeVoiceProfile();
   if (voiceProfile && voiceProfile.refAudioPath && voiceProfile.refText && fs.existsSync(voiceProfile.refAudioPath)) {
@@ -103,7 +104,7 @@ function runCsExplainerRender(jobId, config) {
   }
 
   jobs.appendLog(jobId, "meta", `$ node ${args.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(" ")}`);
-  jobs.appendLog(jobId, "meta", `v3 style: pace, captions and motion follow the reference spec (ignored: ttsSpeed=${ttsSpeed}, captions=${captionsOn}, sfx=${sfxOn}, handle=${brandHandle || "-"}).`);
+  jobs.appendLog(jobId, "meta", `v3 style: pace, captions and motion follow the reference spec (ignored: ttsSpeed=${ttsSpeed}, handle=${brandHandle || "-"}; captions=${captionsOn}, sfx=${sfxOn} are passed).`);
   jobs.appendLog(jobId, "meta", `cwd: ${ORCHESTRATOR_DIR}`);
   jobs.setStatus(jobId, "running");
 

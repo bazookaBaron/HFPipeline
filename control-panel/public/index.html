@@ -47,7 +47,8 @@
         </label>
         <div class="row row-toggles">
           <label class="toggle"><input type="checkbox" name="captionsOn" checked> Captions</label>
-          <label class="toggle"><input type="checkbox" name="sfxOn"> SFX</label>
+          <label class="toggle"><input type="checkbox" name="sfxOn" checked> SFX</label>
+          <label class="toggle"><input type="checkbox" name="endcardOn" checked> Ending (follow + vloombox.in)</label>
         </div>
         <button type="submit" class="run-btn">Run render (real)</button>
         <p class="hint">Runs <code>orchestrator/make-video.js</code>: Gemini storyboard, voice, stage render and mastering, then the hard QA gates, with automatic repair. Pace, captions and motion follow the reference spec.</p>
@@ -69,19 +70,20 @@
           <label>Accent color
             <input type="color" name="accentColor" value="#22c55e">
           </label>
-          <label>TTS speed
-            <input type="number" name="ttsSpeed" min="0.5" max="2" step="0.05" value="1.0">
+          <label>Style
+            <select name="profile">
+              <option value="auto" selected>Auto (picked per topic)</option>
+              <option value="DH">Dark dashboard</option>
+              <option value="LC">Light editorial</option>
+              <option value="DC">Dark chaptered</option>
+            </select>
           </label>
         </div>
         <label>Brand handle / banner text
-          <input type="text" name="brandHandle" placeholder="@yourhandle" value="@hyperframes.dev">
+          <input type="text" name="brandHandle" placeholder="@yourhandle (footer; blank shows vloombox.in)" value="">
         </label>
-        <div class="row row-toggles">
-          <label class="toggle"><input type="checkbox" name="captionsOn" checked> Captions</label>
-          <label class="toggle"><input type="checkbox" name="sfxOn"> SFX</label>
-        </div>
         <button type="submit" class="run-btn">Run render (real)</button>
-        <p class="hint">Shells out to carousel-engine's real <code>render.js</code> (Puppeteer, sample-carousel.json). This checks at run time whether carousel-engine has a working render entrypoint; if it ever doesn't (e.g. mid-refactor), it reports an honest stub instead of faking an image.</p>
+        <p class="hint">Runs <code>orchestrator/make-carousel.js</code>: Gemini writes the slides from the same card library and styles as the videos, every slide is layout-checked and rendered by the stage renderer (1080x1350 PNG), and the carousel ends with the follow + vloombox.in slide.</p>
       </form>
     </section>
 

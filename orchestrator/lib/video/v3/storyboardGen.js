@@ -484,4 +484,4 @@ async function generateStoryboard(topic, opts = {}) {
   throw err;
 }
 
-module.exports = { generateStoryboard, validate, buildPrompt, syntheticTimeline, BANDS, wordBand, autoFillGaps };
+module.exports = { generateStoryboard, validate, buildPrompt, syntheticTimeline, BANDS, wordBand, autoFillGaps, chooseProfile, loadGemini, catalogText };

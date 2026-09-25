@@ -259,6 +259,7 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/stage/theme-lc.js"></script>
     <script src="compositions/components/lib/stage/profile-lc.js"></script>
     <script src="compositions/components/lib/stage/profile-dc.js"></script>
+    <script src="compositions/components/lib/stage/modules-end.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }

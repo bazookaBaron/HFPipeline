@@ -276,7 +276,7 @@ const server = http.createServer(async (req, res) => {
       };
 
       const videoRun = startPipelineRun("cs-explainer", sharedConfig);
-      const carouselRun = startPipelineRun("carousel", { topic: topic.topic, accentColor: sharedConfig.accentColor, brandHandle: sharedConfig.brandHandle });
+      const carouselRun = startPipelineRun("carousel", { topic: topic.topic, accentColor: sharedConfig.accentColor, brandHandle: body.brandHandle || "", profile: sharedConfig.profile });
 
       topics.updateTopic(topicId, {
         status: "running",

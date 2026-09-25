@@ -24,7 +24,8 @@ const { TEMPLATES: DH_TEMPLATES } = require("./templates-dh");
 const { GENERIC_TEMPLATES } = require("./templates-generic");
 const { LC_TEMPLATES } = require("./templates-lc");
 const { DC_TEMPLATES } = require("./templates-dc");
-const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES, ...DC_TEMPLATES };
+const { ENDCARD_TEMPLATES } = require("./endcard");
+const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES, ...DC_TEMPLATES, ...ENDCARD_TEMPLATES };
 
 // Seconds a beat fires before its word onset. Refs land visuals on the audible word or up to
 // ~250 ms before it (SPEC 7.2, ASR bias verified); our word times are forced-aligned on our
@@ -99,9 +100,11 @@ function compileStoryboard(sb, timeline, opts = {}) {
   // ---- LC chrome: persistent header (kicker + "NN - NN" scene counter stepping on every cut) ----
   const chromeEvents = [];
   if ((sb.profile || "DH") === "LC") {
-    const total = String(scaffolds.length).padStart(2, "0");
+    // the channel endcard is not a topic scene: no header, not counted
+    const total = String(scaffolds.filter((s) => s.template !== "endcard").length).padStart(2, "0");
     const kicker = (sb.entities && sb.entities.kicker) || String(sb.topic || "").toUpperCase().replace(/\s+/g, " ").slice(0, 34);
     scaffolds.forEach((s, i) => {
+      if (s.template === "endcard") return;
       s.modules.unshift({ id: "lchead", type: "lcHeader", rect: [70, 224, 938, 55], props: { kicker, counter: `01 — ${total}` }, enter: "none", at: 0 });
       if (i > 0) chromeEvents.push({ t: s.t0, op: "counter", target: "lchead", value: { text: `${String(i + 1).padStart(2, "0")} — ${total}` } });
     });
@@ -114,6 +117,7 @@ function compileStoryboard(sb, timeline, opts = {}) {
     let idx = 0;
     scaffolds.forEach((s, i) => {
       const src = sb.scaffolds[i];
+      if (s.template === "endcard") return;
       const name = String(src.chapter || chapter || "").toUpperCase();
       if (name !== chapter) {
         chapter = name;

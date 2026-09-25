@@ -32,22 +32,24 @@ const LIBS = [
   "compositions/components/lib/stage/theme-lc.js",
   "compositions/components/lib/stage/profile-lc.js",
   "compositions/components/lib/stage/profile-dc.js",
+  "compositions/components/lib/stage/modules-end.js",
+  "compositions/components/lib/stage/modules-carousel.js",
 ];
 
-function harnessHtml(spec, duration) {
-  const data = JSON.stringify({ spec, duration }).replace(/</g, "\\u003c");
+function harnessHtml(spec, duration, frame = { w: 1080, h: 1920 }) {
+  const data = JSON.stringify({ spec, duration, frame }).replace(/</g, "\\u003c");
   return `<!doctype html><html><head><meta charset="UTF-8" />
 <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
 ${LIBS.map((s) => `<script src="${s}"></script>`).join("\n")}
-<style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:1080px;height:1920px;overflow:hidden;background:#000}
-#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:Inter,ui-sans-serif,system-ui,sans-serif}</style>
+<style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:${frame.w}px;height:${frame.h}px;overflow:hidden;background:#000}
+#root{position:relative;width:${frame.w}px;height:${frame.h}px;overflow:hidden;font-family:Inter,ui-sans-serif,system-ui,sans-serif}</style>
 </head><body><div id="root"></div><script>
 window.__timelines = {};
 var D = ${data};
 var tl = gsap.timeline({ paused: true });
 var res = HFStage.build({ root: document.getElementById("root"), tl: tl, spec: D.spec, duration: D.duration });
 tl.set({}, {}, D.duration);
-window.__audit = { tl: tl, problems: res.problems };
+window.__audit = { tl: tl, problems: res.problems, frame: D.frame };
 </script></body></html>`;
 }
 
@@ -88,7 +90,8 @@ function probe(t) {
       const cr = clip ? R(clip) : null;
       // text clipped by an overflow:hidden ancestor that is smaller than the text = cut-off text
       if (cr && (r.right > cr.right + 2 || r.left < cr.left - 2) && clip !== root) out.push({ kind: "text-clipped", module: modName(m), text: txt.slice(0, 40), over: Math.round(Math.max(r.right - cr.right, cr.left - r.left)) });
-      if (r.left < -2 || r.right > 1082 || r.top < -2 || r.bottom > 1922) out.push({ kind: "text-off-frame", module: modName(m), text: txt.slice(0, 40), rect: [r.left, r.top, r.right, r.bottom].map(Math.round) });
+      const FR = A.frame || { w: 1080, h: 1920 };
+      if (r.left < -2 || r.right > FR.w + 2 || r.top < -2 || r.bottom > FR.h + 2) out.push({ kind: "text-off-frame", module: modName(m), text: txt.slice(0, 40), rect: [r.left, r.top, r.right, r.bottom].map(Math.round) });
       else if (r.left < mr.left - 24 || r.right > mr.right + 24) out.push({ kind: "text-outside-card", module: modName(m), text: txt.slice(0, 40), over: Math.round(Math.max(r.right - mr.right, mr.left - r.left)) });
     }
   }
@@ -145,22 +148,33 @@ function probeTimes(spec, duration) {
   return [...ts].sort((a, b) => a - b);
 }
 
-async function auditLayout({ spec, duration, log = () => {} }) {
+async function launchBrowser() {
   const puppeteer = require(require.resolve("puppeteer", { paths: [PUPPETEER_FROM] }));
+  return puppeteer.launch({ headless: true, args: ["--allow-file-access-from-files", "--force-device-scale-factor=1"] });
+}
+
+async function auditLayout({ spec, duration, log = () => {}, frame, times: forcedTimes, shots, browser: shared }) {
   const file = path.join(VIDEO_ENGINE_DIR, `.layout-audit-${process.pid}-${Date.now().toString(36)}.html`);
-  fs.writeFileSync(file, harnessHtml(spec, duration), "utf-8");
-  const browser = await puppeteer.launch({ headless: true, args: ["--allow-file-access-from-files", "--force-device-scale-factor=1"] });
+  fs.writeFileSync(file, harnessHtml(spec, duration, frame), "utf-8");
+  const browser = shared || (await launchBrowser());
+  let page;
   try {
-    const page = await browser.newPage();
-    await page.setViewport({ width: 1080, height: 1920 });
+    page = await browser.newPage();
+    await page.setViewport({ width: (frame || {}).w || 1080, height: (frame || {}).h || 1920 });
     await page.goto("file:///" + file.replace(/\\/g, "/"), { waitUntil: "load" });
     await page.evaluate(() => document.fonts.ready);
     const buildProblems = await page.evaluate(() => (window.__audit ? window.__audit.problems : ["stage did not build"]));
-    const times = probeTimes(spec, duration);
+    const times = forcedTimes || probeTimes(spec, duration);
     const found = [];
     for (const t of times) {
       const r = await page.evaluate(probe, t);
       r.forEach((x) => found.push({ t, ...x }));
+    }
+    // optional screenshots (carousel slides): seek, let fonts/images paint, capture the frame
+    for (const sh of shots || []) {
+      await page.evaluate((t) => { window.__audit.tl.seek(t, false); }, sh.t);
+      await new Promise((r) => setTimeout(r, 120));
+      await page.screenshot({ path: sh.path, clip: { x: 0, y: 0, width: (frame || {}).w || 1080, height: (frame || {}).h || 1920 } });
     }
     // one line per distinct defect (first time seen)
     const seen = new Map();
@@ -172,7 +186,8 @@ async function auditLayout({ spec, duration, log = () => {} }) {
     log(`[layout] ${times.length} probes, ${problems.length} defect(s)`);
     return { ok: problems.length === 0 && !buildProblems.length, problems, buildProblems, probes: times.length };
   } finally {
-    await browser.close();
+    if (shared) await page.close().catch(() => {});
+    else await browser.close();
     fs.rmSync(file, { force: true });
   }
 }
@@ -188,7 +203,7 @@ function describe(p) {
   return `${at}: ${JSON.stringify(p)}`;
 }
 
-module.exports = { auditLayout, describe, probeTimes };
+module.exports = { auditLayout, describe, probeTimes, launchBrowser };
 
 if (require.main === module) {
   (async () => {

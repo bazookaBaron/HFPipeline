@@ -55,10 +55,11 @@ function sfxCues(spec, duration) {
     prevLayout = s.layout;
   });
   (spec.events || []).forEach((e, i) => {
-    const kind = KIND_OF[e.op];
+    const SHOW = { line2: "tick", follow: "pop", site: "tick", type: "keys", click: "tick" };
+    const kind = e.op === "show" ? SHOW[(e.value && e.value.part) || ""] : KIND_OF[e.op];
     if (!kind) return;
     const c = { t: e.t, at: e.t, kind, var: i };
-    if (kind === "keys") c.dur = Math.min(1.2, typedLength(e) / 60);
+    if (kind === "keys") c.dur = e.op === "show" ? 0.2 : Math.min(1.2, typedLength(e) / 60);
     if (kind === "roll") c.dur = (e.value && e.value.dur) || 0.6;
     if (kind === "swish") c.t = e.t - 0.04;
     cues.push(c);

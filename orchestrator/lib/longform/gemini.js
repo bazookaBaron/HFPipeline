@@ -15,6 +15,7 @@ const path = require("path");
 
 const ENV_PATH = path.join(__dirname, "..", "..", "..", "scripting-pipeline", ".env");
 const API = "https://generativelanguage.googleapis.com/v1beta/models";
+const { modelFor, recordUsage } = require("../ai/models");
 
 function readEnv() {
   const env = {};
@@ -38,16 +39,19 @@ function loadGeminiRest(opts = {}) {
   const env = readEnv();
   const apiKey = process.env.GEMINI_API_KEY || env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY not set (process env or scripting-pipeline/.env)");
-  const model = opts.model || process.env.GEMINI_MODEL || env.GEMINI_MODEL || "gemini-3.6-flash";
+  // per-call task -> model tier (lib/ai/models.js); opts.model pins one model for every call
+  const pick = (task) => opts.model || modelFor(task);
+  const model = pick("research.grounded");
   const log = opts.log || (() => {});
   const maxAttempts = opts.maxAttempts || 5;
   const timeoutMs = opts.timeoutMs || 240000;
 
-  async function call(body, label) {
+  async function call(body, label, task) {
+    const m = pick(task);
     let lastErr;
     for (let i = 0; i < maxAttempts; i++) {
       try {
-        const res = await fetch(`${API}/${encodeURIComponent(model)}:generateContent`, {
+        const res = await fetch(`${API}/${encodeURIComponent(m)}:generateContent`, {
           method: "POST",
           headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
           body: JSON.stringify(body),
@@ -60,6 +64,7 @@ function loadGeminiRest(opts = {}) {
           throw new Error(msg);
         }
         const data = JSON.parse(txt);
+        recordUsage({ task, model: m, usage: data.usageMetadata, grounded: !!body.tools });
         const cand = (data.candidates || [])[0];
         if (!cand || !cand.content) throw new Error(`empty candidate (finishReason ${cand && cand.finishReason})`);
         return cand;
@@ -76,8 +81,8 @@ function loadGeminiRest(opts = {}) {
 
   const partsText = (cand) => (cand.content.parts || []).filter((p) => p.text && !p.thought).map((p) => p.text).join("");
 
-  async function grounded(text) {
-    const cand = await call({ contents: [{ parts: [{ text }] }], tools: [{ google_search: {} }], generationConfig: { temperature: 0.3 } }, "grounded");
+  async function grounded(text, o = {}) {
+    const cand = await call({ contents: [{ parts: [{ text }] }], tools: [{ google_search: {} }], generationConfig: { temperature: 0.3 } }, "grounded", o.task || "research.grounded");
     const gm = cand.groundingMetadata || {};
     return {
       text: partsText(cand),
@@ -93,7 +98,7 @@ function loadGeminiRest(opts = {}) {
       const cand = await call({
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { responseMimeType: "application/json", temperature: o.temperature ?? 0.7 },
-      }, "json");
+      }, "json", o.task || opts.task || "research.distil");
       const t = partsText(cand);
       try {
         return JSON.parse(t);

@@ -148,7 +148,7 @@ async function main() {
     return;
   }
 
-  const modelName = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+  const modelName = require("./lib/ai/models").modelFor("topics");
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: modelName,

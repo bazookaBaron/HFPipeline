@@ -121,8 +121,9 @@ function validate(cb, profile) {
 }
 
 async function generateCarousel(topic, { profile = "auto", handle = "", log = () => {}, maxAttempts = 4, generate } = {}) {
-  generate = generate || loadGemini();
-  const prof = profile === "auto" ? await chooseProfile(topic, generate) : profile;
+  const injected = generate; // tests inject a mock for every call
+  generate = generate || loadGemini("carousel");
+  const prof = profile === "auto" ? await chooseProfile(topic, injected || loadGemini("style.choose")) : profile;
   log(`carousel style: ${prof}`);
   let raw = null;
   let problems = [];

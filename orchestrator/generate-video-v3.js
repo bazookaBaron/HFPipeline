@@ -153,7 +153,7 @@ async function main() {
   if (bool(args.endcard, true) && bool(args.promo, false)) {
     let gen = null;
     try {
-      gen = require("./lib/video/v3/storyboardGen").loadGemini();
+      gen = require("./lib/video/v3/storyboardGen").loadGemini("promo.pick");
     } catch (_) {
       gen = null;
     }

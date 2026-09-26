@@ -177,7 +177,7 @@ async function research(topic, opts = {}) {
   let plan = !opts.force && readJson(path.join(dir, "plan.json"));
   if (!plan) {
     log("research: planning questions");
-    plan = await g.json(planPrompt(topic), { temperature: 0.4 });
+    plan = await g.json(planPrompt(topic), { temperature: 0.4, task: "research.plan" });
     plan.questions = (plan.questions || []).filter(Boolean).slice(0, 12);
     if (plan.questions.length < 8) throw new Error(`research plan has ${plan.questions.length} questions (need 8-12)`);
     writeJson(path.join(dir, "plan.json"), plan);
@@ -202,7 +202,7 @@ async function research(topic, opts = {}) {
     return `Q${i + 1}. ${a.question}\n${text}`;
   });
   log(`research: distilling ${reg.list.length} sources`);
-  const raw = await g.json(distilPrompt(topic, plan.angle, blocks, reg.list), { temperature: 0.2 });
+  const raw = await g.json(distilPrompt(topic, plan.angle, blocks, reg.list), { temperature: 0.2, task: "research.distil" });
   const dossier = finalizeDossier(raw, topic, plan.angle, reg.list);
   dossier.research = { questions: plan.questions, searchQueries: [...new Set(answers.flatMap((a) => a.queries || []))], model: g.model, at: new Date().toISOString() };
   if (dossier.facts.length < 12) throw new Error(`dossier has only ${dossier.facts.length} sourced facts`);

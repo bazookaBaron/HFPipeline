@@ -7,6 +7,7 @@ const path = require("path");
 
 const API = "https://generativelanguage.googleapis.com/v1beta/models";
 const DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image"; // verified with the key 2026-09-26 (1376x768 at 16:9)
+const { modelFor, recordUsage } = require("../ai/models");
 
 function readEnv() {
   const envPath = path.join(__dirname, "..", "..", "..", "scripting-pipeline", ".env");
@@ -40,12 +41,14 @@ function createGemini(opts = {}) {
   const env = readEnv();
   const apiKey = opts.apiKey || process.env.GEMINI_API_KEY || env.GEMINI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY not set (process env or scripting-pipeline/.env)");
-  const model = opts.model || process.env.GEMINI_MODEL || env.GEMINI_MODEL || "gemini-3.6-flash";
-  const imageModel = opts.imageModel || process.env.GEMINI_IMAGE_MODEL || env.GEMINI_IMAGE_MODEL || DEFAULT_IMAGE_MODEL;
+  // task -> model tier (lib/ai/models.js): keywords and vetting run on the lite tier
+  const pick = (task) => opts.model || modelFor(task);
+  const model = pick("media.queries");
+  const imageModel = opts.imageModel || modelFor("media.illustration") || DEFAULT_IMAGE_MODEL;
   const fetchImpl = opts.fetch || globalThis.fetch;
   const log = opts.log || (() => {});
 
-  async function call(m, body) {
+  async function call(m, body, task) {
     let delay = 2000;
     for (let attempt = 0; ; attempt++) {
       const res = await fetchImpl(`${API}/${m}:generateContent`, {
@@ -61,6 +64,7 @@ function createGemini(opts = {}) {
       }
       const data = await res.json();
       if (!res.ok || data.error) throw new Error(`gemini ${m} ${res.status}: ${(data.error && data.error.message) || "error"}`);
+      recordUsage({ task, model: m, usage: data.usageMetadata });
       return data;
     }
   }
@@ -82,10 +86,11 @@ function createGemini(opts = {}) {
       if (img.label) parts.push({ text: img.label });
       parts.push({ inlineData: { mimeType: img.mime || "image/jpeg", data: Buffer.from(img.data).toString("base64") } });
     }
-    const data = await call(o.model || model, {
+    const task = o.task || (o.images && o.images.length ? "media.vision" : "media.queries");
+    const data = await call(o.model || pick(task), {
       contents: [{ role: "user", parts }],
       generationConfig: { responseMimeType: "application/json", temperature: o.temperature == null ? 0 : o.temperature },
-    });
+    }, task);
     const text = ((data.candidates || [])[0]?.content?.parts || []).map((p) => p.text || "").join("");
     return extractJson(text);
   }
@@ -94,7 +99,7 @@ function createGemini(opts = {}) {
     const data = await call(o.model || imageModel, {
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig: { responseModalities: ["IMAGE"], imageConfig: { aspectRatio: o.aspectRatio || "16:9" } },
-    });
+    }, "media.illustration");
     for (const p of (data.candidates || [])[0]?.content?.parts || []) {
       if (p.inlineData && p.inlineData.data) return { mime: p.inlineData.mimeType, data: Buffer.from(p.inlineData.data, "base64") };
     }

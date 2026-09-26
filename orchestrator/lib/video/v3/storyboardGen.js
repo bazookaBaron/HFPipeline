@@ -579,7 +579,7 @@ ${cadenceSummary(raw)}
 Return the corrected full storyboard.v3 JSON. Keep everything that was valid; fix exactly these problems.`;
 }
 
-function loadGemini() {
+function loadGemini(task = "storyboard") {
   const envPath = path.join(__dirname, "..", "..", "..", "..", "scripting-pipeline", ".env");
   const env = {};
   if (fs.existsSync(envPath)) {
@@ -592,11 +592,12 @@ function loadGemini() {
   if (!apiKey) throw new Error("GEMINI_API_KEY not set (process env or scripting-pipeline/.env)");
   const { GoogleGenerativeAI } = require(path.join(__dirname, "..", "..", "..", "..", "scripting-pipeline", "node_modules", "@google", "generative-ai"));
   const model = new GoogleGenerativeAI(apiKey).getGenerativeModel({
-    model: process.env.GEMINI_MODEL || env.GEMINI_MODEL || "gemini-3.6-flash",
+    model: require("../../ai/models").modelFor(task),
     generationConfig: { responseMimeType: "application/json", temperature: 0.7 },
   });
   return async (prompt) => {
     const r = await model.generateContent(prompt);
+    require("../../ai/models").recordUsage({ task, model: model.model, usage: r.response.usageMetadata });
     return JSON.parse(r.response.text());
   };
 }
@@ -611,7 +612,7 @@ async function generateStoryboard(topic, opts = {}) {
   const log = opts.log || (() => {});
   if (!opts.profile || opts.profile === "auto") {
     try {
-      opts = { ...opts, profile: await chooseProfile(topic, generate) };
+      opts = { ...opts, profile: await chooseProfile(topic, opts.generate || loadGemini("style.choose")) };
     } catch (err) {
       if (/\b(401|402|403)\b|credits are depleted|API key not valid|PERMISSION_DENIED/i.test(err.message)) throw new Error(`model unavailable (not retried): ${err.message}`);
       opts = { ...opts, profile: "DH" };

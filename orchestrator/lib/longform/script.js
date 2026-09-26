@@ -146,7 +146,7 @@ async function writeScript(dossier, outline, opts = {}) {
   const secs = [outline.coldOpen, ...outline.chapters, outline.recap];
   let sections = await pool(secs, opts.concurrency || 3, async (sec) => {
     log(`script: drafting ${sec.id}`);
-    return normalizeSection(sec, await g.json(scriptPrompt(dossier, outline, sec), { temperature: 0.9 }));
+    return normalizeSection(sec, await g.json(scriptPrompt(dossier, outline, sec), { temperature: 0.9, task: "longform.script" }));
   });
   let problems = checkAll(sections, dossier);
   const history = [problems.map((p) => p.length)];
@@ -155,7 +155,7 @@ async function writeScript(dossier, outline, opts = {}) {
   for (let round = 1; round <= (opts.maxRepairs ?? 3) && problems.some((p) => p.length); round++) {
     const todo = sections.map((s, i) => i).filter((i) => problems[i].length);
     log(`script: repair round ${round}: ${todo.map((i) => `${sections[i].id}(${problems[i].length})`).join(" ")}`);
-    const fixed = await pool(todo, opts.concurrency || 3, async (i) => normalizeSection(secs[i], await g.json(repairPrompt(dossier, outline, secs[i], sections[i], problems[i]), { temperature: 0.6 })));
+    const fixed = await pool(todo, opts.concurrency || 3, async (i) => normalizeSection(secs[i], await g.json(repairPrompt(dossier, outline, secs[i], sections[i], problems[i]), { temperature: 0.6, task: "script.repair" })));
     todo.forEach((i, k) => { if (fixed[k].sentences.length) sections[i] = fixed[k]; });
     problems = checkAll(sections, dossier);
     history.push(problems.map((p) => p.length));

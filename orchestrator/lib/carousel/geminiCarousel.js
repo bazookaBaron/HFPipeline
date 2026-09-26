@@ -72,7 +72,7 @@ async function generateCarouselContent({ topic, brandHandle, accentColor, log = 
     );
   }
 
-  const modelName = process.env.GEMINI_MODEL || "gemini-3.6-flash";
+  const modelName = require("../ai/models").modelFor("carousel");
   const genAI = new GoogleGenerativeAI(apiKey);
   const model = genAI.getGenerativeModel({
     model: modelName,

@@ -5,9 +5,10 @@
  * Long-form (16:9) research -> outline -> chapter script.
  *
  *   node research-longform.js --topic "Why Kingfisher Airlines went bankrupt" [--minutes 10] [--out dir] [--force]
- *     [--cache dir] [--from research|outline|script]
+ *     [--cache dir] [--from research|data|outline|script]
  *
- * Writes <out>/dossier.json, outline.json, script.json and script.md. Resumable: an existing
+ * Writes <out>/dossier.json, data.json (World Bank series, lib/longform/data.js; latest + peak merged into the
+ * dossier as facts D1..), outline.json, script.json and script.md. Resumable: an existing
  * artefact is reused unless --force (everything) or --from <stage> (that stage and later).
  * Research is also cached by topic hash under --cache (default output/lf/.cache).
  */
@@ -17,6 +18,7 @@ const path = require("path");
 const { loadGeminiRest } = require("./lib/longform/gemini");
 const { research } = require("./lib/longform/research");
 const { makeOutline } = require("./lib/longform/outline");
+const { buildData, mergeDataFacts } = require("./lib/longform/data");
 const { writeScript, scriptMarkdown } = require("./lib/longform/script");
 
 function args(argv) {
@@ -43,14 +45,14 @@ const writeJson = (p, v) => fs.writeFileSync(p, JSON.stringify(v, null, 2));
 async function main() {
   const a = args(process.argv);
   if (a.help || !a.topic) {
-    console.log('usage: node research-longform.js --topic "..." [--minutes 10] [--out dir] [--force] [--from research|outline|script] [--cache dir]');
+    console.log('usage: node research-longform.js --topic "..." [--minutes 10] [--out dir] [--force] [--from research|data|outline|script] [--cache dir]');
     process.exit(a.help ? 0 : 2);
   }
   if (!(a.minutes >= 2 && a.minutes <= 20)) throw new Error("--minutes must be 2-20");
   const out = path.resolve(a.out || path.join(__dirname, "output", "lf", slug(a.topic)));
   const cacheDir = path.resolve(a.cache || path.join(__dirname, "output", "lf", ".cache"));
   fs.mkdirSync(out, { recursive: true });
-  const stages = ["research", "outline", "script"];
+  const stages = ["research", "data", "outline", "script"];
   const redoFrom = a.force ? 0 : a.from ? stages.indexOf(a.from) : stages.length;
   if (redoFrom < 0) throw new Error(`--from must be one of ${stages.join(", ")}`);
   const redo = (s) => stages.indexOf(s) >= redoFrom;
@@ -58,7 +60,7 @@ async function main() {
   const gemini = loadGeminiRest({ log });
   log(`topic: ${a.topic} | ${a.minutes} min | out ${out} | model ${gemini.model}`);
 
-  const P = { dossier: path.join(out, "dossier.json"), outline: path.join(out, "outline.json"), script: path.join(out, "script.json"), md: path.join(out, "script.md") };
+  const P = { dossier: path.join(out, "dossier.json"), data: path.join(out, "data.json"), outline: path.join(out, "outline.json"), script: path.join(out, "script.json"), md: path.join(out, "script.md") };
 
   let dossier;
   if (!redo("research") && fs.existsSync(P.dossier)) { dossier = readJson(P.dossier); log("research: reusing dossier.json"); }
@@ -67,6 +69,16 @@ async function main() {
     writeJson(P.dossier, dossier);
   }
   log(`dossier: ${dossier.facts.length} facts, ${dossier.timeline.length} timeline, ${dossier.entities.length} entities, ${dossier.glossary.length} glossary, ${dossier.sources.length} sources`);
+
+  let data;
+  if (!redo("data") && fs.existsSync(P.data)) { data = readJson(P.data); log("data: reusing data.json"); }
+  else {
+    try { data = await buildData(dossier, { log }); } catch (err) { log(`data: unavailable (${err.message}); continuing without series`); data = { version: "data.v1", series: [], skipped: [], error: String(err.message) }; }
+    writeJson(P.data, data);
+  }
+  dossier = mergeDataFacts(dossier, data);
+  writeJson(P.dossier, dossier);
+  log(`data: ${data.series.length} series (${data.series.map((s) => `${s.id} ${s.kind} ${s.country} ${s.indicator}`).join(", ") || "none"})`);
 
   let outline;
   const outlineStale = fs.existsSync(P.outline) && readJson(P.outline).budget?.minutes !== a.minutes;

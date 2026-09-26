@@ -5,13 +5,16 @@
  * make-longform.js -- one-click 16:9 long-form video (plan §7, P6).
  *
  *   node make-longform.js --topic "Why Kingfisher went bankrupt" [--minutes 10] [--out dir]
- *     [--from research|outline|script|storyboards|media|render|stitch|master|gates|package]
+ *     [--from research|data|outline|script|storyboards|media|render|stitch|master|gates|package|thumbnail]
  *     [--chapters "cold,1,3,recap"] [--no-render] [--offline] [--replay <dir>] [--music ambient|lofi|pulse|off]
  *     [--quality looks] [--keep-going]
  *
  * Stages (each writes its artefact under --out and is skipped on a re-run when the artefact exists and
  * its content key still matches; --from <stage> redoes that stage and everything after it):
  *   research     dossier.json                    lib/longform/research.js (Gemini + Google Search)
+ *   data         data.json (+ dossier facts D1..)  lib/longform/data.js (World Bank series for the dossier's dataAsks;
+ *                                                 latest + peak become facts, full series feed charts/maps via
+ *                                                 {series:"S1"} refs, lib/longform/DATA.md); key = hash(dataAsks)
  *   outline      outline.json                    lib/longform/outline.js
  *   script       script.json                     lib/longform/script.js (fixed narration from here on)
  *   storyboards  storyboards/<section>.json      lib/longform/storyboardLF.js, 3 sections in parallel;
@@ -36,6 +39,11 @@
  *   gates        final/gates.json                loudness, frame size/fps, durations, captions, YouTube chapter rules,
  *                                                 per-chapter gate results aggregated
  *   package      final/captions.srt, description.md, credits.txt, metadata.json
+ *   thumbnail    final/thumbnail-{a,b,c}.png (1280x720, < 2 MB), final/thumbnails.json; metadata.json gets a
+ *                thumbnails field         lib/longform/thumbnail.js (hero photo from the manifest, 2-4 word title
+ *                                                 via Gemini lite or deterministic, dossier stat, puppeteer render,
+ *                                                 legibility/contrast/subject checks); key = hash(inputs); a failure
+ *                                                 here is reported but never fails the run
  *
  * Progress: human lines "[lf] ..." plus one machine line per stage event on stdout:
  *   @@lf {"stage":"render","status":"start|progress|done|skip|fail","detail":"...", ...}
@@ -53,7 +61,7 @@ const ST = require("./lib/longform/stitch");
 const { pool } = require("./lib/longform/gemini");
 const { matchLibrary } = require("./lib/media/library");
 
-const STAGES = ["research", "outline", "script", "storyboards", "media", "render", "stitch", "master", "gates", "package"];
+const STAGES = ["research", "data", "outline", "script", "storyboards", "media", "render", "stitch", "master", "gates", "package", "thumbnail"];
 const RENDER_VERSION = "lf-render.1";
 
 // ------------------------------------------------------------------------------------ helpers
@@ -139,6 +147,7 @@ async function main() {
   fs.mkdirSync(out, { recursive: true });
   const P = {
     dossier: path.join(out, "dossier.json"),
+    data: path.join(out, "data.json"),
     outline: path.join(out, "outline.json"),
     script: path.join(out, "script.json"),
     sbDir: path.join(out, "storyboards"),
@@ -150,7 +159,7 @@ async function main() {
   // --from X redoes X and every later stage. Content-keyed stages (media, render, stitch, master)
   // already rebuild when their inputs change, so they are only FORCED when --from names one of them
   // (or an earlier keyed stage): "--from storyboards" re-renders only chapters whose storyboard changed.
-  const KEYED = ["media", "render", "stitch", "master"];
+  const KEYED = ["media", "render", "stitch", "master", "thumbnail"];
   const redo = (stage) => {
     if (!a.from || STAGES.indexOf(stage) < STAGES.indexOf(a.from)) return false;
     return KEYED.indexOf(stage) < 0 || KEYED.indexOf(a.from) >= 0 || STAGES.indexOf(a.from) > STAGES.indexOf("master");
@@ -195,6 +204,32 @@ async function main() {
     }
     writeJson(P.dossier, dossier);
     stageDone("research", `${dossier.facts.length} facts, ${dossier.sources.length} sources`);
+  }
+  // ---------------------------------------------------------------- data (World Bank series)
+  emit("data", "start");
+  {
+    const DATA = require("./lib/longform/data");
+    const dataKey = hash({ asks: dossier.dataAsks || [], v: 1 });
+    let data = exists(P.data) ? readJson(P.data) : null;
+    if (data && data.key === dataKey && !redo("data")) stageSkip("data", `reusing data.json (${data.series.length} series)`);
+    else {
+      try {
+        data = await DATA.buildData(dossier, { log, offline: !!a.offline });
+      } catch (err) {
+        // real data is an enhancement: a failed fetch never stops the video
+        log(`data: unavailable (${String(err.message).slice(0, 160)}); continuing without data series`);
+        data = { version: "data.v1", series: [], skipped: [], error: String(err.message).slice(0, 300) };
+      }
+      data.key = dataKey;
+      writeJson(P.data, data);
+      stageDone("data", `${data.series.length} series, ${(data.skipped || []).length} skipped`);
+    }
+    // idempotent: D* facts (latest + peak per series) replace any earlier ones
+    const merged = DATA.mergeDataFacts(dossier, data);
+    if (JSON.stringify(merged) !== JSON.stringify(dossier)) {
+      dossier = merged;
+      writeJson(P.dossier, dossier);
+    }
   }
   emit("outline", "start");
   const outlineStale = exists(P.outline) && (readJson(P.outline).budget || {}).minutes !== a.minutes;
@@ -307,8 +342,11 @@ async function main() {
     const { intents, renames } = SL.mergeIntents(chapters);
     const key = hash({ intents, v: 1 });
     const keyPath = path.join(P.mediaDir, "media.key");
+    const { hasSeriesRef } = require("./lib/video/v3/series");
     for (const { id, sb } of chapters) {
       sb.mediaManifest = path.relative(path.join(P.chDir, id), manifestPath).split(path.sep).join("/");
+      // chart / map series refs ({series: "S1"}) resolve at compile from data.json (lib/longform/DATA.md)
+      if (hasSeriesRef(sb.scaffolds) || hasSeriesRef(sb.events)) sb.dataFile = path.relative(path.join(P.chDir, id), P.data).split(path.sep).join("/");
       writeJson(chSbPath(id), sb);
     }
     writeJson(path.join(P.mediaDir, "intents.json"), intents);
@@ -370,7 +408,7 @@ async function main() {
     const manifest = readJson(manifestPath);
     const used = [...SL.referencedSlots(sb)].sort().map((s) => [s, manifest.slots[s] || null]);
     const endcard = id === lastSection;
-    const opts = { music: false, captions: false, endcard, quality: a.quality, v: RENDER_VERSION };
+    const opts = { music: false, captions: false, endcard, quality: a.quality, v: RENDER_VERSION, ...(sb.dataFile && exists(P.data) ? { data: hash(readJson(P.data).series) } : {}) };
     const { lfMeta, ...sbKey } = sb; // lfMeta (attempt stats) never changes the picture
     const key = hash({ sb: sbKey, used, opts });
     const mp4 = path.join(dir, "chapter.mp4");
@@ -577,6 +615,31 @@ async function main() {
   };
   writeJson(path.join(P.finalDir, "metadata.json"), metadata);
   stageDone("package", `final/ video.mp4 (${fin.duration.toFixed(1)} s), captions.srt (${cues.length} cues), description.md, credits.txt, metadata.json`, { video, description: path.join(P.finalDir, "description.md"), dir: P.finalDir });
+
+  // ---------------------------------------------------------------- thumbnail (3 variants, never fails the run)
+  emit("thumbnail", "start");
+  try {
+    const TH = require("./lib/longform/thumbnail");
+    const thumbsJson = path.join(P.finalDir, "thumbnails.json");
+    const thumbKey = hash({ v: TH.VERSION, manifest: usedManifest, title: outline.title, angle: dossier.angle, facts: (dossier.facts || []).map((f) => [f.id, f.value, f.unit, f.confidence]), offline: !!a.offline });
+    let thumbs = exists(thumbsJson) ? readJson(thumbsJson) : null;
+    const have = thumbs && thumbs.key === thumbKey && (thumbs.variants || []).every((v) => exists(path.join(P.finalDir, v.file)));
+    if (have && !redo("thumbnail")) stageSkip("thumbnail", `reusing ${thumbs.variants.map((v) => v.file).join(", ")}`);
+    else {
+      const mediaReport = path.join(P.mediaDir, "media-report.json");
+      const ask = a.offline ? null : (prompt) => gemini().json(prompt, { task: "longform.thumbnail", temperature: 0.7 });
+      thumbs = await TH.makeThumbnails({ finalDir: P.finalDir, workDir: path.join(out, "thumbnail"), manifest: { slots: usedManifest }, intents: exists(path.join(P.mediaDir, "intents.json")) ? readJson(path.join(P.mediaDir, "intents.json")) : [], report: exists(mediaReport) ? readJson(mediaReport) : {}, outline, dossier, topic, ask, log });
+      thumbs = { key: thumbKey, ...thumbs };
+      writeJson(thumbsJson, thumbs);
+      stageDone("thumbnail", `${thumbs.variants.map((v) => `${v.file}${v.ok ? "" : " (check fail)"}`).join(", ")}; "${thumbs.title.text}"`, { files: thumbs.variants.map((v) => path.join(P.finalDir, v.file)) });
+    }
+    metadata.thumbnails = TH.metadataField(thumbs);
+    metadata.files.thumbnails = thumbs.variants.map((v) => v.file);
+    writeJson(path.join(P.finalDir, "metadata.json"), metadata);
+  } catch (err) {
+    emit("thumbnail", "fail", { detail: String(err.message).slice(0, 300) });
+    log(`thumbnail: failed (${String(err.message).slice(0, 300)}); the video package is unaffected`);
+  }
   writeJson(path.join(out, "run.json"), { ...run, renders, gatesOk: gatesOut.ok, finishedAt: new Date().toISOString() });
   log(`done: ${video}`);
   return gatesOut.ok ? 0 : 3;

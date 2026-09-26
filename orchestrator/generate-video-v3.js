@@ -16,6 +16,7 @@
  *          [--tts-speed 1] [--captions true] [--mascot true] [--reuse-voice true] [--quality looks]
  *          [--music false|lofi|ambient|pulse]   (synthesized, ducked background bed; default false, LF: ambient)
  *          [--media media-manifest.json]        (LF: slot -> local file + credit; default sb.mediaManifest beside the storyboard)
+ *          [--data data.json]                   (data series for {series:"S1"} refs, lib/longform/DATA.md; default sb.dataFile beside the storyboard)
  *          [--voice-lock <dir>]                 (serialize the TTS stage across parallel renders, e.g. make-longform.js chapters)
  * LF (16:9 long-form) differs: relaxed pace (lib/video/v3/pace.js), captions off, music bed on with a swell on
  * chapter cards, lower SFX density, no presenter, the lfEnd ending (brand.json "longform").
@@ -238,6 +239,16 @@ async function main() {
       log(`media manifest: ${mp}`);
     }
   }
+  // data series (lib/longform/data.js): --data, else sb.dataFile relative to the storyboard file
+  let dataSeries = null;
+  {
+    const dp = typeof args.data === "string" ? path.resolve(args.data) : typeof sbTopic.dataFile === "string" ? path.resolve(path.dirname(sbPath), sbTopic.dataFile) : null;
+    if (dp) {
+      if (!fs.existsSync(dp)) return die("script", `data file not found: ${dp}`);
+      dataSeries = JSON.parse(fs.readFileSync(dp, "utf-8"));
+      log(`data series: ${dp}`);
+    }
+  }
   const pace = paceFor(sb.profile);
   const gapsFinal = sentenceGaps(sb.sentences, pace);
   const gapsTotal = gapsFinal.reduce((a, g) => a + g, 0);
@@ -322,7 +333,7 @@ async function main() {
 
   let spec;
   try {
-    spec = compileStoryboard(sb, timeline, { mascot: mascotOn && !landscape, presenter: typeof args.presenter === "string" ? args.presenter : undefined, media: mediaManifest });
+    spec = compileStoryboard(sb, timeline, { mascot: mascotOn && !landscape, presenter: typeof args.presenter === "string" ? args.presenter : undefined, media: mediaManifest, data: dataSeries });
   } catch (err) {
     return die("compose", `compile failed: ${err.message}`, err);
   }

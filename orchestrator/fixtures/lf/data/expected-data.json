@@ -1,0 +1,340 @@
+{
+ "version": "data.v1",
+ "series": [
+  {
+   "id": "S1",
+   "kind": "time",
+   "metric": "Pakistan external debt",
+   "indicatorMetric": "External debt stocks",
+   "country": "PAK",
+   "countryName": "Pakistan",
+   "unit": "% of GNI",
+   "indicator": "DT.DOD.DECT.GN.ZS",
+   "indicatorName": "External debt stocks (% of GNI)",
+   "source": "World Bank, External debt stocks (% of GNI) (DT.DOD.DECT.GN.ZS)",
+   "sourceUrl": "https://data.worldbank.org/indicator/DT.DOD.DECT.GN.ZS?locations=PK",
+   "licence": "CC BY 4.0",
+   "decimals": 1,
+   "retrieved": "2026-09-26",
+   "points": [
+    {
+     "x": 2010,
+     "y": 32.8
+    },
+    {
+     "x": 2011,
+     "y": 28.6
+    },
+    {
+     "x": 2012,
+     "y": 25.9
+    },
+    {
+     "x": 2013,
+     "y": 23.6
+    },
+    {
+     "x": 2014,
+     "y": 24
+    },
+    {
+     "x": 2015,
+     "y": 23.3
+    },
+    {
+     "x": 2016,
+     "y": 24.4
+    },
+    {
+     "x": 2017,
+     "y": 27.9
+    },
+    {
+     "x": 2018,
+     "y": 28.5
+    },
+    {
+     "x": 2019,
+     "y": 34.9
+    },
+    {
+     "x": 2020,
+     "y": 40
+    },
+    {
+     "x": 2021,
+     "y": 38
+    },
+    {
+     "x": 2022,
+     "y": 34.5
+    },
+    {
+     "x": 2023,
+     "y": 39.4
+    }
+   ]
+  },
+  {
+   "id": "S2",
+   "kind": "time",
+   "metric": "India GDP",
+   "indicatorMetric": "GDP",
+   "country": "IND",
+   "countryName": "India",
+   "unit": "US$ trillion",
+   "indicator": "NY.GDP.MKTP.CD",
+   "indicatorName": "GDP (current US$)",
+   "source": "World Bank, GDP (current US$) (NY.GDP.MKTP.CD)",
+   "sourceUrl": "https://data.worldbank.org/indicator/NY.GDP.MKTP.CD?locations=IN",
+   "licence": "CC BY 4.0",
+   "decimals": 2,
+   "retrieved": "2026-09-26",
+   "points": [
+    {
+     "x": 2000,
+     "y": 0.47
+    },
+    {
+     "x": 2001,
+     "y": 0.49
+    },
+    {
+     "x": 2002,
+     "y": 0.51
+    },
+    {
+     "x": 2003,
+     "y": 0.61
+    },
+    {
+     "x": 2004,
+     "y": 0.71
+    },
+    {
+     "x": 2005,
+     "y": 0.82
+    },
+    {
+     "x": 2006,
+     "y": 0.94
+    },
+    {
+     "x": 2007,
+     "y": 1.22
+    },
+    {
+     "x": 2008,
+     "y": 1.2
+    },
+    {
+     "x": 2009,
+     "y": 1.34
+    },
+    {
+     "x": 2010,
+     "y": 1.68
+    },
+    {
+     "x": 2011,
+     "y": 1.82
+    },
+    {
+     "x": 2012,
+     "y": 1.83
+    },
+    {
+     "x": 2013,
+     "y": 1.86
+    },
+    {
+     "x": 2014,
+     "y": 2.04
+    },
+    {
+     "x": 2015,
+     "y": 2.1
+    },
+    {
+     "x": 2016,
+     "y": 2.29
+    },
+    {
+     "x": 2017,
+     "y": 2.65
+    },
+    {
+     "x": 2018,
+     "y": 2.7
+    },
+    {
+     "x": 2019,
+     "y": 2.84
+    },
+    {
+     "x": 2020,
+     "y": 2.67
+    },
+    {
+     "x": 2021,
+     "y": 3.17
+    },
+    {
+     "x": 2022,
+     "y": 3.25
+    },
+    {
+     "x": 2023,
+     "y": 3.5
+    }
+   ]
+  },
+  {
+   "id": "S3",
+   "kind": "map",
+   "metric": "Pakistan external debt",
+   "indicatorMetric": "External debt stocks",
+   "country": "all",
+   "year": 2023,
+   "unit": "% of GNI",
+   "indicator": "DT.DOD.DECT.GN.ZS",
+   "indicatorName": "External debt stocks (% of GNI)",
+   "source": "World Bank, External debt stocks (% of GNI) (DT.DOD.DECT.GN.ZS), 2023",
+   "sourceUrl": "https://data.worldbank.org/indicator/DT.DOD.DECT.GN.ZS",
+   "licence": "CC BY 4.0",
+   "decimals": 1,
+   "retrieved": "2026-09-26",
+   "values": {
+    "AFG": 19.9,
+    "AGO": 74.6,
+    "ALB": 48.7,
+    "ARG": 40,
+    "ARM": 67.6,
+    "AZE": 21.6,
+    "BDI": 39,
+    "BEN": 64.4,
+    "BFA": 53.8,
+    "BGD": 22.3,
+    "BIH": 50.6,
+    "BLR": 52.4,
+    "BLZ": 51.4,
+    "BOL": 37.2,
+    "BRA": 28.6,
+    "BTN": 114.5,
+    "BWA": 11.2,
+    "CAF": 40,
+    "CHN": 13.5,
+    "CIV": 47.5,
+    "CMR": 31.9,
+    "COD": 18.5,
+    "COG": 47.2,
+    "COL": 55,
+    "COM": 26.5,
+    "CPV": 98.1,
+    "DJI": 85.3,
+    "DMA": 89.9,
+    "DOM": 45.4,
+    "DZA": 3,
+    "ECU": 52.1,
+    "EGY": 44.4,
+    "FJI": 65.3,
+    "GAB": 41.2,
+    "GEO": 85,
+    "GHA": 55.3,
+    "GIN": 25.2,
+    "GMB": 55.8,
+    "GNB": 68.1,
+    "GRD": 74.4,
+    "GTM": 25.1,
+    "GUY": 21.9,
+    "HND": 40.8,
+    "HTI": 15.9,
+    "IDN": 29.9,
+    "IND": 18,
+    "IRN": 2.5,
+    "IRQ": 7.5,
+    "JAM": 80.5,
+    "JOR": 87.9,
+    "KAZ": 72.9,
+    "KEN": 40.4,
+    "KGZ": 67.8,
+    "KHM": 54.5,
+    "LAO": 123,
+    "LBN": 331.6,
+    "LBR": 51.1,
+    "LCA": 48.7,
+    "LKA": 74.6,
+    "LSO": 68.9,
+    "MAR": 48.9,
+    "MDA": 62.8,
+    "MDG": 41.4,
+    "MDV": 68.6,
+    "MEX": 34.1,
+    "MKD": 83.7,
+    "MLI": 27.3,
+    "MMR": 18.6,
+    "MNE": 114,
+    "MNG": 193.6,
+    "MOZ": 355.4,
+    "MRT": 43,
+    "MUS": 123.6,
+    "MWI": 29.2,
+    "NER": 34,
+    "NGA": 29,
+    "NIC": 90.4,
+    "NPL": 24,
+    "PAK": 39.4,
+    "PER": 37.2,
+    "PHL": 25.7,
+    "PNG": 54.3,
+    "PRY": 64.1,
+    "RWA": 81,
+    "SDN": 58,
+    "SEN": 153.2,
+    "SLB": 31.3,
+    "SLE": 37.8,
+    "SLV": 72.1,
+    "SOM": 28.3,
+    "SRB": 65.2,
+    "STP": 46.4,
+    "SUR": 129.1,
+    "SWZ": 28.6,
+    "SYR": 25.3,
+    "TCD": 16.9,
+    "TGO": 37.4,
+    "THA": 38.7,
+    "TJK": 43.1,
+    "TKM": 6.5,
+    "TLS": 12.6,
+    "TON": 35.4,
+    "TUN": 90.2,
+    "TUR": 45.2,
+    "TZA": 44.6,
+    "UGA": 42.7,
+    "UKR": 96.1,
+    "UZB": 59.4,
+    "VCT": 65,
+    "VNM": 34.5,
+    "VUT": 36.7,
+    "WSM": 46.8,
+    "XKX": 39.7,
+    "ZAF": 44.2,
+    "ZMB": 110.7,
+    "ZWE": 41.8
+   }
+  }
+ ],
+ "skipped": [
+  {
+   "ask": {
+    "metric": "Kingfisher revenue",
+    "country": null,
+    "years": [
+     2005,
+     2012
+    ]
+   },
+   "reason": "no World Bank indicator (company / non-WDI data)"
+  }
+ ]
+}

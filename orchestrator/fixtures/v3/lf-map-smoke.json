@@ -1,0 +1,45 @@
+{
+ "version": "storyboard.v3",
+ "profile": "LF",
+ "frame": { "w": 1920, "h": 1080 },
+ "topic": "Pakistan's debt (map smoke)",
+ "chapter": { "index": 3, "count": 6, "title": "The China loans" },
+ "dataFile": "lf-map-smoke.data.json",
+ "entities": {},
+ "sentences": [
+  { "id": "s1", "text": "Look at the map of South Asia, where India and Pakistan share a long and troubled border." },
+  { "id": "s2", "text": "Karachi is Pakistan's biggest port and its financial capital." },
+  { "id": "s3", "text": "Over the last decade, a lot of the money that built its roads and power plants came from Beijing." },
+  { "id": "s4", "text": "Pakistan is not alone: across the developing world, foreign debt is now a big share of national income." },
+  { "id": "s5", "text": "Pakistan's own ratio has climbed from about twenty-three percent in twenty fifteen to a peak of forty in twenty twenty." }
+ ],
+ "scaffolds": [
+  {
+   "id": "m1", "template": "free", "from": "s1",
+   "slots": { "modules": [
+    { "id": "map1", "type": "countryMap", "rect": [96, 120, 1728, 840], "props": { "focus": ["IND", "PAK"] } }
+   ] }
+  },
+  {
+   "id": "m2", "template": "free", "from": "s4",
+   "slots": { "modules": [
+    { "id": "map2", "type": "worldMap", "rect": [96, 120, 1728, 840], "props": {} }
+   ] }
+  },
+  {
+   "id": "c1", "template": "free", "from": "s5",
+   "slots": { "modules": [
+    { "id": "chart1", "type": "lineChart", "rect": [96, 120, 1728, 840], "props": { "title": "Pakistan: external debt", "series": "S1", "from": 2010 } }
+   ] }
+  }
+ ],
+ "events": [
+  { "sentence": "s1", "anchor": { "text": "India" }, "op": "highlight", "target": "map1", "value": { "iso": "IND", "tone": "blue" } },
+  { "sentence": "s1", "anchor": { "text": "Pakistan" }, "op": "highlight", "target": "map1", "value": { "iso": "PAK", "tone": "green" } },
+  { "sentence": "s2", "anchor": { "text": "Karachi" }, "op": "pin", "target": "map1", "value": { "city": "Karachi" } },
+  { "sentence": "s3", "anchor": { "text": "decade," }, "op": "zoomTo", "target": "map1", "value": { "isos": ["PAK", "CHN"] } },
+  { "sentence": "s3", "anchor": { "text": "came" }, "op": "arrow", "target": "map1", "value": { "from": { "city": "Karachi" }, "to": { "city": "Beijing" }, "label": "debt", "tone": "red" } },
+  { "sentence": "s4", "anchor": { "text": "developing" }, "op": "choropleth", "target": "map2", "value": { "series": "S3", "title": "External debt stocks" } },
+  { "sentence": "s5", "anchor": { "text": "peak" }, "op": "annotate", "target": "chart1", "value": { "i": 11, "text": "Peak: 40.0% in 2020" } }
+ ]
+}

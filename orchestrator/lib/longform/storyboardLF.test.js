@@ -200,7 +200,9 @@ test("package: SRT cues offset by chapter start, YouTube timestamps, chapter rul
   assert.match(PK.chapterRules([{ title: "a", start: 0 }, { title: "b", start: 5 }, { title: "c", start: 30 }], 60).join(" "), /"a" is 5.0 s/);
   const md = PK.descriptionMd({ outline: kf.outline, dossier: kf.dossier, chapters: list, credits: "Image credits\n\n[kfA320] \"A plane\" · by X · CC BY-SA 4.0\n", topic: kf.script.topic });
   assert.match(md, /## Chapters\n\n0:00 Intro\n0:36 The Luxury Trap\n9:50 Recap/);
-  assert.match(md, /## Sources\n\n- wikipedia\.org: https:\/\/en\.wikipedia\.org\/wiki\/Kingfisher_Airlines/);
+  // sources: reputable first (press before reference), never user-generated sites
+  assert.match(md, /## Sources\n\n- livemint\.com: https:\/\/www\.livemint\.com\//);
+  assert.doesNotMatch(md, /quora\.com|slideshare\.net|scribd\.com|medium\.com/);
   assert.match(md, /## Image credits\n\n- "A plane" · by X · CC BY-SA 4\.0/);
   assert.match(md, /Not financial advice/);
   const titles = PK.titleOptions(kf.outline, kf.script.topic);

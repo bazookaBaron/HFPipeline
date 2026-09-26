@@ -145,3 +145,12 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .topic-row .topic-status.status-pending { color: var(--muted); }
 .topic-row .topic-status.status-running { color: var(--warn); border-color: var(--warn); }
 .topic-row .topic-status.status-done { color: var(--ok); border-color: var(--ok); }
+
+/* long-form format switch (Short 9:16 | Long 16:9) */
+.format-switch { display: inline-flex; border: 1px solid rgba(127,127,127,.35); border-radius: 8px; overflow: hidden; margin-bottom: 12px; }
+.format-switch .seg { display: inline-flex; flex-direction: row; align-items: center; gap: 6px; padding: 6px 12px; margin: 0; cursor: pointer; font-weight: 600; }
+.format-switch .seg input { margin: 0; width: auto; }
+.format-switch .seg + .seg { border-left: 1px solid rgba(127,127,127,.35); }
+.format-switch .seg:has(input:checked) { background: rgba(124,92,255,.18); }
+.preview-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; }
+.preview-links a { font-weight: 600; }

@@ -46,7 +46,7 @@ async function main() {
     console.log('usage: node research-longform.js --topic "..." [--minutes 10] [--out dir] [--force] [--from research|outline|script] [--cache dir]');
     process.exit(a.help ? 0 : 2);
   }
-  if (!(a.minutes >= 4 && a.minutes <= 20)) throw new Error("--minutes must be 4-20");
+  if (!(a.minutes >= 2 && a.minutes <= 20)) throw new Error("--minutes must be 2-20");
   const out = path.resolve(a.out || path.join(__dirname, "output", "lf", slug(a.topic)));
   const cacheDir = path.resolve(a.cache || path.join(__dirname, "output", "lf", ".cache"));
   fs.mkdirSync(out, { recursive: true });

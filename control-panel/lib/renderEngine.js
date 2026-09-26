@@ -200,4 +200,88 @@ function runCsExplainerRender(jobId, config) {
   });
 }
 
-module.exports = { runCsExplainerRender, videoEngineReady, VIDEO_ENGINE_DIR, RENDERS_DIR };
+/**
+ * 16:9 long-form: `node make-longform.js --topic ... --minutes 3|8|10|12 --out data/renders/<jobId>`
+ * (research -> outline -> script -> storyboards -> media -> chapter renders -> stitch -> music +
+ * master -> gates -> package). Spawned without a shell (args array, same reason as above). Its
+ * stage events are "@@lf {json}" stdout lines, streamed into the job log like every other line;
+ * the page turns them into the per-stage progress view. Exit 0 = package ok, 3 = package written but
+ * hard gates failed, 4 = Gemini unavailable (e.g. HTTP 402 credits depleted; not retried).
+ */
+function runLongformRender(jobId, config) {
+  const job = jobs.getJob(jobId);
+  const entry = path.join(ORCHESTRATOR_DIR, "make-longform.js");
+  const topic = (config && config.topic ? String(config.topic) : "").trim();
+  if (!topic) {
+    jobs.appendLog(jobId, "meta", "No topic provided in config.");
+    jobs.setStatus(jobId, "failed", { error: "config.topic is required" });
+    return Promise.resolve({ ok: false });
+  }
+  if (!fs.existsSync(entry)) {
+    jobs.appendLog(jobId, "stderr", `make-longform.js not found at ${entry}`);
+    jobs.setStatus(jobId, "failed", { error: "orchestrator missing" });
+    return Promise.resolve({ ok: false });
+  }
+  const minutes = [3, 8, 10, 12].includes(Number(config.minutes)) ? Number(config.minutes) : 10;
+  const outDir = path.join(RENDERS_DIR, jobId);
+  fs.mkdirSync(outDir, { recursive: true });
+  const args = ["make-longform.js", "--topic", topic, "--minutes", String(minutes), "--out", outDir, "--music", config.musicBed === false ? "off" : "ambient"];
+  jobs.appendLog(jobId, "meta", `$ node ${args.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(" ")}`);
+  jobs.appendLog(jobId, "meta", `cwd: ${ORCHESTRATOR_DIR}`);
+  jobs.setStatus(jobId, "running");
+
+  return new Promise((resolve) => {
+    const child = spawn("node", args, { cwd: ORCHESTRATOR_DIR, windowsHide: true });
+    job.child = child;
+    const pump = (stream, name) => {
+      let buffer = "";
+      stream.on("data", (chunk) => {
+        buffer += chunk.toString("utf8");
+        let idx;
+        while ((idx = buffer.indexOf("\n")) !== -1) {
+          const line = buffer.slice(0, idx).replace(/\r$/, "");
+          buffer = buffer.slice(idx + 1);
+          if (line.length) jobs.appendLog(jobId, name, line);
+        }
+      });
+      stream.on("end", () => {
+        if (buffer.trim().length) jobs.appendLog(jobId, name, buffer.trim());
+      });
+    };
+    pump(child.stdout, "stdout");
+    pump(child.stderr, "stderr");
+    child.on("error", (err) => {
+      jobs.appendLog(jobId, "stderr", `Failed to spawn make-longform.js: ${err.message}`);
+      jobs.setStatus(jobId, "failed", { error: err.message });
+      resolve({ ok: false });
+    });
+    child.on("close", (code) => {
+      const video = path.join(outDir, "final", "video.mp4");
+      const rel = (f) => `/media/${jobId}/final/${f}`;
+      const result = fs.existsSync(video)
+        ? {
+            type: "video",
+            format: "long",
+            path: video,
+            folder: path.join(outDir, "final"),
+            bytes: fs.statSync(video).size,
+            mediaUrl: rel("video.mp4"),
+            links: ["description.md", "captions.srt", "metadata.json", "credits.txt", "gates.json"]
+              .filter((f) => fs.existsSync(path.join(outDir, "final", f)))
+              .map((f) => ({ label: f, url: rel(f) })),
+          }
+        : null;
+      if (code === 0 && result) {
+        jobs.appendLog(jobId, "meta", `Long-form package ready: ${path.join(outDir, "final")}`);
+        jobs.setStatus(jobId, "succeeded", { result });
+        return resolve({ ok: true, outputPath: video });
+      }
+      const why = code === 3 ? "package written, but hard gates failed (see gates.json)" : code === 4 ? "Gemini unavailable (credits depleted / auth); not retried -- top up and re-run" : `make-longform exited with code ${code}`;
+      jobs.appendLog(jobId, "meta", why);
+      jobs.setStatus(jobId, "failed", { error: why, result });
+      resolve({ ok: false, code });
+    });
+  });
+}
+
+module.exports = { runCsExplainerRender, runLongformRender, videoEngineReady, VIDEO_ENGINE_DIR, RENDERS_DIR };

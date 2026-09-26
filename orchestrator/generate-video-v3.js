@@ -16,6 +16,7 @@
  *          [--tts-speed 1] [--captions true] [--mascot true] [--reuse-voice true] [--quality looks]
  *          [--music false|lofi|ambient|pulse]   (synthesized, ducked background bed; default false, LF: ambient)
  *          [--media media-manifest.json]        (LF: slot -> local file + credit; default sb.mediaManifest beside the storyboard)
+ *          [--voice-lock <dir>]                 (serialize the TTS stage across parallel renders, e.g. make-longform.js chapters)
  * LF (16:9 long-form) differs: relaxed pace (lib/video/v3/pace.js), captions off, music bed on with a swell on
  * chapter cards, lower SFX density, no presenter, the lfEnd ending (brand.json "longform").
  * The output frame is the storyboard's `frame` ({w, h}, default 1080x1920; see lib/video/v3/compile.js).
@@ -87,6 +88,46 @@ function solveSpeed(plan0, sentences, wpm, gapsTotal) {
   const gaps = gapsTotal !== undefined ? gapsTotal : (sentences.length - 1) * SENTENCE_GAP_FINAL;
   const raw = speech / Math.max(1, finalTotal - gaps);
   return { speed: Math.min(2.0, Math.max(0.8, Number(raw.toFixed(4)))), speech, nWords };
+}
+
+/** mkdir-based cross-process lock (a dead holder's lock is taken over); returns release() */
+async function acquireLock(dir, log) {
+  const owner = path.join(dir, "owner.json");
+  let waited = false;
+  for (;;) {
+    try {
+      fs.mkdirSync(dir);
+      fs.writeFileSync(owner, JSON.stringify({ pid: process.pid, at: Date.now() }));
+      const release = () => {
+        try {
+          fs.rmSync(dir, { recursive: true, force: true });
+        } catch (_) {}
+      };
+      process.on("exit", release);
+      if (waited) log("voice lock acquired");
+      return release;
+    } catch (err) {
+      if (err.code !== "EEXIST") throw err;
+      let stale = false;
+      try {
+        const o = JSON.parse(fs.readFileSync(owner, "utf-8"));
+        try {
+          process.kill(o.pid, 0);
+        } catch (_) {
+          stale = true;
+        }
+      } catch (_) {
+        stale = fs.existsSync(dir) && Date.now() - fs.statSync(dir).mtimeMs > 10000;
+      }
+      if (stale) {
+        fs.rmSync(dir, { recursive: true, force: true });
+        continue;
+      }
+      if (!waited) log("waiting for the voice lock (another chapter is synthesizing)");
+      waited = true;
+      await new Promise((r) => setTimeout(r, 1000));
+    }
+  }
 }
 
 async function main() {
@@ -204,6 +245,8 @@ async function main() {
 
   // ---- voice ----
   metrics.start("voice");
+  // --voice-lock: one F5 worker at a time across parallel chapter renders (make-longform.js)
+  const releaseVoice = typeof args["voice-lock"] === "string" ? await acquireLock(path.resolve(args["voice-lock"]), log) : () => {};
   const assetsDir = path.join(VIDEO_ENGINE_DIR, "assets", "generated", runId);
   fs.mkdirSync(assetsDir, { recursive: true });
   const clips = [];
@@ -232,10 +275,12 @@ async function main() {
       clips.push({ audioPath, durationSeconds: res.durationSeconds || probe(audioPath), words: JSON.parse(fs.readFileSync(timingPath, "utf-8")) });
     } catch (err) {
       if (svc) await svc.close().catch(() => {});
+      releaseVoice();
       return die("voice", `voice failed for ${s.id}: ${err.message}`, err);
     }
   }
   if (svc) await svc.close().catch(() => {});
+  releaseVoice();
   metrics.end({ ttsCalls: clips.length });
 
   // ---- narration timeline at final speed ----
@@ -252,9 +297,9 @@ async function main() {
     else {
       const speech = plan0.segments.reduce((a, s) => a + (s.trimEnd - s.trimStart), 0);
       const nSyllables = sb.sentences.reduce((a, s) => a + countSyllables(s.text), 0);
-      const p = solvePace({ speech, gaps: gapsTotal, nWords: plan0.words.length, nSyllables, sylPerS: pace.sylPerS, wpmRange: pace.wpmRange });
+      const p = solvePace({ speech, gaps: gapsTotal, nWords: plan0.words.length, nSyllables, sylPerS: pace.sylPerS, wpmRange: pace.wpmRange, wpm: pace.wpm, sylBand: pace.sylBand });
       solved = { speed: p.speed, speech, nWords: plan0.words.length };
-      log(`pace: ${nSyllables} syllables -> ${p.sylPerS.toFixed(2)} syl/s, ${p.wpm.toFixed(0)} wpm (target ${pace.sylPerS} syl/s, ${pace.wpmRange.join("-")} wpm)`);
+      log(`pace: ${nSyllables} syllables -> ${p.sylPerS.toFixed(2)} syl/s, ${p.wpm.toFixed(0)} wpm (target ${pace.wpm ? `${pace.wpm} wpm, syl band ${pace.sylBand.join("-")}` : `${pace.sylPerS} syl/s`}, ${pace.wpmRange.join("-")} wpm)`);
     }
     speed = solved.speed;
     const plan = planNarration(sb.sentences, clips, { gaps: gapsFinal.map((g) => g * speed) });

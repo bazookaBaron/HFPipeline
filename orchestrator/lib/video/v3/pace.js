@@ -30,11 +30,24 @@ function countSyllables(text) {
 /**
  * speech: seconds of trimmed sentence audio at speed 1; gaps: fixed seconds between sentences.
  * Returns the TTS speed factor and the resulting pace.
+ *
+ * Two modes:
+ *   - syllable-primary (9:16 shorts): hit sylPerS, clamp wpm to wpmRange.
+ *   - wpm-primary (LF, `wpm` given): hit the gross words/min (incl. gaps), then keep the delivered
+ *     syllable rate inside `sylBand` (a guard band, not a target) and wpm inside wpmRange.
  */
-function solvePace({ speech, gaps, nWords, nSyllables, sylPerS = SYL_PER_S, wpmRange = WPM_RANGE }) {
-  let target = nSyllables / sylPerS; // delivered speech seconds
+function solvePace({ speech, gaps, nWords, nSyllables, sylPerS = SYL_PER_S, wpmRange = WPM_RANGE, wpm, sylBand }) {
   const total = (t) => t + gaps;
   const wpmAt = (t) => (nWords / total(t)) * 60;
+  let target; // delivered speech seconds
+  if (wpm) {
+    target = (nWords / wpm) * 60 - gaps;
+    if (sylBand) {
+      // too fast in syllables -> slow down; too slow -> speed up (band edges, never beyond)
+      if (nSyllables / target > sylBand[1]) target = nSyllables / sylBand[1];
+      if (nSyllables / target < sylBand[0]) target = nSyllables / sylBand[0];
+    }
+  } else target = nSyllables / sylPerS;
   if (wpmAt(target) > wpmRange[1]) target = (nWords / wpmRange[1]) * 60 - gaps;
   if (wpmAt(target) < wpmRange[0]) target = (nWords / wpmRange[0]) * 60 - gaps;
   const speed = Math.min(2.0, Math.max(0.8, Number((speech / Math.max(1, target)).toFixed(4))));
@@ -43,14 +56,17 @@ function solvePace({ speech, gaps, nWords, nSyllables, sylPerS = SYL_PER_S, wpmR
 }
 
 /**
- * Per-profile pace (final-video seconds). The 9:16 shorts follow the reference reels; LF (16:9
- * long-form, plan §6) is a relaxed documentary delivery: 4.9 syl/s (~150-165 wpm), 0.35 s between
+ * Per-profile pace (final-video seconds). The 9:16 shorts follow the reference reels (syllable rate
+ * primary). LF (16:9 long-form, plan §6) is a relaxed documentary delivery with WORDS/MIN primary:
+ * 160 wpm gross; the syllable rate is only a guard band (4.2-5.4 syl/s, the v3_gates.py LF band) --
+ * simple short-word scripts delivered at a 4.9 syl/s target hit the old 175 wpm cap and still read
+ * 4.4-4.65 syl/s, so a syllable target was the wrong primary for plain language. 0.35 s between
  * sentences. A sentence may carry `pauseAfter` (seconds, final time) for a paragraph (~0.6 s) or
  * chapter (~0.9 s) pause; it replaces the default gap after that sentence.
  */
 const PACE = {
   default: { sylPerS: SYL_PER_S, wpmRange: WPM_RANGE, sentenceGap: 0.2 },
-  LF: { sylPerS: 4.9, wpmRange: [140, 175], sentenceGap: 0.35, paragraphGap: 0.6, chapterGap: 0.9 },
+  LF: { wpm: 160, sylBand: [4.2, 5.4], sylPerS: 4.9, wpmRange: [140, 175], sentenceGap: 0.35, paragraphGap: 0.6, chapterGap: 0.9 },
 };
 function paceFor(profile) {
   return PACE[profile] || PACE.default;

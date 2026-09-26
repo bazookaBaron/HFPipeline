@@ -36,6 +36,9 @@ const MIME = {
   ".png": "image/png",
   ".jpg": "image/jpeg",
   ".wav": "audio/wav",
+  ".md": "text/markdown; charset=utf-8",
+  ".srt": "text/plain; charset=utf-8",
+  ".txt": "text/plain; charset=utf-8",
 };
 
 function send(res, status, body, headers) {
@@ -134,7 +137,7 @@ const pipelineQueues = { "cs-explainer": Promise.resolve(), carousel: Promise.re
 const pipelineQueueDepth = { "cs-explainer": 0, carousel: 0 };
 
 function startPipelineRun(pipeline, config) {
-  const id = newId(pipeline === "cs-explainer" ? "cs" : "car");
+  const id = newId(pipeline === "cs-explainer" ? "cs" : pipeline === "longform" ? "lf" : "car");
   const createdAt = nowIso();
   const run = {
     id,
@@ -163,7 +166,8 @@ function startPipelineRun(pipeline, config) {
     });
   };
 
-  const runner = pipeline === "cs-explainer" ? renderEngine.runCsExplainerRender : carouselEngine.runCarouselRender;
+  const runner = pipeline === "cs-explainer" ? renderEngine.runCsExplainerRender : pipeline === "longform" ? renderEngine.runLongformRender : carouselEngine.runCarouselRender;
+  // long-form runs share the video (GPU) queue: F5-TTS + renders, one video job at a time
   const queueKey = pipelineQueues[pipeline] ? pipeline : "cs-explainer";
   const previous = pipelineQueues[queueKey];
 
@@ -218,8 +222,8 @@ const server = http.createServer(async (req, res) => {
     }
     if (method === "POST" && pathname === "/api/runs") {
       const body = await readJsonBody(req);
-      if (!["cs-explainer", "carousel"].includes(body.pipeline)) {
-        return sendJson(res, 400, { error: "pipeline must be 'cs-explainer' or 'carousel'" });
+      if (!["cs-explainer", "carousel", "longform"].includes(body.pipeline)) {
+        return sendJson(res, 400, { error: "pipeline must be 'cs-explainer', 'longform' or 'carousel'" });
       }
       const run = startPipelineRun(body.pipeline, body.config || {});
       return sendJson(res, 202, { ...run, streamUrl: `/api/runs/${run.id}/stream` });

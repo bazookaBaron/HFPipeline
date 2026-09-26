@@ -5,7 +5,7 @@
  *
  * Three text tiers, chosen by how much reasoning the task needs:
  *   lite     - short, mechanical, high-volume: search keywords, image vetting, style/promo picks
- *   standard - strict JSON with real structure: storyboards, carousels, topics, fact distilling,
+ *   standard - strict JSON with real structure: storyboards (incl. long-form chapter storyboards), carousels, topics, fact distilling,
  *              grounded research answers, script repairs
  *   pro      - the few calls where writing quality decides the video: long-form outline and
  *              chapter scripts
@@ -37,6 +37,7 @@ const TASKS = {
   "promo.pick": "lite",
   "style.choose": "lite",
   "research.plan": "lite",
+  "longform.metadata": "lite",
   // standard
   storyboard: "standard",
   carousel: "standard",
@@ -44,6 +45,7 @@ const TASKS = {
   "research.grounded": "standard",
   "research.distil": "standard",
   "script.repair": "standard",
+  "longform.storyboard": "standard",
   // pro
   "longform.outline": "pro",
   "longform.script": "pro",

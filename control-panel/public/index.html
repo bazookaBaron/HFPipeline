@@ -20,9 +20,28 @@
           <h2>CS-explainer video</h2>
           <span class="badge badge-real">wired to real video-engine render</span>
         </div>
+        <div class="format-switch" role="radiogroup" aria-label="Format">
+          <label class="seg"><input type="radio" name="format" value="short" checked> Short 9:16</label>
+          <label class="seg"><input type="radio" name="format" value="long"> Long 16:9</label>
+        </div>
         <label>Topic
           <input type="text" name="topic" placeholder="e.g. How hash maps work" value="How hash maps work">
         </label>
+        <div data-format="long" hidden>
+          <label>Length (minutes)
+            <select name="minutes">
+              <option value="3">3 min (short: 3 chapters)</option>
+              <option value="8">8 min</option>
+              <option value="10" selected>10 min</option>
+              <option value="12">12 min</option>
+            </select>
+          </label>
+          <div class="row row-toggles">
+            <label class="toggle"><input type="checkbox" name="musicBed" checked> Music bed (one continuous bed, ducked)</label>
+          </div>
+          <p class="hint">Runs <code>orchestrator/make-longform.js</code>: research &rarr; outline &rarr; script &rarr; storyboards &rarr; media &rarr; chapter renders &rarr; stitch &rarr; music + master &rarr; gates &rarr; package (video, captions.srt, description.md, credits, metadata). Resumable; uses Gemini for research, scripts and storyboards.</p>
+        </div>
+        <div data-format="short">
         <label>Length (seconds)
           <input type="number" name="lengthSeconds" min="10" max="600" value="60">
         </label>
@@ -60,8 +79,9 @@
             <option value="pulse">Pulse</option>
           </select>
         </label>
+        </div>
         <button type="submit" class="run-btn">Run render (real)</button>
-        <p class="hint">Runs <code>orchestrator/make-video.js</code>: Gemini storyboard, voice, stage render and mastering, then the hard QA gates, with automatic repair. Pace, captions and motion follow the reference spec.</p>
+        <p class="hint" data-format="short">Runs <code>orchestrator/make-video.js</code>: Gemini storyboard, voice, stage render and mastering, then the hard QA gates, with automatic repair. Pace, captions and motion follow the reference spec.</p>
       </form>
 
       <!-- Carousel pipeline -->
@@ -126,6 +146,7 @@
         <video id="preview-video" controls hidden></video>
         <div id="preview-gallery" class="gallery" hidden></div>
         <div id="preview-empty" class="muted" hidden>No renderable output for this run (stubbed).</div>
+        <div id="preview-links" class="preview-links" hidden></div>
         <div id="output-folder" class="output-folder" hidden>
           <code id="output-folder-path"></code>
           <button type="button" id="output-folder-open" class="quiet">Open folder</button>

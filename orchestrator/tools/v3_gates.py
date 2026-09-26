@@ -61,8 +61,8 @@ LF = {
     "beats_per_min": (18, 40),
     "max_visual_gap_s": 5.0,
     "scaffold_life_median_s": (5.0, 10.0),
-    "wpm": (140, 175),
-    "syl": (4.4, 5.4),               # relaxed documentary delivery, target 4.9 syl/s
+    "wpm": (140, 175),               # pace.js PACE.LF: 160 wpm gross is the primary target
+    "syl": (4.2, 5.4),               # guard band only (plain short-word scripts deliver ~4.4-4.7 syl/s)
     "lufs": (-14.4, -13.8),
     "lra_max": 1.6,
     "tp_max": -0.9,

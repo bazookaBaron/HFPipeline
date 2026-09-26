@@ -8,7 +8,10 @@ let currentPhaseMax = 0;
 const PHASE_LABELS = {
   "cs-explainer": ["Script (Gemini)", "Voice synthesis", "Anchor timing", "Compose", "Render"],
   carousel: ["Content (Gemini)", "Write content", "Render slides"],
+  longform: ["Research", "Outline", "Script", "Storyboards", "Media", "Render chapters", "Stitch", "Music + master", "Gates", "Package"],
 };
+// make-longform.js prints one machine line per stage event: "@@lf {stage, status, detail}"
+const LF_STAGES = ["research", "outline", "script", "storyboards", "media", "render", "stitch", "master", "gates", "package"];
 
 /** Real progress lines from the orchestrators are deliberately sent on stderr (stdout is
  * reserved for the final machine-readable result line), so stream name alone is NOT a
@@ -45,6 +48,7 @@ function collectConfig(form) {
   for (const el of form.elements) {
     if (!el.name) continue;
     if (el.type === "checkbox") config[el.name] = el.checked;
+    else if (el.type === "radio") { if (el.checked) config[el.name] = el.value; }
     else config[el.name] = el.value;
   }
   return config;
@@ -85,6 +89,20 @@ function resetPhaseTimeline(pipeline) {
 /** Parses the real "Step X/Y: ..." prefixes both orchestrators log at each phase boundary and
  * advances the visible timeline accordingly -- never goes backwards within one run. */
 function updatePhaseFromLine(text) {
+  const lf = text.match(/^@@lf (\{.*\})$/);
+  if (lf) {
+    let ev = null;
+    try { ev = JSON.parse(lf[1]); } catch (_) { return; }
+    const idx = LF_STAGES.indexOf(ev.stage) + 1;
+    if (ev.status === "fail") { renderPhaseTimeline(Math.max(idx, currentPhaseMax || 1), true); return; }
+    if (idx < 1) return;
+    const step = ev.status === "done" || ev.status === "skip" ? idx + 1 : idx;
+    if (step > currentPhaseMax) {
+      currentPhaseMax = Math.min(step, LF_STAGES.length);
+      renderPhaseTimeline(currentPhaseMax, ev.stage === "package" && ev.status === "done" ? "done" : false);
+    }
+    return;
+  }
   const m = text.match(/Step (\d+)\/(\d+):/);
   if (!m) return;
   const step = Number(m[1]);
@@ -98,8 +116,16 @@ function appendLog(entry) {
   const el = $("log-console");
   const line = document.createElement("div");
   const stamp = new Date(entry.t).toLocaleTimeString();
-  line.textContent = `[${stamp}] ${entry.stream}: ${entry.line}`;
-  const cls = classifyLogLine(entry);
+  const lfm = (entry.line || "").match(/^@@lf (\{.*\})$/);
+  let shown = entry.line;
+  if (lfm) {
+    try {
+      const ev = JSON.parse(lfm[1]);
+      shown = `STAGE ${ev.stage} ${ev.status}${ev.section ? ` [${ev.section}]` : ""}${ev.detail ? `: ${ev.detail}` : ""}`;
+    } catch (_) { /* keep raw */ }
+  }
+  line.textContent = `[${stamp}] ${entry.stream}: ${shown}`;
+  const cls = lfm && /"status":"(done|skip)"/.test(entry.line) ? "log-line-success" : classifyLogLine(entry);
   line.className = cls;
   el.appendChild(line);
   el.scrollTop = el.scrollHeight;
@@ -148,10 +174,23 @@ function showResult(result) {
   gallery.hidden = true;
   empty.hidden = true;
   gallery.innerHTML = "";
+  const links = $("preview-links");
+  links.innerHTML = "";
+  links.hidden = true;
+  if (result && Array.isArray(result.links) && result.links.length) {
+    for (const l of result.links) {
+      const a = document.createElement("a");
+      a.href = l.url;
+      a.target = "_blank";
+      a.textContent = l.label;
+      links.appendChild(a);
+    }
+    links.hidden = false;
+  }
   if (result && result.type === "video" && result.mediaUrl) {
     video.src = result.mediaUrl + `?t=${Date.now()}`;
     video.hidden = false;
-    showOutputFolder(result.path ? dirnameOf(result.path) : null);
+    showOutputFolder(result.folder || (result.path ? dirnameOf(result.path) : null));
   } else if (result && result.type === "image-set" && result.images && result.images.length) {
     for (const url of result.images) {
       const img = document.createElement("img");
@@ -223,8 +262,17 @@ function wireForm(formId) {
   const form = $(formId);
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    submitRun(form.dataset.pipeline, collectConfig(form));
+    const config = collectConfig(form);
+    // Format switch: "Long 16:9" runs the long-form orchestrator (make-longform.js) instead
+    const pipeline = form.dataset.pipeline === "cs-explainer" && config.format === "long" ? "longform" : form.dataset.pipeline;
+    submitRun(pipeline, config);
   });
+  const sync = () => {
+    const long = !!form.querySelector('input[name="format"][value="long"]:checked');
+    form.querySelectorAll("[data-format]").forEach((el) => { el.hidden = (el.dataset.format === "long") !== long; });
+  };
+  form.querySelectorAll('input[name="format"]').forEach((r) => r.addEventListener("change", sync));
+  sync();
 }
 
 // ---- Review & publish ----

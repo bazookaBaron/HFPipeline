@@ -1,0 +1,104 @@
+{
+ "scaffolds": [
+  {
+   "id": "hook",
+   "template": "lfCold",
+   "from": "cold-s01",
+   "slots": {
+    "photo": { "id": "hookplane", "props": { "slot": "kfA320" } },
+    "headline": { "id": "hooktxt", "props": { "eyebrow": "Kingfisher Airlines · 2005", "title": "A five-star hotel in the sky", "highlight": "five-star hotel", "sub": "India's most glamorous airline, for a while." } },
+    "overlays": [
+     { "id": "hook2005", "type": "callout", "at": [62, 16], "w": 330, "point": [74, 48], "anchor": { "text": "five," }, "props": { "value": "2005", "text": "Kingfisher takes off", "tone": "red" } }
+    ]
+   }
+  },
+  {
+   "id": "owner",
+   "template": "lfSplit",
+   "from": "cold-s02",
+   "slots": {
+    "photo": { "id": "ownerpic", "props": { "slot": "mallya", "tag": "Vijay Mallya" } },
+    "stack": [
+     { "id": "ownertxt", "type": "lfText", "props": { "eyebrow": "The owner's promise", "title": "India's most glamorous airline", "highlight": "most glamorous", "size": 62, "sub": "Red carpets, fine food and a personal TV screen at every seat." } }
+    ],
+    "overlays": [
+     { "id": "ownerco", "type": "callout", "at": [6, 72], "w": 360, "anchor": { "text": "Mallya" }, "props": { "value": "UB Group", "text": "Chairman, and Kingfisher's founder", "tone": "blue" } }
+    ]
+   }
+  },
+  {
+   "id": "bills",
+   "template": "lfCompare",
+   "from": "cold-s04",
+   "slots": {
+    "title": { "id": "billstitle", "props": { "eyebrow": "Behind the luxury", "title": "What flyers saw vs what the bank saw", "highlight": "the bank saw" } },
+    "compare": {
+     "id": "billscols",
+     "props": {
+      "vs": true,
+      "statsHidden": true,
+      "cols": [
+       { "title": "Passengers", "sub": "Five-star in the sky", "tone": "blue", "stats": [ { "label": "Red carpets", "value": "Yes" }, { "label": "Fine food", "value": "Yes" } ] },
+       { "title": "Sharma ji at SBI", "sub": "The lender's desk", "photo": { "slot": "sbiHQ" }, "tone": "red", "stats": [ { "label": "Bills", "value": "Growing fast", "bar": 72, "tone": "red" }, { "label": "Calculator", "value": "Very busy", "bar": 90, "tone": "red" } ] }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "crash",
+   "template": "lfNumber",
+   "from": "cold-s06",
+   "slots": {
+    "backdrop": { "id": "crashbg", "props": { "slot": "kfGrounded" } },
+    "number": { "id": "debt", "anchor": { "text": "nine", "sentence": "cold-s07" }, "props": { "eyebrow": "Unpaid debt · 2012", "prefix": "₹", "value": 9000, "grouping": "in", "unit": "crore", "context": "defaulted by the time the planes stopped flying" } },
+    "overlays": [
+     { "id": "crash2012", "type": "callout", "at": [18, 12], "w": 330, "delay": 0.4, "props": { "value": "2012", "text": "Planes grounded", "tone": "red" } }
+    ]
+   }
+  },
+  {
+   "id": "promise",
+   "template": "lfTimeline",
+   "from": "cold-s08",
+   "slots": {
+    "title": { "id": "promtitle", "props": { "eyebrow": "Coming up", "title": "Choices, oil shocks and debt deals", "highlight": "debt deals", "size": 52 } },
+    "timeline": {
+     "id": "promtl",
+     "props": {
+      "hidden": true,
+      "ticks": [
+       { "year": "2005", "label": "The luxury launch", "sub": "Business choices", "photo": { "slot": "kfA320" } },
+       { "year": "2008", "label": "Oil spikes", "sub": "Fuel eats the margin", "photo": { "slot": "jetFuel" } },
+       { "year": "2010", "label": "Banks restructure", "sub": "Debt deals", "photo": { "slot": "sbiHQ" } },
+       { "year": "2012", "label": "Grounded", "sub": "The end of the party", "photo": { "slot": "kfGrounded" } }
+      ]
+     }
+    }
+   }
+  }
+ ],
+ "events": [
+  { "sentence": "cold-s01", "anchor": { "text": "hotel." }, "op": "zoomTo", "target": "hookplane", "value": { "box": [30, 30, 55, 55] } },
+  { "sentence": "cold-s02", "anchor": { "text": "glamorous" }, "op": "highlight", "target": "ownertxt" },
+  { "sentence": "cold-s03", "anchor": { "text": "carpets," }, "op": "highlight", "target": "ownerpic", "value": { "box": [22, 24, 56, 58], "label": "The host" } },
+  { "sentence": "cold-s03", "anchor": { "text": "screens." }, "op": "zoomTo", "target": "ownerpic", "value": { "box": [25, 10, 50, 60] } },
+  { "sentence": "cold-s04", "anchor": { "text": "luxury," }, "op": "stat", "target": "billscols", "value": { "col": 1, "row": 1 } },
+  { "sentence": "cold-s04", "anchor": { "text": "bills" }, "op": "stat", "target": "billscols", "value": { "col": 2, "row": 1 } },
+  { "sentence": "cold-s05", "anchor": { "text": "Sharma" }, "op": "stat", "target": "billscols", "value": { "col": 1, "row": 2 } },
+  { "sentence": "cold-s05", "anchor": { "text": "calculator." }, "op": "stat", "target": "billscols", "value": { "col": 2, "row": 2 } },
+  { "sentence": "cold-s06", "anchor": { "text": "grounded." }, "op": "dim", "target": "crashbg", "value": { "level": 0.35 } },
+  { "sentence": "cold-s08", "anchor": { "text": "business" }, "op": "tick", "target": "promtl", "value": { "i": 1 } },
+  { "sentence": "cold-s08", "anchor": { "text": "oil" }, "op": "tick", "target": "promtl", "value": { "i": 2 } },
+  { "sentence": "cold-s08", "anchor": { "text": "debt" }, "op": "tick", "target": "promtl", "value": { "i": 3 } },
+  { "sentence": "cold-s08", "anchor": { "text": "destroyed" }, "op": "tick", "target": "promtl", "value": { "i": 4 } }
+ ],
+ "media": [
+  { "slot": "kfA320", "kind": "photo", "entity": "Kingfisher Airlines", "intent": "Kingfisher Airlines Airbus A320 aircraft on the tarmac", "era": "2005-2012", "size": "full" },
+  { "slot": "mallya", "kind": "portrait", "entity": "Vijay Mallya", "intent": "portrait photo of businessman Vijay Mallya", "size": "card" },
+  { "slot": "sbiHQ", "kind": "photo", "entity": "State Bank of India", "intent": "State Bank of India headquarters building in Mumbai", "size": "card" },
+  { "slot": "kfGrounded", "kind": "photo", "entity": "Kingfisher Airlines", "intent": "grounded Kingfisher Airlines aircraft parked and abandoned at an airport", "era": "2012", "size": "full" },
+  { "slot": "jetFuel", "kind": "photo", "intent": "aviation fuel tanker truck refuelling an airliner at an airport", "size": "card" }
+ ],
+ "pauses": { "cold-s05": 0.6 }
+}

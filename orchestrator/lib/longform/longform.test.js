@@ -152,9 +152,34 @@ test("outline word budget", () => {
     assert.ok(Math.max(...b.chapters) - Math.min(...b.chapters) <= 1);
   }
   const b10 = wordBudget(10);
-  assert.strictEqual(b10.total, 1550);
+  assert.strictEqual(b10.total, 1600); // 160 wpm gross (pace.js PACE.LF)
   assert.ok(b10.coldOpen >= 75 && b10.coldOpen <= 120); // 30-45 s
-  assert.ok(wordBudget(8).total >= 1200 && wordBudget(12).total <= 1900);
+  assert.ok(wordBudget(8).total >= 1200 && wordBudget(12).total <= 1920);
+});
+
+test("outline word budget: short runs scale down (3 min = cold open + 3 short chapters + recap)", () => {
+  const b3 = wordBudget(3);
+  assert.strictEqual(b3.total, 480);
+  assert.strictEqual(b3.chapters.length, 3); // YouTube needs >= 3 chapters
+  assert.strictEqual(b3.coldOpen + b3.recap + b3.chapters.reduce((a, x) => a + x, 0), 480);
+  assert.ok(b3.coldOpen >= 45 && b3.coldOpen <= 60, `cold ${b3.coldOpen}`);
+  assert.ok(b3.recap >= 45 && b3.recap <= 60);
+  // every chapter far above YouTube's 10 s minimum at 160 wpm
+  assert.ok(Math.min(...b3.chapters) / 160 * 60 >= 30);
+  assert.strictEqual(chapterCount(4), 3);
+  assert.strictEqual(chapterCount(5), 4);
+  assert.strictEqual(wordBudget(2).chapters.length, 3);
+  const { isShort, outlinePrompt } = require("./outline");
+  assert.ok(isShort(b3) && !isShort(wordBudget(10)));
+  const p = outlinePrompt({ topic: "t", angle: "a", summary: "s", facts: [], timeline: [], entities: [], glossary: [], dataAsks: [] }, b3);
+  assert.match(p, /Exactly 3 chapters/);
+  assert.match(p, /SHORT video/);
+  assert.match(p, /2-3 causal story beats/);
+  // short outlines: 2 beats and 2 callbacks are enough
+  const facts = Array.from({ length: 14 }, (_, i) => ({ id: `F${i + 1}` }));
+  const ch = (i) => ({ title: "t", question: "q", example: "e", comedicBeat: "c", callback: i < 2 ? "cb" : "", beats: ["a", "b"], factIds: [`F${3 * i + 1}`, `F${3 * i + 2}`, `F${3 * i + 3}`], visuals: [{ type: "photo", entity: "X" }, { type: "number", factId: "F1" }] });
+  const o = { title: "T", runningJoke: "j", coldOpen: { hook: "h", beats: ["b"] }, chapters: [0, 1, 2].map(ch), recap: { takeaways: ["a", "b", "c"] } };
+  assert.deepStrictEqual(outlineProblems(o, { facts }, b3), []);
 });
 
 test("outline problems catch structural gaps", () => {

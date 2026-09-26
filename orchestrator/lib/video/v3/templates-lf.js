@@ -273,11 +273,13 @@ const NO_CHROME = new Set(["lfChapter", "lfEnd", "lfCold"]);
 function lfChrome(sb, scaffolds, chromeEvents, BRAND, frameCredits) {
   const ch = sb.chapter || {};
   const head = { index: Number(ch.index) || 1, count: Number(ch.count) || 1, title: String(ch.title || sb.topic || "") };
+  // the cold open (sb.chapter.index 0) precedes chapter 1: no kicker / progress, only credits
+  const coldOpen = ch.index !== undefined && Number(ch.index) === 0;
   let creditShown = null;
   scaffolds.forEach((s, i) => {
     if (BRAND.has(s.template)) return;
     const chrome = [];
-    if (!NO_CHROME.has(s.template)) {
+    if (!NO_CHROME.has(s.template) && !coldOpen) {
       chrome.push({ id: "lfhead", type: "lfHeader", rect: [96, 48, 1100, 40], props: head, enter: "none", at: 0 });
       chrome.push({ id: "lfprog", type: "lfProgress", rect: [1224, 48, 600, 40], props: { index: head.index, count: head.count }, enter: "fill", at: 0 });
     }

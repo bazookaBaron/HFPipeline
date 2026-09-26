@@ -60,7 +60,7 @@ NUMBERS (checked by a machine against the facts):
 
 function sectionBrief(outline, sec) {
   if (sec.id === "cold") {
-    return `SECTION: COLD OPEN (about ${sec.words} words, 30-45 seconds). Start mid-story with the hook; no greeting.
+    return `SECTION: COLD OPEN (about ${sec.words} words, ~${Math.round((sec.words / 160) * 60)} seconds). Start mid-story with the hook; no greeting.
 Hook: ${sec.hook}
 Beats: ${(sec.beats || []).join(" / ")}
 Promise: ${sec.promise}

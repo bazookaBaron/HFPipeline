@@ -2,33 +2,43 @@
 
 /**
  * outline.js (plan §4.2): dossier -> outline.json
- *   cold open (30-45 s) + 6-8 chapters + recap, with a word budget for the target minutes at the
- *   LF narration pace (~155 wpm: 10 min ~ 1,550 words), a running callback joke, and per chapter:
- *   title, question, beats, example/analogy, comedic beat, factIds, visual wishes.
+ *   cold open + chapters + recap, with a word budget for the target minutes at the LF narration pace
+ *   (160 wpm gross, lib/video/v3/pace.js PACE.LF: 10 min ~ 1,600 words, 3 min ~ 480 words), a running
+ *   callback joke, and per chapter: title, question, beats, example/analogy, comedic beat, factIds,
+ *   visual wishes. Short runs scale down (3 min = cold open + 3 short chapters + recap; YouTube needs
+ *   >= 3 chapters of >= 10 s each).
  * Validated deterministically; up to 3 repair rounds.
  */
 
-const LF_WPM = 155;
+const LF_WPM = 160;
+const MIN_MINUTES = 2;
+const MAX_MINUTES = 20;
 
-/** Chapter count for the target length: <= 9 min -> 6, <= 11 -> 7, else 8. */
+/** Chapter count for the target length: <= 4 min -> 3, <= 6 -> 4, <= 7 -> 5, <= 9 -> 6, <= 11 -> 7, else 8. */
 function chapterCount(minutes) {
-  return minutes <= 9 ? 6 : minutes <= 11 ? 7 : 8;
+  return minutes <= 4 ? 3 : minutes <= 6 ? 4 : minutes <= 7 ? 5 : minutes <= 9 ? 6 : minutes <= 11 ? 7 : 8;
 }
 
 /**
- * Word budget. Cold open ~40 s, recap ~45 s (both clamped to the words that fit), the rest split
- * evenly over the chapters; totals always sum to round(minutes * wpm).
+ * Word budget. Cold open ~40 s and recap ~45 s on full-length videos, scaled down on short ones
+ * (about 10 % of the total each, never under ~17 s), the rest split evenly over the chapters;
+ * totals always sum to round(minutes * wpm).
  */
 function wordBudget(minutes, wpm = LF_WPM) {
-  const m = Math.max(4, Math.min(20, Number(minutes) || 10));
+  const m = Math.max(MIN_MINUTES, Math.min(MAX_MINUTES, Number(minutes) || 10));
   const total = Math.round(m * wpm);
-  const coldOpen = Math.round((40 / 60) * wpm);
-  const recap = Math.round((45 / 60) * wpm);
+  const coldOpen = Math.min(Math.round((40 / 60) * wpm), Math.max(45, Math.round(total * 0.1)));
+  const recap = Math.min(Math.round((45 / 60) * wpm), Math.max(45, Math.round(total * 0.1)));
   const n = chapterCount(m);
   const rest = total - coldOpen - recap;
   const base = Math.floor(rest / n);
   const chapters = Array.from({ length: n }, (_, i) => base + (i < rest - base * n ? 1 : 0));
   return { minutes: m, wpm, total, coldOpen, recap, chapters };
+}
+
+/** short chapters (< ~60 s) get fewer beats / visuals / facts so the outline fits the words */
+function isShort(budget) {
+  return Math.min(...budget.chapters) < 160;
 }
 
 function factDigest(dossier) {
@@ -55,7 +65,7 @@ Return JSON:
  "runningJoke": "<one simple running gag set up in the cold open, called back in 3+ chapters and the recap, that gets funnier as the story gets worse: a recurring imaginary character reacting (e.g. 'Sharma ji, who lent the money, checking his phone'), a running tally, or one image tied to the topic itself. Not a mixed metaphor, not an analogy that needs re-explaining>",
  "coldOpen": {"hook": "<the most surprising tension, in one line>", "beats": ["..."], "promise": "<what the viewer will understand by the end>", "factIds": ["F1"], "visuals": [<visual>]},
  "chapters": [{"id": "ch1", "title": "<2-5 words>", "question": "<the one question this chapter answers>",
-   "beats": ["<4-6 causal story beats, in order>"],
+   "beats": ["<${isShort(budget) ? "2-3" : "4-6"} causal story beats, in order>"],
    "example": "<one concrete worked example or analogy from everyday Indian life (a chai stall, a family budget, an EMI on a phone, a kirana khata, a wedding loan) that maps onto the mechanism>",
    "comedicBeat": "<one light, self-aware joke or absurd-but-true comparison; comparisons must be computable from fact values, say which>",
    "callback": "<how the running joke appears here, or empty>",
@@ -73,7 +83,8 @@ Return JSON:
 
 Rules:
 - Exactly ${n} chapters that build one causal story from the start to now; each chapter answers a different question. No filler chapters.
-- Every chapter uses 2+ fact ids and has 3-5 visuals incl. at least one photo of a named entity; the video overall needs charts/numbers too.
+- Length: the whole narration is about ${budget.total} words (${budget.minutes} min): cold open ~${budget.coldOpen}, each chapter ~${budget.chapters[0]}, recap ~${budget.recap} words.${isShort(budget) ? " This is a SHORT video: keep each chapter to one idea, 2-3 beats and 2-3 key numbers." : ""}
+- Every chapter uses 2+ fact ids and has ${isShort(budget) ? "2-3" : "3-5"} visuals incl. at least one photo of a named entity; the video overall needs charts/numbers too.
 - Neutral and fair on countries, governments and people: explain decisions and trade-offs, give both sides of contested points, say "by one estimate" for low-confidence facts.
 - Comedy is light satire of decisions and situations; never mock private individuals, tragedy, job losses, ethnicity or religion.
 - No investment advice. No subscribe/like/follow calls anywhere.`;
@@ -95,7 +106,8 @@ function outlineProblems(o, dossier, budget) {
   ch.forEach((c, i) => {
     const tag = c.id || `chapter ${i + 1}`;
     ["title", "question", "example", "comedicBeat"].forEach((k) => { if (!c[k]) p.push(`${tag} missing ${k}`); });
-    if ((c.beats || []).length < 3) p.push(`${tag} needs 3+ beats`);
+    const minBeats = isShort(budget) ? 2 : 3;
+    if ((c.beats || []).length < minBeats) p.push(`${tag} needs ${minBeats}+ beats`);
     const fids = c.factIds || [];
     if (fids.length < 2) p.push(`${tag} needs 2+ factIds`);
     fids.filter((f) => !ids.has(f)).forEach((f) => p.push(`${tag} cites unknown fact ${f}`));
@@ -106,10 +118,11 @@ function outlineProblems(o, dossier, budget) {
     if (!vis.some((v) => v && v.type === "photo" && v.entity)) p.push(`${tag} needs a photo visual naming a concrete entity`);
     if (c.callback) callbacks++;
   });
-  if (callbacks < Math.min(3, ch.length)) p.push(`running joke called back in ${callbacks} chapters; need 3+`);
+  const needCallbacks = ch.length >= 5 ? 3 : 2;
+  if (callbacks < needCallbacks) p.push(`running joke called back in ${callbacks} chapters; need ${needCallbacks}+`);
   if (!o.recap || (o.recap.takeaways || []).length < 3) p.push("recap needs 3-5 takeaways");
   if (!ch.some((c) => (c.visuals || []).some((v) => v.type === "chart" || v.type === "number"))) p.push("no chart/number visuals in the whole video");
-  if (allFactIds.size < Math.min(12, ids.size)) p.push(`chapters cite only ${allFactIds.size} distinct facts; use more of the dossier`);
+  if (allFactIds.size < Math.min(12, ids.size, 3 * budget.chapters.length)) p.push(`chapters cite only ${allFactIds.size} distinct facts; use more of the dossier`);
   return p;
 }
 
@@ -143,4 +156,4 @@ async function makeOutline(dossier, opts = {}) {
   return o;
 }
 
-module.exports = { wordBudget, chapterCount, outlineProblems, finalizeOutline, makeOutline, outlinePrompt, factDigest, LF_WPM };
+module.exports = { wordBudget, chapterCount, outlineProblems, finalizeOutline, makeOutline, outlinePrompt, factDigest, isShort, LF_WPM, MIN_MINUTES, MAX_MINUTES };

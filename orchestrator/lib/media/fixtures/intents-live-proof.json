@@ -1,0 +1,22 @@
+[
+  {"slot": "kf-a320", "kind": "photo", "entity": "Kingfisher Airlines", "intent": "Kingfisher Airlines Airbus A320 aircraft on the tarmac"},
+  {"slot": "kf-mallya", "kind": "portrait", "entity": "Vijay Mallya", "intent": "portrait photo of businessman Vijay Mallya"},
+  {"slot": "kf-logo", "kind": "logo", "entity": "Kingfisher Airlines", "intent": "Kingfisher Airlines logo"},
+  {"slot": "kf-mumbai-airport", "kind": "photo", "entity": "Chhatrapati Shivaji Maharaj International Airport", "intent": "Mumbai airport terminal building"},
+  {"slot": "kf-sbi", "kind": "photo", "entity": "State Bank of India", "intent": "State Bank of India headquarters building in Mumbai"},
+  {"slot": "kf-air-deccan", "kind": "photo", "entity": "Air Deccan", "intent": "Air Deccan ATR aircraft"},
+  {"slot": "kf-jet-fuel", "kind": "photo", "intent": "aviation fuel tanker truck refuelling an airliner at an airport"},
+  {"slot": "kf-rupee-notes", "kind": "photo", "intent": "Indian rupee banknotes close-up"},
+  {"slot": "kf-beer", "kind": "photo", "entity": "Kingfisher (beer)", "intent": "bottles of Kingfisher beer by United Breweries"},
+  {"slot": "kf-ub-tower", "kind": "photo", "entity": "UB City", "intent": "UB City tower of United Breweries group in Bengaluru"},
+  {"slot": "kf-unpaid-bills-plane", "kind": "illustration", "intent": "a passenger plane made of a stack of unpaid bills, slowly nose-diving", "mood": "comedic"},
+  {"slot": "kf-india-map", "kind": "map", "entity": "India", "intent": "locator map of India"},
+  {"slot": "kf-grounded", "kind": "photo", "intent": "grounded Kingfisher Airlines aircraft parked and abandoned at an airport"},
+  {"slot": "kf-dgca", "kind": "photo", "intent": "airline cabin crew protesting unpaid salaries in India", "allowIllustration": false},
+  {"slot": "kf-empty-seats", "kind": "illustration", "intent": "a banker holding an IOU note as tall as a building, looking worried", "mood": "comedic"},
+  {"slot": "pk-imf", "kind": "photo", "entity": "International Monetary Fund", "intent": "IMF headquarters building in Washington DC"},
+  {"slot": "pk-karachi-port", "kind": "photo", "entity": "Port of Karachi", "intent": "container ships and cranes at Karachi port"},
+  {"slot": "pk-sbp", "kind": "photo", "entity": "State Bank of Pakistan", "intent": "State Bank of Pakistan building in Karachi"},
+  {"slot": "pk-rupee-notes", "kind": "photo", "intent": "Pakistani rupee banknotes"},
+  {"slot": "pk-gwadar", "kind": "photo", "entity": "Gwadar Port", "intent": "Gwadar deep-sea port in Balochistan"}
+]

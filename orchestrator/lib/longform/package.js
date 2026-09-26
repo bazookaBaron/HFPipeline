@@ -152,7 +152,12 @@ function descriptionMd(o) {
   lines.push("## Chapters", "");
   chapters.forEach((c) => lines.push(`${ytTime(c.start)} ${c.title}`));
   lines.push("");
-  const sources = (dossier && dossier.sources) || [];
+  // only sources the kept facts cite, never user-generated sites, official/press first
+  const { tierOf, rank } = require("./sourceQuality");
+  const cited = new Set(((dossier && dossier.facts) || []).flatMap((f) => (f.sources || []).map((s) => s.url)));
+  const sources = ((dossier && dossier.sources) || [])
+    .filter((s) => (!cited.size || cited.has(s.url)) && tierOf(s.url, s.title) !== "ugc")
+    .sort((a, b) => rank(a) - rank(b));
   if (sources.length) {
     lines.push("## Sources", "");
     const seen = new Set();

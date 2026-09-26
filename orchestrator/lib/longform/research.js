@@ -15,6 +15,7 @@ const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
 const { loadGeminiRest, pool } = require("./gemini");
+const { vetFactSources } = require("./sourceQuality");
 
 const NUMBERS_POLICY = "only facts[].value may be spoken or shown";
 const ENTITY_KINDS = ["person", "company", "place", "org", "product", "concept"];
@@ -47,7 +48,9 @@ function researchPrompt(topic, q) {
   return `Research this question for a documentary-style explainer on "${topic}". Use Google Search.
 Question: ${q}
 Answer in 250-450 words of plain factual prose. Give exact figures with their units, currency and year
-(e.g. "Rs 9,000 crore in 2012", "38% of GDP in 2023"). Say who reported each figure. Where sources disagree,
+(e.g. "Rs 9,000 crore in 2012", "38% of GDP in 2023"). Say who reported each figure. Prefer primary sources (company filings and annual reports, regulators,
+central banks, government statistics, IMF/World Bank) and established business press; do not rely on
+forums, Q&A sites, slide/document dumps or personal blogs. Where sources disagree,
 give both figures and say so. Do not speculate and do not give investment advice.`;
 }
 
@@ -136,13 +139,18 @@ function finalizeDossier(raw, topic, angle, sources) {
     let id = String(f.id || `F${i + 1}`);
     if (seen.has(id)) id = `F${i + 1}x`;
     seen.add(id);
-    const srcs = [...new Set(f.sourceIds || f.sources || [])].map((sid) => bySid[typeof sid === "string" ? sid : sid && sid.sid]).filter(Boolean).map((s) => ({ title: s.title, url: s.url }));
-    if (!srcs.length) return; // unsourced: dropped
+    const cited = [...new Set(f.sourceIds || f.sources || [])].map((sid) => bySid[typeof sid === "string" ? sid : sid && sid.sid]).filter(Boolean).map((s) => ({ title: s.title, url: s.url }));
+    if (!cited.length) return; // unsourced: dropped
     let value = f.value === null || f.value === undefined || f.value === "" ? null : Number(String(f.value).replace(/,/g, ""));
     if (!Number.isFinite(value)) value = null;
+    // source quality (sourceQuality.js): a figure needs a non-UGC source; UGC-only claims go low
+    const vet = vetFactSources(cited, value !== null);
+    if (!vet.keep) return;
+    const srcs = vet.sources;
     const year = f.year ? Number(String(f.year).match(/\d{4}/)?.[0]) || null : null;
     let confidence = ["high", "medium", "low"].includes(f.confidence) ? f.confidence : "medium";
     if (confidence === "high" && srcs.length < 2) confidence = "medium";
+    if (vet.ugcOnly) confidence = "low";
     facts.push({ id, claim: String(f.claim || "").trim(), ...(value !== null ? { value, unit: String(f.unit || "").trim() } : {}), ...(year ? { year } : {}), sources: srcs, confidence });
   });
   const ids = new Set(facts.map((f) => f.id));

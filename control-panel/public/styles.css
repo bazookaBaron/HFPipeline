@@ -154,3 +154,19 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .format-switch .seg:has(input:checked) { background: rgba(124,92,255,.18); }
 .preview-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; }
 .preview-links a { font-weight: 600; }
+
+/* long-form (16:9) finance calendar */
+.lf-cal-controls { align-items: flex-end; flex-wrap: wrap; gap: 12px; }
+.lf-cal-days { display: flex; flex-wrap: wrap; gap: 8px; border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; margin: 0; }
+.lf-cal-days label { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; }
+.lf-cal-list { max-height: 560px; }
+.lf-row { cursor: default; align-items: flex-start; }
+.lf-row .topic-day { width: 74px; }
+.lf-row .lf-angle { font-size: 12.5px; margin-top: 3px; color: var(--text); opacity: 0.85; }
+.lf-row .lf-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.lf-row .lf-actions button { font-size: 11.5px; padding: 4px 9px; }
+.lf-row.lf-muted .topic-title, .lf-row.lf-muted .lf-angle { opacity: 0.5; }
+.topic-row .topic-status.status-planned { color: var(--muted); }
+.topic-row .topic-status.status-skipped { color: var(--muted); text-decoration: line-through; }
+.topic-row .topic-status.status-failed { color: var(--err); border-color: var(--err); }
+@media (max-width: 600px) { .lf-row { flex-wrap: wrap; } .lf-row .topic-day { width: auto; } }

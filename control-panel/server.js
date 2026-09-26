@@ -21,6 +21,7 @@ const oauthYoutube = require("./lib/oauthYoutube");
 const publish = require("./lib/publish");
 const voiceUpload = require("./lib/voiceUpload");
 const topics = require("./lib/topics");
+const topicsLong = require("./lib/topicsLong");
 
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT = Number(process.env.PORT) || 4600;
@@ -293,6 +294,55 @@ const server = http.createServer(async (req, res) => {
         videoRun: { ...videoRun, streamUrl: `/api/runs/${videoRun.id}/stream` },
         carouselRun: { ...carouselRun, streamUrl: `/api/runs/${carouselRun.id}/stream` },
       });
+    }
+
+    // ---- long-form (16:9) finance topic calendar: 4 videos a week ----
+    if (method === "GET" && pathname === "/api/topics-long") {
+      // reconcile running items with their real run record (survives page reloads)
+      const cal = topicsLong.loadCalendar();
+      for (const t of cal.schedule) {
+        if (t.status !== "running" || !t.runId) continue;
+        const run = store.getRun(t.runId);
+        if (run && ["succeeded", "failed", "stubbed"].includes(run.status)) {
+          const patched = topicsLong.updateItem(t.id, { status: run.status === "succeeded" ? "done" : "failed" });
+          if (patched) Object.assign(t, patched);
+        }
+      }
+      return sendJson(res, 200, cal);
+    }
+    if (method === "POST" && pathname === "/api/topics-long/generate") {
+      const body = await readJsonBody(req).catch(() => ({}));
+      try {
+        const cal = await topicsLong.generateLongCalendar({ weeks: Number(body.weeks) || 4, days: body.days, log: (m) => console.log(m) });
+        return sendJson(res, 200, cal);
+      } catch (err) {
+        return sendError(res, err);
+      }
+    }
+    const longItemMatch = pathname.match(/^\/api\/topics-long\/([^/]+)\/(run|status|regenerate)$/);
+    if (method === "POST" && longItemMatch) {
+      const [, itemId, action] = longItemMatch;
+      if (!isSafeId(itemId)) return sendJson(res, 400, { error: "invalid item id" });
+      const item = topicsLong.getItem(itemId);
+      if (!item) return sendJson(res, 404, { error: "calendar item not found" });
+      const body = await readJsonBody(req).catch(() => ({}));
+      if (action === "status") {
+        if (!["planned", "done", "skipped"].includes(body.status)) return sendJson(res, 400, { error: "status must be planned, done or skipped" });
+        return sendJson(res, 200, topicsLong.updateItem(itemId, { status: body.status }));
+      }
+      if (action === "regenerate") {
+        try {
+          return sendJson(res, 200, await topicsLong.regenerateItem(itemId, { log: (m) => console.log(m) }));
+        } catch (err) {
+          return sendError(res, err);
+        }
+      }
+      // action === "run": the same long-form run flow as the Long 16:9 form (make-longform.js)
+      if (item.status === "running") return sendJson(res, 409, { error: "already running" });
+      const minutes = [3, 8, 10, 12].includes(Number(body.minutes)) ? Number(body.minutes) : 10;
+      const run = startPipelineRun("longform", { topic: item.topic, format: "long", minutes, musicBed: body.musicBed !== false });
+      const updated = topicsLong.updateItem(itemId, { status: "running", runId: run.id });
+      return sendJson(res, 202, { item: updated, run: { ...run, streamUrl: `/api/runs/${run.id}/stream` } });
     }
 
     const runMatch = pathname.match(/^\/api\/runs\/([^/]+)(?:\/(.*))?$/);

@@ -134,6 +134,42 @@
       </div>
     </section>
 
+    <section class="card" id="lf-calendar">
+      <div class="card-head">
+        <h2>Long-form calendar (16:9)</h2>
+        <span class="badge badge-real">finance deep-dives · 4 a week</span>
+      </div>
+      <p class="hint">Plans finance deep-research stories (business models, collapses and turnarounds, country economics, sectors and commodities, money systems; about 60% India/South Asia) via one real Gemini call, scheduled on the chosen weekdays. Near-duplicates of past long-form topics are skipped. "Make video" runs <code>orchestrator/make-longform.js</code> for that topic, with progress in the Live run panel below.</p>
+      <div class="row lf-cal-controls">
+        <label>Weeks
+          <select id="lf-cal-weeks">
+            <option value="1">1</option><option value="2">2</option><option value="4" selected>4</option><option value="8">8</option>
+          </select>
+        </label>
+        <label>Length
+          <select id="lf-cal-minutes">
+            <option value="8">8 min</option><option value="10" selected>10 min</option><option value="12">12 min</option>
+          </select>
+        </label>
+        <fieldset class="lf-cal-days" aria-label="Publish days">
+          <label><input type="checkbox" value="mon" checked> Mon</label>
+          <label><input type="checkbox" value="tue" checked> Tue</label>
+          <label><input type="checkbox" value="wed"> Wed</label>
+          <label><input type="checkbox" value="thu" checked> Thu</label>
+          <label><input type="checkbox" value="fri"> Fri</label>
+          <label><input type="checkbox" value="sat" checked> Sat</label>
+          <label><input type="checkbox" value="sun"> Sun</label>
+        </fieldset>
+      </div>
+      <div class="row">
+        <button type="button" id="lf-cal-generate-btn">Generate calendar (4 weeks)</button>
+        <span id="lf-cal-status" class="muted"></span>
+      </div>
+      <div id="lf-cal-list" class="topics-list lf-cal-list">
+        <p class="muted">No long-form calendar yet -- click "Generate calendar".</p>
+      </div>
+    </section>
+
     <section class="card">
       <div class="card-head">
         <h2>Live run</h2>

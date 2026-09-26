@@ -527,6 +527,132 @@ async function runTopic(topicId, rowEl) {
   }
 }
 
+// ---- long-form (16:9) finance calendar ----
+const LF_CAT_LABELS = {
+  "business-model": "Business model",
+  "collapse-turnaround": "Collapse / turnaround",
+  "country-economics": "Country economics",
+  "sectors-commodities": "Sectors & commodities",
+  "money-systems": "Money systems",
+};
+
+function esc(value) {
+  return String(value == null ? "" : value).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+function lfWeekday(iso) {
+  try { return new Date(`${iso}T00:00:00Z`).toLocaleDateString(undefined, { weekday: "short", timeZone: "UTC" }); } catch (_) { return ""; }
+}
+
+function renderLongCalendar(cal) {
+  const el = $("lf-cal-list");
+  const schedule = (cal && cal.schedule) || [];
+  if (!schedule.length) {
+    el.innerHTML = '<p class="muted">No long-form calendar yet -- click "Generate calendar".</p>';
+    return;
+  }
+  el.innerHTML = "";
+  schedule.forEach((t) => {
+    const row = document.createElement("div");
+    const muted = t.status === "done" || t.status === "skipped";
+    row.className = `topic-row lf-row${t.status === "running" ? " topic-running" : ""}${muted ? " lf-muted" : ""}`;
+    row.dataset.itemId = t.id;
+    const busy = t.status === "running";
+    row.innerHTML = `
+      <div class="topic-day">${esc(lfWeekday(t.date))}<br>${esc(t.date)}</div>
+      <div class="topic-main">
+        <div class="topic-title">${esc(t.topic)}</div>
+        <div class="lf-angle">${esc(t.angle)}</div>
+        <div class="topic-meta">${esc(LF_CAT_LABELS[t.category] || t.category)}${t.region ? " · " + esc(t.region) : ""}${t.entities && t.entities.length ? " · " + esc(t.entities.join(", ")) : ""}${t.whyNow ? " · why now: " + esc(t.whyNow) : ""}${t.runId ? " · run: " + esc(t.runId) : ""}</div>
+        <div class="lf-actions">
+          <button type="button" data-act="run" ${busy ? "disabled" : ""}>Make video</button>
+          ${t.status === "done" ? '<button type="button" class="quiet" data-act="planned">Reopen</button>' : `<button type="button" class="quiet" data-act="done" ${busy ? "disabled" : ""}>Mark done</button>`}
+          ${t.status === "skipped" ? '<button type="button" class="quiet" data-act="planned">Unskip</button>' : `<button type="button" class="quiet" data-act="skipped" ${busy ? "disabled" : ""}>Skip</button>`}
+          <button type="button" class="quiet" data-act="regenerate" ${busy ? "disabled" : ""}>Regenerate</button>
+        </div>
+      </div>
+      <div class="topic-status status-${esc(t.status)}">${esc(t.status)}</div>
+    `;
+    row.querySelectorAll("button[data-act]").forEach((btn) => btn.addEventListener("click", () => longItemAction(t, btn.dataset.act, btn)));
+    el.appendChild(row);
+  });
+}
+
+async function loadLongCalendar() {
+  try {
+    renderLongCalendar(await api("/api/topics-long"));
+  } catch (err) {
+    $("lf-cal-list").innerHTML = `<p class="muted">Could not load the long-form calendar: ${esc(err.message)}</p>`;
+  }
+}
+
+function syncLongGenerateLabel() {
+  const weeks = $("lf-cal-weeks").value;
+  $("lf-cal-generate-btn").textContent = `Generate calendar (${weeks} week${weeks === "1" ? "" : "s"})`;
+}
+
+async function generateLongCalendar() {
+  const btn = $("lf-cal-generate-btn");
+  const status = $("lf-cal-status");
+  const weeks = Number($("lf-cal-weeks").value) || 4;
+  const days = [...document.querySelectorAll(".lf-cal-days input:checked")].map((i) => i.value);
+  if (!days.length) { status.textContent = "Pick at least one publish day."; return; }
+  btn.disabled = true;
+  status.textContent = `Calling Gemini for ${weeks * days.length} long-form topics (can take up to a minute)...`;
+  try {
+    const cal = await api("/api/topics-long/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ weeks, days }),
+    });
+    status.textContent = `Planned ${cal.schedule.filter((t) => t.status === "planned").length} topics.`;
+    renderLongCalendar(cal);
+  } catch (err) {
+    status.textContent = `Failed: ${err.message}`;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function longItemAction(item, act, btn) {
+  const status = $("lf-cal-status");
+  btn.disabled = true;
+  try {
+    if (act === "run") {
+      const minutes = Number($("lf-cal-minutes").value) || 10;
+      const { run } = await api(`/api/topics-long/${item.id}/run`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ minutes, musicBed: true }),
+      });
+      // reuse the Long 16:9 run flow: live log + per-stage progress in the Live run panel
+      currentRunId = run.id;
+      $("preview-area").hidden = true;
+      $("review-panel").hidden = true;
+      attachStream(run.id, run.streamUrl, "longform");
+      loadHistory();
+      loadLongCalendar();
+      watchRunUntilDone(run.streamUrl).then(() => loadLongCalendar());
+      return;
+    }
+    if (act === "regenerate") {
+      status.textContent = `Regenerating the ${item.date} topic...`;
+      await api(`/api/topics-long/${item.id}/regenerate`, { method: "POST" });
+      status.textContent = `Replaced the ${item.date} topic.`;
+    } else {
+      await api(`/api/topics-long/${item.id}/status`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: act }),
+      });
+    }
+    loadLongCalendar();
+  } catch (err) {
+    status.textContent = `Failed: ${err.message}`;
+    btn.disabled = false;
+  }
+}
+
 // ---- wire everything up ----
 wireForm("form-cs-explainer");
 wireForm("form-carousel");
@@ -541,6 +667,9 @@ $("voice-upload-btn").addEventListener("click", () => {
   uploadVoice(file);
 });
 $("topics-generate-btn").addEventListener("click", generateTopics);
+$("lf-cal-generate-btn").addEventListener("click", generateLongCalendar);
+$("lf-cal-weeks").addEventListener("change", syncLongGenerateLabel);
+loadLongCalendar();
 
 loadHistory();
 loadTopics();

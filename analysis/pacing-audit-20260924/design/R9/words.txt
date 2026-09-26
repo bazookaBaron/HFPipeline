@@ -1,0 +1,37 @@
+What@0.00 exactly@0.38 is@0.78 Enduroil?@1.02 But@1.88 people@2.10 keep@2.36 mentioning@2.58 it@2.96 alongside@3.16 Palantir,@3.44 SpaceX@4.22 and@4.50 OpenAI.@4.86
+But@5.72 Enduroil@5.84 is@6.38 doing@6.50 something@6.68 very@6.94 different.@7.28 WID@8.06 is@8.14 a@8.28 defense@8.36 technology@8.60 company@9.14 trying@9.52
+to@9.82 rebuild@10.00 military@10.28 hardware@10.78 around@11.28 software,@11.58 AI@12.40 and@12.66 autonomy.@13.06 Traditional@14.18 defense@14.56 companies@14.90 build@15.38 fighter@15.68
+jets,@15.94 missiles,@16.44 radars,@16.98 ships@17.52 and@17.66 other@17.88 huge@18.02 weapons@18.30 systems.@18.60 And@19.44 those@19.54 programs@19.70 can@20.14 take@20.40
+years,@20.58 sometimes@21.10 decades.@21.38 Enduroil's@22.50 idea@23.10 is@23.32 what@23.66 if@23.84 defense@23.96 hardware@24.22 was@24.72 built@24.90 like@25.12 modern@25.32
+technology@25.62 products.@26.20 Faster@26.60 development,@27.72 more@28.56 software,@28.74 more@29.36 autonomy,@29.46 more@30.24 iteration,@30.38 and@31.22 cheaper@31.32 systems@31.56 produced@32.00
+at@32.30 much@32.54 larger@32.70 scale.@33.08 The@33.94 company@34.06 was@34.28 founded@34.50 in@34.78 2017@35.00 by@35.58 Par@36.00 Malukki,@36.28 the@37.06
+guy@37.14 who@37.30 founded@37.46 Oculus@37.74 before@38.14 Facebook@38.44 acquired@38.86 it,@39.22 along@39.78 with@39.96 several@40.18 co@40.46 -founders.@40.70 In@41.58
+2025@41.74 it@42.30 reached@42.70 a@42.92 valuation@43.02 of@43.34 more@43.62 than@43.76 $30@43.92 billion,@44.20 making@44.98 it@45.16 one@45.34 of@45.46
+the@45.58 most@45.66 valuable@45.80 private@46.20 defense@46.60 technology@46.94 companies.@47.46 But@48.34 the@48.50 most@48.60 important@48.74 part@49.16 of@49.38 Anduril@49.52
+is@50.00 not@50.16 one@50.34 drone@50.60 or@50.86 one@51.08 missile,@51.26 it@51.82 is@51.92 the@52.06 software@52.16 underneath,@52.48 called@53.22 Lattice.@53.44
+Think@53.88 of@54.42 Lattice@54.54 as@54.82 an@54.96 operating@55.08 system@55.34 for@55.78 military@55.98 hardware.@56.34 Radars,@57.24 cameras,@57.82 drones,@58.30 ground@58.94
+vehicles,@59.18 underwater@59.86 vehicles@60.14 and@60.68 other@60.86 sensors@61.04 normally@61.36 come@61.78 from@62.06 different@62.22 manufacturers@62.48 and@63.12 operate@63.38 separately.@63.70
+Lattice@64.56 connects@64.92 them.@65.16 It@65.96 takes@66.06 data@66.26 from@66.52 thousands@66.68 of@67.00 sensors,@67.18 combines@67.60 it@67.84 into@68.08 one@68.24
+picture,@68.44 identifies@69.10 objects@69.34 or@69.96 threats@70.14 and@70.38 helps@70.54 operators@70.74 decide@71.12 what@71.54 happens@71.74 next.@72.08 Now@72.38 connect@72.82
+that@73.14 software@73.34 to@73.74 Autonomous@73.90 Hardware.@74.38 Anduril@75.38 builds@75.98 Ghost@76.32 Drones,@76.58 Roadrunner,@77.10 Autonomous@77.62 Aircraft,@78.02 Fury,@78.58 a@79.22
+Fighter@79.32 -style@79.54 Autonomous@79.82 Aircraft,@80.34 Barracuda,@80.88 a@81.72 family@81.82 of@82.04 cruise@82.22 missile@82.44 -like@82.84 systems,@83.02 underwater@83.78 vehicles@84.04
+like@84.52 Dive@84.86 and@85.20 Copperhead,@85.38 and@86.04 surveillance@86.20 systems@86.46 like@86.90 Sentry.@87.16 So@87.90 imagine@88.00 Autonomous@88.26 Drones@88.82 monitoring@89.06
+an@89.50 area.@89.76 One@90.60 sensor@90.80 detects@91.12 something,@91.60 lattice@92.24 identifies@92.46 and@93.02 tracks@93.32 it,@93.56 then@94.04 shares@94.20 that@94.44
+with@94.74 other@94.90 systems.@95.06 A@95.80 human@95.90 operator@96.10 supervises@96.44 how@97.22 they@97.40 respond.@97.54 That@98.44 is@98.66 the@98.82 core@98.94
+vision.@99.18 Not@99.82 one@100.08 person@100.34 controlling@100.64 one@101.08 drone,@101.40 but@101.70 one@102.10 person@102.40 supervising@102.70 many@103.40 autonomous@103.64 systems@104.04
+working@104.52 together.@104.84 Anduril@105.98 calls@106.40 this@106.60 mission@106.84 autonomy.@107.08 This@108.24 is@108.40 why@108.52 AI@108.72 matters@109.04 so@109.42 much.@109.72
+A@110.38 battlefield@110.46 produces@110.78 enormous@111.42 amounts@111.84 of@112.12 data@112.34 at@112.62 once.@112.88 Camera@113.46 feeds,@113.78 radar,@114.32 radio@114.84 signals,@115.06
+locations,@115.86 aircraft,@116.58 drones.@117.28 No@118.06 human@118.20 can@118.52 process@118.72 all@119.04 of@119.38 that@119.50 in@119.62 real@119.78 time.@120.00 So@120.72
+AI@120.92 turns@121.22 raw@121.60 sensor@121.88 data@122.16 into@122.50 answers.@122.78 What@123.60 is@123.94 this@124.10 object?@124.26 Where@124.72 is@124.84 it@125.04
+going?@125.14 Is@125.64 it@125.84 a@125.94 threat?@126.04 Which@126.54 system@126.74 can@127.08 respond?@127.26 The@128.06 other@128.22 key@128.38 part@128.58 of@128.80
+Anduril's@128.92 strategy@129.48 is@129.80 manufacturing.@130.02 Anduril@130.54 argues@131.46 that@131.74 modern@132.02 wars@132.24 may@132.60 require@132.80 huge@133.16 numbers@133.48 of@133.84
+relatively@134.02 affordable@134.34 autonomous@134.82 systems,@135.24 not@136.08 a@136.34 tiny@136.52 number@136.74 of@137.04 incredibly@137.18 expensive@137.44 platforms.@138.02 So@139.16 it@139.58
+is@139.70 investing@139.78 in@140.18 arsenal,@140.36 software@140.94 -driven@141.16 factories@141.42 built@141.88 to@142.18 produce@142.34 autonomous@142.54 defence@143.00 systems@143.24 at@143.70
+much@143.90 larger@144.06 scale.@144.36 So@145.16 the@145.34 easiest@145.48 way@145.76 to@146.02 think@146.14 about@146.28 Anduril@146.42 is@147.00 this.@147.12 Palantir@147.76
+helps@148.26 defence@148.52 organisations@148.80 understand@149.40 and@149.92 use@150.30 data.@150.52 SpaceX@151.26 transformed@151.56 how@152.18 space@152.40 hardware@152.58 is@153.00 built.@153.22
+Anduril@154.02 is@154.48 trying@154.58 to@154.76 do@154.88 something@155.00 similar@155.24 for@155.64 defence.@155.80 Build@156.48 the@156.68 hardware,@156.86 build@157.48 the@157.66
+AI,@157.86 build@158.46 the@158.66 software,@158.82 connecting@159.36 everything.@159.60 then@160.06 manufacture@160.60 it@161.14 at@161.44 scale.@161.52 It@162.34 is@162.44 turning@162.56
+military@162.80 hardware@163.24 from@163.70 slow,@163.96 manually@164.48 operated@164.76 machines@165.30 into@165.78 a@166.14 network@166.26 of@166.58 software@166.78 -defined@167.14 autonomous@167.38
+systems.@167.96
+words 477 span 168.42 wpm 169.9
+gaps>0.3 49 max 0.76 median 0.0 model small-cpu-int8

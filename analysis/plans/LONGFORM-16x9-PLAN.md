@@ -213,6 +213,11 @@ Verified 2026-09-26: `tools:[{google_search:{}}]` on `gemini-3.6-flash` returns 
   These are tunable in `pace.js` (profile-aware), and will be recalibrated if the user supplies long-form references.
 - **Music bed:** on (the lofi/ambient preset), ducked under the voice, swelling +3 dB on chapter cards.
 - **SFX:** the same library at lower density: whoosh on scene transitions, soft pop on photo drops, tick on count-ups. No tick on every row.
+- **Mix rule (user, 2026-09-26): a dense blend of motion graphics AND media. It is never a slideshow.** Every scene is a motion-graphics layout.
+  - Photos and clips appear inside it as one layer: a card in a split, a thumbnail on a timeline, a backdrop behind a big number, a map with pins. Each one gets animated annotations: highlight boxes, arrows, labels, count-ups, callouts.
+  - Even `lfFull` carries animated graphics over the photo: a lower third, a callout, a number or a highlight.
+  - Graphic-only scenes (charts, numbers, compare, recap) sit between media scenes.
+  - Target share of runtime: graphics present **100%**; real media visible about 50–65%; no media-only frame without an animated element within 1.5 s.
 - **Cadence bands** (LF, provisional until a reference is measured):
   - a visual change every ≤ 5 s;
   - scene life median 6–10 s;

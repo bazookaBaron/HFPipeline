@@ -31,6 +31,7 @@
     // static dot grid: 3 px dots, centres at 27+54k (R2 measured), radial mask centred ~ (540,840)
     "html .st-bg::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle,var(--x-141414,#141414) 0,var(--x-141414,#141414) 1.5px,transparent 1.75px);background-size:54px 54px;background-position:0 0;",
     "-webkit-mask-image:radial-gradient(ellipse 720px 560px at 540px 840px,var(--x-000000,#000000) 30%,transparent 100%);mask-image:radial-gradient(ellipse 720px 560px at 540px 840px,var(--x-000000,#000000) 30%,transparent 100%);}",
+    // 9:16 layer size; core.js sizes the layers inline from spec.frame when a spec sets one
     "html .st-content,html .st-chrome,html .st-mascot-layer{position:absolute;left:0;top:0;width:1080px;height:1920px;}",
     "html .st-mod{position:absolute;box-sizing:border-box;font-family:var(--st-sans);color:var(--st-text);}",
     "html .st-mascot{position:absolute;}html .st-mascot-img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:contain;object-position:50% 100%;}",

@@ -2,7 +2,8 @@
 <!--
   stage -- HyperFrames sub-composition (v3 reference-parity renderer)
 
-  Full-frame (1080x1920) host for a whole video's visuals: background plate, chrome (HUD),
+  Full-frame host (spec.frame; 1080x1920 unless the spec says otherwise, core.js resizes #root)
+  for a whole video's visuals: background plate, chrome (HUD),
   mascot and a sequence of scaffolds of measured modules, mutated by word-timed events.
   All logic lives in lib/stage/core.js + lib/stage/modules-<profile>.js (loaded by the root
   composition); this file only resolves props and registers the timeline.

@@ -71,14 +71,28 @@ def beats_from_spec(spec):
     return sorted(set(round(x, 2) for x in t))
 
 
+# frame size of the delivered video (set in main from ffprobe, else the spec's frame)
+W, H = 1080, 1920
+
+
+def video_size(video):
+    try:
+        out = subprocess.run(["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "csv=p=0", video],
+                             capture_output=True, text=True).stdout.strip()
+        w, h = (int(v) for v in out.split(",")[:2])
+        return w, h
+    except Exception:
+        return None
+
+
 def frame(video, t):
     raw = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t:.3f}", "-i", video, "-frames:v", "1", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
                          capture_output=True).stdout
-    return raw  # 1080*1920*3
+    return raw  # W*H*3
 
 
 def px(raw, x, y):
-    i = (y * 1080 + x) * 3
+    i = (y * W + x) * 3
     return raw[i], raw[i + 1], raw[i + 2]
 
 
@@ -97,13 +111,13 @@ def syllables(word):
         n -= 1
     return max(1, n)
 
-def caption_rows(raw):
-    """rows (y) that contain a >=160 px run of near-white pixels in the caption band 1380-1560"""
+def caption_border_rows(raw):
+    """rows (y) that contain a >=160 px run of near-white pixels in the caption band 1380-1560 (9:16)"""
     rows = []
     for y in range(1380, 1560):
         run = best = 0
-        base = y * 1080 * 3
-        for x in range(0, 1080):
+        base = y * W * 3
+        for x in range(0, W):
             i = base + x * 3
             if raw[i] > 225 and raw[i + 1] > 225 and raw[i + 2] > 225:
                 run += 1
@@ -132,7 +146,7 @@ def settled_caption(video, t, match, band):
     """The midpoint frame can land on a caption chunk's pop-in (scaled chip); probe +-0.3 s for a settled one."""
     for dt in (0.3, -0.3, 0.6):
         raw = frame(video, t + dt)
-        if len(raw) < 1080 * 1920 * 3:
+        if len(raw) < W * H * 3:
             continue
         box = caption_rows(raw, match)
         if box and band[0] <= box[0] <= band[1] and band[2] <= box[-1] <= band[3]:
@@ -149,6 +163,12 @@ def main():
     tl = json.load(open(a.timeline, encoding="utf-8"))
     spec, timeline = tl["spec"], tl["timeline"]
     profile = spec.get("profile", "DH")
+    global W, H
+    fr = spec.get("frame") or {}
+    W, H = video_size(a.video) or (fr.get("w", 1080), fr.get("h", 1920))
+    # the geometry bands below (HUD, caption chips, BP header) are measured on 9:16 refs:
+    # a landscape frame keeps only the background check until its own profile bands exist
+    portrait = H > W
     B = LC if profile == "LC" else DC if profile == "DC" else BR if profile == "BR" else BP if profile == "BP" else DH
     total = timeline["totalSeconds"]
     gates = []
@@ -205,17 +225,23 @@ def main():
     else:
         gate("loudness_stats_present", False, None, "metrics.audio required", repair="audio")
 
+    # ---- delivered frame size = the compiled frame ----
+    want = (fr.get("w", 1080), fr.get("h", 1920))
+    gate("frame_size", (W, H) == want, f"{W}x{H}", f"{want[0]}x{want[1]}", repair="render")
+
     # ---- frame geometry at each scaffold's midpoint ----
     geo_fail = []
     for s in spec["scaffolds"]:
         t = (s["t0"] + s["t1"]) / 2
         raw = frame(a.video, t)
-        if len(raw) < 1080 * 1920 * 3:
+        if len(raw) < W * H * 3:
             geo_fail.append(f"{s['id']}: no frame at {t:.2f}")
             continue
         bgc = (0xF4, 0xF4, 0xED) if profile == "LC" else (0x09, 0x0A, 0x0D) if profile == "DC" else (0xF1, 0xF1, 0xEA) if profile == "BR" else (0xED, 0xF1, 0xF3) if profile == "BP" else (0, 0, 0)
-        if not near(px(raw, 4, 4), bgc, 6) or not near(px(raw, 4, 1915), bgc, 6):
+        if not near(px(raw, 4, 4), bgc, 6) or not near(px(raw, 4, H - 5), bgc, 6):
             geo_fail.append(f"{s['id']}: background {px(raw, 4, 4)} at corners, want {bgc}")
+        if not portrait:
+            continue
         if profile == "BP" and any(m["id"] == "bphead" for m in s["modules"]):
             # R6 header bar: brand block #111923 at x 45-310.5 x y 236-291
             if not near(px(raw, 305, 284), (0x11, 0x19, 0x23), 10):
@@ -260,14 +286,14 @@ def main():
         if any(m["id"] == "hud" for m in s["modules"]):
             if not near(px(raw, 72, 270), (9, 13, 17), 8):
                 geo_fail.append(f"{s['id']}: HUD fill {px(raw, 72, 270)} at (72,270), want #090d11")
-        rows = caption_rows(raw)
+        rows = caption_border_rows(raw)
         if rows:
             top, bot = rows[0], rows[-1]
             if not (1413 <= top <= 1419):
                 geo_fail.append(f"{s['id']}: caption top border y {top}, want 1416+-3")
             if not (1526 <= bot <= 1536):
                 geo_fail.append(f"{s['id']}: caption bottom border y {bot}, want ~1531")
-    gate("frame_geometry", not geo_fail, geo_fail or "all scaffolds", "DH: bg #000, HUD #090d11 @y235-305, caption y1416-1532; LC: bg #F4F4ED, caption y1452-1545", repair="render")
+    gate("frame_geometry", not geo_fail, geo_fail or "all scaffolds", "DH: bg #000, HUD #090d11 @y235-305, caption y1416-1532; LC: bg #F4F4ED, caption y1452-1545" if portrait else f"{W}x{H}: background only (9:16 bands skipped)", repair="render")
 
     hard_fail = [g for g in gates if g["hard"] and not g["ok"]]
     out = {"ok": not hard_fail, "gates": gates, "repair": sorted(set(g["repair"] for g in hard_fail if g["repair"]))}

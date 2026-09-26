@@ -7,7 +7,8 @@
  *
  *   node tools/stage-preview.js --spec fx.json --out dir --at 1,2.5 [--check] [--words w.json]
  *
- * spec file: { duration, profile?, accent?, spec: {scaffolds, events, mascot}, words?: [{text,start,end}] }
+ * spec file: { duration, profile?, accent?, spec: {frame?, scaffolds, events, mascot}, words?: [{text,start,end}] }
+ * The snapshot size follows spec.frame ({w, h}, default 1080x1920).
  */
 
 const fs = require("fs");

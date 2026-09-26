@@ -4,7 +4,7 @@
 /**
  * Layout audit (hard gate): builds the compiled stage in headless Chrome, seeks the timeline to
  * probe times inside every scaffold and measures the real DOM for
- *   - text that runs outside the 1080x1920 frame or outside its own card,
+ *   - text that runs outside the frame (spec.frame, default 1080x1920) or outside its own card,
  *   - node cards that overlap each other,
  *   - content cards that overlap each other,
  *   - text hidden under the mascot.
@@ -163,13 +163,15 @@ async function launchBrowser() {
 }
 
 async function auditLayout({ spec, duration, log = () => {}, frame, times: forcedTimes, shots, browser: shared }) {
+  // the viewport follows the compiled frame unless the caller forces one (carousel 1080x1350)
+  frame = frame || spec.frame || { w: 1080, h: 1920 };
   const file = path.join(VIDEO_ENGINE_DIR, `.layout-audit-${process.pid}-${Date.now().toString(36)}.html`);
   fs.writeFileSync(file, harnessHtml(spec, duration, frame), "utf-8");
   const browser = shared || (await launchBrowser());
   let page;
   try {
     page = await browser.newPage();
-    await page.setViewport({ width: (frame || {}).w || 1080, height: (frame || {}).h || 1920 });
+    await page.setViewport({ width: frame.w, height: frame.h });
     await page.goto("file:///" + file.replace(/\\/g, "/"), { waitUntil: "load" });
     await page.evaluate(() => document.fonts.ready);
     const buildProblems = await page.evaluate(() => (window.__audit ? window.__audit.problems : ["stage did not build"]));
@@ -183,7 +185,7 @@ async function auditLayout({ spec, duration, log = () => {}, frame, times: force
     for (const sh of shots || []) {
       await page.evaluate((t) => { window.__audit.tl.seek(t, false); }, sh.t);
       await new Promise((r) => setTimeout(r, 120));
-      await page.screenshot({ path: sh.path, clip: { x: 0, y: 0, width: (frame || {}).w || 1080, height: (frame || {}).h || 1920 } });
+      await page.screenshot({ path: sh.path, clip: { x: 0, y: 0, width: frame.w, height: frame.h } });
     }
     // one line per distinct defect (first time seen)
     const seen = new Map();
@@ -192,7 +194,7 @@ async function auditLayout({ spec, duration, log = () => {}, frame, times: force
       if (!seen.has(key)) seen.set(key, f);
     }
     const problems = [...seen.values()];
-    log(`[layout] ${times.length} probes, ${problems.length} defect(s)`);
+    log(`[layout] ${frame.w}x${frame.h}, ${times.length} probes, ${problems.length} defect(s)`);
     return { ok: problems.length === 0 && !buildProblems.length, problems, buildProblems, probes: times.length };
   } finally {
     if (shared) await page.close().catch(() => {});

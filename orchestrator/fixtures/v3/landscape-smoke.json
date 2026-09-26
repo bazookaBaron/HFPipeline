@@ -1,0 +1,52 @@
+{
+ "version": "storyboard.v3",
+ "profile": "LC",
+ "frame": { "w": 1920, "h": 1080 },
+ "topic": "Landscape frame smoke test",
+ "entities": { "kicker": "SMOKE / 16:9 FRAME" },
+ "sentences": [
+  { "id": "s1", "text": "This is a quick landscape test of the stage renderer." },
+  { "id": "s2", "text": "Two numbers sit side by side, and a panel fills in." },
+  { "id": "s3", "text": "The bars fill to show the gap, and that is the end." }
+ ],
+ "scaffolds": [
+  {
+   "id": "sc1",
+   "template": "free",
+   "from": "s1",
+   "slots": {
+    "modules": [
+     { "id": "head", "type": "headline", "rect": [120, 380, 1680, 246], "props": { "lines": ["LANDSCAPE", "STAGE TEST"] } }
+    ]
+   }
+  },
+  {
+   "id": "sc2",
+   "template": "free",
+   "from": "s2",
+   "slots": {
+    "modules": [
+     { "id": "nums", "type": "kpis", "rect": [120, 340, 820, 124], "props": { "items": [ { "eyebrow": "FRAME WIDTH", "value": "1920", "sub": "PIXELS", "tone": "blue" }, { "eyebrow": "FRAME HEIGHT", "value": "1080", "sub": "PIXELS", "tone": "green" } ] } },
+     { "id": "log", "type": "panel", "rect": [1000, 340, 800, 256], "props": { "title": "STAGE LOG", "icon": "monitor", "iconTone": "blue", "rows": [ { "text": "frame 1920x1080", "mono": true, "status": "OK", "hidden": true }, { "text": "presenter off", "mono": true, "status": "OK", "hidden": true }, { "text": "layers resized", "mono": true, "status": "OK", "hidden": true } ] } }
+    ]
+   }
+  },
+  {
+   "id": "sc3",
+   "template": "free",
+   "from": "s3",
+   "slots": {
+    "modules": [
+     { "id": "gap", "type": "bars", "rect": [240, 420, 1440, 118], "props": { "filled": false, "items": [ { "label": "Landscape", "value": 100, "display": "1920 px", "tone": "blue" }, { "label": "Portrait", "value": 56, "display": "1080 px", "tone": "green" } ] } }
+    ]
+   }
+  }
+ ],
+ "events": [
+  { "sentence": "s2", "anchor": { "text": "numbers" }, "op": "rowIn", "target": "log", "value": { "row": 1 } },
+  { "sentence": "s2", "anchor": { "text": "side," }, "op": "rowIn", "target": "log", "value": { "row": 2 } },
+  { "sentence": "s2", "anchor": { "text": "panel" }, "op": "rowIn", "target": "log", "value": { "row": 3 } },
+  { "sentence": "s3", "anchor": { "text": "fill" }, "op": "fill", "target": "gap", "value": { "item": 1 } },
+  { "sentence": "s3", "anchor": { "text": "gap," }, "op": "fill", "target": "gap", "value": { "item": 2 } }
+ ]
+}

@@ -1,7 +1,7 @@
 /*
  * HFStage core -- the v3 "stage" renderer (reference parity, analysis/.../design/SPEC.md).
  *
- * One full-frame (1080x1920) sub-composition renders a whole video's visuals from a compiled
+ * One full-frame (spec.frame, default 1080x1920) sub-composition renders a whole video's visuals from a compiled
  * spec: background plate, chrome (HUD), mascot and a sequence of SCAFFOLDS, each a set of
  * modules at exact pixel rects. A module id that appears in consecutive scaffolds is the SAME
  * element (the reference "carrier" persists and mutates in place); a rect change between
@@ -10,6 +10,7 @@
  *
  *   spec = {
  *     profile: "DH",
+ *     frame:     { w, h },                             output px (default 1080x1920; 16:9 = 1920x1080)
  *     scaffolds: [{ id, t0, t1, layout: "column"|"full"|"title",
  *                   modules: [{ id, type, rect:[x,y,w,h], props, enter?, at?, slot?, z? }] }],
  *     events:    [{ t, op, target, value? }],          target = "<moduleId>[.<entity>]"
@@ -193,6 +194,20 @@
     var content = mk("div", "st-content", root);
     var mascotLayer = mk("div", "st-mascot-layer", root);
     var chrome = mk("div", "st-chrome", root);
+    // output frame: the stage root and its full-frame layers take its size (the profile CSS is
+    // measured on 1080x1920; hosts without spec.frame, e.g. the 1080x1350 carousel, keep their
+    // own root size); horizontal pushes travel the frame width
+    var frame = { w: (spec.frame && spec.frame.w) || 1080, h: (spec.frame && spec.frame.h) || 1920 };
+    if (spec.frame) {
+      [root, bg, content, mascotLayer, chrome].forEach(function (el) {
+        el.style.width = frame.w + "px";
+        el.style.height = frame.h + "px";
+      });
+    }
+    if (frame.w !== 1080) {
+      RECIPES.cover = Object.assign({}, RECIPES.cover, { from: { x: frame.w } });
+      RECIPES.slideInRight = Object.assign({}, RECIPES.slideInRight, { from: { x: frame.w / 2, autoAlpha: 0 } });
+    }
     content.style.zIndex = "1";
     mascotLayer.style.zIndex = "2";
     chrome.style.zIndex = "3";
@@ -203,6 +218,7 @@
       F: F,
       duration: duration,
       root: root,
+      frame: frame,
       modules: {},
       entities: {},
       recipes: RECIPES,

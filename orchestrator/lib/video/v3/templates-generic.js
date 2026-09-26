@@ -288,4 +288,16 @@ function opener(sc, entities) {
   return { layout: "title", modules: mods.concat(rest.mods) };
 }
 
-module.exports = { GENERIC_TEMPLATES: { stack, hero, opener }, preferred, BAND, fitBlock, place };
+/**
+ * free: modules at explicit rects (slots.modules: [{ id?, type, rect:[x,y,w,h], props, enter?, anchor?, at?, exit?, z? }]).
+ * Frame-agnostic (no 9:16 bands): used by landscape (16:9) storyboards until the LF templates exist.
+ */
+function free(sc) {
+  const mods = ((sc.slots || {}).modules || []).map((f, i) => {
+    if (!Array.isArray(f.rect) || f.rect.length !== 4) throw new Error(`scaffold ${sc.id}: free module ${i} needs rect [x, y, w, h]`);
+    return { id: f.id || `${sc.id}_f${i}`, type: f.type, rect: f.rect, props: f.props || {}, enter: f.enter, at: f.at, exit: f.exit, z: f.z, anchor: f.anchor };
+  });
+  return { layout: sc.layout || "full", modules: mods };
+}
+
+module.exports = { GENERIC_TEMPLATES: { stack, hero, opener, free }, preferred, BAND, fitBlock, place };

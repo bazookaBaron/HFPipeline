@@ -113,6 +113,12 @@ CAPTION_SKINS.BR = CAPTION_SKINS.marker;
 CAPTION_SKINS.BP = CAPTION_SKINS.marker;
 
 const F = 1 / 30;
+const DEFAULT_FRAME = { w: 1080, h: 1920 };
+
+/** hyperframes resolution preset for a frame (portrait / landscape / square) */
+function resolutionOf(frame) {
+  return frame.w > frame.h ? "landscape" : frame.w < frame.h ? "portrait" : "square";
+}
 
 /** Chunk words into caption phrases: <= maxWords, break after sentence/clause punctuation. */
 function chunkWords(words, maxWords) {
@@ -141,9 +147,11 @@ function chunkWords(words, maxWords) {
   return out;
 }
 
-function buildCaptions(words, totalDuration, profile, accent, skinName) {
+function buildCaptions(words, totalDuration, profile, accent, skinName, frame = DEFAULT_FRAME) {
   const skin = CAPTION_SKINS[skinName] || CAPTION_SKINS[profile] || CAPTION_SKINS.DH;
   if (!words.length) return "";
+  // skins are measured on 9:16; a landscape frame puts the chip 90 px above the bottom edge
+  const top = frame.w > frame.h ? frame.h - 90 - skin.height : skin.top;
   const chunks = chunkWords(words, skin.maxWords).map((g) => ({
     start: g[0].start,
     end: g[g.length - 1].end,
@@ -155,8 +163,8 @@ function buildCaptions(words, totalDuration, profile, accent, skinName) {
         data-composition-id="captions"
         data-start="0"
         data-duration="${totalDuration.toFixed(3)}"
-        data-width="1080"
-        data-height="1920"
+        data-width="${frame.w}"
+        data-height="${frame.h}"
         data-track-index="5"
         data-timeline-role="captions"
         data-caption-root="true"
@@ -165,8 +173,8 @@ function buildCaptions(words, totalDuration, profile, accent, skinName) {
           #captions-comp { position: absolute; inset: 0; pointer-events: none; }
           #captions-comp .cap3 {
             position: absolute;
-            left: 540px;
-            top: ${skin.top}px;
+            left: ${frame.w / 2}px;
+            top: ${top}px;
             height: ${skin.height}px;
             transform: translateX(-50%);
             transform-origin: 50% 50%;
@@ -204,7 +212,7 @@ function buildCaptions(words, totalDuration, profile, accent, skinName) {
               var text = c.words.map(function (w) { return w.t; }).join(" ");
               var size = ${skin.fontSize};
               if (window.HFTextFit) {
-                while (size > 40 && HFTextFit.measure(text, ${skin.weight}, size, FAMILY) > 1080 * 0.9 - ${2 * skin.padX + 6}) size -= 2;
+                while (size > 40 && HFTextFit.measure(text, ${skin.weight}, size, FAMILY) > ${frame.w} * 0.9 - ${2 * skin.padX + 6}) size -= 2;
               }
               line.style.fontSize = size + "px";
               // inline wrapper: the box is a flex container, which would drop the space text nodes
@@ -280,6 +288,7 @@ function buildCaptions(words, totalDuration, profile, accent, skinName) {
  * @param {Array<{text,start,end}>} [o.words] final-time words for captions
  * @param {string} [o.profile] "DH"
  * @param {string} [o.accent] caption shadow colour
+ * The frame size comes from spec.frame ({w, h}, default 1080x1920).
  */
 // Root media layer: framework-timed <video> trims (and still holds) placed exactly over each
 // media window's body. Wrappers are UNTIMED (a timed <video> may not sit inside a timed element);
@@ -331,15 +340,16 @@ function mediaTweens(media) {
 }
 
 function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, words, profile = "DH", accent = "#4497ff", captionsOn = true, captionSkin }) {
+  const frame = spec.frame || DEFAULT_FRAME;
   const specJson = JSON.stringify({ spec: JSON.stringify(spec), duration: Number(totalDuration.toFixed(3)) }).replace(/'/g, "&#39;");
   const narrationTag = narrationRelPath
     ? `      <audio id="narration-audio" class="clip" data-start="0" data-track-index="0" src="${narrationRelPath}"></audio>`
     : "";
   return `<!doctype html>
-<html lang="en" data-resolution="portrait">
+<html lang="en" data-resolution="${resolutionOf(frame)}">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=1080, height=1920" />
+    <meta name="viewport" content="width=${frame.w}, height=${frame.h}" />
     <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
     <script src="compositions/components/lib/text-fit.js"></script>
     <script src="compositions/components/lib/props.js"></script>
@@ -361,12 +371,12 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/stage/modules-bp.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
-      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
-      #root { position: relative; width: 1080px; height: 1920px; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
+      html, body { margin: 0; width: ${frame.w}px; height: ${frame.h}px; overflow: hidden; background: #000; }
+      #root { position: relative; width: ${frame.w}px; height: ${frame.h}px; font-family: Inter, ui-sans-serif, system-ui, sans-serif; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="${runId}" data-start="0" data-width="1080" data-height="1920">
+    <div id="root" data-composition-id="${runId}" data-start="0" data-width="${frame.w}" data-height="${frame.h}">
 ${narrationTag}
       <!-- Duration anchor: with a lone sub-composition clip, \`hyperframes snapshot\` stopped
            showing the stage after ~1.8 s (verified 2026-09-25); an explicit full-length clip
@@ -379,14 +389,14 @@ ${narrationTag}
         data-variable-values='${specJson}'
         data-start="0"
         data-duration="${totalDuration.toFixed(3)}"
-        data-width="1080"
-        data-height="1920"
+        data-width="${frame.w}"
+        data-height="${frame.h}"
         data-track-index="1"
         class="clip"
-        style="position:absolute; left:0; top:0; width:1080px; height:1920px;"
+        style="position:absolute; left:0; top:0; width:${frame.w}px; height:${frame.h}px;"
       ></div>
 ${buildMediaLayer(spec.media || [])}
-${captionsOn ? buildCaptions(words || [], totalDuration, profile, accent, captionSkin) : ""}
+${captionsOn ? buildCaptions(words || [], totalDuration, profile, accent, captionSkin, frame) : ""}
     </div>
     <script>
       const tl = gsap.timeline({ paused: true });

@@ -15,6 +15,7 @@
  * Usage: node generate-video-v3.js --storyboard sb.json --out out.mp4 [--run-id id] [--wpm 215]
  *          [--tts-speed 1] [--captions true] [--mascot true] [--reuse-voice true] [--quality looks]
  *          [--music false|lofi|ambient|pulse]   (synthesized, ducked background bed; default false)
+ * The output frame is the storyboard's `frame` ({w, h}, default 1080x1920; see lib/video/v3/compile.js).
  * stdout: exactly one JSON line on success.
  */
 
@@ -176,6 +177,10 @@ async function main() {
   }
   const sb = bool(args.endcard, true) ? appendEndcard(sbTopic, undefined, promo) : sbTopic;
   if (sb.version !== "storyboard.v3") return die("script", `expected storyboard.v3, got ${sb.version}`);
+  // storyboard frame (sb.frame, default 1080x1920) rides in the compiled spec; landscape (16:9
+  // long-form) has no presenter, so the mascot is off there whatever --mascot says
+  const landscape = !!(sb.frame && Number(sb.frame.w) > Number(sb.frame.h));
+  if (landscape && mascotOn) log("landscape frame: presenter off");
   metrics.set("counts", { sentences: sb.sentences.length, scaffolds: sb.scaffolds.length, events: (sb.events || []).length });
 
   // ---- voice ----
@@ -253,7 +258,7 @@ async function main() {
 
   let spec;
   try {
-    spec = compileStoryboard(sb, timeline, { mascot: mascotOn, presenter: typeof args.presenter === "string" ? args.presenter : undefined });
+    spec = compileStoryboard(sb, timeline, { mascot: mascotOn && !landscape, presenter: typeof args.presenter === "string" ? args.presenter : undefined });
   } catch (err) {
     return die("compose", `compile failed: ${err.message}`, err);
   }

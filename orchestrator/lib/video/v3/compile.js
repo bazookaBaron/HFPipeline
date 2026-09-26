@@ -6,6 +6,7 @@
  *
  * storyboard.v3 = {
  *   version: "storyboard.v3", profile: "DH", topic,
+ *   frame?: { w, h },                                              // output frame, default 1080x1920
  *   entities: { hud, users, router, lever, left, right },           // carrier props (persist)
  *   sentences: [{ id, text }],
  *   scaffolds: [{ id, template, from, slots }],                     // `from` = first sentence id
@@ -38,6 +39,15 @@ const LEAD = { default: 0.05, traffic: 0.08, retype: 0.0, text: 0.05, strike: 0.
 
 function round(x) {
   return Math.round(x * 1000) / 1000;
+}
+
+// Output frame in px. 9:16 shorts are the default; the 16:9 long-form sets {w:1920, h:1080}.
+const DEFAULT_FRAME = { w: 1080, h: 1920 };
+function frameOf(sb) {
+  const f = (sb && sb.frame) || {};
+  const w = Number(f.w) || DEFAULT_FRAME.w;
+  const h = Number(f.h) || DEFAULT_FRAME.h;
+  return { w, h };
 }
 
 function compileStoryboard(sb, timeline, opts = {}) {
@@ -162,6 +172,7 @@ function compileStoryboard(sb, timeline, opts = {}) {
   const media = buildMediaLayer({ scaffolds, events, sbScaffolds: sb.scaffolds, wordTime });
   return {
     profile: sb.profile || "DH",
+    frame: frameOf(sb),
     mascot: opts.mascot === false ? null : presenterSpec(words, opts.presenter),
     scaffolds,
     events,
@@ -223,4 +234,4 @@ function findFill(sc, moduleId) {
   return null;
 }
 
-module.exports = { compileStoryboard, LEAD, TEMPLATES };
+module.exports = { compileStoryboard, LEAD, TEMPLATES, DEFAULT_FRAME, frameOf };

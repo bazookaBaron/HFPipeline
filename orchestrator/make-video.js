@@ -51,7 +51,7 @@ async function main() {
   for (let r = 0; r <= rounds; r++) {
     const args = ["generate-video-v3.js", "--topic", topic, "--out", outPath, "--run-id", runId, "--reuse-voice", "true"];
     // pass-through options (control panel): voice profile, accent, target length
-    ["ref-audio", "ref-text", "accent", "length-seconds", "profile", "captions", "sfx", "music", "endcard", "voice-profile", "promo", "caption-skin"].forEach((k) => {
+    ["ref-audio", "ref-text", "accent", "length-seconds", "profile", "captions", "sfx", "music", "endcard", "voice-profile", "promo", "caption-skin", "presenter"].forEach((k) => {
       if (arg(k) !== undefined) args.push("--" + k, arg(k));
     });
     if (previous) args.push("--previous", previous, "--problems", problems);

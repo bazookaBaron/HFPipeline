@@ -423,6 +423,39 @@
     return out;
   }
 
+  /** Gesture beats from word intervals: runs split on gaps > 0.28 s; one lift per run start
+   * (>= 1.3 s after the previous one ended) plus one every 2.4 s inside long runs. */
+  function armGestures(words, duration) {
+    var ws = words
+      .filter(function (w) {
+        return w && isFinite(w[0]) && isFinite(w[1]) && w[1] > w[0];
+      })
+      .slice()
+      .sort(function (a, b) {
+        return a[0] - b[0];
+      });
+    var runs = [];
+    ws.forEach(function (w) {
+      var r = runs[runs.length - 1];
+      if (r && w[0] - r[1] <= 0.28) r[1] = Math.max(r[1], w[1]);
+      else runs.push([w[0], w[1]]);
+    });
+    var AMPS = [14, 9, 18, 11, 16, 10];
+    var out = [];
+    var free = 0;
+    var k = 0;
+    runs.forEach(function (r) {
+      for (var t = r[0]; t < r[1] - 0.5; t += 2.4) {
+        if (t < free) continue;
+        var back = Math.min(r[1], t + 0.95, duration - 0.45);
+        if (back < t + 0.3) continue;
+        out.push({ t: Math.round(t / F) * F, back: Math.round(back / F) * F, amp: AMPS[k++ % AMPS.length] });
+        free = back + 0.42 + 0.9;
+      }
+    });
+    return out;
+  }
+
   function buildMascot(ctx, layer, cfg, scaffolds, mp) {
     if (!cfg || !cfg.open) return;
     var tl = ctx.tl;
@@ -439,6 +472,15 @@
     }
     var open = mk("img", "st-mascot-img", wrap);
     open.src = cfg.open;
+    // optional gesturing forearm (same canvas as `open`, which has it cut out): rotates about the elbow
+    var arm = null;
+    if (cfg.arm) {
+      arm = mk("img", "st-mascot-img st-mascot-arm", wrap);
+      arm.src = cfg.arm;
+      var pv = cfg.armPivot || [0.5, 0.5];
+      arm.style.transformOrigin = (pv[0] * 100).toFixed(2) + "% " + (pv[1] * 100).toFixed(2) + "%";
+      tl.set(arm, { rotation: 0 }, 0);
+    }
     var talkSrc = typeof cfg.talk === "string" ? cfg.talk : cfg.talkSprite;
     var talkWords = Array.isArray(cfg.talk) ? cfg.talk : cfg.words;
     var talk2 = face && cfg.talk2 ? sprite(cfg.talk2, "st-mascot-talk2", face.mouth) : null;
@@ -491,6 +533,14 @@
         cur = m[1];
         tl.set(talk, { autoAlpha: cur === "a" ? 1 : 0 }, m[0]);
         if (talk2) tl.set(talk2, { autoAlpha: cur === "b" ? 1 : 0 }, m[0]);
+      });
+    }
+    // explaining gestures: the hand lifts (forearm rotates up about the elbow) at the start of each
+    // speech run and every ~2.4 s inside long runs, then settles; amplitudes cycle deterministically
+    if (arm && talkWords && talkWords.length) {
+      armGestures(talkWords, ctx.duration).forEach(function (g) {
+        tl.to(arm, { rotation: -g.amp, duration: 0.28, ease: "power2.out", immediateRender: false }, g.t);
+        tl.to(arm, { rotation: 0, duration: 0.42, ease: "sine.inOut", immediateRender: false }, g.back);
       });
     }
     var glanceUntil = -1;

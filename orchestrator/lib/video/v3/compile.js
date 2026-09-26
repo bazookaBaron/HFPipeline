@@ -162,34 +162,56 @@ function compileStoryboard(sb, timeline, opts = {}) {
   const media = buildMediaLayer({ scaffolds, events, sbScaffolds: sb.scaffolds, wordTime });
   return {
     profile: sb.profile || "DH",
-    mascot: opts.mascot === false ? null : presenterSpec(words),
+    mascot: opts.mascot === false ? null : presenterSpec(words, opts.presenter),
     scaffolds,
     events,
     media,
   };
 }
 
-// ---- presenter (original robot, video-engine/assets/mascot/presenter/) ----
+// ---- presenters: "guy" (default channel character) and the original robot ----
 // All five sprites share one canvas (701x1112, feet on the bottom edge) and differ only on the
 // face screen; `face` gives the eye / mouth regions (fractions of the canvas: x, y, w, h) so the
 // stage can layer eye and mouth states independently. `talk` = narration word intervals that
 // drive the mouth flap. The old SpongeBob placeholder (assets/mascot/sb_*.png) stays on disk.
-const PRESENTER = {
-  open: "assets/mascot/presenter/open.png",
-  blink: "assets/mascot/presenter/blink.png",
-  talk2: "assets/mascot/presenter/talk2.png",
-  glance: "assets/mascot/presenter/glance.png",
-  aspect: 0.6304,
-  face: { eyes: [0.3345, 0.2262, 0.3576, 0.1061], mouth: [0.4505, 0.3323, 0.1418, 0.0706] },
+const PRESENTERS = {
+  robot: {
+    open: "assets/mascot/presenter/open.png",
+    blink: "assets/mascot/presenter/blink.png",
+    talk2: "assets/mascot/presenter/talk2.png",
+    glance: "assets/mascot/presenter/glance.png",
+    talkSprite: "assets/mascot/presenter/talk.png",
+    aspect: 0.6304,
+    face: { eyes: [0.3345, 0.2262, 0.3576, 0.1061], mouth: [0.4505, 0.3323, 0.1418, 0.0706] },
+  },
+  // the channel character (Charcters/main_character_2.svg -> assets/mascot/guy/source/build_guy.py):
+  // same face contract plus `arm` (raised forearm + hand) that swings about the elbow on speech beats
+  guy: (() => {
+    const m = require("../../../../video-engine/assets/mascot/guy/presenter.json");
+    return {
+      open: "assets/mascot/guy/open.png",
+      blink: "assets/mascot/guy/blink.png",
+      talk2: "assets/mascot/guy/talk2.png",
+      glance: "assets/mascot/guy/glance.png",
+      talkSprite: "assets/mascot/guy/talk.png",
+      arm: "assets/mascot/guy/arm.png",
+      armPivot: m.armPivot,
+      aspect: m.aspect,
+      face: { eyes: m.eyes, mouth: m.mouth },
+    };
+  })(),
 };
+const DEFAULT_PRESENTER = "guy";
 
-function presenterSpec(words) {
+function presenterSpec(words, name) {
   const talk = (words || [])
     .filter((w) => Number.isFinite(w.start) && Number.isFinite(w.end) && w.end > w.start)
     .map((w) => [round(w.start), round(w.end)]);
   // `talk` doubles as the open-mouth sprite path and the word intervals: the sprite lives in
   // talkSprite so the interval list keeps the documented name.
-  return { ...PRESENTER, talkSprite: "assets/mascot/presenter/talk.png", talk };
+  const key = name || process.env.HF_PRESENTER || DEFAULT_PRESENTER;
+  if (!PRESENTERS[key]) throw new Error(`unknown presenter "${key}" (have ${Object.keys(PRESENTERS).join(", ")})`);
+  return { ...PRESENTERS[key], talk };
 }
 
 function findFill(sc, moduleId) {

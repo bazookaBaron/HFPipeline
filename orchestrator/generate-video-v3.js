@@ -6,7 +6,7 @@
  *
  *   storyboard.v3 (sentences + templated scaffolds + word-anchored events)
  *     -> voice per sentence (F5-TTS + WhisperX via voiceSynth; --reuse-voice skips unchanged text)
- *     -> speed solved so the delivered pace hits the reference band (--wpm, default 215; refs 176-221)
+ *     -> speed solved for the reference syllable rate (5.84 syl/s, lib/video/v3/pace.js); --wpm N forces a fixed words/min
  *     -> ONE narration track: lead/tail trimmed, sentence gaps 0.2 s AFTER the tempo change
  *        (ref median 0.18-0.20 s), atempo applied BEFORE rendering so frames are exact
  *     -> compile scaffolds/events against final word times -> stage composition + captions
@@ -74,6 +74,8 @@ function ffmpeg(args) {
 }
 
 /** speed so that words / final duration = target wpm, with fixed final sentence gaps */
+const { countSyllables, solvePace } = require("./lib/video/v3/pace");
+
 function solveSpeed(plan0, sentences, wpm) {
   const nWords = plan0.words.length;
   const speech = plan0.segments.reduce((a, s) => a + (s.trimEnd - s.trimStart), 0);
@@ -147,7 +149,7 @@ async function main() {
   const sbTopic = stripEndcard(JSON.parse(fs.readFileSync(sbPath, "utf-8")));
   // topic-matched vloombox.in promo scene (our own screen recordings) before the follow card
   let promo = null;
-  if (bool(args.endcard, true) && bool(args.promo, true)) {
+  if (bool(args.endcard, true) && bool(args.promo, false)) {
     let gen = null;
     try {
       gen = require("./lib/video/v3/storyboardGen").loadGemini();
@@ -219,8 +221,17 @@ async function main() {
   const narrationRel = `assets/generated/${runId}/narration.wav`;
   try {
     const plan0 = planNarration(sb.sentences, clips, { sentenceGap: 0 });
-    // BP (R6) is delivered at 196 wpm: target 200 unless --wpm is given
-    const solved = solveSpeed(plan0, sb.sentences, !args.wpm && sb.profile === "BP" ? 200 : wpm);
+    // pace: the reference syllable rate (lib/video/v3/pace.js), wpm clamped to the reference range;
+    // an explicit --wpm keeps the old fixed words/min solve
+    let solved;
+    if (args.wpm) solved = solveSpeed(plan0, sb.sentences, wpm);
+    else {
+      const speech = plan0.segments.reduce((a, s) => a + (s.trimEnd - s.trimStart), 0);
+      const nSyllables = sb.sentences.reduce((a, s) => a + countSyllables(s.text), 0);
+      const p = solvePace({ speech, gaps: (sb.sentences.length - 1) * SENTENCE_GAP_FINAL, nWords: plan0.words.length, nSyllables });
+      solved = { speed: p.speed, speech, nWords: plan0.words.length };
+      log(`pace: ${nSyllables} syllables -> ${p.sylPerS.toFixed(2)} syl/s, ${p.wpm.toFixed(0)} wpm (refs 5.84 syl/s)`);
+    }
     speed = solved.speed;
     const plan = planNarration(sb.sentences, clips, { sentenceGap: SENTENCE_GAP_FINAL * speed });
     await assembleNarration({ segments: plan.segments, totalSeconds: plan.totalSeconds, outPath: authoredWav, log });
@@ -242,7 +253,7 @@ async function main() {
 
   let spec;
   try {
-    spec = compileStoryboard(sb, timeline, { mascot: mascotOn });
+    spec = compileStoryboard(sb, timeline, { mascot: mascotOn, presenter: typeof args.presenter === "string" ? args.presenter : undefined });
   } catch (err) {
     return die("compose", `compile failed: ${err.message}`, err);
   }

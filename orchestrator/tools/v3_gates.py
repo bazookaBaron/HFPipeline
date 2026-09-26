@@ -7,13 +7,14 @@ video detector. Bands come from analysis/pacing-audit-20260924/design/SPEC.md (r
 prints one JSON object {ok, gates:[{name, ok, value, band, hard}], repair:[...]} and exits 1 if a
 hard gate fails. `repair` names the stage that must redo work (storyboard / audio / render).
 """
+import re
 import argparse, json, subprocess, sys, statistics
 
 LC = {
     "beats_per_min": (45, 95),       # R3 69.6, R4 50.9
     "max_visual_gap_s": 4.5,         # R3 4.0; R4 holds to 8.3 s only with a live packet loop
     "scaffold_life_median_s": (2.5, 7.0),  # R3 4.2, R4 5.0
-    "wpm": (176, 225),
+    "wpm": (170, 222),
     "lufs": (-14.4, -13.8),
     "lra_max": 1.6,
     "tp_max": -0.9,
@@ -22,7 +23,7 @@ DC = {
     "beats_per_min": (55, 100),      # R5 73.5
     "max_visual_gap_s": 3.2,         # R5 2.73 (0 gaps > 3 s)
     "scaffold_life_median_s": (1.6, 5.0),  # R5 sub-states mean 2.6 s, scaffolds median 3.3 s
-    "wpm": (170, 225),               # R5 176
+    "wpm": (170, 222),               # R5 176
     "lufs": (-14.4, -13.8),
     "lra_max": 1.6,
     "tp_max": -0.9,
@@ -31,7 +32,7 @@ DH = {
     "beats_per_min": (50, 100),      # R1 79.7-93.3, R2 67-72.9 (visual beats incl. cuts/entrances/events)
     "max_visual_gap_s": 3.8,         # R1 3.83 (every longer hold has motion), R2 3.12
     "scaffold_life_median_s": (2.0, 8.4),  # R1 3.4 (scaffold every 3.4 s), R2 layout life median 8.4
-    "wpm": (176, 225),               # refs 176-221
+    "wpm": (170, 222),               # refs 176-221
     "lufs": (-14.4, -13.8),          # refs -14.1..-14.2
     "lra_max": 1.6,                  # refs 1.0-1.4; AAC re-measure variance allowance
     "tp_max": -0.9,                  # refs -0.5..-1.1 dBTP
@@ -40,7 +41,7 @@ BR = {
     "beats_per_min": (55, 80),       # R7 62.8 (chrome ticks count as beats)
     "max_visual_gap_s": 3.6,         # R7 longest hold 3.43 s
     "scaffold_life_median_s": (2.5, 5.0),  # R7 3.53 s (host sheet mutates in place)
-    "wpm": (195, 218),               # R7 204; the pipeline targets ~212
+    "wpm": (170, 222),               # R7 204; pace follows the syllable rate (refs 170-221 wpm)
     "lufs": (-14.4, -13.8),          # R7 -14.1
     "lra_max": 1.6,                  # R7 1.5
     "tp_max": -0.9,
@@ -49,7 +50,7 @@ BP = {
     "beats_per_min": (45, 65),       # R6 52.1 (48.6 at 0.15 %); chrome (note / tracker / users) counts
     "max_visual_gap_s": 3.8,         # R6 longest content hold 3.73 s (packets run on the blueprint)
     "scaffold_life_median_s": (2.5, 5.0),  # R6 3.67 s (blueprint visits mutate in place)
-    "wpm": (185, 215),               # R6 196; BP renders at ~200
+    "wpm": (170, 222),               # R6 196; pace follows the syllable rate (refs 170-221 wpm)
     "lufs": (-14.4, -13.8),          # R6 -14.1
     "lra_max": 1.6,                  # R6 1.5
     "tp_max": -0.9,
@@ -84,6 +85,17 @@ def px(raw, x, y):
 def near(c, ref, tol):
     return all(abs(a - b) <= tol for a, b in zip(c, ref))
 
+
+
+def syllables(word):
+    """Vowel-group syllable estimate (same heuristic as lib/video/v3/pace.js)."""
+    t = re.sub(r"[^a-z]", "", str(word).lower())
+    if not t:
+        return 0
+    n = len(re.findall(r"[aeiouy]+", t))
+    if t.endswith("e") and n > 1 and not t.endswith("le"):
+        n -= 1
+    return max(1, n)
 
 def caption_rows(raw):
     """rows (y) that contain a >=160 px run of near-white pixels in the caption band 1380-1560"""
@@ -170,6 +182,12 @@ def main():
     # ---- pace ----
     wpm = len(timeline["words"]) / total * 60
     gate("delivered_wpm", B["wpm"][0] <= wpm <= B["wpm"][1], round(wpm, 1), B["wpm"], repair="audio")
+    # syllable rate over speech time (word gaps > 0.25 s removed): refs 5.39-6.08, median 5.84
+    ws = timeline["words"]
+    speech_t = sum(w["end"] - w["start"] for w in ws) + sum(max(0.0, b["start"] - a["end"]) for a, b in zip(ws, ws[1:]) if b["start"] - a["end"] <= 0.25)
+    syl = sum(syllables(w.get("text", "")) for w in ws)
+    rate = syl / speech_t if speech_t else 0
+    gate("syllables_per_s", 5.3 <= rate <= 6.4, round(rate, 2), [5.3, 6.4], repair="audio")
 
     # ---- loudness (from the master stats recorded in metrics, else measure) ----
     stats = None

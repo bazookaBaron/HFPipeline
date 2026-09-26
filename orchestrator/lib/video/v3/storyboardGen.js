@@ -317,6 +317,8 @@ NARRATION RULES
 - Spell every number as spoken words; the visuals carry digits. Never read IDs, keys, code or paths aloud.
 - Realistic, consistent specifics (one customer, one message, the same field names) reused across scenes.
 
+${NARRATIVE_GUIDE}
+
 ${BR_GRAMMAR}
 
 TEMPLATES

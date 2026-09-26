@@ -14,7 +14,9 @@ const NARRATIVE_GUIDE = `SPOKEN STORY (derived from five 2.5-3 minute tech expla
 
 const EMPTY_OPEN = /^(?:in this video(?:,|\s)|today(?:,|\s)(?:we(?:'re| are| will)?\s|let'?s\s)|let'?s (?:talk|discuss) about|welcome back|hey (?:guys|everyone))/i;
 const CHANNEL_CTA = /\b(?:follow (?:us|me|for more)|like and subscribe|subscribe (?:for|to) (?:more|our)|share this video|check out vloombox)\b/i;
-const ABSOLUTE_OUTCOME = /\b(?:eliminat(?:e|es|ing)|guarantee(?:s|d)?|ensure(?:s|d)?)\b|\bwill always\b|\bnever (?:fail|serve|happen|occur)\b/i;
+// "ensure" alone is ordinary purpose language ("locks ensure ordering"); only "ensures (that)
+// no/nothing/every/zero ..." reads as a guarantee
+const ABSOLUTE_OUTCOME = /\b(?:eliminat(?:e|es|ing)|guarantee(?:s|d)?)\b|\bensures? (?:that )?(?:no|nothing|every|zero)\b|\bwill always\b|\bnever (?:fail|serve|happen|occur)\b/i;
 
 function normalize(text) {
   return String(text || "").toLowerCase().replace(/[^\p{L}\p{N}]+/gu, " ").trim();

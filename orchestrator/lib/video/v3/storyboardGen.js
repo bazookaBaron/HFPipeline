@@ -27,7 +27,7 @@ const PROFILES = {
   BP: { example: path.join(FIX, "chat-bp.json"), templates: ["bpScene", "bpHost"], bpm: [48, 67], maxGap: 3.5, lifeMedian: [2.5, 5.0], nodeX: [0.15, 0.85], forbiddenOps: ["retype"] },
   // LF 16:9 long-form chapters (plan §6, provisional): a visual change every <= 5 s, scene life 6-10 s, 18-35 beats/min.
   // LF storyboards are written per chapter by lib/longform (P6), not by this 9:16 generator.
-  LF: { example: path.join(FIX, "lf-pilot.json"), templates: ["lfCold", "lfSplit", "lfFull", "lfChart", "lfNumber", "lfCompare", "lfTimeline", "lfMap", "lfHeadline", "lfChapter", "lfJoke", "lfRecap", "lfEnd", "free"], bpm: [18, 40], maxGap: 5.0, lifeMedian: [5.0, 10.0], nodeX: [0.1, 0.9], forbiddenOps: ["retype", "slam"], syn: { word: 0.36, gap: 0.35 } },
+  LF: { example: path.join(FIX, "lf-pilot.json"), templates: ["lfCold", "lfStage", "lfSplit", "lfFull", "lfChart", "lfNumber", "lfCompare", "lfTimeline", "lfMap", "lfHeadline", "lfChapter", "lfJoke", "lfRecap", "lfEnd", "free"], bpm: [18, 40], maxGap: 5.0, lifeMedian: [5.0, 10.0], nodeX: [0.1, 0.9], forbiddenOps: ["retype", "slam"], syn: { word: 0.36, gap: 0.35 } },
 };
 
 // synthetic pacing that approximates the delivered pace (215 wpm incl. 0.2 s sentence gaps)
@@ -455,6 +455,8 @@ function buildPromptLF() {
   throw new Error("LF storyboards are generated per chapter by lib/longform (storyboardLF), not by the 9:16 storyboard generator");
 }
 
+const LF_TRANS = { out: ["zoomThrough", "pushLeft"], in: ["zoomIn", "afterPush"] };
+
 /** LF: structural checks + the real compiler on a relaxed synthetic timeline + LF cadence bands */
 function validateLF(sb) {
   const PR = PROFILES.LF;
@@ -463,6 +465,11 @@ function validateLF(sb) {
   if (!Array.isArray(sb.scaffolds) || !sb.scaffolds.length) return P.concat(["scaffolds[] missing"]);
   sb.scaffolds.forEach((sc) => {
     if (PR.templates.indexOf(sc.template) < 0) P.push(`scaffold ${sc.id}: template must be one of ${PR.templates.join("|")} for profile LF`);
+    // LF scene transitions push through / settle from the frame centre (core TRANS_OUT/IN)
+    if (sc.transition) {
+      if (sc.transition.out && LF_TRANS.out.indexOf(sc.transition.out) < 0) P.push(`scaffold ${sc.id}: transition.out must be one of ${LF_TRANS.out.join("|")} for profile LF`);
+      if (sc.transition.in && LF_TRANS.in.indexOf(sc.transition.in) < 0) P.push(`scaffold ${sc.id}: transition.in must be one of ${LF_TRANS.in.join("|")} for profile LF`);
+    }
   });
   sb.sentences.forEach((s) => {
     if (/\d/.test(s.text)) P.push(`sentence ${s.id} contains digits; spell numbers out (the visuals carry the digits)`);

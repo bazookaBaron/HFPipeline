@@ -51,6 +51,7 @@
     P + ".ph-scrim.s-left{background:linear-gradient(90deg,rgba(247,246,241,.97) 0%,rgba(247,246,241,.93) 30%,rgba(247,246,241,.6) 47%,rgba(247,246,241,0) 66%);}",
     P + ".ph-scrim.s-right{background:linear-gradient(270deg,rgba(247,246,241,.97) 0%,rgba(247,246,241,.93) 30%,rgba(247,246,241,.6) 47%,rgba(247,246,241,0) 66%);}",
     P + ".ph-scrim.s-bottom{background:linear-gradient(0deg,rgba(247,246,241,.96) 0%,rgba(247,246,241,.8) 22%,rgba(247,246,241,0) 48%);}",
+    P + ".ph-scrim.s-center{background:radial-gradient(ellipse 62% 70% at 50% 50%,rgba(247,246,241,.95) 0%,rgba(247,246,241,.9) 45%,rgba(247,246,241,.55) 75%,rgba(247,246,241,.25) 100%);}",
     P + ".ph-scrim.s-top{background:linear-gradient(180deg,rgba(247,246,241,.9) 0%,rgba(247,246,241,0) 22%);}",
     P + ".ph-veil{position:absolute;inset:0;background:" + T.paper + ";opacity:0;}",
     P + ".ph-credit{position:absolute;left:12px;bottom:12px;max-width:calc(100% - 24px);padding:3px 9px;border-radius:5px;background:rgba(247,246,241,.94);font-family:" + MONO + ";font-size:15px;font-weight:500;line-height:20px;color:#2f3538;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}",
@@ -82,6 +83,10 @@
     P + ".lf-num .u{font-weight:700;letter-spacing:-.02em;color:" + T.ink2 + ";margin-left:.18em;}",
     P + ".lf-num .cx{font-weight:500;line-height:1.28;color:" + T.ink2 + ";margin-top:22px;}",
     P + ".lf-num .ey{margin-bottom:16px;}",
+    P + ".lf-numcard .lf-num{display:flex;flex-direction:column;justify-content:center;}",
+    P + ".lf-numcard .lf-num .cx{margin-top:10px;}",
+    P + ".lf-numcard .lf-num .ey{margin-bottom:10px;white-space:normal;line-height:1.3;}",
+    P + ".lf-numcard .lf-bars{margin-top:14px;}",
     P + ".lf-bars{margin-top:30px;display:flex;flex-direction:column;gap:14px;}",
     P + ".lf-bars .r{display:flex;align-items:center;gap:16px;height:36px;}",
     P + ".lf-bars .lb{flex:none;width:30%;font-family:" + MONO + ";font-size:16px;font-weight:600;letter-spacing:.06em;color:" + T.ink2 + ";text-transform:uppercase;white-space:nowrap;overflow:hidden;}",
@@ -138,6 +143,8 @@
     P + ".lf-end .slot .k{font-family:" + MONO + ";font-size:17px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;}",
     // ---- lfText / lowerThird / callout ----
     P + ".lf-text .ey{margin-bottom:16px;}",
+    P + ".lf-plate{box-shadow:0 18px 44px rgba(30,28,20,.16),0 2px 6px rgba(30,28,20,.08);}",
+    P + ".lf-plate .ey{margin-bottom:10px;}",
     P + ".lf-text .tt{font-weight:800;letter-spacing:-.028em;line-height:1.06;color:" + T.ink + ";}",
     P + ".lf-text .tt .w{display:inline-block;}",
     P + ".lf-text .sb{font-weight:500;line-height:1.34;color:" + T.ink2 + ";margin-top:18px;}",
@@ -429,6 +436,7 @@
     enter: "rise",
     build: function (el, p, c) {
       el.classList.add("lf-card", "lf-portrait");
+      if (p.overlay) el.setAttribute("data-overlay", "1");
       var w = W(el);
       var h = H(el);
       var horiz = w > h * 1.05;
@@ -508,8 +516,20 @@
   M.bigNumber = {
     enter: "rise",
     build: function (el, p, c) {
-      el.classList.add("lf-num");
-      var w = W(el);
+      // card: true -> a satellite mini-card (paper card, padded); align: center -> centred hero figure
+      var host = el;
+      if (p.card) {
+        el.classList.add("lf-card", "lf-numcard");
+        host = div("", el);
+        Object.assign(host.style, { position: "absolute", left: "26px", top: "18px", width: W(el) - 52 + "px", height: H(el) - 36 + "px" });
+      }
+      if (p.overlay || p.card) el.setAttribute("data-overlay", "1");
+      host.classList.add("lf-num");
+      if (p.align === "center") {
+        host.style.alignItems = "center";
+        host.style.textAlign = "center";
+      }
+      var w = W(host);
       var dec = p.decimals || 0;
       var fmt = function (x) {
         return (p.prefix || "") + L.fmtNum(x, dec, p.grouping || "intl") + (p.suffix || "");
@@ -517,8 +537,8 @@
       var val = Number(p.value) || 0;
       var from = p.from !== undefined ? Number(p.from) : 0;
       var counting = p.count === "enter" || p.count === "op";
-      if (p.eyebrow) div("lf-eyebrow ey", el, p.eyebrow);
-      var row = div("", el);
+      if (p.eyebrow) div("lf-eyebrow ey", host, p.eyebrow);
+      var row = div("", host);
       row.style.whiteSpace = "nowrap";
       var v = c.entity("value", document.createElement("span"));
       v.className = "v";
@@ -538,12 +558,13 @@
         row.appendChild(u);
       }
       if (p.context) {
-        var cx = c.entity("context", div("cx", el, p.context));
-        cx.style.fontSize = L.fit(p.context, 500, 34, 26, w, 2) + "px";
+        var cx = c.entity("context", div("cx", host, p.context));
+        cx.style.fontSize = (p.card ? L.fit(p.context, 500, 24, 19, w, 2) : L.fit(p.context, 500, 34, 26, w, 2)) + "px";
       }
       var bars = [];
       if (Array.isArray(p.bars) && p.bars.length) {
-        var bl = div("lf-bars", el);
+        var bl = div("lf-bars", host);
+        if (p.align === "center") bl.style.alignSelf = "stretch";
         p.bars.slice(0, 3).forEach(function (b, i) {
           var r = div("r", bl);
           div("lb", r, b.label || "");
@@ -829,7 +850,15 @@
       var pLines = p.promise ? L.lineCount(p.promise, 500, ps, w * 0.92) : 0;
       // vertical rhythm: eyebrow, number, title, promise, segments -- centred in the rect
       var hs = [22, noSize * 0.82, tLines * ts * 1.04, pLines ? pLines * ps * 1.3 : 0, 8];
-      var gaps = [30, 34, pLines ? 26 : 0, 56];
+      var mid = p.align === "center";
+      var gaps = mid ? [20, 24, pLines ? 20 : 0, 36] : [30, 34, pLines ? 26 : 0, 56];
+      if (mid) {
+        // centred poster: every line on the frame's centre axis
+        [ey, no, tt].forEach(function (x) {
+          Object.assign(x.style, { left: "0", width: w + "px", textAlign: "center" });
+        });
+        if (pr) Object.assign(pr.style, { left: w * 0.04 + "px", textAlign: "center" });
+      }
       var total = hs.reduce(function (a, b) { return a + b; }, 0) + gaps.reduce(function (a, b) { return a + b; }, 0);
       var y = Math.max(0, (h - total) / 2);
       ey.style.top = y + "px";
@@ -841,10 +870,11 @@
       if (pr) pr.style.top = y + "px";
       y += hs[3] + gaps[3];
       var segW = Math.min(90, (w * 0.7 - 10 * (n - 1)) / n);
+      var segX = mid ? (w - (n * segW + (n - 1) * 10)) / 2 : 0;
       var segs = [];
       for (var i = 1; i <= n; i++) {
         var sg = div("sg", el);
-        Object.assign(sg.style, { left: (i - 1) * (segW + 10) + "px", top: y + "px", width: segW + "px" });
+        Object.assign(sg.style, { left: segX + (i - 1) * (segW + 10) + "px", top: y + "px", width: segW + "px" });
         sg.setAttribute("data-s", i < k ? "done" : i === k ? "cur" : "todo");
         var f = div("f", sg);
         if (i > k) f.style.display = "none";
@@ -995,11 +1025,19 @@
     enter: "rise",
     build: function (el, p, c) {
       el.classList.add("lf-text");
-      var w = W(el);
-      if (p.align === "center") el.style.textAlign = "center";
-      if (p.eyebrow) c.entity("eyebrow", div("lf-eyebrow ey", el, p.eyebrow));
+      // plate: true -> a centred caption card (punchline / headline over a hero's bottom edge)
+      var host = el;
+      if (p.plate) {
+        el.classList.add("lf-card", "lf-plate");
+        el.setAttribute("data-overlay", "1");
+        host = div("", el);
+        Object.assign(host.style, { position: "absolute", left: "36px", top: "0", width: W(el) - 72 + "px", height: H(el) + "px", display: "flex", flexDirection: "column", justifyContent: "center" });
+      }
+      var w = W(host);
+      if (p.align === "center" || p.plate) host.style.textAlign = "center";
+      if (p.eyebrow) c.entity("eyebrow", div("lf-eyebrow ey", host, p.eyebrow));
       var size = L.fit(p.title || "", 800, p.size || 72, Math.round((p.size || 72) * 0.66), w, p.maxLines || 3);
-      var tt = c.entity("title", div("tt", el));
+      var tt = c.entity("title", div("tt", host));
       tt.style.fontSize = size + "px";
       if (p.tone) tt.style.color = L.tone(p.tone, T.ink);
       var words = String(p.title || "").split(/\s+/).filter(Boolean);
@@ -1033,7 +1071,7 @@
       });
       var sb = null;
       if (p.sub) {
-        sb = c.entity("sub", div("sb", el, p.sub));
+        sb = c.entity("sub", div("sb", host, p.sub));
         sb.style.fontSize = L.fit(p.sub, 500, p.subSize || 30, 24, w, 3) + "px";
       }
       if (p.overlay) el.setAttribute("data-overlay", "1");

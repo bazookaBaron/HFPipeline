@@ -5,10 +5,37 @@
    "template": "lfChapter",
    "from": "ch2-s01",
    "slots": {
-    "card": { "id": "chapter", "props": { "promise": "Why a luxury airline bought a budget one." } },
-    "photo": { "id": "chdeccan", "props": { "slot": "deccanATR", "tag": "Air Deccan ATR 42" } },
+    "card": {
+     "id": "chapter",
+     "props": {
+      "promise": "Why a luxury airline bought a budget one."
+     }
+    },
+    "photo": {
+     "id": "chdeccan",
+     "props": {
+      "slot": "deccanATR",
+      "tag": "Air Deccan ATR 42"
+     }
+    },
     "overlays": [
-     { "id": "ch2007", "type": "callout", "at": [8, 70], "w": 330, "anchor": { "text": "budget" }, "props": { "value": "2007", "text": "Kingfisher eyes Air Deccan", "tone": "red" } }
+     {
+      "id": "ch2007",
+      "type": "callout",
+      "at": [
+       8,
+       70
+      ],
+      "w": 330,
+      "anchor": {
+       "text": "budget"
+      },
+      "props": {
+       "value": "2007",
+       "text": "Kingfisher eyes Air Deccan",
+       "tone": "red"
+      }
+     }
     ]
    }
   },
@@ -17,9 +44,37 @@
    "template": "lfNumber",
    "from": "ch2-s02",
    "slots": {
-    "number": { "id": "rule5", "props": { "eyebrow": "The 5/20 rule · part one", "value": 5, "unit": "years", "context": "of flying at home before a single route abroad", "count": "enter", "from": 0, "dur": 0.8 } },
-    "side": [
-     { "id": "rule20", "type": "bigNumber", "anchor": { "text": "twenty", "sentence": "ch2-s04" }, "props": { "eyebrow": "Part two", "value": 20, "unit": "planes", "context": "in the fleet, at least", "size": 150, "count": "enter", "from": 0, "dur": 0.8 } }
+    "number": {
+     "id": "rule5",
+     "props": {
+      "eyebrow": "The 5/20 rule · part one",
+      "value": 5,
+      "unit": "years",
+      "context": "at home before any route abroad",
+      "count": "enter",
+      "from": 0,
+      "dur": 0.8
+     }
+    },
+    "right": [
+     {
+      "id": "rule20",
+      "type": "bigNumber",
+      "anchor": {
+       "text": "twenty",
+       "sentence": "ch2-s04"
+      },
+      "props": {
+       "eyebrow": "Part two",
+       "value": 20,
+       "unit": "planes",
+       "context": "in the fleet, at least",
+       "size": 150,
+       "count": "enter",
+       "from": 0,
+       "dur": 0.8
+      }
+     }
     ]
    }
   },
@@ -28,22 +83,73 @@
    "template": "lfJoke",
    "from": "ch2-s05",
    "slots": {
-    "art": { "id": "rickart", "props": { "slot": "rickshawArt", "fallbackLabel": "A broken auto-rickshaw with a shiny highway pass" } },
-    "punchline": { "id": "rickpunch", "props": { "title": "Buying a broken auto-rickshaw for its highway pass.", "highlight": "highway pass.", "sub": "Kingfisher wanted Deccan's head start, not its planes." } },
-    "tag": { "id": "ricktag", "anchor": { "text": "fast-track" }, "props": { "text": "Fast-track, sort of" } }
+    "art": {
+     "id": "rickart",
+     "props": {
+      "slot": "rickshawArt",
+      "fallbackLabel": "A broken auto-rickshaw with a shiny highway pass"
+     }
+    },
+    "punchline": {
+     "id": "rickpunch",
+     "props": {
+      "title": "Buying a broken auto-rickshaw for its highway pass.",
+      "highlight": "highway pass."
+     }
+    },
+    "tag": {
+     "id": "ricktag",
+     "anchor": {
+      "text": "fast-track"
+     },
+     "props": {
+      "text": "Fast-track, sort of"
+     }
+    }
    }
   },
   {
    "id": "stake",
-   "template": "lfSplit",
+   "template": "lfStage",
    "from": "ch2-s06",
    "slots": {
-    "photo": { "id": "ubpic", "props": { "slot": "ubCity", "tag": "UB City, Bengaluru" } },
-    "stack": [
-     { "id": "stake550", "type": "bigNumber", "props": { "eyebrow": "May 2007 · the first bite", "prefix": "₹", "value": 550, "unit": "crore", "context": "for a 26% stake in Air Deccan", "count": "enter", "from": 0, "dur": 0.8, "size": 170 } }
+    "hero": {
+     "id": "ubpic",
+     "props": {
+      "slot": "ubCity",
+      "tag": "UB City, Bengaluru"
+     }
+    },
+    "left": [
+     {
+      "id": "stake26",
+      "type": "callout",
+      "anchor": {
+       "text": "twenty-six"
+      },
+      "props": {
+       "value": "26%",
+       "text": "of Air Deccan",
+       "tone": "blue"
+      }
+     }
     ],
-    "overlays": [
-     { "id": "stake26", "type": "callout", "at": [6, 68], "w": 330, "anchor": { "text": "twenty-six" }, "props": { "value": "26%", "text": "of Air Deccan", "tone": "blue" } }
+    "right": [
+     {
+      "id": "stake550",
+      "type": "bigNumber",
+      "props": {
+       "eyebrow": "May 2007 · the first bite",
+       "prefix": "₹",
+       "value": 550,
+       "unit": "crore",
+       "context": "for a 26% stake in Air Deccan",
+       "count": "enter",
+       "from": 0,
+       "dur": 0.8,
+       "size": 170
+      }
+     }
     ]
    }
   },
@@ -52,7 +158,14 @@
    "template": "lfChart",
    "from": "ch2-s08",
    "slots": {
-    "title": { "id": "totaltitle", "props": { "eyebrow": "Cash spent on Air Deccan", "title": "₹550 crore, then ₹418 crore more", "highlight": "₹418 crore more" } },
+    "title": {
+     "id": "totaltitle",
+     "props": {
+      "eyebrow": "Cash spent on Air Deccan",
+      "title": "₹550 crore, then ₹418 crore more",
+      "highlight": "₹418 crore more"
+     }
+    },
     "chart": {
      "id": "cash",
      "type": "barChart",
@@ -61,12 +174,29 @@
       "source": "Deal terms as reported by Indian Journal of Marketing and The Economic Times (2007)",
       "hidden": true,
       "bars": [
-       { "label": "First stake (26%)", "value": 550, "display": "₹550 cr" },
-       { "label": "Raised to 46%", "value": 418, "display": "₹418 cr" },
-       { "label": "Total cash spent", "value": 968, "display": "₹968 cr", "tone": "red" }
+       {
+        "label": "First stake (26%)",
+        "value": 550,
+        "display": "₹550 cr"
+       },
+       {
+        "label": "Raised to 46%",
+        "value": 418,
+        "display": "₹418 cr"
+       },
+       {
+        "label": "Total cash spent",
+        "value": 968,
+        "display": "₹968 cr",
+        "tone": "red"
+       }
       ]
      }
     }
+   },
+   "transition": {
+    "out": "zoomThrough",
+    "in": "zoomIn"
    }
   },
   {
@@ -74,10 +204,43 @@
    "template": "lfNumber",
    "from": "ch2-s10",
    "slots": {
-    "backdrop": { "id": "bagbg", "props": { "slot": "deccanATR" } },
-    "number": { "id": "loss", "props": { "eyebrow": "Air Deccan · year to June 2007", "prefix": "₹", "value": 419, "unit": "crore", "context": "lost in a single year", "count": "enter", "from": 0, "dur": 0.8 } },
+    "backdrop": {
+     "id": "bagbg",
+     "props": {
+      "slot": "deccanATR"
+     }
+    },
+    "number": {
+     "id": "loss",
+     "props": {
+      "eyebrow": "Air Deccan · year to June 2007",
+      "prefix": "₹",
+      "value": 419,
+      "unit": "crore",
+      "context": "lost in a single year",
+      "count": "enter",
+      "from": 0,
+      "dur": 0.8
+     }
+    },
     "overlays": [
-     { "id": "bagco", "type": "callout", "at": [14, 12], "w": 330, "anchor": { "text": "baggage." }, "props": { "value": "Heavy baggage", "text": "the losses came along", "tone": "red" } }
+     {
+      "id": "bagco",
+      "type": "callout",
+      "at": [
+       14,
+       12
+      ],
+      "w": 330,
+      "anchor": {
+       "text": "baggage."
+      },
+      "props": {
+       "value": "Heavy baggage",
+       "text": "the losses came along",
+       "tone": "red"
+      }
+     }
     ]
    }
   },
@@ -85,24 +248,83 @@
    "id": "sharma",
    "template": "lfJoke",
    "from": "ch2-s12",
-   "mirror": true,
    "slots": {
-    "art": { "id": "bankart", "props": { "slot": "bankerArt", "fallbackLabel": "A worried banker and a very long bill" } },
-    "punchline": { "id": "bankpunch", "props": { "title": "Sharma ji's calculator ran out of paper.", "highlight": "ran out of paper.", "sub": "Air Deccan's ₹419 crore loss, added to Kingfisher's tab." } },
-    "tag": { "id": "banktag", "anchor": { "text": "tab." }, "props": { "text": "Running total" } }
+    "art": {
+     "id": "bankart",
+     "props": {
+      "slot": "bankerArt",
+      "fallbackLabel": "A worried banker and a very long bill"
+     }
+    },
+    "punchline": {
+     "id": "bankpunch",
+     "props": {
+      "title": "Sharma ji's calculator ran out of paper.",
+      "highlight": "ran out of paper."
+     }
+    },
+    "tag": {
+     "id": "banktag",
+     "anchor": {
+      "text": "tab."
+     },
+     "props": {
+      "text": "Running total"
+     }
+    }
    }
   },
   {
    "id": "red",
-   "template": "lfSplit",
+   "template": "lfStage",
    "from": "ch2-s13",
    "slots": {
-    "photo": { "id": "redplane", "props": { "slot": "kfA320", "tag": "Kingfisher livery" } },
-    "stack": [
-     { "id": "paint", "type": "bigNumber", "props": { "eyebrow": "Rebranding to Kingfisher Red", "prefix": "₹", "value": 15, "unit": "crore", "context": "to repaint and relaunch the budget fleet", "count": "enter", "from": 0, "dur": 0.8, "size": 170 } }
+    "hero": {
+     "id": "redplane",
+     "props": {
+      "slot": "kfA320",
+      "tag": "Kingfisher livery"
+     }
+    },
+    "right": [
+     {
+      "id": "paint",
+      "type": "bigNumber",
+      "props": {
+       "eyebrow": "Kingfisher Red",
+       "prefix": "₹",
+       "value": 15,
+       "unit": "crore",
+       "context": "to repaint and relaunch the budget fleet",
+       "count": "enter",
+       "from": 0,
+       "dur": 0.8,
+       "size": 170
+      }
+     }
     ],
     "overlays": [
-     { "id": "neon", "type": "callout", "at": [52, 8], "w": 340, "point": [60, 45], "anchor": { "text": "neon", "sentence": "ch2-s14" }, "props": { "text": "Neon paint is not a sports car", "tone": "red" } }
+     {
+      "id": "neon",
+      "type": "callout",
+      "at": [
+       52,
+       8
+      ],
+      "w": 340,
+      "point": [
+       60,
+       45
+      ],
+      "anchor": {
+       "text": "neon",
+       "sentence": "ch2-s14"
+      },
+      "props": {
+       "text": "Paint is not a sports car",
+       "tone": "red"
+      }
+     }
     ]
    }
   },
@@ -111,7 +333,31 @@
    "template": "lfNumber",
    "from": "ch2-s15",
    "slots": {
-    "number": { "id": "peak", "props": { "eyebrow": "Domestic market share · FY2009", "value": 26.7, "decimals": 1, "suffix": "%", "context": "of India's domestic flyers, at the peak", "count": "enter", "from": 0, "dur": 0.8, "bars": [ { "label": "Kingfisher at its peak", "value": 26.7, "display": "26.7%", "tone": "blue" } ] } }
+    "number": {
+     "id": "peak",
+     "props": {
+      "eyebrow": "Domestic market share · FY2009",
+      "value": 26.7,
+      "decimals": 1,
+      "suffix": "%",
+      "context": "of India's domestic flyers, at the peak",
+      "count": "enter",
+      "from": 0,
+      "dur": 0.8,
+      "bars": [
+       {
+        "label": "Kingfisher at its peak",
+        "value": 26.7,
+        "display": "26.7%",
+        "tone": "blue"
+       }
+      ]
+     }
+    }
+   },
+   "transition": {
+    "out": "zoomThrough",
+    "in": "zoomIn"
    }
   },
   {
@@ -119,49 +365,388 @@
    "template": "lfFull",
    "from": "ch2-s16",
    "slots": {
-    "photo": { "id": "hauntpic", "props": { "slot": "kfGrounded" } },
-    "lowerThird": { "id": "hauntlt", "props": { "tag": "The catch", "title": "Inherited losses", "sub": "The stage was set for disaster" } },
+    "photo": {
+     "id": "hauntpic",
+     "props": {
+      "slot": "kfGrounded"
+     }
+    },
+    "lowerThird": {
+     "id": "hauntlt",
+     "props": {
+      "tag": "The catch",
+      "title": "Inherited losses",
+      "sub": "The stage was set for disaster"
+     }
+    },
     "overlays": [
-     { "id": "hauntco", "type": "callout", "at": [58, 14], "w": 340, "point": [45, 55], "delay": 1, "props": { "value": "₹419 cr", "text": "a year, now Kingfisher's problem", "tone": "red" } }
+     {
+      "id": "hauntco",
+      "type": "callout",
+      "at": [
+       58,
+       14
+      ],
+      "w": 340,
+      "point": [
+       45,
+       55
+      ],
+      "delay": 1,
+      "props": {
+       "value": "₹419 cr",
+       "text": "a year, now Kingfisher's problem",
+       "tone": "red"
+      }
+     }
     ]
    }
   }
  ],
  "events": [
-  { "sentence": "ch2-s01", "anchor": { "text": "carrier?" }, "op": "highlight", "target": "chdeccan", "value": { "box": [12, 19, 73, 36], "label": "Air Deccan" } },
-  { "sentence": "ch2-s02", "anchor": { "text": "law" }, "op": "highlight", "target": "rule5" },
-  { "sentence": "ch2-s02", "anchor": { "text": "five-twenty" }, "op": "count", "target": "rule5", "value": { "to": 5, "from": 0 } },
-  { "sentence": "ch2-s03", "anchor": { "text": "locally" }, "op": "highlight", "target": "rule5" },
-  { "sentence": "ch2-s04", "anchor": { "text": "abroad." }, "op": "highlight", "target": "rule20" },
-  { "sentence": "ch2-s05", "anchor": { "text": "broken" }, "op": "highlight", "target": "rickpunch" },
-  { "sentence": "ch2-s06", "anchor": { "text": "UB" }, "op": "highlight", "target": "ubpic", "value": { "box": [30, 22, 40, 56], "label": "UB Group" } },
-  { "sentence": "ch2-s07", "anchor": { "text": "deal" }, "op": "highlight", "target": "stake550" },
-  { "sentence": "ch2-s07", "anchor": { "text": "fifty" }, "op": "highlight", "target": "stake550" },
-  { "sentence": "ch2-s07", "anchor": { "text": "rupees." }, "op": "zoomTo", "target": "ubpic", "value": { "box": [20, 15, 60, 70] } },
-  { "sentence": "ch2-s08", "anchor": { "text": "They" }, "op": "draw", "target": "cash", "value": { "bar": 1 } },
-  { "sentence": "ch2-s08", "anchor": { "text": "eighteen" }, "op": "draw", "target": "cash", "value": { "bar": 2 } },
-  { "sentence": "ch2-s09", "anchor": { "text": "total" }, "op": "draw", "target": "cash", "value": { "bar": 3 } },
-  { "sentence": "ch2-s09", "anchor": { "text": "seventy" }, "op": "annotate", "target": "cash", "value": { "bar": 3, "text": "About ₹970 crore", "tone": "red" } },
-  { "sentence": "ch2-s11", "anchor": { "text": "nineteen" }, "op": "highlight", "target": "loss" },
-  { "sentence": "ch2-s11", "anchor": { "text": "year." }, "op": "dim", "target": "bagbg", "value": { "level": 0.35 } },
-  { "sentence": "ch2-s12", "anchor": { "text": "paper" }, "op": "highlight", "target": "bankpunch" },
-  { "sentence": "ch2-s13", "anchor": { "text": "Red." }, "op": "highlight", "target": "redplane", "value": { "box": [30, 35, 45, 30], "label": "Kingfisher Red" } },
-  { "sentence": "ch2-s13", "anchor": { "text": "rebranding" }, "op": "highlight", "target": "paint" },
-  { "sentence": "ch2-s14", "anchor": { "text": "rebrand" }, "op": "unhighlight", "target": "redplane" },
-  { "sentence": "ch2-s14", "anchor": { "text": "bicycle" }, "op": "zoomTo", "target": "redplane", "value": { "box": [25, 25, 55, 55] } },
-  { "sentence": "ch2-s14", "anchor": { "text": "car." }, "op": "highlight", "target": "paint" },
-  { "sentence": "ch2-s15", "anchor": { "text": "peak" }, "op": "highlight", "target": "peak" },
-  { "sentence": "ch2-s15", "anchor": { "text": "percent." }, "op": "fill", "target": "peak" },
-  { "sentence": "ch2-s16", "anchor": { "text": "losses" }, "op": "highlight", "target": "hauntpic", "value": { "box": [22, 45, 57, 19], "label": "Kingfisher Red" } },
-  { "sentence": "ch2-s16", "anchor": { "text": "disaster." }, "op": "zoomTo", "target": "hauntpic", "value": { "box": [18, 32, 64, 36], "dur": 1.2 } }
+  {
+   "sentence": "ch2-s01",
+   "anchor": {
+    "text": "carrier?"
+   },
+   "op": "highlight",
+   "target": "chdeccan",
+   "value": {
+    "box": [
+     12,
+     19,
+     73,
+     36
+    ],
+    "label": "Air Deccan"
+   }
+  },
+  {
+   "sentence": "ch2-s02",
+   "anchor": {
+    "text": "law"
+   },
+   "op": "highlight",
+   "target": "rule5"
+  },
+  {
+   "sentence": "ch2-s02",
+   "anchor": {
+    "text": "five-twenty"
+   },
+   "op": "count",
+   "target": "rule5",
+   "value": {
+    "to": 5,
+    "from": 0
+   }
+  },
+  {
+   "sentence": "ch2-s03",
+   "anchor": {
+    "text": "locally"
+   },
+   "op": "highlight",
+   "target": "rule5"
+  },
+  {
+   "sentence": "ch2-s04",
+   "anchor": {
+    "text": "abroad."
+   },
+   "op": "highlight",
+   "target": "rule20"
+  },
+  {
+   "sentence": "ch2-s05",
+   "anchor": {
+    "text": "broken"
+   },
+   "op": "highlight",
+   "target": "rickpunch"
+  },
+  {
+   "sentence": "ch2-s06",
+   "anchor": {
+    "text": "UB"
+   },
+   "op": "highlight",
+   "target": "ubpic",
+   "value": {
+    "box": [
+     30,
+     22,
+     40,
+     56
+    ],
+    "label": "UB Group",
+    "hold": 2.5
+   }
+  },
+  {
+   "sentence": "ch2-s07",
+   "anchor": {
+    "text": "deal"
+   },
+   "op": "highlight",
+   "target": "stake550"
+  },
+  {
+   "sentence": "ch2-s07",
+   "anchor": {
+    "text": "fifty"
+   },
+   "op": "highlight",
+   "target": "stake550"
+  },
+  {
+   "sentence": "ch2-s07",
+   "anchor": {
+    "text": "rupees."
+   },
+   "op": "zoomTo",
+   "target": "ubpic",
+   "value": {
+    "box": [
+     20,
+     15,
+     60,
+     70
+    ]
+   }
+  },
+  {
+   "sentence": "ch2-s08",
+   "anchor": {
+    "text": "They"
+   },
+   "op": "draw",
+   "target": "cash",
+   "value": {
+    "bar": 1
+   }
+  },
+  {
+   "sentence": "ch2-s08",
+   "anchor": {
+    "text": "eighteen"
+   },
+   "op": "draw",
+   "target": "cash",
+   "value": {
+    "bar": 2
+   }
+  },
+  {
+   "sentence": "ch2-s09",
+   "anchor": {
+    "text": "total"
+   },
+   "op": "draw",
+   "target": "cash",
+   "value": {
+    "bar": 3
+   }
+  },
+  {
+   "sentence": "ch2-s09",
+   "anchor": {
+    "text": "seventy"
+   },
+   "op": "annotate",
+   "target": "cash",
+   "value": {
+    "bar": 3,
+    "text": "About ₹970 crore",
+    "tone": "red"
+   }
+  },
+  {
+   "sentence": "ch2-s11",
+   "anchor": {
+    "text": "nineteen"
+   },
+   "op": "highlight",
+   "target": "loss"
+  },
+  {
+   "sentence": "ch2-s11",
+   "anchor": {
+    "text": "year."
+   },
+   "op": "dim",
+   "target": "bagbg",
+   "value": {
+    "level": 0.35
+   }
+  },
+  {
+   "sentence": "ch2-s12",
+   "anchor": {
+    "text": "paper"
+   },
+   "op": "highlight",
+   "target": "bankpunch"
+  },
+  {
+   "sentence": "ch2-s13",
+   "anchor": {
+    "text": "Red."
+   },
+   "op": "highlight",
+   "target": "redplane",
+   "value": {
+    "box": [
+     30,
+     35,
+     45,
+     30
+    ],
+    "label": "Kingfisher Red"
+   }
+  },
+  {
+   "sentence": "ch2-s13",
+   "anchor": {
+    "text": "rebranding"
+   },
+   "op": "highlight",
+   "target": "paint"
+  },
+  {
+   "sentence": "ch2-s14",
+   "anchor": {
+    "text": "rebrand"
+   },
+   "op": "unhighlight",
+   "target": "redplane"
+  },
+  {
+   "sentence": "ch2-s14",
+   "anchor": {
+    "text": "bicycle"
+   },
+   "op": "zoomTo",
+   "target": "redplane",
+   "value": {
+    "box": [
+     25,
+     25,
+     55,
+     55
+    ]
+   }
+  },
+  {
+   "sentence": "ch2-s14",
+   "anchor": {
+    "text": "car."
+   },
+   "op": "highlight",
+   "target": "paint"
+  },
+  {
+   "sentence": "ch2-s15",
+   "anchor": {
+    "text": "peak"
+   },
+   "op": "highlight",
+   "target": "peak"
+  },
+  {
+   "sentence": "ch2-s15",
+   "anchor": {
+    "text": "percent."
+   },
+   "op": "fill",
+   "target": "peak"
+  },
+  {
+   "sentence": "ch2-s16",
+   "anchor": {
+    "text": "losses"
+   },
+   "op": "highlight",
+   "target": "hauntpic",
+   "value": {
+    "box": [
+     22,
+     45,
+     57,
+     19
+    ],
+    "label": "Kingfisher Red"
+   }
+  },
+  {
+   "sentence": "ch2-s16",
+   "anchor": {
+    "text": "disaster."
+   },
+   "op": "zoomTo",
+   "target": "hauntpic",
+   "value": {
+    "box": [
+     18,
+     32,
+     64,
+     36
+    ],
+    "dur": 1.2
+   }
+  }
  ],
  "media": [
-  { "slot": "deccanATR", "kind": "photo", "entity": "Air Deccan", "intent": "Air Deccan ATR aircraft", "era": "2003-2008", "size": "full" },
-  { "slot": "rickshawArt", "kind": "illustration", "intent": "a man proudly buying a broken auto-rickshaw just for the fast-track highway pass stuck on its windscreen", "mood": "comedic", "size": "card" },
-  { "slot": "ubCity", "kind": "photo", "entity": "UB City", "intent": "UB City tower of United Breweries group in Bengaluru", "size": "card" },
-  { "slot": "bankerArt", "kind": "illustration", "intent": "a banker holding an IOU note as tall as a building, looking worried", "mood": "comedic", "size": "card" },
-  { "slot": "kfA320", "kind": "photo", "entity": "Kingfisher Airlines", "intent": "Kingfisher Airlines Airbus A320 aircraft on the tarmac", "era": "2005-2012", "size": "card" },
-  { "slot": "kfGrounded", "kind": "photo", "entity": "Kingfisher Airlines", "intent": "grounded Kingfisher Airlines aircraft parked and abandoned at an airport", "era": "2012", "size": "full" }
+  {
+   "slot": "deccanATR",
+   "kind": "photo",
+   "entity": "Air Deccan",
+   "intent": "Air Deccan ATR aircraft",
+   "era": "2003-2008",
+   "size": "full"
+  },
+  {
+   "slot": "rickshawArt",
+   "kind": "illustration",
+   "intent": "a man proudly buying a broken auto-rickshaw just for the fast-track highway pass stuck on its windscreen",
+   "mood": "comedic",
+   "size": "card"
+  },
+  {
+   "slot": "ubCity",
+   "kind": "photo",
+   "entity": "UB City",
+   "intent": "UB City tower of United Breweries group in Bengaluru",
+   "size": "card"
+  },
+  {
+   "slot": "bankerArt",
+   "kind": "illustration",
+   "intent": "a banker holding an IOU note as tall as a building, looking worried",
+   "mood": "comedic",
+   "size": "card"
+  },
+  {
+   "slot": "kfA320",
+   "kind": "photo",
+   "entity": "Kingfisher Airlines",
+   "intent": "Kingfisher Airlines Airbus A320 aircraft on the tarmac",
+   "era": "2005-2012",
+   "size": "card"
+  },
+  {
+   "slot": "kfGrounded",
+   "kind": "photo",
+   "entity": "Kingfisher Airlines",
+   "intent": "grounded Kingfisher Airlines aircraft parked and abandoned at an airport",
+   "era": "2012",
+   "size": "full"
+  }
  ],
- "pauses": { "ch2-s01": 0.6, "ch2-s05": 0.6, "ch2-s09": 0.6, "ch2-s14": 0.6 }
+ "pauses": {
+  "ch2-s01": 0.6,
+  "ch2-s05": 0.6,
+  "ch2-s09": 0.6,
+  "ch2-s14": 0.6
+ }
 }

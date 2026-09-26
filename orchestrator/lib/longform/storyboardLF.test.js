@@ -70,7 +70,7 @@ test("validation catches: rewritten narration source, slideshow, invented chart 
   const total = bad.scaffolds.find((s) => s.id === "total");
   total.slots.chart.props.bars[2].value = 1234; // not a dossier figure
   delete total.slots.chart.props.source;
-  bad.scaffolds.find((s) => s.id === "stake").slots.photo.props.slot = "mysteryPhoto";
+  bad.scaffolds.find((s) => s.id === "stake").slots.hero.props.slot = "mysteryPhoto";
   const v = await SL.validateChapter(SL.assemble(bad, ctx), ctx, { layoutAudit: false });
   const all = v.problems.join("\n");
   assert.match(all, /starts with an lfChapter card/);
@@ -217,4 +217,33 @@ test("stitch: join pads give a ~0.9 s voice gap across chapters", () => {
   assert.ok(Math.abs(0.6 + pads[0] + 0.1 - 0.9) < 1 / 30 + 1e-9, `pad ${pads[0]}`);
   assert.strictEqual(pads[2], 0); // nothing after the last chapter
   assert.strictEqual(joinPads([tl(0.5, 10, 11.5), tl(0.2, 5, 5.6)], 0.9)[0], 0); // never negative
+});
+
+test("centre stage: lfStage centres the hero, rails orbit it, lfSplit maps onto it; long text / splits / unbalanced rails are flagged", () => {
+  const { LF_TEMPLATES } = require("../video/v3/templates-lf");
+  const sc = { id: "x", template: "lfStage", slots: { hero: { id: "h", props: { slot: "p" } }, left: [{ id: "a", type: "callout", props: { value: "1", text: "one" } }], right: [{ id: "b", type: "bigNumber", props: { value: 5, unit: "years" } }] } };
+  const mods = LF_TEMPLATES.lfStage(sc).modules;
+  const hero = mods.find((m) => m.id === "h");
+  assert.strictEqual(hero.rect[0] + hero.rect[2] / 2, 960);
+  const a = mods.find((m) => m.id === "a");
+  const b = mods.find((m) => m.id === "b");
+  assert.ok(a.rect[0] + a.rect[2] > hero.rect[0] && a.rect[0] < hero.rect[0], "left satellite overlaps the hero's left edge");
+  assert.ok(b.rect[0] < hero.rect[0] + hero.rect[2] && b.rect[0] + b.rect[2] > hero.rect[0] + hero.rect[2], "right satellite overlaps the right edge");
+  assert.ok(b.props.card && b.props.overlay);
+  const split = LF_TEMPLATES.lfSplit({ id: "y", template: "lfSplit", slots: { photo: { id: "p2", props: { slot: "p" } }, stack: [{ id: "t", type: "lfText", props: { title: "Hi" } }] } }).modules;
+  const p2 = split.find((m) => m.id === "p2");
+  assert.strictEqual(p2.rect[0] + p2.rect[2] / 2, 960);
+  assert.strictEqual(split.find((m) => m.id === "t").props.align, "center");
+
+  const probs = SL.compositionProblems({
+    scaffolds: [
+      { id: "s1", template: "lfSplit", slots: { photo: {}, stack: [{ type: "lfText", props: { title: "A very long headline that keeps going on and on", sub: "A body sentence." } }] } },
+      { id: "s2", template: "lfStage", slots: { hero: {}, left: [{ type: "callout", props: { text: "x" } }, { type: "callout", props: { text: "y" } }], right: [] } },
+    ],
+  }).join("\n");
+  assert.match(probs, /lfSplit .* retired/);
+  assert.match(probs, /side column/);
+  assert.match(probs, /on-screen headline .* words \(max 8\)/);
+  assert.match(probs, /drop "sub"/);
+  assert.match(probs, /satellites unbalanced \(left 2, right 0\)/);
 });

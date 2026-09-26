@@ -53,12 +53,35 @@
       },
     },
   };
+  // LF (16:9) centre-stage cuts: the outgoing scene pushes through the frame centre, the next one
+  // settles in from it (every card scales about the FRAME centre, not its own)
+  function centreOrigin(r, fr) {
+    if (!r || !fr) return "50% 50%";
+    return fr.w / 2 - r[0] + "px " + (fr.h / 2 - r[1]) + "px";
+  }
+  TRANS_OUT.zoomThrough = {
+    dur: 0.3,
+    ease: "power2.in",
+    reset: { scale: 1 },
+    to: function (k, r, fr) {
+      return { scale: 1.14, autoAlpha: 0, transformOrigin: centreOrigin(r, fr) };
+    },
+  };
   var TRANS_IN = {
     riseIn: { dur: 0.333, ease: "power3.out", stagger: 0.033, from: { y: 700 }, to: { y: 0 } },
     slideInRight: { dur: 0.3, ease: "expo.out", stagger: 0.05, from: { x: 540, autoAlpha: 0 }, to: { x: 0, autoAlpha: 1 } },
     cover: { dur: 0.267, ease: "power3.out", from: { x: 1080 }, to: { x: 0 } },
     popRise: { dur: 0.3, ease: "power2.out", stagger: 0.05, from: { y: 28, autoAlpha: 0 }, to: { y: 0, autoAlpha: 1 } },
     afterPush: { dur: 0.3, ease: "power3.out", gap: F, stagger: 0.05, from: { x: 480, autoAlpha: 0 }, to: { x: 0, autoAlpha: 1 } },
+    zoomIn: {
+      dur: 0.4,
+      ease: "power3.out",
+      stagger: 0.02,
+      from: function (k, r, fr) {
+        return { scale: 0.9, autoAlpha: 0, transformOrigin: centreOrigin(r, fr) };
+      },
+      to: { scale: 1, autoAlpha: 1 },
+    },
   };
 
   // per-profile entrance overrides (SPEC 6: LC riseFade 22 px / 233 ms, R3 E1)
@@ -288,7 +311,8 @@
           // scene transition entrance replaces the element recipe (children may still animate)
           var tt = run.cut + (TI.gap || 0) + (TI.stagger || 0) * (run.index || 0);
           tl.set(el, { autoAlpha: 1 }, tt);
-          tl.fromTo(el, TI.from, Object.assign({ duration: TI.dur, ease: TI.ease, immediateRender: false }, TI.to), tt);
+          var tiFrom = typeof TI.from === "function" ? TI.from(run.index || 0, run.rects[0] && run.rects[0].rect, frame) : TI.from;
+          tl.fromTo(el, tiFrom, Object.assign({ duration: TI.dur, ease: TI.ease, immediateRender: false }, TI.to), tt);
           if (m.api.enter && run.enter !== "none") m.api.enter(tt, "none", run);
         } else if (m.api.enter && run.enter !== "none") {
           tl.set(el, { autoAlpha: 1 }, t0);
@@ -315,9 +339,10 @@
             // scene transition exit: the whole card moves (over the mascot), then is hidden
             var k = run.index || 0;
             var ts = run.t1 - TO.dur - (TO.stagger || 0) * k;
-            tl.to(el, Object.assign({ duration: TO.dur, ease: TO.ease }, typeof TO.to === "function" ? TO.to(k) : TO.to), Math.max(run.t0, ts));
+            var lastRect = run.rects.length ? run.rects[run.rects.length - 1].rect : null;
+            tl.to(el, Object.assign({ duration: TO.dur, ease: TO.ease }, typeof TO.to === "function" ? TO.to(k, lastRect, frame) : TO.to), Math.max(run.t0, ts));
             tl.set(el, { autoAlpha: 0 }, run.t1);
-            tl.set(el, { x: 0, y: 0, rotation: 0 }, run.t1 + F);
+            tl.set(el, Object.assign({ x: 0, y: 0, rotation: 0 }, TO.reset || {}), run.t1 + F);
             tl.set(content, { zIndex: 4 }, Math.max(0, ts));
             tl.set(content, { zIndex: 1 }, run.t1 + 0.4);
           } else if (m.api.exit && exitKind !== "cut") m.api.exit(run.t1, exitKind);

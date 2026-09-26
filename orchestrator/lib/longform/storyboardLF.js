@@ -33,10 +33,14 @@ const { validateIntents } = require("../media/resolve");
 const { claimNumbers, unitScale, evalCalc, close } = require("./numbers");
 
 const FRAME = { w: 1920, h: 1080 };
-const PROMPT_VERSION = "lf-sb.1";
+const PROMPT_VERSION = "lf-sb.2";
 const PILOT = path.join(__dirname, "..", "..", "fixtures", "v3", "lf-pilot.json");
 const LF_MEDIA = new Set(["photo", "photoGrid", "portraitCard", "mapCard", "media"]);
 const LF_CHROME = new Set(["lfHeader", "lfProgress", "lfCredit"]);
+/** on-screen word limits (the narrator says the sentences; the screen carries short text) */
+const TEXT = { title: 8, context: 8, callout: 6, promise: 10, deck: 12, sub: 0 };
+/** templates never offered to the model (lfEnd is compiler-added; lfSplit is the deprecated two-column split) */
+const LF_HIDDEN = new Set(["lfEnd", "lfSplit"]);
 const MIX = { graceS: 1.5, mediaShare: [40, 70], maxMediaRun: 5, lifeMedian: [5.0, 10.0], bpmSyn: [20, 37] };
 
 /**
@@ -180,8 +184,14 @@ function pilotExample() {
 }
 
 const LF_GRAMMAR = `VISUAL GRAMMAR (16:9 long-form, "LF": paper-white #F7F6F1 editorial plate, 12-column grid, Inter heads, mono micro labels, real photos as ONE layer inside motion-graphics layouts)
+COMPOSITION (hard, the user's rule -- a produced YouTube documentary frame, never a two-column website):
+- CENTRE STAGE: every scene has ONE hero on the frame's centre axis -- a photo / map / chart (lfStage, lfFull, lfMap, lfChart), a big figure (lfNumber), two cards with a VS chip on the centre line (lfCompare), a timeline band (lfTimeline), a retypeset headline (lfHeadline), an art card (lfJoke). The eye stays at the centre from scene to scene.
+- SATELLITES orbit the hero in the LEFT and RIGHT rails ("left": [...], "right": [...], 0-2 each, balanced: the two rails differ by at most 1): stat chips (callout {value, text}), mini big-number cards (bigNumber), a portraitCard of the person named, a small photo thumbnail, a short lfText label. Each enters on its word ("anchor"). Never a column of body text beside the picture.
+- ON-SCREEN TEXT IS SHORT: the narrator says the sentences; the screen shows kicker, headline (<= ${TEXT.title} words), labels and numbers. No "sub" paragraphs on lfText; bigNumber context <= ${TEXT.context} words; callout text <= ${TEXT.callout} words; lowerThird title / sub <= ${TEXT.title} words each; chapter promise <= ${TEXT.promise} words; headlineCard deck <= ${TEXT.deck} words (or none).
+- The headline sits TOP-CENTRE ("title") or as a lower third centred over the hero's bottom edge ("headline") -- one of the two.
+- Transitions: at most every third cut, {"out": "zoomThrough", "in": "zoomIn"} pushes through the centre into the next scene (the rest are hard cuts).
 MIX RULE (hard, the user's rule -- it is never a slideshow):
-- Every scene is a motion-graphics layout. Photos/illustrations appear INSIDE it (a card in a split, a backdrop behind a big number, thumbnails on a timeline, columns in a compare, a full-bleed with a lower third).
+- Every scene is a motion-graphics layout. Photos/illustrations appear INSIDE it (the centred hero card, a satellite thumbnail or portrait, a backdrop behind a big number, thumbnails on a timeline, columns in a compare, a full bleed with a lower third).
 - Graphics are on screen 100% of the time: within 1.5 s of every cut a non-photo graphic is visible (lfText, bigNumber, callout, lowerThird, chart, headlineCard, compareCols, eraTimeline, recapList, chapterCard).
 - EVERY photo gets animated annotations on the words: overlays (callout / lowerThird at [x%, y%] of the photo, with an optional "point" leader) AND/OR events highlight {box,label} / arrow {from,to,label} / zoomTo {box} / dim.
 - Real media is visible ~50-65 % of the runtime (validated band 40-70 %). Graphic-only scenes (lfChart, lfNumber without backdrop, lfCompare, lfRecap) sit between media scenes: never more than ${MIX.maxMediaRun} media scenes in a row.
@@ -197,7 +207,7 @@ NUMBERS ON SCREEN:
 - bigNumber: prefer count "enter" (counts up as the card appears; enter it on the number word with "anchor" when the number is said later). count "op" shows 0 until its count event, so only use it with a count event within ~1 s of the card's entrance.
 MEDIA SLOTS:
 - Media is referenced ONLY through {"slot": "<name>"} props (photo / backdrop / art / photoGrid items / compareCols cols[].photo / eraTimeline ticks[].photo / portraitCard / mapCard). Never a URL or file.
-- Declare every slot you use exactly once in "media": {slot, kind: photo|portrait|logo|map|illustration, entity? (the Wikidata-style name, e.g. "Air Deccan"), intent (concrete nouns + place + era: "Air Deccan ATR aircraft on an Indian airport apron"), era? ("2007"), size?: full (full-bleed lfCold/lfFull/backdrop) | card (splits, compare, timeline thumbs, logos)}.
+- Declare every slot you use exactly once in "media": {slot, kind: photo|portrait|logo|map|illustration, entity? (the Wikidata-style name, e.g. "Air Deccan"), intent (concrete nouns + place + era: "Air Deccan ATR aircraft on an Indian airport apron"), era? ("2007"), size?: full (full-bleed lfCold/lfFull/backdrop) | card (centred heroes, satellites, compare, timeline thumbs, logos)}.
 - Reuse a slot across scenes when it is the same picture (e.g. the airline's plane in a split, then as a timeline thumb). 4-9 distinct slots per chapter.
 - illustration = AI art for jokes/analogies/concepts ONLY (lfJoke art); never real people or real news events, never text in the image. Real people -> portrait; companies -> logo or photo.
 - A headline is REBUILT with headlineCard (typeset), never a screenshot; paraphrase and mark it "Paraphrased ... · retypeset" in note.
@@ -248,7 +258,7 @@ STRUCTURE
 ${LF_GRAMMAR}
 
 TEMPLATES (scaffold = {id, template, from: <first sentence id>, mirror?, slots})
-${Object.entries(TEMPLATE_DOCS).filter(([k]) => /^lf[A-Z]/.test(k) && k !== "lfEnd").map(([k, v]) => `- ${k}: ${v}`).join("\n")}
+${Object.entries(TEMPLATE_DOCS).filter(([k]) => /^lf[A-Z]/.test(k) && !LF_HIDDEN.has(k)).map(([k, v]) => `- ${k}: ${v}`).join("\n")}
 Slot fill = {id, type?, props, anchor?: {text, occurrence?, sentence?} (enters on that word), at?}. Overlays = [{id, type: callout|lowerThird, at: [x%, y%], w, point?: [x%, y%], anchor? | delay?, props}].
 
 MODULES (LF cards: type -> use, props, ops)
@@ -497,6 +507,7 @@ async function validateChapter(sb, ctx, opts = {}) {
   if (meta.kind !== "cold" && first !== "lfChapter") P.push(`a chapter starts with an lfChapter card (got ${first})`);
   if (sb.scaffolds.some((s) => s.template === "lfEnd")) P.push("never author lfEnd; the end screen is appended after the recap automatically");
   if (sb.scaffolds.some((s, i) => i > 0 && s.template === "lfChapter")) P.push("only the first scaffold may be an lfChapter card");
+  P.push(...compositionProblems(sb));
   // media intents
   const intents = sb.mediaIntents || [];
   try {
@@ -585,6 +596,53 @@ async function validateChapter(sb, ctx, opts = {}) {
     log(`  (layout audit skipped: ${err.message})`);
   }
   return { problems: P, report };
+}
+
+const words = (t) => String(t || "").split(/\s+/).filter(Boolean).length;
+
+/**
+ * Centre-stage composition (user, 2026-09-26): one centred hero, satellites balanced in the left /
+ * right rails, short on-screen text only (the narrator says the sentences), no two-column splits.
+ */
+function compositionProblems(sb) {
+  const P = [];
+  const each = (sc, fn) =>
+    Object.entries(sc.slots || {}).forEach(([k, v]) => [].concat(v || []).forEach((f, i) => f && typeof f === "object" && fn(f, Array.isArray(v) ? `${sc.id}.${k}[${i}]` : `${sc.id}.${k}`, k)));
+  (sb.scaffolds || []).forEach((sc) => {
+    const s = sc.slots || {};
+    if (sc.template === "lfSplit") P.push(`scaffold ${sc.id}: lfSplit (image in one column, text in the other) is retired; use lfStage: the photo as the centred hero, the figures as left / right satellites, a top-centre title`);
+    if (s.stack || s.side) P.push(`scaffold ${sc.id}: "${s.stack ? "stack" : "side"}" is a side column; put those modules in the "left" / "right" rails (0-2 each, balanced)`);
+    const L = [].concat(s.left || []).length;
+    const Rr = [].concat(s.right || []).length;
+    if (L > 2 || Rr > 2) P.push(`scaffold ${sc.id}: at most 2 satellites per rail (left ${L}, right ${Rr})`);
+    if (Math.abs(L - Rr) > 1) P.push(`scaffold ${sc.id}: satellites unbalanced (left ${L}, right ${Rr}); the rails may differ by at most 1`);
+    if (s.title && s.headline && sc.template === "lfStage") P.push(`scaffold ${sc.id}: use a top-centre "title" OR a lower-third "headline", not both`);
+    each(sc, (f, where, key) => {
+      const p = f.props || {};
+      const type = f.type || (key === "overlays" ? "callout" : key === "headline" || key === "title" || key === "punchline" ? (sc.template === "lfStage" && key === "headline" ? "lowerThird" : sc.template === "lfHeadline" ? "headlineCard" : "lfText") : key === "lowerThird" ? "lowerThird" : key === "card" ? "chapterCard" : key === "number" ? "bigNumber" : "");
+      const over = (field, max, what) => words(p[field]) > max && P.push(`${where}: ${what} "${String(p[field]).slice(0, 60)}" is ${words(p[field])} words (max ${max}); the narrator says the sentence, the screen shows a short label`);
+      if (type === "lfText") {
+        over("title", TEXT.title, "on-screen headline");
+        if (p.sub) P.push(`${where}: drop "sub" ("${String(p.sub).slice(0, 50)}..."); body sentences are narrated, not printed`);
+      }
+      if (type === "bigNumber") over("context", TEXT.context, "bigNumber context");
+      if (type === "callout") over("text", TEXT.callout, "callout text");
+      if (type === "lowerThird") {
+        over("title", TEXT.title, "lower third title");
+        over("sub", TEXT.title, "lower third sub");
+      }
+      if (type === "chapterCard") over("promise", TEXT.promise, "chapter promise");
+      if (type === "headlineCard") over("deck", TEXT.deck, "headline deck");
+    });
+  });
+  // transitions: centre push only, not on consecutive cuts
+  let last = -9;
+  (sb.scaffolds || []).forEach((sc, i) => {
+    if (!sc.transition) return;
+    if (i - last < 2) P.push(`scaffold ${sc.id}: two centre-push transitions in a row; keep a hard cut between them`);
+    last = i;
+  });
+  return P;
 }
 
 function summaryLine(report) {
@@ -774,6 +832,7 @@ function mergeIntents(chapters) {
 }
 
 module.exports = {
+  compositionProblems,
   FRAME,
   MIX,
   PROMPT_VERSION,

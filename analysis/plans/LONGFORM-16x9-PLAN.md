@@ -87,7 +87,7 @@ Everything that touches the network happens **before** compose. Renders read onl
 | Template | Layout |
 |---|---|
 | `lfCold` | cold-open hook: full-bleed photo (or AI illustration) + kinetic headline + kicker |
-| `lfSplit` | photo card 7 cols + text/number/chart stack 5 cols (mirrorable) |
+| `lfStage` | centre stage (2026-09-26, replaces the two-column `lfSplit`, kept as an alias): a centred hero (photo 1152x648 / map / chart) + satellites (chips, mini numbers, portraits, thumbnails) in left/right 320 px rails overlapping its edges, balanced; headline top-centre or a centred lower third; on-screen text <= 8 words |
 | `lfFull` | full-bleed photo/video with lower-third title + credit |
 | `lfChart` | one chart 10–12 cols + title + source line |
 | `lfNumber` | a big figure (₹9,000 cr / 38%) + context line + small spark/compare |

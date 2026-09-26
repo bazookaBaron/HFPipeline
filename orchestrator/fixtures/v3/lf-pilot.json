@@ -98,8 +98,8 @@
      {
       "type": "callout",
       "at": [
-       8,
-       70
+       80,
+       64
       ],
       "w": 330,
       "anchor": {
@@ -116,26 +116,36 @@
   },
   {
    "id": "toy",
-   "template": "lfSplit",
+   "template": "lfStage",
    "from": "s2",
    "slots": {
-    "photo": {
+    "title": {
+     "id": "toytxt",
+     "props": {
+      "eyebrow": "Kingfisher Airlines · 2005",
+      "title": "The shiny new toy of India's skies",
+      "highlight": "shiny new toy"
+     }
+    },
+    "hero": {
      "id": "kfplane",
      "props": {
       "slot": "kfA320",
       "tag": "Kingfisher Airbus A320"
      }
     },
-    "stack": [
+    "left": [
      {
-      "id": "toytxt",
-      "type": "lfText",
+      "id": "toyseat",
+      "type": "callout",
+      "anchor": {
+       "text": "leather",
+       "sentence": "s3"
+      },
       "props": {
-       "eyebrow": "Kingfisher Airlines · 2005",
-       "title": "The shiny new toy of India's skies",
-       "highlight": "shiny new toy",
-       "size": 62,
-       "sub": "Red planes, leather seats, free headphones and a party-loving boss."
+       "value": "Full service",
+       "text": "Leather seats, free headphones",
+       "tone": "blue"
       }
      }
     ],
@@ -144,8 +154,8 @@
       "id": "toyred",
       "type": "callout",
       "at": [
-       60,
-       5
+       94,
+       44
       ],
       "w": 300,
       "point": [
@@ -166,40 +176,33 @@
   },
   {
    "id": "deccan",
-   "template": "lfSplit",
+   "template": "lfStage",
    "from": "s4",
-   "mirror": true,
    "slots": {
-    "photo": {
+    "hero": {
      "id": "atr",
      "props": {
       "slot": "deccanATR",
       "tag": "Air Deccan ATR 42"
      }
     },
-    "stack": [
+    "left": [
      {
       "id": "rupee",
       "type": "bigNumber",
       "props": {
-       "eyebrow": "Air Deccan · since 2003",
+       "eyebrow": "Air Deccan · 2003",
        "prefix": "₹",
        "value": 1,
        "unit": "tickets",
-       "context": "India's first low-cost airline sold its cheapest seats for one rupee.",
-       "size": 190
+       "context": "the cheapest seats in India"
       }
      }
     ],
-    "overlays": [
+    "right": [
      {
       "id": "lowcost",
       "type": "callout",
-      "at": [
-       4,
-       76
-      ],
-      "w": 330,
       "anchor": {
        "text": "low"
       },
@@ -216,6 +219,10 @@
    "id": "deal",
    "template": "lfNumber",
    "from": "s5",
+   "transition": {
+    "out": "zoomThrough",
+    "in": "zoomIn"
+   },
    "slots": {
     "number": {
      "id": "cheque",
@@ -224,39 +231,34 @@
       "prefix": "₹",
       "value": 550,
       "unit": "crore",
-      "context": "for about a quarter of Deccan Aviation",
-      "bars": [
-       {
-        "label": "Stake bought",
-        "value": 26,
-        "display": "26%",
-        "tone": "blue"
-       }
-      ]
+      "context": "for about a quarter of Deccan Aviation"
      }
     },
-    "backdrop": {
-     "id": "mallyabg",
-     "props": {
-      "slot": "mallya"
-     }
-    },
-    "overlays": [
+    "left": [
      {
-      "id": "mallyalt",
-      "type": "lowerThird",
-      "at": [
-       44,
-       74
-      ],
-      "w": 480,
+      "id": "stakechip",
+      "type": "callout",
       "anchor": {
-       "text": "Mallya"
+       "text": "quarter"
       },
       "props": {
-       "tag": "The buyer",
-       "title": "Vijay Mallya",
-       "sub": "Chairman, UB Group and Kingfisher"
+       "value": "26%",
+       "text": "Stake bought",
+       "tone": "blue"
+      }
+     }
+    ],
+    "right": [
+     {
+      "id": "mallyapc",
+      "type": "portraitCard",
+      "anchor": {
+       "text": "cheque"
+      },
+      "props": {
+       "slot": "mallya",
+       "name": "Vijay Mallya",
+       "role": "The buyer · UB Group"
       }
      }
     ]
@@ -283,19 +285,13 @@
       "date": "2007",
       "headline": "The king of good times buys into the people's airline",
       "highlight": "king of good times",
-      "deck": "Kingfisher's owner takes a stake in Air Deccan, India's budget pioneer.",
       "note": "Paraphrased from 2007 coverage · retypeset"
      }
     },
-    "overlays": [
+    "right": [
      {
       "id": "stake",
       "type": "callout",
-      "at": [
-       58,
-       70
-      ],
-      "w": 330,
       "anchor": {
        "text": "bought"
       },
@@ -348,7 +344,7 @@
       ]
      }
     },
-    "side": [
+    "left": [
      {
       "id": "rulenum",
       "type": "bigNumber",
@@ -356,8 +352,8 @@
        "eyebrow": "The rule",
        "value": 5,
        "unit": "years",
-       "context": "at home before a single international route",
-       "size": 170,
+       "context": "at home before any route abroad",
+       "size": 84,
        "count": "enter",
        "from": 0,
        "dur": 0.8
@@ -367,7 +363,26 @@
        "sentence": "s8"
       }
      }
+    ],
+    "right": [
+     {
+      "id": "abroad",
+      "type": "callout",
+      "anchor": {
+       "text": "abroad.",
+       "sentence": "s8"
+      },
+      "props": {
+       "value": "Year 5",
+       "text": "the first route abroad",
+       "tone": "red"
+      }
+     }
     ]
+   },
+   "transition": {
+    "out": "zoomThrough",
+    "in": "zoomIn"
    }
   },
   {
@@ -441,8 +456,7 @@
      "id": "punch",
      "props": {
       "title": "Imagine marrying someone for their gym membership.",
-      "highlight": "gym membership.",
-      "sub": "Kingfisher wanted Deccan's five-year pass, not its one-rupee seats."
+      "highlight": "gym membership."
      }
     },
     "tag": {
@@ -517,6 +531,10 @@
       ]
      }
     }
+   },
+   "transition": {
+    "out": "zoomThrough",
+    "in": "zoomIn"
    }
   },
   {
@@ -589,22 +607,6 @@
    }
   },
   {
-   "sentence": "s3",
-   "anchor": {
-    "text": "party."
-   },
-   "op": "zoomTo",
-   "target": "kfplane",
-   "value": {
-    "box": [
-     30,
-     30,
-     50,
-     60
-    ]
-   }
-  },
-  {
    "sentence": "s4",
    "anchor": {
     "text": "opposite:"
@@ -639,14 +641,6 @@
     ],
     "label": "₹1 seats"
    }
-  },
-  {
-   "sentence": "s5",
-   "anchor": {
-    "text": "quarter"
-   },
-   "op": "fill",
-   "target": "cheque"
   },
   {
    "sentence": "s6",
@@ -808,17 +802,6 @@
      36
     ],
     "dur": 1.2
-   }
-  },
-  {
-   "sentence": "s5",
-   "anchor": {
-    "text": "crore"
-   },
-   "op": "dim",
-   "target": "mallyabg",
-   "value": {
-    "level": 0.35
    }
   },
   {

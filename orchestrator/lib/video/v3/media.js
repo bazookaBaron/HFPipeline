@@ -24,9 +24,11 @@ function round(x) {
   return Math.round(x * 1000) / 1000;
 }
 
-function bodyRect(rect, props) {
+function bodyRect(rect, props, type) {
   const head = props.head || props.dot ? HEAD : 0;
-  return [rect[0] + BORDER, rect[1] + BORDER + head, rect[2] - 2 * BORDER, rect[3] - 2 * BORDER - head];
+  // LF photo: 3 px paper border as a card, none when full-bleed
+  const B = type === "photo" ? (props.card === false ? 0 : 3) : BORDER;
+  return [rect[0] + B, rect[1] + B + head, rect[2] - 2 * B, rect[3] - 2 * B - head];
 }
 
 function buildMediaLayer({ scaffolds, events, sbScaffolds, wordTime }) {
@@ -34,14 +36,15 @@ function buildMediaLayer({ scaffolds, events, sbScaffolds, wordTime }) {
   const byId = new Map();
   scaffolds.forEach((s, si) => {
     s.modules.forEach((m) => {
-      if (m.type !== "media" || (m.props && m.props.kind === "image")) return;
+      // `media` windows (9:16) and LF `photo` modules with kind "video"
+      if (m.type === "photo" ? !(m.props && m.props.kind === "video" && m.props.src) : m.type !== "media" || (m.props && m.props.kind === "image")) return;
       let e = byId.get(m.id);
       const last = e && e.runs[e.runs.length - 1];
       if (last && Math.abs(last.t1 - s.t0) < 1e-6) {
         last.t1 = s.t1;
       } else {
         if (!e) {
-          e = { id: m.id, props: m.props || {}, runs: [] };
+          e = { id: m.id, type: m.type, props: m.props || {}, runs: [] };
           byId.set(m.id, e);
           out.push(e);
         }
@@ -76,7 +79,7 @@ function buildMediaLayer({ scaffolds, events, sbScaffolds, wordTime }) {
           items.push({ kind: "img", src: x.tr.lastFrame || p.lastFrame, start: round(t0 + vdur), dur: round(t1 - t0 - vdur), wrap: ri });
         }
       });
-      const body = bodyRect(run.rect, p);
+      const body = bodyRect(run.rect, p, e.type);
       const tweens = (events || [])
         .filter((ev) => ev.op === "shrink" && String(ev.target).split(".")[0] === e.id && ev.t >= run.t0 && ev.t < run.t1)
         .map((ev) => ({
@@ -93,7 +96,7 @@ function buildMediaLayer({ scaffolds, events, sbScaffolds, wordTime }) {
           if (ev.op === "highlight") hls.push({ t: ev.t, t1: run.t1, box: (ev.value && ev.value.box) || [10, 10, 30, 20], tone: (ev.value && ev.value.tone) || "amber" });
           else if (hls.length) hls[hls.length - 1].t1 = ev.t;
         });
-      return { id: `media${ei}_${ri}`, rect: body.map(round), radius: 7.5, t0: round(run.t0), t1: round(run.t1), tweens, highlights: hls };
+      return { id: `media${ei}_${ri}`, rect: body.map(round), radius: e.type === "photo" ? (p.card === false ? 0 : 9) : 7.5, allCorners: e.type === "photo", t0: round(run.t0), t1: round(run.t1), tweens, highlights: hls };
     });
     return { id: e.id, wrappers, items: items.map((it, k) => ({ ...it, id: `m${ei}_${k}` })) };
   });
@@ -127,7 +130,9 @@ function checkMedia(media, veDir) {
       if (ar && wr) {
         const box = wr.rect[2] / wr.rect[3];
         const crop = 1 - Math.min(ar, box) / Math.max(ar, box);
-        if (crop > 0.02) problems.push(`media ${m.id}: window aspect ${box.toFixed(3)} vs footage ${ar.toFixed(3)} crops ${(crop * 100).toFixed(1)}% (max 2%)`);
+        // LF photo cards crop on purpose (cover on the focal box); 9:16 windows keep the 2 % rule
+        const maxCrop = wr.allCorners ? 0.45 : 0.02;
+        if (crop > maxCrop) problems.push(`media ${m.id}: window aspect ${box.toFixed(3)} vs footage ${ar.toFixed(3)} crops ${(crop * 100).toFixed(1)}% (max ${maxCrop * 100}%)`);
       }
       const r = spawnSync("ffmpeg", ["-v", "error", "-ss", String(it.mediaStart || 0), "-i", file, "-frames:v", "1", "-vf", "scale=64:-1,format=gray", "-f", "rawvideo", "-"], { maxBuffer: 1 << 20 });
       const buf = r.stdout || Buffer.alloc(0);

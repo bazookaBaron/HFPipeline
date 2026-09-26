@@ -37,7 +37,54 @@ function typedLength(e) {
   return String(s || "").length || 12;
 }
 
+// LF (plan §6): the same library at lower density -- whoosh on scene cuts, a soft pop when a photo drops
+// in, a tick roll on count-ups, a swish on drawn charts/arrows, a blip on highlights; no tick on every row.
+const LF_KIND = { count: "roll", draw: "swish", arrow: "swish", highlight: "blip", annotate: "blip", zoomTo: "swish", pin: "tick", check: "tick", tick: "tick", win: "blip", press: "pop" };
+const LF_MEDIA = new Set(["photo", "photoGrid", "portraitCard", "mapCard"]);
+const LF_MIN_GAP = 0.3;
+
+function sfxCuesLF(spec, duration) {
+  const cues = [];
+  const scaffolds = spec.scaffolds || [];
+  let prevIds = new Set();
+  scaffolds.forEach((s, si) => {
+    const ids = new Set((s.modules || []).map((m) => m.id));
+    if (si > 0 && [...ids].some((id) => !prevIds.has(id))) cues.push({ t: s.t0 - 0.2, at: s.t0, kind: "whoosh", var: si, gain: -3 });
+    (s.modules || []).forEach((m, mi) => {
+      if (prevIds.has(m.id) || !LF_MEDIA.has(m.type) || !m.at) return;
+      cues.push({ t: s.t0 + m.at, at: s.t0 + m.at, kind: "pop", var: si + mi, gain: -6 });
+    });
+    if (s.template === "lfChapter") cues.push({ t: s.t0 + 0.02, at: s.t0 + 0.02, kind: "chime", var: si, gain: -4 });
+    prevIds = ids;
+  });
+  (spec.events || []).forEach((e, i) => {
+    const kind = LF_KIND[e.op];
+    if (!kind) return;
+    const c = { t: e.t, at: e.t, kind, var: i, gain: kind === "blip" || kind === "tick" ? -3 : -2 };
+    if (kind === "roll") c.dur = (e.value && e.value.dur) || 1.2;
+    if (kind === "swish") c.t = e.t - 0.04;
+    cues.push(c);
+  });
+  // count-ups that run on entrance (bigNumber count: "enter")
+  scaffolds.forEach((s) => (s.modules || []).forEach((m) => {
+    if (m.type === "bigNumber" && m.props && m.props.count === "enter") cues.push({ t: s.t0 + (m.at || 0) + 0.15, at: s.t0 + (m.at || 0) + 0.15, kind: "roll", var: 3, dur: m.props.dur || 1.2, gain: -2 });
+  }));
+  cues.sort((a, b) => a.at - b.at || PRIORITY[b.kind] - PRIORITY[a.kind]);
+  const kept = [];
+  for (const c of cues) {
+    if (c.at < 0.05 || c.at > duration - 0.05) continue;
+    const near = kept.filter((k) => Math.abs(k.at - c.at) < LF_MIN_GAP);
+    if (!near.length) kept.push(c);
+    else if (near.every((k) => PRIORITY[c.kind] > PRIORITY[k.kind])) {
+      near.forEach((k) => kept.splice(kept.indexOf(k), 1));
+      kept.push(c);
+    }
+  }
+  return kept.map(({ at, ...c }) => ({ ...c, t: +c.t.toFixed(3) }));
+}
+
 function sfxCues(spec, duration) {
+  if (spec.profile === "LF") return sfxCuesLF(spec, duration);
   const cues = [];
   const scaffolds = spec.scaffolds || [];
   let prevIds = new Set();
@@ -90,7 +137,7 @@ const MUSIC_PRESETS = ["lofi", "ambient", "pulse"];
  * Mix SFX (and, when `music` names a preset, the ducked synthesized bed) under the narration:
  * writes outWav (48 kHz stereo) and returns {cues, ...stats}. sfx=false mixes the bed alone.
  */
-function mixSfx({ spec, duration, narrationWav, outWav, stemWav, sfx = true, music = null, musicStemWav, log = () => {} }) {
+function mixSfx({ spec, duration, narrationWav, outWav, stemWav, sfx = true, music = null, musicStemWav, swell = [], log = () => {} }) {
   if (music && !MUSIC_PRESETS.includes(music)) throw new Error(`unknown music preset "${music}" (have ${MUSIC_PRESETS.join(", ")})`);
   const cues = sfx ? sfxCues(spec, duration) : [];
   const cuesPath = outWav + ".cues.json";
@@ -100,6 +147,8 @@ function mixSfx({ spec, duration, narrationWav, outWav, stemWav, sfx = true, mus
   if (music) {
     args.push("--music", music, "--duration", String(duration));
     if (musicStemWav) args.push("--music-stem", musicStemWav);
+    // [[t0, t1], ...] windows where the bed swells +3 dB (LF chapter cards)
+    if (swell && swell.length) args.push("--swell", JSON.stringify(swell));
   }
   const r = spawnSync(PYTHON, args, { encoding: "utf-8" });
   if (r.status !== 0) throw new Error(`sfx mix failed: ${(r.stderr || r.error || "").toString().slice(-600)}`);

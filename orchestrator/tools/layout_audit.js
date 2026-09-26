@@ -40,6 +40,9 @@ const LIBS = [
   "compositions/components/lib/stage/modules-br.js",
   "compositions/components/lib/stage/profile-bp.js",
   "compositions/components/lib/stage/modules-bp.js",
+  "compositions/components/lib/stage/profile-lf.js",
+  "compositions/components/lib/stage/modules-lf.js",
+  "compositions/components/lib/stage/modules-chart.js",
 ];
 
 function harnessHtml(spec, duration, frame = { w: 1080, h: 1920 }) {

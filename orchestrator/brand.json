@@ -60,5 +60,46 @@
       "Follow for more",
       "daily posts"
     ]
+  },
+  "longform": {
+    "enabled": true,
+    "spoken": "Thanks for watching. If this made money make a little more sense, subscribe for more deep dives.",
+    "eyebrow": "Thanks for watching",
+    "lines": [
+      "Subscribe for more",
+      {
+        "text": "deep dives.",
+        "accent": "deep dives."
+      }
+    ],
+    "sub": "Business, money and the economy, explained simply.",
+    "cta": "SUBSCRIBE",
+    "slots": [
+      "Next deep dive",
+      "More like this"
+    ],
+    "beats": [
+      {
+        "word": "money",
+        "part": "line2"
+      },
+      {
+        "word": "sense,",
+        "part": "sub"
+      },
+      {
+        "word": "subscribe",
+        "part": "subscribe"
+      },
+      {
+        "word": "more",
+        "occurrence": 2,
+        "part": "slots"
+      },
+      {
+        "word": "dives.",
+        "op": "press"
+      }
+    ]
   }
 }

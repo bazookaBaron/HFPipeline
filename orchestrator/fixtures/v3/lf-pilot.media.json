@@ -1,0 +1,106 @@
+{
+  "version": "media-manifest.v1",
+  "note": "hand-assembled from cached lib/media sidecars for the LF pilot",
+  "slots": {
+    "kfA320": {
+      "status": "ok",
+      "kind": "image",
+      "source": "commons",
+      "sha": "3ff5e3a866c6487f9176a90f21324afa67a78103d5d64eddb0b45b40e4c4cb2f",
+      "file": "assets/media/cache/3f/3ff5e3a866c6487f9176a90f21324afa67a78103d5d64eddb0b45b40e4c4cb2f.jpg",
+      "credit": "Photo: Matthew T Rader / Wikimedia Commons · CC BY-SA 4.0",
+      "creditFull": "\"Kingfisher Airlines airplane at the Chennai International Airport (MMA)\" · by Matthew T Rader · Wikimedia Commons: https://commons.wikimedia.org/wiki/File:Kingfisher_Airlines_airplane_at_the_Chennai_International_Airport_(MMA).jpg · CC BY-SA 4.0 (https://creativecommons.org/licenses/by-sa/4.0) · cropped/scaled",
+      "licence": "CC BY-SA 4.0",
+      "focal": [
+        0,
+        0,
+        1,
+        0.97
+      ],
+      "width": 1920,
+      "height": 1200,
+      "pageUrl": "https://commons.wikimedia.org/wiki/File:Kingfisher_Airlines_airplane_at_the_Chennai_International_Airport_(MMA).jpg"
+    },
+    "deccanATR": {
+      "status": "ok",
+      "kind": "image",
+      "source": "openverse",
+      "sha": "fcadf5f5d9b231f4499c91b85126107e59206c84904afaef8758f897648f581e",
+      "file": "assets/media/cache/fc/fcadf5f5d9b231f4499c91b85126107e59206c84904afaef8758f897648f581e.jpg",
+      "credit": "Photo: Aeroprints.com / Wikimedia Commons · CC BY-SA 3.0",
+      "creditFull": "\"File:VT-ADJ ATR.42 Air Deccan (8447273655).jpg\" · by Aeroprints.com · Wikimedia Commons (via Openverse): https://commons.wikimedia.org/w/index.php?curid=32538464 · CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0/) · cropped/scaled",
+      "licence": "CC BY-SA 3.0",
+      "focal": [
+        0.12,
+        0.19,
+        0.85,
+        0.55
+      ],
+      "width": 1536,
+      "height": 1024,
+      "pageUrl": "https://commons.wikimedia.org/w/index.php?curid=32538464"
+    },
+    "mallya": {
+      "status": "ok",
+      "kind": "image",
+      "source": "commons",
+      "sha": "308223965f10e03f1902e7bd26823b789120487bb0403201ec60515a095a94f6",
+      "file": "assets/media/cache/30/308223965f10e03f1902e7bd26823b789120487bb0403201ec60515a095a94f6.jpg",
+      "credit": "Photo: World Economic Forum… / Wikimedia Commons · CC BY-SA 2.0",
+      "creditFull": "\"Vijaymallya\" · by World Economic Forum (www.weforum.org)/Photo by Dana Smillie · Wikimedia Commons: https://commons.wikimedia.org/wiki/File:Vijaymallya.jpg · CC BY-SA 2.0 (https://creativecommons.org/licenses/by-sa/2.0) · cropped/scaled",
+      "licence": "CC BY-SA 2.0",
+      "focal": [
+        0,
+        0.05,
+        1,
+        0.95
+      ],
+      "width": 1920,
+      "height": 1726,
+      "pageUrl": "https://commons.wikimedia.org/wiki/File:Vijaymallya.jpg"
+    },
+    "kfHyd": {
+      "status": "ok",
+      "kind": "image",
+      "source": "commons",
+      "sha": "7fefecee50b8e57afffeee21168669407ed4a74e261480a1380695b832aee28e",
+      "file": "assets/media/cache/7f/7fefecee50b8e57afffeee21168669407ed4a74e261480a1380695b832aee28e.jpg",
+      "credit": "Photo: ShashiBellamkonda / Wikimedia Commons · CC BY 2.0",
+      "creditFull": "\"Hyderabad Airport Kingfisher RGIA 2008\" · by ShashiBellamkonda · Wikimedia Commons: https://commons.wikimedia.org/wiki/File:Hyderabad_Airport_Kingfisher_RGIA_2008.jpg · CC BY 2.0 (https://creativecommons.org/licenses/by/2.0) · cropped/scaled",
+      "licence": "CC BY 2.0",
+      "focal": [
+        0.248,
+        0.395,
+        0.536,
+        0.22
+      ],
+      "width": 1920,
+      "height": 1280,
+      "pageUrl": "https://commons.wikimedia.org/wiki/File:Hyderabad_Airport_Kingfisher_RGIA_2008.jpg"
+    },
+    "kfLogo": {
+      "status": "ok",
+      "kind": "image",
+      "source": "commons",
+      "sha": "59620d82a79819a0698527b344d0290d94d2c8deea1885231ba49d3e6876e673",
+      "file": "assets/media/cache/59/59620d82a79819a0698527b344d0290d94d2c8deea1885231ba49d3e6876e673.png",
+      "credit": "Logo: Kingfisher Airlines / Wikimedia Commons · Public domain",
+      "creditFull": "\"Kingfisher logo\" · by Kingfisher Airlines · Wikimedia Commons: https://commons.wikimedia.org/wiki/File:Kingfisher_logo.svg · Public domain",
+      "licence": "Public domain",
+      "focal": [
+        0.03,
+        0.28,
+        0.95,
+        0.44
+      ],
+      "width": 1920,
+      "height": 510,
+      "pageUrl": "https://commons.wikimedia.org/wiki/File:Kingfisher_logo.svg"
+    },
+    "jokeArt": {
+      "status": "fallback",
+      "kind": "image",
+      "reason": "AI illustration not generated (Gemini credits depleted); the module renders its typeset fallback"
+    }
+  }
+}

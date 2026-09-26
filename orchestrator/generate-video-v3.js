@@ -14,7 +14,10 @@
  *
  * Usage: node generate-video-v3.js --storyboard sb.json --out out.mp4 [--run-id id] [--wpm 215]
  *          [--tts-speed 1] [--captions true] [--mascot true] [--reuse-voice true] [--quality looks]
- *          [--music false|lofi|ambient|pulse]   (synthesized, ducked background bed; default false)
+ *          [--music false|lofi|ambient|pulse]   (synthesized, ducked background bed; default false, LF: ambient)
+ *          [--media media-manifest.json]        (LF: slot -> local file + credit; default sb.mediaManifest beside the storyboard)
+ * LF (16:9 long-form) differs: relaxed pace (lib/video/v3/pace.js), captions off, music bed on with a swell on
+ * chapter cards, lower SFX density, no presenter, the lfEnd ending (brand.json "longform").
  * The output frame is the storyboard's `frame` ({w, h}, default 1080x1920; see lib/video/v3/compile.js).
  * stdout: exactly one JSON line on success.
  */
@@ -37,7 +40,7 @@ const { pickPromo } = require("./lib/video/v3/promo");
 const { masterVideo } = require("./lib/video/audioMaster");
 const { generateStoryboard } = require("./lib/video/v3/storyboardGen");
 
-const SENTENCE_GAP_FINAL = 0.2;
+const SENTENCE_GAP_FINAL = 0.2; // shorts; per-profile gaps come from lib/video/v3/pace.js
 
 function log(msg) {
   process.stderr.write(`[generate-video-v3] ${msg}\n`);
@@ -75,13 +78,13 @@ function ffmpeg(args) {
 }
 
 /** speed so that words / final duration = target wpm, with fixed final sentence gaps */
-const { countSyllables, solvePace } = require("./lib/video/v3/pace");
+const { countSyllables, solvePace, paceFor, sentenceGaps } = require("./lib/video/v3/pace");
 
-function solveSpeed(plan0, sentences, wpm) {
+function solveSpeed(plan0, sentences, wpm, gapsTotal) {
   const nWords = plan0.words.length;
   const speech = plan0.segments.reduce((a, s) => a + (s.trimEnd - s.trimStart), 0);
   const finalTotal = (nWords / wpm) * 60;
-  const gaps = (sentences.length - 1) * SENTENCE_GAP_FINAL;
+  const gaps = gapsTotal !== undefined ? gapsTotal : (sentences.length - 1) * SENTENCE_GAP_FINAL;
   const raw = speech / Math.max(1, finalTotal - gaps);
   return { speed: Math.min(2.0, Math.max(0.8, Number(raw.toFixed(4)))), speech, nWords };
 }
@@ -98,7 +101,7 @@ async function main() {
   const runId = String(args["run-id"] || `v3-${path.basename(outPath, ".mp4")}`).replace(/[^a-zA-Z0-9_-]/g, "-");
   const wpm = Number(args.wpm || 215);
   const ttsSpeed = args["tts-speed"] !== undefined ? Number(args["tts-speed"]) : 1.0;
-  const captionsOn = bool(args.captions, true);
+  let captionsOn = bool(args.captions, true);
   const mascotOn = bool(args.mascot, true);
   const reuseVoice = bool(args["reuse-voice"], false);
   const quality = typeof args.quality === "string" ? args.quality : "looks";
@@ -150,7 +153,7 @@ async function main() {
   const sbTopic = stripEndcard(JSON.parse(fs.readFileSync(sbPath, "utf-8")));
   // topic-matched vloombox.in promo scene (our own screen recordings) before the follow card
   let promo = null;
-  if (bool(args.endcard, true) && bool(args.promo, false)) {
+  if (bool(args.endcard, true) && bool(args.promo, false) && sbTopic.profile !== "LF") {
     let gen = null;
     try {
       gen = require("./lib/video/v3/storyboardGen").loadGemini("promo.pick");
@@ -181,6 +184,22 @@ async function main() {
   // long-form) has no presenter, so the mascot is off there whatever --mascot says
   const landscape = !!(sb.frame && Number(sb.frame.w) > Number(sb.frame.h));
   if (landscape && mascotOn) log("landscape frame: presenter off");
+  const isLF = sb.profile === "LF";
+  // LF: burned-in captions off by default (the SRT is uploaded instead, plan D7)
+  if (isLF && args.captions === undefined) captionsOn = false;
+  // LF media manifest (lib/media): --media, else sb.mediaManifest relative to the storyboard file
+  let mediaManifest = null;
+  {
+    const mp = typeof args.media === "string" ? path.resolve(args.media) : typeof sbTopic.mediaManifest === "string" ? path.resolve(path.dirname(sbPath), sbTopic.mediaManifest) : null;
+    if (mp) {
+      if (!fs.existsSync(mp)) return die("script", `media manifest not found: ${mp}`);
+      mediaManifest = JSON.parse(fs.readFileSync(mp, "utf-8"));
+      log(`media manifest: ${mp}`);
+    }
+  }
+  const pace = paceFor(sb.profile);
+  const gapsFinal = sentenceGaps(sb.sentences, pace);
+  const gapsTotal = gapsFinal.reduce((a, g) => a + g, 0);
   metrics.set("counts", { sentences: sb.sentences.length, scaffolds: sb.scaffolds.length, events: (sb.events || []).length });
 
   // ---- voice ----
@@ -229,16 +248,16 @@ async function main() {
     // pace: the reference syllable rate (lib/video/v3/pace.js), wpm clamped to the reference range;
     // an explicit --wpm keeps the old fixed words/min solve
     let solved;
-    if (args.wpm) solved = solveSpeed(plan0, sb.sentences, wpm);
+    if (args.wpm) solved = solveSpeed(plan0, sb.sentences, wpm, gapsTotal);
     else {
       const speech = plan0.segments.reduce((a, s) => a + (s.trimEnd - s.trimStart), 0);
       const nSyllables = sb.sentences.reduce((a, s) => a + countSyllables(s.text), 0);
-      const p = solvePace({ speech, gaps: (sb.sentences.length - 1) * SENTENCE_GAP_FINAL, nWords: plan0.words.length, nSyllables });
+      const p = solvePace({ speech, gaps: gapsTotal, nWords: plan0.words.length, nSyllables, sylPerS: pace.sylPerS, wpmRange: pace.wpmRange });
       solved = { speed: p.speed, speech, nWords: plan0.words.length };
-      log(`pace: ${nSyllables} syllables -> ${p.sylPerS.toFixed(2)} syl/s, ${p.wpm.toFixed(0)} wpm (refs 5.84 syl/s)`);
+      log(`pace: ${nSyllables} syllables -> ${p.sylPerS.toFixed(2)} syl/s, ${p.wpm.toFixed(0)} wpm (target ${pace.sylPerS} syl/s, ${pace.wpmRange.join("-")} wpm)`);
     }
     speed = solved.speed;
-    const plan = planNarration(sb.sentences, clips, { sentenceGap: SENTENCE_GAP_FINAL * speed });
+    const plan = planNarration(sb.sentences, clips, { gaps: gapsFinal.map((g) => g * speed) });
     await assembleNarration({ segments: plan.segments, totalSeconds: plan.totalSeconds, outPath: authoredWav, log });
     await ffmpeg(["-y", "-v", "error", "-i", authoredWav, "-af", `atempo=${speed}`, "-ar", "24000", "-ac", "1", path.join(VIDEO_ENGINE_DIR, narrationRel)]);
     const k = 1 / speed;
@@ -258,7 +277,7 @@ async function main() {
 
   let spec;
   try {
-    spec = compileStoryboard(sb, timeline, { mascot: mascotOn && !landscape, presenter: typeof args.presenter === "string" ? args.presenter : undefined });
+    spec = compileStoryboard(sb, timeline, { mascot: mascotOn && !landscape, presenter: typeof args.presenter === "string" ? args.presenter : undefined, media: mediaManifest });
   } catch (err) {
     return die("compose", `compile failed: ${err.message}`, err);
   }
@@ -281,12 +300,15 @@ async function main() {
   // --music <lofi|ambient|pulse>: optional synthesized bed (tools/music_bed.py), ducked under the voice; default off
   let audioRel = narrationRel;
   const sfxOn = bool(args.sfx, true);
-  const music = args.music === true ? "lofi" : typeof args.music === "string" && !/^(false|off|none|)$/i.test(args.music) ? args.music.toLowerCase() : null;
+  // LF: the soft synthesized bed is ON by default (plan §0), "ambient" unless --music says otherwise
+  const music = args.music === undefined && isLF ? "ambient" : args.music === true ? "lofi" : typeof args.music === "string" && !/^(false|off|none|)$/i.test(args.music) ? args.music.toLowerCase() : null;
+  // LF: the bed swells +3 dB under chapter cards
+  const swell = isLF ? spec.scaffolds.filter((s) => s.template === "lfChapter").map((s) => [s.t0, s.t1]) : [];
   if (sfxOn || music) {
     try {
       const mixRel = narrationRel.replace(/narration\.wav$/, "narration-sfx.wav");
       const musicStemWav = music ? path.join(VIDEO_ENGINE_DIR, narrationRel.replace(/narration\.wav$/, "music-bed.wav")) : undefined;
-      const sfx = mixSfx({ spec, duration: timeline.totalSeconds, narrationWav: path.join(VIDEO_ENGINE_DIR, narrationRel), outWav: path.join(VIDEO_ENGINE_DIR, mixRel), sfx: sfxOn, music, musicStemWav, log });
+      const sfx = mixSfx({ spec, duration: timeline.totalSeconds, narrationWav: path.join(VIDEO_ENGINE_DIR, narrationRel), outWav: path.join(VIDEO_ENGINE_DIR, mixRel), sfx: sfxOn, music, musicStemWav, swell, log });
       metrics.set("sfx", { cues: sfx.cues.length });
       if (music) metrics.set("music", { preset: music, bedDb: sfx.bedDb, duckDb: sfx.duckDb, monoLossDb: sfx.monoLossDb, stem: musicStemWav });
       audioRel = mixRel;

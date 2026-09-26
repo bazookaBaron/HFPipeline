@@ -20,7 +20,24 @@ function loadBrand() {
   return JSON.parse(fs.readFileSync(BRAND_PATH, "utf-8"));
 }
 
+/**
+ * LF (16:9 long-form): no portrait endcard / promo -- the ending is the lfEnd template (endScreen module:
+ * subscribe CTA + two YouTube end-screen slot outlines), text from brand.json "longform".
+ */
+function appendLongformEnd(sb, brand) {
+  const lf = brand.longform || {};
+  if (!lf.enabled || sb.sentences.some((s) => s.id === END_SENTENCE)) return sb;
+  const out = JSON.parse(JSON.stringify(sb));
+  out.sentences.push({ id: END_SENTENCE, text: lf.spoken });
+  out.scaffolds.push({ id: "lfend", template: "lfEnd", from: END_SENTENCE, slots: { end: { id: "lfend", props: { eyebrow: lf.eyebrow, lines: lf.lines, sub: lf.sub, cta: lf.cta, slots: lf.slots } } } });
+  out.events = (out.events || []).concat(
+    (lf.beats || []).map((b) => ({ sentence: END_SENTENCE, anchor: { text: b.word, occurrence: b.occurrence }, op: b.op || "show", target: "lfend", value: b.part ? { part: b.part } : {} }))
+  );
+  return out;
+}
+
 function appendEndcard(sb, brand = loadBrand(), promo = null) {
+  if (sb.profile === "LF") return appendLongformEnd(sb, brand);
   const ec = brand.endcard || {};
   if (!ec.enabled || sb.sentences.some((s) => s.id === END_SENTENCE)) return sb;
   const out = JSON.parse(JSON.stringify(sb));
@@ -41,7 +58,7 @@ function appendEndcard(sb, brand = loadBrand(), promo = null) {
 function stripEndcard(sb) {
   const out = JSON.parse(JSON.stringify(sb));
   out.sentences = out.sentences.filter((s) => s.id !== END_SENTENCE && s.id !== PROMO_SENTENCE);
-  out.scaffolds = out.scaffolds.filter((s) => s.template !== "endcard" && s.template !== "promo");
+  out.scaffolds = out.scaffolds.filter((s) => s.template !== "endcard" && s.template !== "promo" && s.template !== "lfEnd");
   out.events = (out.events || []).filter((e) => e.sentence !== END_SENTENCE && e.sentence !== PROMO_SENTENCE);
   return out;
 }

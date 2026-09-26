@@ -25,6 +25,9 @@ const PROFILES = {
   BR: { example: path.join(FIX, "decisions-br.json"), templates: ["brStack", "brGrid", "brMedia", "brSummary", "brBand"], bpm: [56, 80], maxGap: 3.3, lifeMedian: [2.5, 5.0], nodeX: [0.15, 0.85], forbiddenOps: ["count", "retype"] },
   // BP light blueprint (R6): 52 beats/min (45-65), scene median 3.67 s, longest hold 3.73 s, 196 wpm
   BP: { example: path.join(FIX, "chat-bp.json"), templates: ["bpScene", "bpHost"], bpm: [48, 67], maxGap: 3.5, lifeMedian: [2.5, 5.0], nodeX: [0.15, 0.85], forbiddenOps: ["retype"] },
+  // LF 16:9 long-form chapters (plan §6, provisional): a visual change every <= 5 s, scene life 6-10 s, 18-35 beats/min.
+  // LF storyboards are written per chapter by lib/longform (P6), not by this 9:16 generator.
+  LF: { example: path.join(FIX, "lf-pilot.json"), templates: ["lfCold", "lfSplit", "lfFull", "lfChart", "lfNumber", "lfCompare", "lfTimeline", "lfMap", "lfHeadline", "lfChapter", "lfJoke", "lfRecap", "lfEnd", "free"], bpm: [18, 40], maxGap: 5.0, lifeMedian: [5.0, 10.0], nodeX: [0.1, 0.9], forbiddenOps: ["retype", "slam"], syn: { word: 0.36, gap: 0.35 } },
 };
 
 // synthetic pacing that approximates the delivered pace (215 wpm incl. 0.2 s sentence gaps)
@@ -52,17 +55,17 @@ async function layoutProblems(sb, opts, log) {
   }
 }
 
-function syntheticTimeline(sb) {
+function syntheticTimeline(sb, syn = SYN) {
   let t = 0.12;
   const words = [];
   const sentenceTimes = sb.sentences.map((s) => {
     const start = t;
     tokens(s.text).forEach((w, wi) => {
-      words.push({ i: words.length, sentenceId: s.id, wi, text: w, start: +t.toFixed(3), end: +(t + SYN.word - 0.03).toFixed(3) });
-      t += SYN.word;
+      words.push({ i: words.length, sentenceId: s.id, wi, text: w, start: +t.toFixed(3), end: +(t + syn.word - 0.03).toFixed(3) });
+      t += syn.word;
     });
     const st = { id: s.id, start: +(start - 0.06).toFixed(3), end: +t.toFixed(3) };
-    t += SYN.gap;
+    t += s.pauseAfter !== undefined ? Number(s.pauseAfter) : syn.gap;
     return st;
   });
   return { words, sentenceTimes, totalSeconds: +(t + 0.4).toFixed(3) };
@@ -94,6 +97,7 @@ function validate(sb, opts = {}) {
   if (!sb || typeof sb !== "object") return ["output is not a JSON object"];
   if (sb.version !== "storyboard.v3") P.push('version must be "storyboard.v3"');
   if (!Array.isArray(sb.sentences) || !sb.sentences.length) return P.concat(["sentences[] missing"]);
+  if (sb.profile === "LF") return P.concat(validateLF(sb));
   const ids = new Set();
   let nWords = 0;
   sb.sentences.forEach((s, i) => {
@@ -443,7 +447,55 @@ ${example}
 Return the storyboard.v3 JSON for the TOPIC now.`;
 }
 
+/**
+ * LF (16:9 long-form) storyboards are written per chapter by lib/longform (research -> outline -> chapter
+ * script -> storyboardLF, plan §7 / P6); this generator only knows the 9:16 styles.
+ */
+function buildPromptLF() {
+  throw new Error("LF storyboards are generated per chapter by lib/longform (storyboardLF), not by the 9:16 storyboard generator");
+}
+
+/** LF: structural checks + the real compiler on a relaxed synthetic timeline + LF cadence bands */
+function validateLF(sb) {
+  const PR = PROFILES.LF;
+  const P = [];
+  if (!(sb.frame && Number(sb.frame.w) > Number(sb.frame.h))) P.push('LF storyboards need a landscape frame ({"w": 1920, "h": 1080})');
+  if (!Array.isArray(sb.scaffolds) || !sb.scaffolds.length) return P.concat(["scaffolds[] missing"]);
+  sb.scaffolds.forEach((sc) => {
+    if (PR.templates.indexOf(sc.template) < 0) P.push(`scaffold ${sc.id}: template must be one of ${PR.templates.join("|")} for profile LF`);
+  });
+  sb.sentences.forEach((s) => {
+    if (/\d/.test(s.text)) P.push(`sentence ${s.id} contains digits; spell numbers out (the visuals carry the digits)`);
+  });
+  if (P.length) return P;
+  const tl = syntheticTimeline(sb, PR.syn);
+  let spec;
+  try {
+    spec = compileStoryboard(sb, tl, { mascot: false });
+  } catch (err) {
+    return [err.message];
+  }
+  const typeOf = {};
+  spec.scaffolds.forEach((s) => s.modules.forEach((m) => (typeOf[m.id] = m.type)));
+  (sb.events || []).forEach((e, i) => {
+    const mod = String(e.target || "").split(".")[0];
+    const ops = knownOps(typeOf[mod]);
+    if (!ops[e.op]) P.push(`event[${i}] op "${e.op}" is not available on ${mod} (${typeOf[mod]}); allowed: ${Object.keys(ops).join(", ")}`);
+    if (PR.forbiddenOps.indexOf(e.op) >= 0) P.push(`event[${i}] op "${e.op}" is not part of the LF style`);
+  });
+  const b = beats(spec);
+  const T = tl.totalSeconds;
+  const bpm = (b.length / T) * 60;
+  const pts = [0].concat(b, [T]);
+  let worst = 0;
+  for (let i = 1; i < pts.length; i++) worst = Math.max(worst, pts[i] - pts[i - 1]);
+  if (bpm < PR.bpm[0] || bpm > PR.bpm[1]) P.push(`${bpm.toFixed(0)} visual beats/min on the synthetic LF timeline (target ${PR.bpm.join("-")})`);
+  if (worst > PR.maxGap) P.push(`a hold of ${worst.toFixed(1)} s without a visual change (max ${PR.maxGap} s)`);
+  return P;
+}
+
 function buildPrompt(topic, opts = {}) {
+  if (opts.profile === "LF") return buildPromptLF(topic, opts);
   if (opts.profile === "BP") return buildPromptBP(topic, opts, fs.readFileSync(PROFILES.BP.example, "utf-8"));
   if (opts.profile === "BR") return buildPromptBR(topic, opts, fs.readFileSync(PROFILES.BR.example, "utf-8"));
   const profile = opts.profile === "LC" ? "LC" : opts.profile === "DC" ? "DC" : "DH";
@@ -478,7 +530,7 @@ VISUAL GRAMMAR (measured)
 - A module persists across consecutive scaffolds only if it has the same id; otherwise ids are unique.
 
 TEMPLATES
-${Object.entries(TEMPLATE_DOCS).map(([k, v]) => `- ${k}: ${v}`).join("\n")}
+${Object.entries(TEMPLATE_DOCS).filter(([k]) => !/^lf[A-Z]/.test(k)).map(([k, v]) => `- ${k}: ${v}`).join("\n")}
 (the section label goes in slots.label {props:{text, tone?}}, 1-3 caps words like "THE PROBLEM", "CACHE MISS")
 
 MODULES (type -> use, props, ops)
@@ -663,4 +715,4 @@ async function generateStoryboard(topic, opts = {}) {
   throw err;
 }
 
-module.exports = { generateStoryboard, validate, buildPrompt, syntheticTimeline, BANDS, wordBand, autoFillGaps, chooseProfile, loadGemini, catalogText };
+module.exports = { PROFILES, validateLF, generateStoryboard, validate, buildPrompt, syntheticTimeline, BANDS, wordBand, autoFillGaps, chooseProfile, loadGemini, catalogText };

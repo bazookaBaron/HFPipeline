@@ -58,3 +58,33 @@ test("caption chunks: <=4 words, break on sentence end, no orphan singles", () =
   ch.forEach((c) => assert.ok(c.length <= 5));
   assert.ok(ch.some((c) => /idle\.$/.test(c[c.length - 1].text)));
 });
+
+test("LF: media slots resolve from the manifest, credits planned, no presenter, fallback on missing slots", () => {
+  const FX = path.join(__dirname, "..", "..", "..", "fixtures", "v3");
+  const sb = JSON.parse(fs.readFileSync(path.join(FX, "lf-pilot.json"), "utf-8"));
+  const media = JSON.parse(fs.readFileSync(path.join(FX, "lf-pilot.media.json"), "utf-8"));
+  const { syntheticTimeline } = require("./storyboardGen");
+  const tl = syntheticTimeline(sb, { word: 0.36, gap: 0.35 }); // LF pace incl. pauseAfter
+  const spec = compileStoryboard(sb, tl, { media });
+  assert.strictEqual(spec.mascot, null);
+  const mods = spec.scaffolds.flatMap((s) => s.modules);
+  const plane = mods.find((m) => m.id === "kfplane");
+  assert.match(plane.props.src, /^assets\/media\/cache\/3f\//);
+  assert.match(plane.props.credit, /CC BY-SA 4\.0/);
+  assert.ok(mods.find((m) => m.id === "jokeart").props.missing, "fallback slot -> missing");
+  assert.ok(spec.credits.some((c) => c.module === "kfplane" && c.where === "inside"));
+  assert.ok(spec.credits.some((c) => c.where === "frame"), "backdrop / thumbnails credit the frame line");
+  assert.ok(mods.some((m) => m.id === "lfhead") && mods.some((m) => m.id === "lfprog"));
+  // without a manifest every media fill falls back (no src, no credit)
+  const bare = compileStoryboard(sb, tl, {});
+  assert.ok(bare.scaffolds.flatMap((s) => s.modules).find((m) => m.id === "kfplane").props.missing);
+});
+
+test("LF: a chart without a source line and fetched media without a credit are compile errors", () => {
+  const base = { version: "storyboard.v3", profile: "LF", frame: { w: 1920, h: 1080 }, sentences: [{ id: "s1", text: "A chart appears here." }] };
+  const chart = { ...base, scaffolds: [{ id: "c", template: "lfChart", from: "s1", slots: { chart: { id: "ch", type: "barChart", props: { unit: "x", bars: [{ label: "a", value: 1 }] } } } }] };
+  assert.throws(() => compileStoryboard(chart, synthTimeline(chart), {}), /source/);
+  const media = { slots: { p: { status: "ok", kind: "image", file: "assets/media/cache/ab/abc.jpg", credit: "" } } };
+  const photo = { ...base, scaffolds: [{ id: "p", template: "lfSplit", from: "s1", slots: { photo: { props: { slot: "p" } }, stack: [{ type: "lfText", props: { title: "Hi" } }] } }] };
+  assert.throws(() => compileStoryboard(photo, synthTimeline(photo), { media }), /without a credit/);
+});

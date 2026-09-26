@@ -1,0 +1,872 @@
+{
+ "version": "storyboard.v3",
+ "profile": "LF",
+ "frame": {
+  "w": 1920,
+  "h": 1080
+ },
+ "topic": "Why Kingfisher went bankrupt",
+ "chapter": {
+  "index": 2,
+  "count": 7,
+  "title": "The Air Deccan deal"
+ },
+ "mediaManifest": "lf-pilot.media.json",
+ "entities": {},
+ "sentences": [
+  {
+   "id": "s1",
+   "text": "Chapter two. The Air Deccan deal, or how to buy an airline just to skip a queue.",
+   "pauseAfter": 0.6
+  },
+  {
+   "id": "s2",
+   "text": "By two thousand seven, Kingfisher Airlines was the shiny new toy of India's skies."
+  },
+  {
+   "id": "s3",
+   "text": "Red planes, leather seats, free headphones, and a boss who loved a good party."
+  },
+  {
+   "id": "s4",
+   "text": "Air Deccan was the opposite: India's first low cost airline, famous for tickets that cost one rupee."
+  },
+  {
+   "id": "s5",
+   "text": "So Vijay Mallya wrote a cheque for about five hundred and fifty crore rupees, for roughly a quarter of the company."
+  },
+  {
+   "id": "s6",
+   "text": "The papers loved it. The king of good times had just bought the people's airline."
+  },
+  {
+   "id": "s7",
+   "text": "But the real prize was hiding inside a very boring rule."
+  },
+  {
+   "id": "s8",
+   "text": "In India, an airline had to fly at home for five years before it could fly abroad."
+  },
+  {
+   "id": "s9",
+   "text": "Kingfisher had flown for two years. Air Deccan had flown for four.",
+   "pauseAfter": 0.6
+  },
+  {
+   "id": "s10",
+   "text": "So the plan was simple: merge, borrow Deccan's age, and reach London faster."
+  },
+  {
+   "id": "s11",
+   "text": "Imagine marrying someone just because they already have a gym membership."
+  },
+  {
+   "id": "s12",
+   "text": "On paper, one airline sold luxury and the other sold bargains."
+  },
+  {
+   "id": "s13",
+   "text": "Under one roof, Deccan became Kingfisher Red, and the costs quietly began to pile up."
+  },
+  {
+   "id": "s14",
+   "text": "That deal would come back to haunt everyone involved."
+  }
+ ],
+ "scaffolds": [
+  {
+   "id": "ch",
+   "template": "lfChapter",
+   "from": "s1",
+   "slots": {
+    "card": {
+     "id": "chapter",
+     "props": {
+      "promise": "How to buy an airline just to skip a queue."
+     }
+    },
+    "photo": {
+     "id": "chlogo",
+     "props": {
+      "slot": "kfLogo",
+      "fit": "contain",
+      "bg": "#0b0b0c",
+      "pushIn": false
+     }
+    },
+    "overlays": [
+     {
+      "type": "callout",
+      "at": [
+       8,
+       70
+      ],
+      "w": 330,
+      "anchor": {
+       "text": "airline"
+      },
+      "props": {
+       "value": "2007",
+       "text": "Kingfisher meets Air Deccan",
+       "tone": "red"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "toy",
+   "template": "lfSplit",
+   "from": "s2",
+   "slots": {
+    "photo": {
+     "id": "kfplane",
+     "props": {
+      "slot": "kfA320",
+      "tag": "Kingfisher Airbus A320"
+     }
+    },
+    "stack": [
+     {
+      "id": "toytxt",
+      "type": "lfText",
+      "props": {
+       "eyebrow": "Kingfisher Airlines · 2005",
+       "title": "The shiny new toy of India's skies",
+       "highlight": "shiny new toy",
+       "size": 62,
+       "sub": "Red planes, leather seats, free headphones and a party-loving boss."
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "id": "toyred",
+      "type": "callout",
+      "at": [
+       60,
+       5
+      ],
+      "w": 300,
+      "point": [
+       92,
+       22
+      ],
+      "anchor": {
+       "text": "Red",
+       "sentence": "s3"
+      },
+      "props": {
+       "text": "Red, everywhere",
+       "tone": "red"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "deccan",
+   "template": "lfSplit",
+   "from": "s4",
+   "mirror": true,
+   "slots": {
+    "photo": {
+     "id": "atr",
+     "props": {
+      "slot": "deccanATR",
+      "tag": "Air Deccan ATR 42"
+     }
+    },
+    "stack": [
+     {
+      "id": "rupee",
+      "type": "bigNumber",
+      "props": {
+       "eyebrow": "Air Deccan · since 2003",
+       "prefix": "₹",
+       "value": 1,
+       "unit": "tickets",
+       "context": "India's first low-cost airline sold its cheapest seats for one rupee.",
+       "size": 190
+      }
+     }
+    ],
+    "overlays": [
+     {
+      "id": "lowcost",
+      "type": "callout",
+      "at": [
+       4,
+       76
+      ],
+      "w": 330,
+      "anchor": {
+       "text": "low"
+      },
+      "props": {
+       "value": "No frills",
+       "text": "India's first low-cost airline",
+       "tone": "blue"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "deal",
+   "template": "lfNumber",
+   "from": "s5",
+   "slots": {
+    "number": {
+     "id": "cheque",
+     "props": {
+      "eyebrow": "The deal · 2007",
+      "prefix": "₹",
+      "value": 550,
+      "unit": "crore",
+      "context": "for about a quarter of Deccan Aviation",
+      "bars": [
+       {
+        "label": "Stake bought",
+        "value": 26,
+        "display": "26%",
+        "tone": "blue"
+       }
+      ]
+     }
+    },
+    "backdrop": {
+     "id": "mallyabg",
+     "props": {
+      "slot": "mallya"
+     }
+    },
+    "overlays": [
+     {
+      "id": "mallyalt",
+      "type": "lowerThird",
+      "at": [
+       44,
+       74
+      ],
+      "w": 480,
+      "anchor": {
+       "text": "Mallya"
+      },
+      "props": {
+       "tag": "The buyer",
+       "title": "Vijay Mallya",
+       "sub": "Chairman, UB Group and Kingfisher"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "papers",
+   "template": "lfHeadline",
+   "from": "s6",
+   "slots": {
+    "photo": {
+     "id": "logo",
+     "props": {
+      "slot": "kfLogo",
+      "fit": "contain",
+      "bg": "#0b0b0c",
+      "pushIn": false
+     }
+    },
+    "headline": {
+     "id": "news",
+     "props": {
+      "publisher": "Business press",
+      "date": "2007",
+      "headline": "The king of good times buys into the people's airline",
+      "highlight": "king of good times",
+      "deck": "Kingfisher's owner takes a stake in Air Deccan, India's budget pioneer.",
+      "note": "Paraphrased from 2007 coverage · retypeset"
+     }
+    },
+    "overlays": [
+     {
+      "id": "stake",
+      "type": "callout",
+      "at": [
+       58,
+       70
+      ],
+      "w": 330,
+      "anchor": {
+       "text": "bought"
+      },
+      "props": {
+       "value": "26%",
+       "text": "a stake, not the whole airline",
+       "tone": "red"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "rule",
+   "template": "lfChart",
+   "from": "s7",
+   "slots": {
+    "title": {
+     "id": "ruletitle",
+     "props": {
+      "eyebrow": "The boring rule",
+      "title": "Five years at home before flying abroad",
+      "highlight": "Five years"
+     }
+    },
+    "chart": {
+     "id": "years",
+     "type": "barChart",
+     "props": {
+      "unit": "Years of domestic flying by 2007",
+      "source": "Indian aviation rules for international routes (2007); airline launch years",
+      "hidden": true,
+      "bars": [
+       {
+        "label": "Kingfisher",
+        "value": 2,
+        "display": "2 yrs"
+       },
+       {
+        "label": "Air Deccan",
+        "value": 4,
+        "display": "4 yrs"
+       },
+       {
+        "label": "Needed to fly abroad",
+        "value": 5,
+        "display": "5 yrs",
+        "tone": "red"
+       }
+      ]
+     }
+    },
+    "side": [
+     {
+      "id": "rulenum",
+      "type": "bigNumber",
+      "props": {
+       "eyebrow": "The rule",
+       "value": 5,
+       "unit": "years",
+       "context": "at home before a single international route",
+       "size": 170,
+       "count": "enter",
+       "from": 0,
+       "dur": 0.8
+      },
+      "anchor": {
+       "text": "home",
+       "sentence": "s8"
+      }
+     }
+    ]
+   }
+  },
+  {
+   "id": "plan",
+   "template": "lfTimeline",
+   "from": "s10",
+   "slots": {
+    "title": {
+     "id": "plantitle",
+     "props": {
+      "eyebrow": "The plan",
+      "title": "Merge, borrow Deccan's age, reach London faster",
+      "highlight": "reach London faster",
+      "size": 52
+     }
+    },
+    "timeline": {
+     "id": "era",
+     "props": {
+      "ticks": [
+       {
+        "year": "2003",
+        "label": "Air Deccan takes off",
+        "sub": "Low cost, one-rupee seats",
+        "photo": {
+         "slot": "deccanATR"
+        }
+       },
+       {
+        "year": "2005",
+        "label": "Kingfisher launches",
+        "sub": "Full service, all red",
+        "photo": {
+         "slot": "kfA320"
+        }
+       },
+       {
+        "year": "2007",
+        "label": "Mallya buys in",
+        "sub": "About ₹550 crore",
+        "photo": {
+         "slot": "mallya"
+        }
+       },
+       {
+        "year": "2008",
+        "label": "One airline",
+        "sub": "Deccan becomes Kingfisher Red",
+        "photo": {
+         "slot": "kfHyd"
+        }
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "joke",
+   "template": "lfJoke",
+   "from": "s11",
+   "slots": {
+    "art": {
+     "id": "jokeart",
+     "props": {
+      "slot": "jokeArt",
+      "fallbackLabel": "Marrying for the gym membership"
+     }
+    },
+    "punchline": {
+     "id": "punch",
+     "props": {
+      "title": "Imagine marrying someone for their gym membership.",
+      "highlight": "gym membership.",
+      "sub": "Kingfisher wanted Deccan's five-year pass, not its one-rupee seats."
+     }
+    },
+    "tag": {
+     "id": "sticker",
+     "anchor": {
+      "text": "gym"
+     },
+     "props": {
+      "text": "True story, sort of"
+     }
+    }
+   }
+  },
+  {
+   "id": "cmp",
+   "template": "lfCompare",
+   "from": "s12",
+   "slots": {
+    "title": {
+     "id": "cmptitle",
+     "props": {
+      "eyebrow": "One company, two promises",
+      "title": "Luxury and bargains under one roof"
+     }
+    },
+    "compare": {
+     "id": "cols",
+     "props": {
+      "vs": true,
+      "statsHidden": true,
+      "cols": [
+       {
+        "title": "Kingfisher",
+        "sub": "Full-service, premium",
+        "photo": {
+         "slot": "kfA320"
+        },
+        "tone": "red",
+        "stats": [
+         {
+          "label": "Sold",
+          "value": "Luxury"
+         },
+         {
+          "label": "Cost per seat",
+          "value": "High",
+          "bar": 86,
+          "tone": "red"
+         }
+        ]
+       },
+       {
+        "title": "Air Deccan",
+        "sub": "No frills, budget",
+        "photo": {
+         "slot": "deccanATR"
+        },
+        "tone": "blue",
+        "stats": [
+         {
+          "label": "Sold",
+          "value": "Bargains"
+         },
+         {
+          "label": "Cost per seat",
+          "value": "Low",
+          "bar": 34,
+          "tone": "blue"
+         }
+        ]
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "id": "haunt",
+   "template": "lfFull",
+   "from": "s14",
+   "slots": {
+    "photo": {
+     "id": "hyd",
+     "props": {
+      "slot": "kfHyd"
+     }
+    },
+    "lowerThird": {
+     "id": "hydlt",
+     "props": {
+      "tag": "Hyderabad · 2008",
+      "title": "Kingfisher Red takes over Deccan",
+      "sub": "The merger that set up the fall"
+     }
+    },
+    "overlays": [
+     {
+      "id": "hydco",
+      "type": "callout",
+      "at": [
+       58,
+       14
+      ],
+      "w": 330,
+      "point": [
+       45,
+       55
+      ],
+      "delay": 1,
+      "props": {
+       "value": "2008",
+       "text": "One brand, two cost bases",
+       "tone": "red"
+      }
+     }
+    ]
+   }
+  }
+ ],
+ "events": [
+  {
+   "sentence": "s2",
+   "anchor": {
+    "text": "shiny"
+   },
+   "op": "highlight",
+   "target": "toytxt"
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "seats,"
+   },
+   "op": "highlight",
+   "target": "kfplane",
+   "value": {
+    "box": [
+     44,
+     50,
+     16,
+     46
+    ],
+    "label": "Full service"
+   }
+  },
+  {
+   "sentence": "s3",
+   "anchor": {
+    "text": "party."
+   },
+   "op": "zoomTo",
+   "target": "kfplane",
+   "value": {
+    "box": [
+     30,
+     30,
+     50,
+     60
+    ]
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "opposite:"
+   },
+   "op": "highlight",
+   "target": "atr",
+   "value": {
+    "box": [
+     76,
+     27,
+     18,
+     30
+    ],
+    "label": "Deccan"
+   }
+  },
+  {
+   "sentence": "s4",
+   "anchor": {
+    "text": "rupee."
+   },
+   "op": "arrow",
+   "target": "atr",
+   "value": {
+    "from": [
+     30,
+     20
+    ],
+    "to": [
+     40,
+     52
+    ],
+    "label": "₹1 seats"
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "quarter"
+   },
+   "op": "fill",
+   "target": "cheque"
+  },
+  {
+   "sentence": "s6",
+   "anchor": {
+    "text": "loved"
+   },
+   "op": "highlight",
+   "target": "news"
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "boring"
+   },
+   "op": "highlight",
+   "target": "ruletitle"
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "plan"
+   },
+   "op": "tick",
+   "target": "era",
+   "value": {
+    "i": 1
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "simple:"
+   },
+   "op": "tick",
+   "target": "era",
+   "value": {
+    "i": 2
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "merge,"
+   },
+   "op": "tick",
+   "target": "era",
+   "value": {
+    "i": 3
+   }
+  },
+  {
+   "sentence": "s10",
+   "anchor": {
+    "text": "borrow"
+   },
+   "op": "tick",
+   "target": "era",
+   "value": {
+    "i": 4
+   }
+  },
+  {
+   "sentence": "s11",
+   "anchor": {
+    "text": "membership."
+   },
+   "op": "highlight",
+   "target": "punch"
+  },
+  {
+   "sentence": "s12",
+   "anchor": {
+    "text": "luxury"
+   },
+   "op": "stat",
+   "target": "cols",
+   "value": {
+    "col": 1,
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s12",
+   "anchor": {
+    "text": "bargains."
+   },
+   "op": "stat",
+   "target": "cols",
+   "value": {
+    "col": 2,
+    "row": 1
+   }
+  },
+  {
+   "sentence": "s13",
+   "anchor": {
+    "text": "Red,"
+   },
+   "op": "stat",
+   "target": "cols",
+   "value": {
+    "col": 2,
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s13",
+   "anchor": {
+    "text": "costs"
+   },
+   "op": "stat",
+   "target": "cols",
+   "value": {
+    "col": 1,
+    "row": 2
+   }
+  },
+  {
+   "sentence": "s13",
+   "anchor": {
+    "text": "pile"
+   },
+   "op": "win",
+   "target": "cols",
+   "value": {
+    "col": 1,
+    "text": "COSTS PILE UP"
+   }
+  },
+  {
+   "sentence": "s14",
+   "anchor": {
+    "text": "deal"
+   },
+   "op": "highlight",
+   "target": "hyd",
+   "value": {
+    "box": [
+     22,
+     45,
+     57,
+     19
+    ],
+    "label": "Kingfisher Red"
+   }
+  },
+  {
+   "sentence": "s14",
+   "anchor": {
+    "text": "haunt"
+   },
+   "op": "zoomTo",
+   "target": "hyd",
+   "value": {
+    "box": [
+     18,
+     32,
+     64,
+     36
+    ],
+    "dur": 1.2
+   }
+  },
+  {
+   "sentence": "s5",
+   "anchor": {
+    "text": "crore"
+   },
+   "op": "dim",
+   "target": "mallyabg",
+   "value": {
+    "level": 0.35
+   }
+  },
+  {
+   "sentence": "s7",
+   "anchor": {
+    "text": "rule."
+   },
+   "op": "draw",
+   "target": "years",
+   "value": {
+    "bar": 3
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "two"
+   },
+   "op": "draw",
+   "target": "years",
+   "value": {
+    "bar": 1
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "flown",
+    "occurrence": 2
+   },
+   "op": "draw",
+   "target": "years",
+   "value": {
+    "bar": 2
+   }
+  },
+  {
+   "sentence": "s9",
+   "anchor": {
+    "text": "four."
+   },
+   "op": "annotate",
+   "target": "years",
+   "value": {
+    "bar": 2,
+    "text": "One year short",
+    "tone": "blue"
+   }
+  }
+ ]
+}

@@ -42,4 +42,22 @@ function solvePace({ speech, gaps, nWords, nSyllables, sylPerS = SYL_PER_S, wpmR
   return { speed, sylPerS: nSyllables / delivered, wpm: wpmAt(delivered) };
 }
 
-module.exports = { SYL_PER_S, WPM_RANGE, syllables, countSyllables, solvePace };
+/**
+ * Per-profile pace (final-video seconds). The 9:16 shorts follow the reference reels; LF (16:9
+ * long-form, plan §6) is a relaxed documentary delivery: 4.9 syl/s (~150-165 wpm), 0.35 s between
+ * sentences. A sentence may carry `pauseAfter` (seconds, final time) for a paragraph (~0.6 s) or
+ * chapter (~0.9 s) pause; it replaces the default gap after that sentence.
+ */
+const PACE = {
+  default: { sylPerS: SYL_PER_S, wpmRange: WPM_RANGE, sentenceGap: 0.2 },
+  LF: { sylPerS: 4.9, wpmRange: [140, 175], sentenceGap: 0.35, paragraphGap: 0.6, chapterGap: 0.9 },
+};
+function paceFor(profile) {
+  return PACE[profile] || PACE.default;
+}
+/** final-time gap after each sentence (the last one gets 0) */
+function sentenceGaps(sentences, pace = PACE.default) {
+  return sentences.map((s, i) => (i === sentences.length - 1 ? 0 : s.pauseAfter !== undefined && Number.isFinite(Number(s.pauseAfter)) ? Math.max(0, Number(s.pauseAfter)) : pace.sentenceGap));
+}
+
+module.exports = { SYL_PER_S, WPM_RANGE, PACE, paceFor, sentenceGaps, syllables, countSyllables, solvePace };

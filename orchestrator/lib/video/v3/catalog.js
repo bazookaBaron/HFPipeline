@@ -218,6 +218,28 @@ const MODULES = {
   bpHeader: { only: "BP", chrome: true, use: "segmented header: brand, chapter, live users counter", props: "(compiler)", ops: { users: "{to, dur?} users counter counts up (compact 1K / 250K / 50M)", chapter: "{n, title} (the compiler does this from `chapter`)" } },
   tracker: { only: "BP", chrome: true, use: "component tracker chips", props: "(compiler, from entities.tracker)", ops: { light: "{chip: name} chip lights on the component noun" } },
   noteCard: { only: "BP", chrome: true, use: "left thesis note card", props: "(compiler, from scaffold.note)", ops: { note: "{kind: rule|problem|fix|goal|cost, text (<= 34 chars)}" } },
+  // ---- LF only (16:9 long-form editorial; lib/stage/profile-lf.js + modules-lf.js + modules-chart.js).
+  // Media is referenced by slot ({slot: "<id>"}, resolved from media-manifest.json at compile time), never by URL/path.
+  photo: { only: "LF", use: "a real photo (or AI illustration) from the media manifest: cover fit on its focal box, slow push-in over its run, card or full-bleed; ALWAYS annotate it on the words", props: "{slot, card?: true, scrim?: left|right|bottom, veil?: 0-1, tag? (mono caps label), pushIn?: true, fallbackLabel?}", ops: { highlight: "{box:[x,y,w,h] % of the photo, label?, tone?, hold?} yellow box drawn on the picture", unhighlight: "{}", arrow: "{from:[x,y] %, to:[x,y] %, label?, tone?} curved arrow draws", zoomTo: "{box} push into a region (600 ms)", zoomOut: "{}", dim: "{level?} paper veil over the photo", undim: "{}" } },
+  photoGrid: { only: "LF", use: "2-4 photos side by side (people, places, products)", props: "{items: [{slot, label?}] (2-4), cols?, hidden?}", ops: { show: "{item}", focus: "{item} others veil", unfocus: "{}" }, entities: "i<N>" },
+  portraitCard: { only: "LF", use: "a person: photo + name + role + years", props: "{slot, name, role?, years?}", ops: {} },
+  headlineCard: { only: "LF", use: "a news headline REBUILT as typeset text (publisher, date, headline) -- never a screenshot; the key phrase gets a marker sweep", props: "{publisher, date, headline (<= 90 chars), deck?, highlight? (phrase from the headline)}", ops: { highlight: "{phrase?} yellow marker sweeps the phrase" } },
+  bigNumber: { only: "LF", use: "one big figure that counts up (money, %, counts) + unit + a context line; optional 2-3 mini bars", props: "{value (number), prefix? ('₹'), suffix?, unit? ('crore'), decimals?, grouping?: intl|in, eyebrow?, context, count?: enter|op, bars?: [{label, value 0-100, display, tone?}]}", ops: { count: "{to?, from?, dur?}", fill: "{bar?}" } },
+  compareCols: { only: "LF", use: "2-3 columns compared (then vs now, company vs company), each with an optional photo, stats and bars", props: "{cols: [{title, sub?, photo?: {slot}, tone?, stats: [{label, value, bar? 0-100, tone?}]}] (2-3), vs?: true, hidden?, statsHidden?}", ops: { show: "{col}", stat: "{col, row} row reveals + bar fills", win: "{col, text?} winner ring + badge", lose: "{col} dims" }, entities: "c<N>, c<N>r<M>" },
+  eraTimeline: { only: "LF", use: "horizontal era timeline, 3-6 ticks with years, labels and optional thumbnails, ticked on the words", props: "{ticks: [{year, label (<= 34 chars), sub?, photo?: {slot}}] (3-6), hidden?: true}", ops: { tick: "{i} tick i appears, the line runs to it", focus: "{i}" }, entities: "t<N>" },
+  barChart: { only: "LF", use: "bar chart in plain units; draws on its word; source line mandatory", props: "{title?, unit ('₹ crore'), source (mandatory), bars: [{label, value, display?, tone?}] (2-8), accent? (1-based), hidden?}", ops: { draw: "{bar?}", annotate: "{bar, text, tone?}", tone: "{bar, tone}" }, entities: "b<N>" },
+  lineChart: { only: "LF", use: "line chart over time in plain units; draws left to right; source line mandatory", props: "{title?, unit, source (mandatory), points: [{x, y, display?}] | series: [{name, tone?, points}], area?: true, hidden?}", ops: { draw: "{}", annotate: "{i (1-based point), text, tone?, series?}" } },
+  chapterCard: { only: "LF", use: "chapter card (the compiler fills index/count/title from sb.chapter)", props: "{promise (one line), eyebrow?}", ops: {} },
+  recapList: { only: "LF", use: "3-5 takeaways checked off one by one", props: "{items: [string] (3-5), hidden?}", ops: { check: "{i}" }, entities: "r<N>" },
+  endScreen: { only: "LF", use: "the long-form ending (added by the compiler, never authored)", props: "(brand.json longform)", ops: { show: "{part: line2|sub|subscribe|slots}", press: "{}" } },
+  lfText: { only: "LF", use: "eyebrow + headline (+ sub); kinetic words on the cold open; marker highlight on a phrase", props: "{eyebrow?, title, sub?, size?: 72, maxLines?, highlight? (phrase), kinetic?, tone?}", ops: { highlight: "{} marker sweeps the phrase" } },
+  lowerThird: { only: "LF", use: "lower third over a full-bleed photo (who / where / when)", props: "{title, sub?, tag?, tone?}", ops: {} },
+  callout: { only: "LF", use: "stat / label chip placed over a photo, with a leader line to the thing it names", props: "{value?, text, tone?} (+ overlay `point` [x,y] % in the template)", ops: {} },
+  mapCard: { only: "LF", use: "a locator map image (media manifest) with pins and money/goods flow arrows", props: "{slot, title?, pins: [{at:[x,y] %, label?, tone?}], arrows: [{from, to, label?, tone?}]}", ops: { pin: "{i}", arrow: "{i}", highlight: "{box}" } },
+  // LF chrome, injected by the compiler: "lfhead" (kicker), "lfprog" (chapter progress), "lfcredit" (media credit line)
+  lfHeader: { only: "LF", chrome: true, use: "chapter kicker", props: "(compiler, from sb.chapter)", ops: { chapter: "{index?, title?}" } },
+  lfProgress: { only: "LF", chrome: true, use: "chapter progress segments", props: "(compiler)", ops: {} },
+  lfCredit: { only: "LF", chrome: true, use: "media credit line", props: "(compiler, from the media manifest)", ops: { credit: "{text}" } },
 };
 
 // HUD fields (optional persistent status bar, set once in entities.hud)
@@ -237,6 +259,20 @@ const TEMPLATES = {
   brBand: "BR only (T5, proof moment). slots: lockup {props:{lines, keyword?}} (big line above), top: [ONE card shown on a full-bleed pink band, <= 660 px].",
   // ---- BP only (templates-bp.js, R6). Every BP scaffold carries `note` {kind, text} and may carry `chapter` and `transition` {out, in} ----
   bpScene: "BP only (explainer). slots.top: [1-3 modules, total 640-928 px, column 717 px wide from y 402]; two consecutive fills with \"half\": true share a row (348 px each, e.g. phone + reqList).",
+  // ---- LF only (templates-lf.js, 16:9 long-form). Media fills take props.slot; `overlays` [{type: callout|lowerThird, at: [x,y] %, point?: [x,y] %, props, anchor}] sit on the photo ----
+  lfCold: "LF only (cold open). slots: photo {props:{slot}}, headline {props:{eyebrow?, title, sub?}} (kinetic), stack? [modules], overlays?.",
+  lfSplit: "LF only. slots: photo (7 cols card), stack [1-3 modules in 5 cols: lfText / bigNumber / callout / barChart], overlays?; mirror: true swaps sides.",
+  lfFull: "LF only. slots: photo (full bleed), lowerThird {props:{title, sub?, tag?}} (lands <= 1.5 s), overlays? (callouts).",
+  lfChart: "LF only. slots: title? {props:{eyebrow?, title}}, chart {type: barChart|lineChart, props}, side? [modules, 4 cols].",
+  lfNumber: "LF only. slots: number {props bigNumber}, backdrop? {props:{slot}} (photo right, scrimmed), stack? [modules], overlays?.",
+  lfCompare: "LF only. slots: title?, compare {props compareCols}.",
+  lfTimeline: "LF only. slots: title?, timeline {props eraTimeline}.",
+  lfMap: "LF only. slots: map {props mapCard}, side [modules, 4 cols], overlays?.",
+  lfHeadline: "LF only. slots: headline {props headlineCard}, photo? (collage behind the card), overlays?.",
+  lfChapter: "LF only. First scaffold of a chapter. slots: card {props:{promise}}, photo?.",
+  lfJoke: "LF only (comedic beat). slots: art {props:{slot}} (AI illustration / photo), punchline {props:{title, sub?}}, tag? {props:{text}} (sticker).",
+  lfRecap: "LF only. slots: title?, list {props recapList}, photo?.",
+  lfEnd: "LF only; added by the compiler from brand.json longform (never authored).",
   bpHost: "BP only. The persistent blueprint (slots.blueprint {id: 'bp'}), graph from entities.blueprint; every later bpHost with the same id recalls it with its accumulated state (add / alert / annotate / version ops mutate it).",
 };
 

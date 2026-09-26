@@ -56,6 +56,46 @@ BP = {
     "tp_max": -0.9,
 }
 
+LF = {
+    # 16:9 long-form chapters (plan §6/§8, provisional until a long-form reference is measured)
+    "beats_per_min": (18, 40),
+    "max_visual_gap_s": 5.0,
+    "scaffold_life_median_s": (5.0, 10.0),
+    "wpm": (140, 175),
+    "syl": (4.4, 5.4),               # relaxed documentary delivery, target 4.9 syl/s
+    "lufs": (-14.4, -13.8),
+    "lra_max": 1.6,
+    "tp_max": -0.9,
+}
+LF_MEDIA = {"photo", "photoGrid", "portraitCard", "mapCard", "media"}
+LF_CHROME = {"lfHeader", "lfProgress", "lfCredit"}
+
+
+def lf_visible(spec, t):
+    """(scaffold, [modules visible at t]) from the compiled spec"""
+    for s in spec["scaffolds"]:
+        if s["t0"] - 1e-6 <= t < s["t1"]:
+            return s, [m for m in s["modules"] if s["t0"] + (m.get("at") or 0) <= t + 1e-6]
+    return None, []
+
+
+def media_ok(m):
+    p = m.get("props") or {}
+    return m["type"] in LF_MEDIA and (bool(p.get("src")) or any(isinstance(v, dict) and v.get("src") for v in (p.get("items") or [])))
+
+
+def cached_without_credit(v, where, out):
+    if isinstance(v, list):
+        for x in v:
+            cached_without_credit(x, where, out)
+    elif isinstance(v, dict):
+        src = v.get("src")
+        if isinstance(src, str) and "assets/media/cache/" in src.replace("\\", "/") and not v.get("missing") and not str(v.get("credit") or "").strip():
+            out.append(f"{where}: {src}")
+        for k, x in v.items():
+            if k != "src":
+                cached_without_credit(x, where, out)
+
 
 def beats_from_spec(spec):
     t = []
@@ -169,7 +209,7 @@ def main():
     # the geometry bands below (HUD, caption chips, BP header) are measured on 9:16 refs:
     # a landscape frame keeps only the background check until its own profile bands exist
     portrait = H > W
-    B = LC if profile == "LC" else DC if profile == "DC" else BR if profile == "BR" else BP if profile == "BP" else DH
+    B = LC if profile == "LC" else DC if profile == "DC" else BR if profile == "BR" else BP if profile == "BP" else LF if profile == "LF" else DH
     total = timeline["totalSeconds"]
     gates = []
 
@@ -207,7 +247,8 @@ def main():
     speech_t = sum(w["end"] - w["start"] for w in ws) + sum(max(0.0, b["start"] - a["end"]) for a, b in zip(ws, ws[1:]) if b["start"] - a["end"] <= 0.25)
     syl = sum(syllables(w.get("text", "")) for w in ws)
     rate = syl / speech_t if speech_t else 0
-    gate("syllables_per_s", 5.3 <= rate <= 6.4, round(rate, 2), [5.3, 6.4], repair="audio")
+    syl_band = B.get("syl", (5.3, 6.4))
+    gate("syllables_per_s", syl_band[0] <= rate <= syl_band[1], round(rate, 2), list(syl_band), repair="audio")
 
     # ---- loudness (from the master stats recorded in metrics, else measure) ----
     stats = None
@@ -237,9 +278,14 @@ def main():
         if len(raw) < W * H * 3:
             geo_fail.append(f"{s['id']}: no frame at {t:.2f}")
             continue
-        bgc = (0xF4, 0xF4, 0xED) if profile == "LC" else (0x09, 0x0A, 0x0D) if profile == "DC" else (0xF1, 0xF1, 0xEA) if profile == "BR" else (0xED, 0xF1, 0xF3) if profile == "BP" else (0, 0, 0)
-        if not near(px(raw, 4, 4), bgc, 6) or not near(px(raw, 4, H - 5), bgc, 6):
-            geo_fail.append(f"{s['id']}: background {px(raw, 4, 4)} at corners, want {bgc}")
+        bgc = (0xF4, 0xF4, 0xED) if profile == "LC" else (0x09, 0x0A, 0x0D) if profile == "DC" else (0xF1, 0xF1, 0xEA) if profile == "BR" else (0xED, 0xF1, 0xF3) if profile == "BP" else (0xF7, 0xF6, 0xF1) if profile == "LF" else (0, 0, 0)
+
+        def covered(x, y):
+            # LF full-bleed photos / the end screen cover the plate on purpose
+            return profile == "LF" and any(m["type"] not in LF_CHROME and m["rect"][0] <= x <= m["rect"][0] + m["rect"][2] and m["rect"][1] <= y <= m["rect"][1] + m["rect"][3] and m["type"] != "endScreen" for m in s["modules"])
+        for (cx, cy) in ((4, 4), (4, H - 5)):
+            if not covered(cx, cy) and not near(px(raw, cx, cy), bgc, 6):
+                geo_fail.append(f"{s['id']}: background {px(raw, cx, cy)} at ({cx},{cy}), want {bgc}")
         if not portrait:
             continue
         if profile == "BP" and any(m["id"] == "bphead" for m in s["modules"]):
@@ -295,10 +341,83 @@ def main():
                 geo_fail.append(f"{s['id']}: caption bottom border y {bot}, want ~1531")
     gate("frame_geometry", not geo_fail, geo_fail or "all scaffolds", "DH: bg #000, HUD #090d11 @y235-305, caption y1416-1532; LC: bg #F4F4ED, caption y1452-1545" if portrait else f"{W}x{H}: background only (9:16 bands skipped)", repair="render")
 
+    if profile == "LF":
+        lf_gates(a.video, spec, total, gate)
+
     hard_fail = [g for g in gates if g["hard"] and not g["ok"]]
     out = {"ok": not hard_fail, "gates": gates, "repair": sorted(set(g["repair"] for g in hard_fail if g["repair"]))}
     print(json.dumps(out, indent=1))
     sys.exit(0 if out["ok"] else 1)
+
+
+def lf_gates(video, spec, total, gate):
+    """LF-only gates (plan §6/§8): credits, graphics density, media share, photo holds."""
+    # ---- credits (spec): every fetched (cached) image on screen carries a credit ----
+    missing = []
+    for s in spec["scaffolds"]:
+        for m in s["modules"]:
+            cached_without_credit(m.get("props") or {}, f"{s['id']}/{m['id']}", missing)
+    gate("credits_present", not missing, missing or "every cached image has a credit", "credit on every fetched image", repair="storyboard")
+
+    # ---- credits (pixels): the credit chip / line is drawn while its image shows ----
+    # region = the chip rect the compiler recorded; a drawn credit has dark mono text on a light chip
+    fails, checked = [], 0
+    for c in spec.get("credits") or []:
+        t = min(c["t1"] - 0.2, max(c["t0"] + 0.8, (c["t0"] + c["t1"]) / 2))
+        raw = frame(video, t)
+        if len(raw) < W * H * 3:
+            fails.append(f"{c['module']}: no frame at {t:.2f}")
+            continue
+        x0, y0, w, h = (int(round(v)) for v in c["rect"])
+        w = min(w, 360)
+        dark = light = n = 0
+        for y in range(max(0, y0 + 3), min(H, y0 + h - 3)):
+            for x in range(max(0, x0 + 4), min(W, x0 + w - 4), 2):
+                r, g, b = px(raw, x, y)
+                lum = 0.2126 * r + 0.7152 * g + 0.0722 * b
+                n += 1
+                dark += lum < 120
+                light += lum > 215
+        checked += 1
+        if not n or dark / n < 0.015 or light / n < 0.25:
+            fails.append(f"{c['module']} @{t:.1f}s: credit strip not drawn (dark {dark}/{n}, light {light}/{n})")
+    gate("credits_visible", not fails, fails or f"{checked} credit runs drawn", "credit chip/line visible mid-run for every fetched image", repair="render")
+
+    # ---- graphics coverage: a non-media graphic is on screen at every second (1.5 s grace after a cut) ----
+    bad, cov, media_s, n = [], 0, 0, 0
+    k = 0.5
+    while k < total - 0.3:
+        s, vis = lf_visible(spec, k)
+        n += 1
+        if s is not None:
+            graphic = [m for m in vis if m["type"] not in LF_MEDIA and m["type"] not in LF_CHROME]
+            if graphic or s.get("template") == "lfEnd":
+                cov += 1
+            elif k - s["t0"] > 1.5:
+                bad.append(f"{s['id']} @{k:.1f}s")
+            else:
+                cov += 1
+            if any(media_ok(m) for m in vis):
+                media_s += 1
+        k += 1.0
+    gate("graphics_coverage", not bad, f"{100 * cov / max(1, n):.0f}% of sampled seconds" if not bad else bad[:6], "a non-media graphic on screen every second (<= 1.5 s after a cut)", repair="storyboard")
+    gate("media_share_pct", 40 <= 100 * media_s / max(1, n) <= 70, round(100 * media_s / max(1, n), 1), "40-70 (real media visible ~50-65 %)", hard=False)
+
+    # ---- each photo run >= 2.5 s ----
+    short = []
+    runs = {}
+    for s in spec["scaffolds"]:
+        for m in s["modules"]:
+            if media_ok(m):
+                r = runs.get(m["id"])
+                if r and abs(r[1] - s["t0"]) < 1e-6:
+                    r[1] = s["t1"]
+                else:
+                    runs[m["id"]] = [s["t0"] + (m.get("at") or 0), s["t1"]]
+                    if r and r[1] - r[0] < 2.5:
+                        short.append(f"{m['id']} {r[1] - r[0]:.1f}s")
+    short += [f"{k2} {r[1] - r[0]:.1f}s" for k2, r in runs.items() if r[1] - r[0] < 2.5]
+    gate("photo_hold_min_s", not short, short or "all >= 2.5 s", ">= 2.5 s per photo run", hard=False)
 
 
 if __name__ == "__main__":

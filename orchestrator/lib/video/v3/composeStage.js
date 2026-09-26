@@ -111,6 +111,8 @@ CAPTION_SKINS.chipCyan = {
 CAPTION_SKINS.BR = CAPTION_SKINS.marker;
 // BP (R6) defaults to the highlighter "marker" skin too
 CAPTION_SKINS.BP = CAPTION_SKINS.marker;
+// LF (16:9 long-form): captions are off by default (SRT uploaded instead); when on, the LC paper chip
+CAPTION_SKINS.LF = CAPTION_SKINS.LC;
 
 const F = 1 / 30;
 const DEFAULT_FRAME = { w: 1080, h: 1920 };
@@ -314,7 +316,7 @@ function buildMediaLayer(media) {
           const hl = (w.highlights || [])
             .map((h, hi) => `        <div id="${w.id}_hl${hi}" class="hf-media-hl" style="position:absolute; left:${h.box[0]}%; top:${h.box[1]}%; width:${h.box[2]}%; height:${h.box[3]}%; border:4px solid ${TONE[h.tone] || h.tone}; border-radius:8px; box-shadow:0 0 0 2px rgba(0,0,0,.35); opacity:0;"></div>`)
             .join("\n");
-          return `      <div id="${w.id}" class="hf-media-wrap" style="position:absolute; left:${x}px; top:${y}px; width:${ww}px; height:${hh}px; overflow:hidden; border-radius:0 0 ${w.radius}px ${w.radius}px; pointer-events:none;">
+          return `      <div id="${w.id}" class="hf-media-wrap" style="position:absolute; left:${x}px; top:${y}px; width:${ww}px; height:${hh}px; overflow:hidden; border-radius:${w.allCorners ? `${w.radius}px` : `0 0 ${w.radius}px ${w.radius}px`}; pointer-events:none;">
 ${kids}
 ${hl}
       </div>`;
@@ -322,6 +324,11 @@ ${hl}
         .join("\n")
     )
     .join("\n");
+}
+
+/** LF underlay: the paper plate (same as profile-lf.js .st-bg) drawn by the root under the footage */
+function underlayPlate(frame) {
+  return `      <div id="lf-plate" style="position:absolute; left:0; top:0; width:${frame.w}px; height:${frame.h}px; background-color:#f7f6f1; background-image:radial-gradient(circle,#e6e4dc 0,#e6e4dc 1.5px,transparent 1.75px); background-size:40px 40px; background-position:0 0;"></div>`;
 }
 
 function mediaTweens(media) {
@@ -369,6 +376,9 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/stage/modules-br.js"></script>
     <script src="compositions/components/lib/stage/profile-bp.js"></script>
     <script src="compositions/components/lib/stage/modules-bp.js"></script>
+    <script src="compositions/components/lib/stage/profile-lf.js"></script>
+    <script src="compositions/components/lib/stage/modules-lf.js"></script>
+    <script src="compositions/components/lib/stage/modules-chart.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: ${frame.w}px; height: ${frame.h}px; overflow: hidden; background: #000; }
@@ -382,6 +392,7 @@ ${narrationTag}
            showing the stage after ~1.8 s (verified 2026-09-25); an explicit full-length clip
            pins the root's length for every tool. -->
       <div id="duration-anchor" class="clip" data-start="0" data-duration="${totalDuration.toFixed(3)}" data-track-index="9" style="position:absolute; left:0; top:0; width:1px; height:1px;"></div>
+${spec.underlay ? underlayPlate(frame) + "\n" + buildMediaLayer(spec.media || []) : ""}
       <div
         id="stage-comp"
         data-composition-id="stage-main"
@@ -395,7 +406,7 @@ ${narrationTag}
         class="clip"
         style="position:absolute; left:0; top:0; width:${frame.w}px; height:${frame.h}px;"
       ></div>
-${buildMediaLayer(spec.media || [])}
+${spec.underlay ? "" : buildMediaLayer(spec.media || [])}
 ${captionsOn ? buildCaptions(words || [], totalDuration, profile, accent, captionSkin, frame) : ""}
     </div>
     <script>

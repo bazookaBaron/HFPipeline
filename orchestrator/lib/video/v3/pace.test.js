@@ -27,3 +27,15 @@ test("wpm is clamped to the reference range", () => {
   const slow = solvePace({ speech: 40, gaps: 2, nWords: 120, nSyllables: 300 });
   assert.ok(Math.abs(slow.wpm - 170) < 0.5, `wpm ${slow.wpm}`);
 });
+
+test("LF pace: relaxed syllable rate, 140-175 wpm, 0.35 s gaps, pauseAfter", () => {
+  const { paceFor, sentenceGaps } = require("./pace");
+  const lf = paceFor("LF");
+  assert.strictEqual(paceFor("DH").sentenceGap, 0.2);
+  assert.strictEqual(lf.sentenceGap, 0.35);
+  const gaps = sentenceGaps([{ id: "a" }, { id: "b", pauseAfter: 0.6 }, { id: "c" }], lf);
+  assert.deepStrictEqual(gaps, [0.35, 0.6, 0]);
+  // 150 words, 225 syllables (1.5 syl/word), 40 s of speech at speed 1
+  const p = solvePace({ speech: 40, gaps: 3.5, nWords: 150, nSyllables: 225, sylPerS: lf.sylPerS, wpmRange: lf.wpmRange });
+  assert.ok(p.wpm >= 140 - 0.5 && p.wpm <= 175 + 0.5, `wpm ${p.wpm}`);
+});

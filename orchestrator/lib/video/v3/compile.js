@@ -28,9 +28,10 @@ const { LC_TEMPLATES } = require("./templates-lc");
 const { DC_TEMPLATES } = require("./templates-dc");
 const { BR_TEMPLATES, brChrome } = require("./templates-br");
 const { BP_TEMPLATES, bpChrome } = require("./templates-bp");
+const { LF_TEMPLATES, lfChrome } = require("./templates-lf");
 const { ENDCARD_TEMPLATES } = require("./endcard");
 const BRAND = new Set(["endcard", "promo"]); // channel scenes after the topic: no topic chrome
-const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES, ...DC_TEMPLATES, ...BR_TEMPLATES, ...BP_TEMPLATES, ...ENDCARD_TEMPLATES };
+const TEMPLATES = { ...DH_TEMPLATES, ...GENERIC_TEMPLATES, ...LC_TEMPLATES, ...DC_TEMPLATES, ...BR_TEMPLATES, ...BP_TEMPLATES, ...LF_TEMPLATES, ...ENDCARD_TEMPLATES };
 
 // Seconds a beat fires before its word onset. Refs land visuals on the audible word or up to
 // ~250 ms before it (SPEC 7.2, ASR bias verified); our word times are forced-aligned on our
@@ -50,8 +51,100 @@ function frameOf(sb) {
   return { w, h };
 }
 
+/**
+ * LF media contract (opts.media = media-manifest.json from lib/media, {version, slots} or a bare slot map):
+ *   slots[<id>] = { status: "ok"|"illustration"|"fallback", kind: "image"|"video", file (relative to
+ *                   video-engine/, e.g. assets/media/cache/ab/<sha>.jpg), credit, focal: [x,y,w,h] fractions,
+ *                   width, height, ... }
+ * Any object inside a module's props that carries `slot: "<id>"` (the module itself, photoGrid items,
+ * compareCols cols[].photo, eraTimeline ticks[].photo, ...) gets src / credit / focal / kind / mediaStatus
+ * from its manifest entry. A missing slot, a fallback entry or no manifest at all -> `missing: true`, and the
+ * module renders its typeset fallback state. Credits are drawn by the stage from the manifest, never
+ * written by the storyboard author.
+ */
+function normalizeManifest(m) {
+  if (!m || typeof m !== "object") return null;
+  return m.slots && typeof m.slots === "object" ? m.slots : m;
+}
+function resolveSlots(v, slots, used) {
+  if (Array.isArray(v)) return v.map((x) => resolveSlots(x, slots, used));
+  if (!v || typeof v !== "object") return v;
+  const out = {};
+  for (const [k, x] of Object.entries(v)) out[k] = resolveSlots(x, slots, used);
+  if (typeof v.slot === "string") {
+    used.add(v.slot);
+    const e = slots ? slots[v.slot] : null;
+    if (!e || e.status === "fallback" || !e.file) {
+      out.missing = true;
+      out.mediaStatus = e ? e.status || "fallback" : "missing";
+      delete out.src;
+    } else {
+      out.src = String(e.file).replace(/\\/g, "/");
+      out.credit = v.credit || e.credit || "";
+      if (!v.focal && Array.isArray(e.focal)) out.focal = e.focal;
+      out.kind = v.kind || e.kind || "image";
+      out.mediaStatus = e.status || "ok";
+      if (e.width && e.height) out.mediaSize = [e.width, e.height];
+      if (e.poster) out.poster = v.poster || e.poster;
+    }
+  }
+  return out;
+}
+/** every (nested) media object with a real source, for the credit rules: [{obj, top}] */
+function mediaObjects(props, top = true, acc = []) {
+  if (Array.isArray(props)) props.forEach((x) => mediaObjects(x, false, acc));
+  else if (props && typeof props === "object") {
+    if (typeof props.src === "string" && !props.missing) acc.push({ obj: props, top });
+    Object.entries(props).forEach(([k, x]) => k !== "src" && typeof x === "object" && mediaObjects(x, false, acc));
+  }
+  return acc;
+}
+const CREDIT_OWNERS = new Set(["photo", "mapCard"]); // modules that draw their own credit chip (creditPos inside)
+const CHART_TYPES = new Set(["barChart", "lineChart"]);
+
+/**
+ * LF credit plan: `inside` chips (photo / mapCard, rect in frame px for the credits gate) and the
+ * per-scaffold frame credit line (every other fetched image on screen: backdrops, full-bleed, grids,
+ * thumbnails, portraits). Throws when a cached (fetched) image has no credit.
+ */
+function lfCredits(scaffolds) {
+  const credits = [];
+  const frameText = [];
+  scaffolds.forEach((s, si) => {
+    const frame = [];
+    s.modules.forEach((m) => {
+      if (CHART_TYPES.has(m.type) && !(m.props && m.props.source)) throw new Error(`scaffold ${s.id}: chart ${m.id} has no source line (props.source is mandatory)`);
+      mediaObjects(m.props || {}).forEach(({ obj, top }) => {
+        const fetched = /(^|\/)assets\/media\/cache\//.test(obj.src);
+        if (fetched && !String(obj.credit || "").trim()) throw new Error(`scaffold ${s.id}: module ${m.id} shows fetched media ${obj.src} without a credit (the media manifest must carry one)`);
+        if (!obj.credit) return;
+        const pos = obj.creditPos || "inside";
+        if (top && CREDIT_OWNERS.has(m.type) && pos === "inside") {
+          const b = obj.card === false ? 0 : 3;
+          const tw = Math.min(m.rect[2] - 2 * b - 24, String(obj.credit).length * 9 + 18);
+          credits.push({ module: m.id, where: "inside", text: obj.credit, t0: round(s.t0 + (m.at || 0)), t1: s.t1, rect: [m.rect[0] + b + 12, m.rect[1] + m.rect[3] - b - 12 - 26, Math.round(tw), 26] });
+        } else if (pos !== "none" && frame.indexOf(obj.credit) < 0) frame.push(obj.credit);
+      });
+    });
+    const text = frame.join("   |   ");
+    frameText.push(text);
+    if (text) credits.push({ module: "lfcredit", where: "frame", text, t0: s.t0, t1: s.t1, rect: [96, 1016, Math.min(1728, text.length * 9 + 18), 26] });
+  });
+  // one entry per continuous run (a photo that persists across scaffolds)
+  const merged = [];
+  credits.forEach((c) => {
+    const last = merged.find((x) => x.module === c.module && x.text === c.text && Math.abs(x.t1 - c.t0) < 1e-6);
+    if (last) last.t1 = c.t1;
+    else merged.push({ ...c });
+  });
+  return { credits: merged, frameText };
+}
+
 function compileStoryboard(sb, timeline, opts = {}) {
   const { sentenceTimes, words, totalSeconds } = timeline;
+  const isLF = (sb.profile || "DH") === "LF";
+  const mediaSlots = normalizeManifest(opts.media);
+  const usedSlots = new Set();
   const sIndex = new Map(sb.sentences.map((s, i) => [s.id, i]));
   const tBy = new Map(sentenceTimes.map((t) => [t.id, t]));
   const wordsBy = new Map();
@@ -79,7 +172,8 @@ function compileStoryboard(sb, timeline, opts = {}) {
   }
   const scaffolds = scs.map((x, i) => {
     const t1 = i + 1 < scs.length ? scs[i + 1].t0 : totalSeconds;
-    const built = TEMPLATES[x.sc.template](x.sc, sb.entities || {});
+    const built = TEMPLATES[x.sc.template](x.sc, sb.entities || {}, sb);
+    if (isLF) built.modules.forEach((m) => (m.props = resolveSlots(m.props || {}, mediaSlots, usedSlots)));
     const modules = built.modules.map((m) => {
       const fill = findFill(x.sc, m.id);
       const anchor = m.anchor || (fill && fill.anchor);
@@ -150,6 +244,12 @@ function compileStoryboard(sb, timeline, opts = {}) {
   if ((sb.profile || "DH") === "BR") brChrome(sb, scaffolds, chromeEvents, BRAND);
   // ---- BP chrome (R6): segmented header + component tracker + note card (templates-bp.js) ----
   if ((sb.profile || "DH") === "BP") bpChrome(sb, scaffolds, chromeEvents, BRAND);
+  // ---- LF chrome (plan §3): chapter kicker + progress, media credit line (templates-lf.js) ----
+  let lf = null;
+  if (isLF) {
+    lf = lfCredits(scaffolds);
+    lfChrome(sb, scaffolds, chromeEvents, BRAND, lf.frameText);
+  }
 
   // ---- events ----
   const events = (sb.events || []).map((ev, i) => {
@@ -170,14 +270,23 @@ function compileStoryboard(sb, timeline, opts = {}) {
   events.push(...chromeEvents);
   // root-level timed <video> trims for media windows (lib/video/v3/media.js)
   const media = buildMediaLayer({ scaffolds, events, sbScaffolds: sb.scaffolds, wordTime });
-  return {
+  const out = {
     profile: sb.profile || "DH",
     frame: frameOf(sb),
-    mascot: opts.mascot === false ? null : presenterSpec(words, opts.presenter),
+    // LF never shows a presenter (plan §3)
+    mascot: opts.mascot === false || isLF ? null : presenterSpec(words, opts.presenter),
     scaffolds,
     events,
     media,
   };
+  if (isLF) {
+    out.credits = lf.credits; // [{module, where: inside|frame, text, t0, t1, rect}] -> v3_gates credits_visible
+    out.mediaSlots = [...usedSlots];
+    // LF footage plays UNDER the stage (the stage turns transparent, a root plate draws the paper), so
+    // lower thirds, callouts and annotations stay on top of the video (composeStage.js)
+    if (media.length) out.underlay = true;
+  }
+  return out;
 }
 
 // ---- presenters: "guy" (default channel character) and the original robot ----
@@ -234,4 +343,4 @@ function findFill(sc, moduleId) {
   return null;
 }
 
-module.exports = { compileStoryboard, LEAD, TEMPLATES, DEFAULT_FRAME, frameOf };
+module.exports = { compileStoryboard, LEAD, TEMPLATES, DEFAULT_FRAME, frameOf, normalizeManifest, resolveSlots };

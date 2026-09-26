@@ -232,7 +232,18 @@ def duck_gain(active, hop, n):
     return 10 ** (np.interp(np.arange(n), t_frames, g) / 20)
 
 
-def add_music(voice, preset, seed):
+def swell_gain(n, windows, db=3.0, ramp=0.4):
+    """+db over each [t0, t1] window (seconds) with linear ramps -- the LF chapter-card swell"""
+    g = np.zeros(n)
+    t = np.arange(n) / SR
+    for t0, t1 in windows or []:
+        up = np.clip((t - t0) / ramp, 0, 1)
+        down = np.clip((t1 - t) / ramp, 0, 1)
+        g = np.maximum(g, np.minimum(up, down))
+    return 10 ** (g * db / 20)
+
+
+def add_music(voice, preset, seed, swell=None):
     sys.path.insert(0, str(Path(__file__).resolve().parent))
     import music_bed
 
@@ -246,7 +257,7 @@ def add_music(voice, preset, seed):
     b_ms = k_weight_ms(bed[body]) or 1e-9
     g = 10 ** (BED_DB / 20) * math.sqrt(v_ms / b_ms)
     duck = duck_gain(active, hop, n)
-    out = bed * (g * duck)[:, None]
+    out = bed * (g * duck * swell_gain(n, swell))[:, None]
     stats = {
         "music": preset,
         "bedDb": BED_DB,
@@ -294,7 +305,7 @@ def main():
         seg[:, 1] += s[: len(seg)] * g * math.sqrt(0.5 + pan / 2) * math.sqrt(2)
     bed, mstats = (None, {})
     if music:
-        bed, mstats = add_music(voice, music, int(opt("--music-seed") or 7))
+        bed, mstats = add_music(voice, music, int(opt("--music-seed") or 7), json.loads(opt("--swell")) if opt("--swell") else None)
         if opt("--music-stem"):
             write_wav(opt("--music-stem"), bed)
     write_wav(out_p, voice + fx + (bed if bed is not None else 0))

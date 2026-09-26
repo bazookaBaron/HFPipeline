@@ -80,7 +80,9 @@ function planNarration(sentences, clips, opts = {}) {
       words.push({ i: words.length, sentenceId: s.id, wi, text: toks[wi], start: round(w.start + offset), end: round(w.end + offset) });
     });
     sentenceTimes.push({ id: s.id, start: round(at), end: round(at + (trimEnd - trimStart)), speechStart: round(first + offset), speechEnd: round(last + offset) });
-    cursor = at + (trimEnd - trimStart) + (si < sentences.length - 1 ? o.sentenceGap : 0);
+    // gaps: o.gaps[si] (authored seconds, per sentence) when given, else the uniform sentenceGap
+    const gap = Array.isArray(o.gaps) ? Number(o.gaps[si]) || 0 : o.sentenceGap;
+    cursor = at + (trimEnd - trimStart) + (si < sentences.length - 1 ? gap : 0);
   });
   return { segments, sentenceTimes, words, totalSeconds: round(cursor) };
 }

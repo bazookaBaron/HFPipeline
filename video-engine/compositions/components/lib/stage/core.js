@@ -76,6 +76,13 @@
       settle: { dur: 0.133, y: 12, ease: "power3.out" },
       riseMid: { dur: 0.133, y: 12, ease: "power3.out" },
     },
+    // LF (16:9 long-form, plan §3): the shorts' grammar, slightly calmer -- rise 12 px / 233 ms, fade 200 ms
+    LF: {
+      fade: { dur: 0.2, y: 0, ease: "power2.out" },
+      rise: { dur: 0.233, y: 12, ease: "power2.out" },
+      settle: { dur: 0.233, y: 12, ease: "power2.out" },
+      riseMid: { dur: 0.233, y: 12, ease: "power2.out" },
+    },
     // BR (R7 E1/#21): opaque pop on frame 1 + 25.5 px drift up, 8 f power2.out (no fade)
     BR: {
       fade: { dur: 0.267, y: 25.5, ease: "power2.out", from: 1 },
@@ -212,6 +219,11 @@
     mascotLayer.style.zIndex = "2";
     chrome.style.zIndex = "3";
     bg.setAttribute("data-profile", spec.profile || "DH");
+    // footage under the stage (LF video): the root draws the plate, the stage stays transparent
+    if (spec.underlay) {
+      root.style.background = "transparent";
+      bg.style.display = "none";
+    }
 
     var ctx = {
       tl: tl,

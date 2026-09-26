@@ -8,10 +8,10 @@ let currentPhaseMax = 0;
 const PHASE_LABELS = {
   "cs-explainer": ["Script (Gemini)", "Voice synthesis", "Anchor timing", "Compose", "Render"],
   carousel: ["Content (Gemini)", "Write content", "Render slides"],
-  longform: ["Research", "Outline", "Script", "Storyboards", "Media", "Render chapters", "Stitch", "Music + master", "Gates", "Package"],
+  longform: ["Research", "Outline", "Script", "Storyboards", "Media", "Render chapters", "Stitch", "Music + master", "Gates", "Package", "Thumbnails"],
 };
 // make-longform.js prints one machine line per stage event: "@@lf {stage, status, detail}"
-const LF_STAGES = ["research", "outline", "script", "storyboards", "media", "render", "stitch", "master", "gates", "package"];
+const LF_STAGES = ["research", "outline", "script", "storyboards", "media", "render", "stitch", "master", "gates", "package", "thumbnail"];
 
 /** Real progress lines from the orchestrators are deliberately sent on stderr (stdout is
  * reserved for the final machine-readable result line), so stream name alone is NOT a
@@ -174,6 +174,7 @@ function showResult(result) {
   gallery.hidden = true;
   empty.hidden = true;
   gallery.innerHTML = "";
+  gallery.classList.remove("preview-thumbs");
   const links = $("preview-links");
   links.innerHTML = "";
   links.hidden = true;
@@ -190,6 +191,25 @@ function showResult(result) {
   if (result && result.type === "video" && result.mediaUrl) {
     video.src = result.mediaUrl + `?t=${Date.now()}`;
     video.hidden = false;
+    // long-form: the three YouTube thumbnail variants (final/thumbnail-{a,b,c}.png), click to open full size
+    if (Array.isArray(result.thumbnails) && result.thumbnails.length) {
+      gallery.classList.add("preview-thumbs");
+      for (const t of result.thumbnails) {
+        const a = document.createElement("a");
+        a.href = t.url;
+        a.target = "_blank";
+        a.title = t.label;
+        const img = document.createElement("img");
+        img.src = t.url + `?t=${Date.now()}`;
+        img.alt = t.label;
+        a.appendChild(img);
+        const cap = document.createElement("span");
+        cap.textContent = t.label;
+        a.appendChild(cap);
+        gallery.appendChild(a);
+      }
+      gallery.hidden = false;
+    }
     showOutputFolder(result.folder || (result.path ? dirnameOf(result.path) : null));
   } else if (result && result.type === "image-set" && result.images && result.images.length) {
     for (const url of result.images) {

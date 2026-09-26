@@ -87,22 +87,25 @@ async function masterVideo({ inputPath, outputPath, speed = 1, log = () => {}, p
     throw new Error("inputPath and outputPath must differ");
   }
   const filters = speedFilters(speed);
+  // loudnorm works (and outputs) at 192 kHz internally; the final encode is resampled to 48 kHz
+  // (aresample after loudnorm + -ar 48000) so delivered files are 48 kHz AAC, not 96 kHz.
   // A stricter loudnorm LRA request leaves room for AAC's post-encode variance.
   const lraRequest = 1;
   // Compress peaks before normalization; loudnorm alone cannot reduce this mix's LRA enough.
   const audioChain = `${filters.audio},acompressor=threshold=0.05:ratio=3:attack=5:release=100`;
-  // Allow headroom for AAC's post-encode true-peak overshoot.
-  const peakRequest = peakOverride !== undefined ? peakOverride : -1.5;
+  // Allow headroom for AAC's post-encode true-peak overshoot (measured ~0.5-1 dB more at 48 kHz than
+  // the old 96 kHz output: -2.0 lands at -1.1..-1.5 dBTP on the v3 shorts and the LF master).
+  const peakRequest = peakOverride !== undefined ? peakOverride : -2.0;
   const first = await run(["-hide_banner", "-i", inputPath, "-filter_complex",
     `[0:a]${audioChain},loudnorm=I=-14:LRA=${lraRequest}:TP=${peakRequest}:print_format=json[a]`, "-map", "[a]", "-f", "null", "-"], log);
   assertSuccess(first, "loudnorm analysis");
   const measured = parseLoudnorm(first.stderr);
   const videoFilter = speed === 1 ? "" : `[0:v]${filters.video}[v];`;
-  const secondFilter = `${videoFilter}[0:a]${audioChain},loudnorm=I=-14:LRA=${lraRequest}:TP=${peakRequest}:measured_I=${measured.input_i}:measured_LRA=${measured.input_lra}:measured_TP=${measured.input_tp}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true:print_format=json[a]`;
+  const secondFilter = `${videoFilter}[0:a]${audioChain},loudnorm=I=-14:LRA=${lraRequest}:TP=${peakRequest}:measured_I=${measured.input_i}:measured_LRA=${measured.input_lra}:measured_TP=${measured.input_tp}:measured_thresh=${measured.input_thresh}:offset=${measured.target_offset}:linear=true:print_format=json,aresample=48000[a]`;
   const videoArgs = speed === 1 ? ["-map", "0:v:0", "-c:v", "copy"] :
     ["-map", "[v]", "-c:v", "libx264", "-crf", "18", "-preset", "medium"];
   const second = await run(["-hide_banner", "-y", "-i", inputPath, "-filter_complex", secondFilter,
-    ...videoArgs, "-map", "[a]", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", outputPath], log);
+    ...videoArgs, "-map", "[a]", "-c:a", "aac", "-b:a", "192k", "-ar", "48000", "-movflags", "+faststart", outputPath], log);
   assertSuccess(second, "master encode");
   const measurement = await run(["-hide_banner", "-nostats", "-i", outputPath, "-map", "0:a:0",
     "-af", "ebur128=peak=true", "-f", "null", "-"], log);

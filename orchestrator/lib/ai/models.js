@@ -38,6 +38,7 @@ const TASKS = {
   "style.choose": "lite",
   "research.plan": "lite",
   "longform.metadata": "lite",
+  "longform.thumbnail": "lite",
   // standard
   storyboard: "standard",
   carousel: "standard",

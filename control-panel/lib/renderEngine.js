@@ -266,7 +266,12 @@ function runLongformRender(jobId, config) {
             folder: path.join(outDir, "final"),
             bytes: fs.statSync(video).size,
             mediaUrl: rel("video.mp4"),
-            links: ["description.md", "captions.srt", "metadata.json", "credits.txt", "gates.json"]
+            links: ["description.md", "captions.srt", "metadata.json", "credits.txt", "gates.json", "thumbnails.json"]
+              .filter((f) => fs.existsSync(path.join(outDir, "final", f)))
+              .map((f) => ({ label: f, url: rel(f) })),
+            // stage "thumbnail": 1280x720 variants served by the same /media/<job>/final/ route
+            thumbnails: ["a", "b", "c"]
+              .map((v) => `thumbnail-${v}.png`)
               .filter((f) => fs.existsSync(path.join(outDir, "final", f)))
               .map((f) => ({ label: f, url: rel(f) })),
           }

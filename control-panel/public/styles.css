@@ -154,6 +154,9 @@ code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
 .format-switch .seg:has(input:checked) { background: rgba(124,92,255,.18); }
 .preview-links { display: flex; flex-wrap: wrap; gap: 8px 16px; margin-top: 10px; }
 .preview-links a { font-weight: 600; }
+.preview-thumbs { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; margin-top: 12px; }
+.preview-thumbs a { display: flex; flex-direction: column; gap: 4px; text-decoration: none; font-size: 12px; color: inherit; opacity: .8; }
+.preview-thumbs img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 6px; display: block; }
 
 /* long-form (16:9) finance calendar */
 .lf-cal-controls { align-items: flex-end; flex-wrap: wrap; gap: 12px; }

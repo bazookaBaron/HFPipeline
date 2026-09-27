@@ -238,6 +238,43 @@ function fillTags(section) {
 // ---------- gates ----------
 const tagged = (sents, d) => sents.filter((s) => (s.devices || []).includes(d));
 
+const HOOK_MAX_FIGURES_BEFORE_IRONY = 4;
+/** Hard figures a sentence says (years, counting words and verified quotes excluded). */
+const figuresIn = (s, quotes) => parseSpokenNumbers(stripVerifiedQuotes(s.text, quotes)).filter((n) => !isExempt(n) && !n.year);
+
+// "Here's the catch: demographic drag." - a label with no meaning attached
+const LABEL_FRAGMENT = /^(?:here['’]s the (?:catch|thing|twist|kicker|problem|answer)|the (?:catch|problem|answer|reason|culprit) is|the (?:catch|problem|answer|reason|culprit))\s*[:—–-]?\s*((?:[\w'’-]+\s*){1,4})[.!]?$/i;
+
+/** Numbers said the way a person says them: no "zero point three", at most one decimal per section (none in the cold open). */
+function spokenNumberProblems(sents, sectionId, quotes) {
+  const p = [];
+  let decimals = [];
+  sents.forEach((s) => {
+    const t = stripVerifiedQuotes(s.text, quotes);
+    if (/\bzero point\b/i.test(t)) p.push(`${s.id}: say "zero point..." the way a person would ("barely", "a fraction of a percent", "flat")`);
+    else if (/\b[a-z-]+ point [a-z-]+/i.test(t) && figuresIn(s, quotes).length) decimals.push(s.id);
+  });
+  const allowed = sectionId === "cold" ? 0 : 1;
+  if (decimals.length > allowed) p.push(`${decimals.join(", ")}: too many decimals for the ear; round like a person ("about one percent a year", "three out of five", "almost a quarter"); the screen shows the exact figure`);
+  return p;
+}
+
+/** Cold-open number density: <= 1 figure per 2 sentences, <= 4 before the irony pivot, never two figure sentences in a row. */
+function numberDensityProblems(sents, quotes, ironyIdx) {
+  const p = [];
+  const counts = sents.map((s) => figuresIn(s, quotes).length);
+  const total = counts.reduce((a, x) => a + x, 0);
+  const max = Math.ceil(sents.length / 2);
+  if (total > max) p.push(`cold open says ${total} figures in ${sents.length} sentences (max ${max}: about one per two or three sentences); keep the ones that hit hardest, say the rest in words`);
+  if (ironyIdx > 0) {
+    const before = counts.slice(0, ironyIdx).reduce((a, x) => a + x, 0);
+    if (before > HOOK_MAX_FIGURES_BEFORE_IRONY) p.push(`${before} figures before the irony pivot (max ${HOOK_MAX_FIGURES_BEFORE_IRONY}); one number per stakes stop, the rest as scenes`);
+  }
+  const runs = sents.filter((s, i) => i > 0 && counts[i] && counts[i - 1]).map((s) => s.id);
+  if (runs.length) p.push(`${runs.join(", ")} follow another number sentence; the hook must not read like a list of numbers: put a small human scene (who, where, what it looks like) between numbers`);
+  return p;
+}
+
 function hookScriptProblems(sents, opts = {}) {
   const p = [];
   const wpm = opts.wpm || 160;
@@ -247,8 +284,22 @@ function hookScriptProblems(sents, opts = {}) {
     ["case", "the concrete case study"]];
   if (quotes.length) need.splice(1, 0, ["quote", "the anchor quote (verbatim, in double quotes)"]);
   need.forEach(([d, what]) => { if (!tagged(sents, d).length) p.push(`cold open lacks ${what}: no sentence tagged "${d}"`); });
-  const stakes = tagged(sents, "stakes").filter((s) => hasFigure(s.text));
-  if (stakes.length < 3) p.push(`cold open stakes tour has ${stakes.length} stop(s) with a number; need 3 (one place + one number + year each)`);
+  // a stop is anchored by a figure, or by a year when the change is said like a person ("it shrank in 2023")
+  const anchored = (s) => hasFigure(s.text) || parseSpokenNumbers(s.text).some((n) => n.year);
+  const stakes = tagged(sents, "stakes").filter(anchored);
+  if (stakes.length < 3) p.push(`cold open stakes tour has ${stakes.length} stop(s) anchored by a number or year; need 3 (one place + one number + year each)`);
+  const scenes = tagged(sents, "stakes").filter((s) => !anchored(s));
+  if (stakes.length >= 3 && scenes.length < 3) p.push(`stakes tour has ${scenes.length} scene sentence(s); wrap each stop's number in a tiny human scene (who, where, what it looks like), tagged "stakes"`);
+  if (!tagged(sents, "joke").length) p.push('cold open has no light joke or wry aside (tag it "joke")');
+  const myth = sents.findIndex((s) => (s.devices || []).includes("myth"));
+  const iro = sents.findIndex((s) => (s.devices || []).includes("irony"));
+  if (iro >= 0) {
+    if (myth < 0 || myth > iro) p.push(`the irony pivot (${sents[iro].id}) must reverse the belief stated BEFORE it ("most people think..." -> "but the irony is...")`);
+    if (wc(sents[iro].text) < 7) p.push(`${sents[iro].id}: the irony pivot is a fragment; state the counter-fact as a full sentence`);
+    const next = sents[iro + 1];
+    if (!next || /\?\s*$/.test(next.text)) p.push(`${sents[iro].id}: explain the irony in the next sentence (why it is true), before any question`);
+  }
+  numberDensityProblems(sents, quotes, iro).forEach((x) => p.push(x));
   const qs = tagged(sents, "question").filter((s) => /\?\s*$/.test(s.text));
   if (qs.length < 3) p.push(`cold open question stack has ${qs.length} question(s); need 3-4 ending on the viewer`);
   else if (!/\b(?:you|your|yours|yourself)\b/i.test(qs[qs.length - 1].text)) p.push(`${qs[qs.length - 1].id}: the last question of the stack must be about the viewer (you / your)`);
@@ -275,11 +326,23 @@ function styleProblems(section, opts = {}) {
   if (st.longShare >= LONG_SHARE_MAX && st.long.length) p.push(`${st.long.length} sentence(s) over ${LONG_WORDS} words (${st.long.join(", ")}); split them`);
   coverage(sents, DIRECT, "direct address", 'talk to the viewer ("you", "imagine", "look at this", "here\'s the thing")', wpm).forEach((x) => p.push(x));
   coverage(sents, PIVOT, "pivot", 'add a turn ("But...", "The irony is...", "So the question is...", "What most people don\'t realise...")', wpm).forEach((x) => p.push(x));
-  sents.forEach((s) => quoteProblems(s, opts.dossier).forEach((x) => p.push(x)));
+  sents.forEach((s, i) => {
+    // "The IMF chief warned:" tagged quote, with the quote itself in the next sentence: fine
+    const qp = quoteProblems(s, opts.dossier);
+    const neighbourQuotes = [sents[i - 1], sents[i + 1]].some((x) => x && quotedSpans(x.text).length);
+    qp.filter((x) => !(neighbourQuotes && /no quoted words/.test(x))).forEach((x) => p.push(x));
+  });
+  const quotes = (opts.dossier && opts.dossier.quotes) || [];
+  spokenNumberProblems(sents, section.id, quotes).forEach((x) => p.push(x));
+  sents.forEach((s) => {
+    const m = String(s.text).trim().match(LABEL_FRAGMENT);
+    if (m) p.push(`${s.id}: "${s.text}" names a label without saying what it means; say the plain meaning first, then (optionally) the name`);
+  });
   if (section.id === "cold") hookScriptProblems(sents, { dossier: opts.dossier, wpm }).forEach((x) => p.push(x));
   else if (/^ch\d+/.test(section.id)) {
     if (!tagged(sents, "metaphor").length) p.push('chapter has no everyday metaphor (tag the sentence "metaphor")');
     if (!tagged(sents, "case").length) p.push('chapter has no concrete, named case (tag the sentence "case")');
+    if (!tagged(sents, "joke").length) p.push('chapter has no light joke or wry aside (tag it "joke")');
     if (!sents.slice(0, 2).some((s) => /\?/.test(s.text))) p.push("chapter must open with a question in its first two sentences");
     if (!opts.isLastChapter && !sents.slice(-2).some((s) => /\?/.test(s.text))) p.push("chapter must end on a cliffhanger question (in its last two sentences) that the next chapter answers");
   }
@@ -309,5 +372,5 @@ function montageProblems(montageLines, anchorLine, dossier) {
 module.exports = {
   MOODS, VISUALS, DEVICES, MEDIAN_MAX, LONG_WORDS, LONG_SHARE_MAX, WINDOW_SECONDS, IRONY_BY_SECONDS, MONTAGE_MIN, MONTAGE_MAX, MONTAGE_WORDS,
   DIRECT, PIVOT, lengthStats, windows, splitSentence, splitLongSentences, mergeDanglingLeads, fillTags, styleProblems, hookScriptProblems, montageProblems,
-  quotedSpans, matchQuote, stripVerifiedQuotes, quoteProblems, normQuote, median,
+  quotedSpans, matchQuote, stripVerifiedQuotes, quoteProblems, normQuote, median, numberDensityProblems, spokenNumberProblems, LABEL_FRAGMENT, HOOK_MAX_FIGURES_BEFORE_IRONY,
 };

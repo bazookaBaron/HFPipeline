@@ -148,8 +148,9 @@ const HOOK = {
   chorus: "Lost decades.",
   anchorQuote: { quoteId: null },
   myth: { belief: "Japan is poor now", reveal: "it is still rich", factIds: ["F1"] },
-  stakesTour: [{ place: "Tokyo", factId: "F2", line: "l" }, { place: "Osaka", factId: "F3", line: "l" }, { place: "Germany", factId: "F4", line: "l" }],
-  ironyPivot: { thesis: "But the irony is...", factIds: ["F5"] },
+  stakesTour: [{ place: "Tokyo", factId: "F2", line: "l", why: "w", scene: "s" }, { place: "Osaka", factId: "F3", line: "l", why: "w", scene: "s" }, { place: "Germany", factId: "F4", line: "l", why: "w", scene: "s" }],
+  ironyPivot: { thesis: "But the irony is...", explain: "e", factIds: ["F5"] },
+  joke: "j",
   statDefinitionMetaphor: { factId: "F6", definition: "d", metaphor: "m" },
   caseStudy: { name: "Yubari", place: "Hokkaido", factIds: ["F7"] },
   questionStack: ["How?", "Why?", "What does it mean for your savings?"],
@@ -165,7 +166,7 @@ test("outline word budget", () => {
   }
   const b10 = wordBudget(10);
   assert.strictEqual(b10.total, 1600); // 160 wpm gross (pace.js PACE.LF)
-  assert.ok(b10.coldOpen >= 150 && b10.coldOpen <= 250); // hook skeleton: ~56-94 s
+  assert.ok(b10.coldOpen >= 180 && b10.coldOpen <= 300); // hook skeleton: ~68-112 s
   assert.ok(wordBudget(8).total >= 1200 && wordBudget(12).total <= 1920);
 });
 

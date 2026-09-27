@@ -24,15 +24,15 @@ function chapterCount(minutes) {
 /**
  * Word budget. The cold open carries the full hook skeleton (chorus -> anchor quote -> myth/reveal ->
  * 3-stop stakes tour -> irony pivot by ~0:45-1:00 -> stat/definition/metaphor -> case -> question stack):
- * about 22 % of the total, 180-250 words (~68-94 s). Recap ~45 s on full-length videos (10 %, never
+ * about 25 % of the total, 180-300 words (~68-112 s; stakes stops need room for their scenes). Recap ~45 s on full-length videos (10 %, never
  * under ~17 s), the rest split evenly over the chapters; totals always sum to round(minutes * wpm).
  */
 const HOOK_MIN_WORDS = 180;
-const HOOK_MAX_WORDS = 250;
+const HOOK_MAX_WORDS = 300;
 function wordBudget(minutes, wpm = LF_WPM) {
   const m = Math.max(MIN_MINUTES, Math.min(MAX_MINUTES, Number(minutes) || 10));
   const total = Math.round(m * wpm);
-  const coldOpen = Math.min(HOOK_MAX_WORDS, Math.max(HOOK_MIN_WORDS, Math.round(total * 0.22)));
+  const coldOpen = Math.min(HOOK_MAX_WORDS, Math.max(HOOK_MIN_WORDS, Math.round(total * 0.25)));
   const recap = Math.min(Math.round((45 / 60) * wpm), Math.max(45, Math.round(total * 0.1)));
   const n = chapterCount(m);
   const rest = total - coldOpen - recap;
@@ -56,7 +56,7 @@ function hookMaterial(dossier) {
   const L = [];
   if (h.belief) L.push(`COMMON BELIEF: ${h.belief.text} [${h.belief.factIds.join(", ")}]`);
   if (h.irony) L.push(`COUNTER-INTUITIVE FACT (the irony): ${h.irony.text} [${h.irony.factIds.join(", ")}]`);
-  if ((h.stakes || []).length) L.push(`STAKES BY PLACE: ${h.stakes.map((s) => `${s.place} -> ${s.factId}`).join("; ")}`);
+  if ((h.stakes || []).length) L.push(`STAKES BY PLACE: ${h.stakes.map((s) => `${s.place} -> ${s.factId}${s.why ? ` (${s.why})` : ""}`).join("; ")}`);
   if ((h.counterView || []).length) L.push(`COUNTER-VIEW FACTS (use them so conclusions stay balanced): ${h.counterView.join(", ")}`);
   const q = dossier.quotes || [];
   L.push(q.length
@@ -86,9 +86,15 @@ function hookProblems(hook, dossier) {
   if (st.length !== 3) p.push(`hook.stakesTour needs exactly 3 stops, got ${st.length}`);
   const places = new Set(st.map((s) => String((s && s.place) || "").toLowerCase().trim()).filter(Boolean));
   if (places.size < Math.min(3, st.length)) p.push("hook.stakesTour stops must be 3 DIFFERENT places");
-  st.forEach((s, i) => { if (!s || !numeric(s.factId)) p.push(`hook.stakesTour[${i}] needs a numeric factId (place + number + year)`); });
+  st.forEach((s, i) => {
+    if (!s || !numeric(s.factId)) p.push(`hook.stakesTour[${i}] needs a numeric factId (place + number + year)`);
+    if (s && !s.why) p.push(`hook.stakesTour[${i}] needs "why": its causal link to this story and to the viewer`);
+    if (s && !s.scene) p.push(`hook.stakesTour[${i}] needs "scene": a tiny human scene (who, where, what it looks like)`);
+  });
   const ip = hook.ironyPivot || {};
   if (!ip.thesis) p.push("hook.ironyPivot needs a thesis");
+  if (!ip.explain) p.push("hook.ironyPivot needs \"explain\": one plain sentence on why the reversal is true");
+  if (!hook.joke) p.push("hook needs a light joke / wry aside");
   if (!(ip.factIds || []).length) p.push("hook.ironyPivot needs 1+ factIds");
   known(ip.factIds, "ironyPivot");
   const sdm = hook.statDefinitionMetaphor || {};
@@ -101,6 +107,49 @@ function hookProblems(hook, dossier) {
   if (qs.some((q) => !/\?\s*$/.test(String(q)))) p.push("hook.questionStack entries must be questions ending in '?'");
   if (qs.length && !VIEWER.test(String(qs[qs.length - 1]))) p.push("hook.questionStack: the LAST question must be about the viewer (you / your)");
   return p;
+}
+
+const HOOK_SPEC = `HOOK SKELETON (the cold open follows it in this order; it is the most important part of the video):
+{"chorus": "<the buzzword or the common belief as a 1-4 word fragment that everyone repeats, e.g. 'Lost decades.'>",
+ "anchorQuote": {"quoteId": "<Q id from QUOTES, or null when there are no quotes>"},
+ "myth": {"belief": "<what most people think>", "reveal": "<what they don't realise, carried by ONE number>", "factIds": ["F.."]},
+ "stakesTour": [{"place": "<country/region>", "factId": "F..", "why": "<how this stop is CAUSED BY or the SAME MECHANISM as this video's story, and why a viewer anywhere should care>", "scene": "<a tiny human scene there: who, where, what it looks like>", "line": "<one plain line: place + one number + year>"}]
+   (exactly 3 DIFFERENT places, escalating. Each stop must be causally tied to the topic: a consequence of it, or the same
+   mechanism now playing out elsewhere. A random big number from another country is NOT a stakes stop.),
+ "ironyPivot": {"thesis": "<'But the irony is...' a real REVERSAL of myth.belief, one full sentence>", "explain": "<one plain sentence on why the reversal is true>", "factIds": ["F.."]},
+ "statDefinitionMetaphor": {"factId": "F..", "definition": "<the key term or stat in plain words, no jargon label>", "metaphor": "<everyday physical picture>"},
+ "caseStudy": {"name": "<a real, named example>", "place": "<where>", "factIds": ["F.."]},
+ "joke": "<one light, wry aside for the hook>",
+ "questionStack": ["<3-4 open questions the video will answer; the LAST one is about the viewer: what this means for you, your money, your job or your prices, anywhere in the world>"]}`;
+
+/**
+ * Regenerate only the hook skeleton of an existing outline (cost: one call, chapters kept). Validated by hookProblems,
+ * up to `attempts` calls. Returns the new hook (or the last attempt with .problems).
+ */
+async function reHook(dossier, outline, opts = {}) {
+  const log = opts.log || (() => {});
+  const base = `You design the opening hook of a YouTube deep-dive: "${outline.title}" (topic: ${dossier.topic}).
+Audience: curious people worldwide, 18-35, no finance background.
+Angle: ${dossier.angle}
+Chapters that follow: ${(outline.chapters || []).map((c) => `${c.index}. ${c.title}: ${c.question}`).join(" | ")}
+
+FACTS (cite by id):
+${factDigest(dossier)}
+${hookMaterial(dossier)}
+
+${HOOK_SPEC}
+The irony pivot must land within the first 45-60 seconds. At most 4 numbers before it (myth reveal + one per stakes stop).
+Return JSON: the hook skeleton object only.`;
+  let raw = null, problems = [];
+  for (let i = 0; i < (opts.attempts || 2); i++) {
+    const prompt = raw ? `${base}\n\nYOUR PREVIOUS HOOK:\n${JSON.stringify(raw)}\n\nFix these problems and return the full corrected JSON:\n- ${problems.join("\n- ")}` : base;
+    log(`hook attempt ${i + 1}${problems.length ? ` (fixing ${problems.length})` : ""}`);
+    raw = await opts.gemini.json(prompt, { temperature: 0.8, task: "longform.outline", thinking: opts.thinking });
+    problems = hookProblems(raw, dossier);
+    problems.forEach((x) => log(`  - ${x}`));
+    if (!problems.length) break;
+  }
+  return problems.length ? { ...raw, problems } : raw;
 }
 
 function outlinePrompt(dossier, budget) {
@@ -145,15 +194,7 @@ Return JSON:
  {"type": "number", "factId": "F..", "context": "..."}
  {"type": "illustration", "intent": "<concept/joke art, never a real person or real event>"}
 
-HOOK SKELETON (the cold open follows it in this order; it is the most important part of the video):
-{"chorus": "<the buzzword or the common belief as a 1-4 word fragment that everyone repeats, e.g. 'Lost decades.'>",
- "anchorQuote": {"quoteId": "<Q id from QUOTES, or null when there are no quotes>"},
- "myth": {"belief": "<what most people think>", "reveal": "<what they don't realise, carried by a number>", "factIds": ["F.."]},
- "stakesTour": [{"place": "<country/region>", "factId": "F..", "line": "<one plain line: place + number + year>"}] (exactly 3, three DIFFERENT places, escalating; use a spread of world regions),
- "ironyPivot": {"thesis": "<'But the irony is...' the counter-intuitive thesis of the whole video, in one line>", "factIds": ["F.."]},
- "statDefinitionMetaphor": {"factId": "F..", "definition": "<the key term or stat in plain words>", "metaphor": "<everyday physical picture>"},
- "caseStudy": {"name": "<a real, named example>", "place": "<where>", "factIds": ["F.."]},
- "questionStack": ["<3-4 open questions the video will answer; the LAST one is about the viewer: what this means for you, your money, your job or your prices, anywhere in the world>"]}
+${HOOK_SPEC}
 The irony pivot must land within the first 45-60 seconds of narration. CHAPTERS then follow a mini version: open question ->
 story/example -> numbers + metaphor -> "but" turn -> cliffhanger question answered in the next chapter.
 
@@ -237,4 +278,4 @@ async function makeOutline(dossier, opts = {}) {
   return o;
 }
 
-module.exports = { wordBudget, chapterCount, outlineProblems, hookProblems, hookMaterial, finalizeOutline, makeOutline, outlinePrompt, factDigest, isShort, LF_WPM, MIN_MINUTES, MAX_MINUTES, HOOK_MIN_WORDS, HOOK_MAX_WORDS };
+module.exports = { wordBudget, chapterCount, outlineProblems, hookProblems, hookMaterial, reHook, HOOK_SPEC, finalizeOutline, makeOutline, outlinePrompt, factDigest, isShort, LF_WPM, MIN_MINUTES, MAX_MINUTES, HOOK_MIN_WORDS, HOOK_MAX_WORDS };

@@ -54,7 +54,8 @@ Return JSON: {"angle": "<the one viewer question the video answers, <= 20 words>
 - any official data series worth charting (World Bank / IMF / central banks / company filings).
 "hookQuestions" (one searchable question each, for the video's opening):
 - myth: what most people believe about this topic, and the counter-intuitive fact (the irony) that overturns it;
-- stakes: hard numbers with years showing what is at stake in 3 or more DIFFERENT countries or regions of the world;
+- stakes: hard numbers with years showing what is at stake in 3 or more DIFFERENT countries or regions of the world, each
+  causally tied to this topic (a consequence of it there, or the same mechanism playing out there);
 - quote: short verbatim on-the-record statements about this topic by named authorities (heads of state, finance ministers,
   central bankers, IMF/World Bank/OECD officials, CEOs, well-known economists);
 - counter: the strongest case against the usual story (what defenders or critics argue), with figures.
@@ -66,8 +67,9 @@ const KIND_ASK = {
 well-known commentator, mainstream coverage), and (2) the most counter-intuitive, surprising fact that overturns or complicates
 it, with its figure, year and source.`,
   stakes: `Give at least 4 hard numbers from geographically DIFFERENT places (different countries or world regions), one per place,
-each with the place, the figure, its unit and the year, and who reported it. Choose figures a viewer anywhere can feel (people,
-jobs, prices, savings, debt per person, share of the economy).`,
+each with the place, the figure, its unit and the year, and who reported it. Every place must be CAUSALLY tied to this topic:
+a direct consequence of it there (trade, prices, jobs, savings, capital flows), or the same mechanism now playing out there;
+say the link in one sentence. Choose figures a viewer anywhere can feel (people, jobs, prices, savings, debt per person).`,
   quote: `Give 1-3 short (under 35 words) verbatim quotes. Copy each quote word for word inside double quotes, exactly as the source
 reports it, then give the speaker, their role, the date and the outlet or official transcript that reported it. Use only
 official transcripts, speeches, filings, parliamentary records or established news outlets. No paraphrases, no social-media
@@ -171,7 +173,7 @@ Rules:
 Also return, in the same JSON object, material for the video's opening hook:
  "hook": {"belief": {"text": "<what most people think about this, plain words, <= 20 words>", "factIds": ["F.."]},
           "irony": {"text": "<the counter-intuitive fact that overturns or complicates the belief, <= 25 words>", "factIds": ["F.."]},
-          "stakes": [{"place": "<country or region>", "factId": "F.."}],
+          "stakes": [{"place": "<country or region>", "factId": "F..", "why": "<the causal link to the topic, <= 20 words>"}],
           "counterView": ["F.."]},
  "quotes": [{"id": "Q1", "text": "<the quote, copied EXACTLY as it appears in the notes, without the quotation marks>", "speaker": "<name>",
              "role": "<role at the time>", "year": <year or null>, "sourceIds": ["S4"]}]
@@ -217,7 +219,7 @@ function finalizeHook(rawHook, facts) {
     const key = String(s.place).toLowerCase().trim();
     if (places.has(key)) return;
     places.add(key);
-    stakes.push({ place: String(s.place).trim(), factId: String(s.factId) });
+    stakes.push({ place: String(s.place).trim(), factId: String(s.factId), ...(s.why ? { why: String(s.why).trim() } : {}) });
   });
   return { belief: part(h.belief), irony: part(h.irony), stakes, counterView: ids(h.counterView) };
 }

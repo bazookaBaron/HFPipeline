@@ -92,13 +92,29 @@ function loadGeminiRest(opts = {}) {
     };
   }
 
+  let thinkingUnsupported = false;
   async function json(prompt, o = {}) {
     let lastErr;
+    const task = o.task || opts.task || "research.distil";
     for (let i = 0; i < 3; i++) {
-      const cand = await call({
+      const thinkingConfig = thinkingUnsupported ? null : thinkingConfigFor(o.thinkingTask || task, env, o.thinking);
+      const body = {
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { responseMimeType: "application/json", temperature: o.temperature ?? 0.7 },
-      }, "json", o.task || opts.task || "research.distil");
+        generationConfig: { responseMimeType: "application/json", temperature: o.temperature ?? 0.7, ...(thinkingConfig ? { thinkingConfig } : {}) },
+      };
+      let cand;
+      try {
+        cand = await call(body, "json", task);
+      } catch (err) {
+        // a model that rejects the thinking knob still gets the call, at its default thinking
+        if (thinkingConfig && /\b400\b/.test(err.message) && /thinking/i.test(err.message)) {
+          log(`  gemini: ${task} model rejects thinkingConfig; using its default`);
+          thinkingUnsupported = true;
+          i--;
+          continue;
+        }
+        throw err;
+      }
       const t = partsText(cand);
       try {
         return JSON.parse(t);
@@ -111,6 +127,25 @@ function loadGeminiRest(opts = {}) {
   }
 
   return { grounded, json, model };
+}
+
+/**
+ * Thinking knob per task (cost): GEMINI_THINKING_<TASK> (dots -> underscores, e.g. GEMINI_THINKING_LONGFORM_SCRIPT)
+ * in the process env or scripting-pipeline/.env, else THINKING_DEFAULTS. Values: minimal | low | medium | high
+ * (Gemini 3 thinkingLevel), a number (thinkingBudget tokens), or "default" (send nothing: the model's own default).
+ * A caller may pass o.thinkingTask to look up a finer key (script.js uses "longform.script.cold" for the hook).
+ * Cold-open A/B (LF v2 WS-F, Japan): model default = $0.19 (12.6k thinking tokens), 298 words, 5 gate problems, stakes
+ * stops kept their causal links; "low" = $0.04 (0 thinking), 394 words, 9 problems, irony at ~75 s. So chapters
+ * default to "low" (cheap, fine) and the hook keeps the model default.
+ */
+const THINKING_DEFAULTS = { "longform.script": "low", "longform.script.cold": "default" };
+function thinkingConfigFor(task, env = {}, override) {
+  const key = `GEMINI_THINKING_${String(task).toUpperCase().replace(/[^A-Z0-9]+/g, "_")}`;
+  const v = String(override ?? process.env[key] ?? env[key] ?? THINKING_DEFAULTS[task] ?? "default").trim().toLowerCase();
+  if (!v || v === "default") return null;
+  if (/^\d+$/.test(v)) return { thinkingBudget: Number(v) };
+  if (["minimal", "low", "medium", "high"].includes(v)) return { thinkingLevel: v };
+  return null;
 }
 
 /** Run async fn over items with at most `n` in flight; preserves order. */
@@ -127,4 +162,4 @@ async function pool(items, n, fn) {
   return out;
 }
 
-module.exports = { loadGeminiRest, pool, readEnv };
+module.exports = { loadGeminiRest, pool, readEnv, thinkingConfigFor, THINKING_DEFAULTS };

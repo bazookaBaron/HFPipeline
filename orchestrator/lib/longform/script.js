@@ -43,7 +43,7 @@ const STYLE = `VOICE (spoken narration for a relaxed, warm narrator; a smart fri
   "think about that", "so the question is", "people," / "guys," (sparingly). Conversation, not a lecture.
 - Pivots drive the story. A turn every 30-40 seconds (every six or seven sentences): "But...", "And while most people
   think X, what they don't realise is...", "The irony is...", "Here's the catch.", "So the question is...".
-- Every claim is carried by a number, a place and a time ("by twenty fifty", "in the summer of twenty twenty-two", "since
+- Big claims are anchored by a number, a place and a time (few numbers, well chosen: see NUMBERS FOR THE EAR) ("by twenty fifty", "in the summer of twenty twenty-two", "since
   two thousand"). No vague adjectives where a figure exists.
 - Every hard concept gets three steps: (1) a one-line plain definition; (2) a physical, everyday metaphor, then extend it
   once ("like a nail in frozen wood. Now the wood turns to mud."); (3) a real, named example that proves it.
@@ -56,7 +56,7 @@ const STYLE = `VOICE (spoken narration for a relaxed, warm narrator; a smart fri
   term or institution in plain words. Carry one example through instead of piling up new ones.
 - Comedy, a little and dry: deadpan asides, understatement ("Which, in hindsight, was a bold plan."), rule of three with a
   twist, a punchline as its own short sentence, absurd-but-true comparisons whose numbers are COMPUTED from fact values and
-  declared in "calc". At least two light beats per chapter. Punch up at decisions and institutions; never mock private
+  declared in "calc". At least one light beat in the cold open and two per chapter, each tagged "joke". Punch up at decisions and institutions; never mock private
   individuals, tragedy, job losses, ethnicity or religion.
 - The running joke appears at most once per chapter and each callback twists it a new way; never re-explain it.
 - Quotes: ONLY the verbatim QUOTES listed below, word for word inside double quotes, introduced by who said it and when
@@ -66,6 +66,12 @@ const STYLE = `VOICE (spoken narration for a relaxed, warm narrator; a smart fri
 - Neutral and fair on countries, governments and people: describe decisions, incentives and trade-offs; give the other
   side when a point is contested (use the counter-view facts). No loaded labels.
 - No investment advice. No "subscribe/like/follow/share", no "in this video", no "welcome back".
+
+NUMBERS FOR THE EAR (the screen shows the exact digits; the voice speaks like a person):
+- Say numbers the way a person would: "about one percent a year", "three out of five", "almost a quarter", "roughly
+  doubled", "barely shrank". Never "zero point three percent"; no decimals in the cold open, at most one per chapter.
+- At most one number every two or three sentences. Between numbers, give a picture: who, where, what it looks like.
+  A hook that reads like a list of numbers fails.
 
 NUMBERS (checked by a machine against the facts):
 - Spell every number as words for the voice: "ninety billion rupees", "forty-two percent", "twenty twelve" or
@@ -109,21 +115,26 @@ function hookBrief(outline, dossier) {
   // per-step word allowance so the whole skeleton fits the cold-open budget
   const alloc = (share) => Math.max(6, Math.round((outline.coldOpen.words || 180) * share));
   const q = ((dossier.quotes || []).find((x) => x.id === (h.anchorQuote || {}).quoteId)) || null;
-  const st = (h.stakesTour || []).map((s, i) => `   ${i + 1}. ${s.place} [${s.factId}]: ${s.line || ""}`).join("\n");
+  const st = (h.stakesTour || []).map((s, i) => `   ${i + 1}. ${s.place} [${s.factId}]: scene: ${s.scene || "(a plain everyday picture of people there)"} | link to our story: ${s.why || ""} | number: ${s.line || ""}`).join("\n");
   return `HOOK SKELETON, in this order (tag each sentence's device):
  1. chorus [chorus]: open cold on the buzzword / common belief as a fragment: "${h.chorus || ""}". Then one line on how
     everyone repeats it, talking to the viewer ("You've heard it everywhere." headlines, politicians, your uncle at
     dinner). 2-3 very short sentences, ~${alloc(0.08)} words.
  2. anchor quote [quote]: ${q ? `${q.speaker}${q.role ? ` (${q.role})` : ""}${q.year ? `, ${q.year}` : ""}: "${q.text}" - read it word for word in double quotes, quoteId "${q.id}".` : "(no verified quote: skip this step)"}
  3. myth, then reveal [myth], [reveal]: "And while most people think ${(h.myth || {}).belief || "..."}, what they don't realise is ${(h.myth || {}).reveal || "..."}" [${((h.myth || {}).factIds || []).join(", ")}]
- 4. stakes tour [stakes], ~${alloc(0.24)} words: open with "look at this" or similar, then one place + one number + a year
-    per stop, escalating, one or two short sentences each; make clear why each stop matters to THIS story:
+ 4. stakes tour [stakes], ~${alloc(0.24)} words, three stops. Each stop = a tiny human scene (who, where, what it looks
+    like; one short sentence, NO number) + ONE number said like a person ("about one in three", "roughly a fifth") + the
+    link to our story in a few words, so the viewer feels why it matters to THEM. Scene and link sentences are tagged
+    [stakes] too. Never two number sentences in a row.
 ${st}
- 5. irony pivot [irony, pivot]: "But the irony is..." ${(h.ironyPivot || {}).thesis || ""} [${((h.ironyPivot || {}).factIds || []).join(", ")}]
+ 5. irony pivot [irony, pivot]: a real REVERSAL of the belief from step 3, as one full sentence: "But the irony is,
+    ..." ${(h.ironyPivot || {}).thesis || ""} [${((h.ironyPivot || {}).factIds || []).join(", ")}]
+    Then explain it in the next one or two plain sentences (no question yet): ${(h.ironyPivot || {}).explain || ""}
     It MUST start within the first ~140 words (about 50 seconds). Keep steps 1-4 tight (steps 2 and 3: ~${alloc(0.12)} words each).
+    Never a label fragment like "Here's the catch: <jargon>." Say the plain meaning first; the name (if any) after.
  6. stat, definition, metaphor [stat], [definition], [metaphor]: [${(h.statDefinitionMetaphor || {}).factId || ""}] ${(h.statDefinitionMetaphor || {}).definition || ""} / metaphor: ${(h.statDefinitionMetaphor || {}).metaphor || ""} (extend the metaphor once).
     ~${alloc(0.14)} words. The definition is a real plain-words definition ("Deflation just means prices keep falling."), not a label.
- 7. case study [case], ~${alloc(0.1)} words, then one dry joke line [joke]: ${(h.caseStudy || {}).name || ""}${(h.caseStudy || {}).place ? `, ${h.caseStudy.place}` : ""} [${((h.caseStudy || {}).factIds || []).join(", ")}]
+ 7. case study [case], ~${alloc(0.1)} words, then one dry joke line [joke] (idea: ${h.joke || "a wry aside"}): ${(h.caseStudy || {}).name || ""}${(h.caseStudy || {}).place ? `, ${h.caseStudy.place}` : ""} [${((h.caseStudy || {}).factIds || []).join(", ")}]
  8. question stack [question], ~${alloc(0.12)} words: the first sentence is "So the question is, <first question>?" (never a
     bare "So the question is."), then the others, one short question per sentence, the last about the viewer:
 ${(h.questionStack || []).map((x) => `    - ${x}`).join("\n")}
@@ -204,7 +215,8 @@ YOUR CURRENT DRAFT OF THIS SECTION:
 ${JSON.stringify(draft)}
 
 A checker found these problems. Rewrite the section so that none remain, keeping the tone, jokes, tags and flow.
-Change only what the problems need; keep the sentences that are fine.
+Change only what the problems need; keep the sentences that are fine.${sec.id === "cold" ? `
+In the cold open, never cut a stakes stop's scene or its link to our story; to save words, trim elsewhere (chorus, case, questions).` : ""}
 If a number cannot be matched to a fact, drop it or say it qualitatively ("a huge chunk", "most of it").
 To lower the reading grade: split long sentences, swap long words for short everyday ones.
 - ${problems.join("\n- ")}
@@ -271,16 +283,26 @@ function checkAll(sections, dossier, opts = {}) {
 /**
  * @param {object} dossier
  * @param {object} outline
- * @param {{gemini, log?, maxRepairs?: number, concurrency?: number}} opts
+ * @param {{gemini, log?, maxRepairs?: number, concurrency?: number, only?: string[], previous?: object}} opts
  */
 async function writeScript(dossier, outline, opts = {}) {
   const log = opts.log || (() => {});
   const g = opts.gemini;
   const wpm = (outline.budget && outline.budget.wpm) || 160;
   const secs = [outline.coldOpen, ...outline.chapters, outline.recap];
+  // opts.only + opts.previous (cost): redraft only these section ids, reuse the rest from a previous script.json
+  const prev = opts.previous && opts.only ? Object.fromEntries(opts.previous.sections.map((s) => [s.id, s])) : null;
   let sections = await pool(secs, opts.concurrency || 3, async (sec) => {
+    if (prev && !opts.only.includes(sec.id) && prev[sec.id] && prev[sec.id].sentences.length) {
+      const { stats, problems, ...kept } = JSON.parse(JSON.stringify(prev[sec.id]));
+      if (sec.id === "cold") { kept.montageLines = opts.previous.montageLines || []; kept.anchorLine = opts.previous.anchorLine || null; }
+      log(`script: reusing ${sec.id}`);
+      return autoFix(kept);
+    }
+    // opts.drafts[id]: a raw draft already paid for (e.g. an A/B run) is used instead of a new call
+    if (opts.drafts && opts.drafts[sec.id]) { log(`script: using supplied draft for ${sec.id}`); return autoFix(normalizeSection(sec, opts.drafts[sec.id])); }
     log(`script: drafting ${sec.id}`);
-    return autoFix(normalizeSection(sec, await g.json(scriptPrompt(dossier, outline, sec), { temperature: 0.9, task: "longform.script" })));
+    return autoFix(normalizeSection(sec, await g.json(scriptPrompt(dossier, outline, sec), { temperature: 0.9, task: "longform.script", thinking: opts.thinking, thinkingTask: sec.id === "cold" ? "longform.script.cold" : undefined })));
   });
   sections.forEach((s) => { if (s.autoFix.splits) log(`script: ${s.id}: splitter made ${s.autoFix.splits} split(s) before any repair`); });
   let problems = checkAll(sections, dossier, { wpm });

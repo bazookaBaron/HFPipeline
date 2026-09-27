@@ -99,7 +99,7 @@ test("chapter gates: metaphor + case tags, opening question, cliffhanger except 
   assert.ok(p.some((x) => /no concrete, named case/.test(x)));
   assert.ok(p.some((x) => /cliffhanger/.test(x)));
   const ok = [sent("c1", "Why did you never hear about it?"), sent("c2", "It was like a slow leak in a tyre.", { devices: ["metaphor"] }),
-    sent("c3", "But look at Yubari, a town that went broke.", { devices: ["case"] }), sent("c4", "So what happened next?")];
+    sent("c3", "But look at Yubari, a town that went broke.", { devices: ["case"] }), sent("c3b", "Which, in hindsight, was a bold plan.", { devices: ["joke"] }), sent("c4", "So what happened next?")];
   assert.deepStrictEqual(S.styleProblems({ id: "ch2", sentences: ok }, {}), []);
   const last = ok.slice(0, 3);
   assert.ok(!S.styleProblems({ id: "ch3", sentences: last }, { isLastChapter: true }).some((x) => /cliffhanger/.test(x)));
@@ -125,25 +125,87 @@ test("hook script gate: every skeleton element, stakes with numbers, irony by ~6
     sent("h1", "Lost decades.", { devices: ["chorus"] }),
     sent("h2", "Most people think Japan just got lazy.", { devices: ["myth"] }),
     sent("h3", "What they don't realise is it never got poor.", { devices: ["reveal"] }),
-    sent("h4", "In Tokyo, prices fell by ten percent.", { devices: ["stakes"] }),
-    sent("h5", "In Detroit, forty thousand jobs vanished.", { devices: ["stakes"] }),
-    sent("h6", "In Berlin, rents doubled in twenty years.", { devices: ["stakes"] }),
-    sent("h7", "But the irony is, Japan is still rich.", { devices: ["irony", "pivot"] }),
+    sent("h4a", "Picture a noodle shop owner in Tokyo.", { devices: ["stakes"] }),
+    sent("h4", "His prices fell by ten percent.", { devices: ["stakes"] }),
+    sent("h5a", "Now picture a car worker in Detroit.", { devices: ["stakes"] }),
+    sent("h5", "Forty thousand jobs like his vanished.", { devices: ["stakes"] }),
+    sent("h6a", "And a renter in Berlin, watching the bills.", { devices: ["stakes"] }),
+    sent("h6", "Rents there went up by half in twenty years.", { devices: ["stakes"] }),
+    sent("h7", "But the irony is, Japan is still very rich.", { devices: ["irony", "pivot"] }),
+    sent("h7b", "Its people and firms own huge piles of assets abroad.", {}),
     sent("h8", "Deflation means prices go down, not up.", { devices: ["definition", "stat"] }),
     sent("h9", "It's like a sale that never ends.", { devices: ["metaphor"] }),
     sent("h10", "Look at Yubari, a town that went broke.", { devices: ["case"] }),
+    sent("h10b", "Its melon festival did not save it.", { devices: ["joke"] }),
     sent("h11", "So how did it happen?", { devices: ["question"] }),
     sent("h12", "Who paid for it?", { devices: ["question"] }),
     sent("h13", "And what does it mean for your savings?", { devices: ["question"] }),
   ];
   assert.deepStrictEqual(S.hookScriptProblems(good, { dossier: d }), []);
-  const noViewer = good.slice(0, 12).concat(sent("h13", "And what comes next?", { devices: ["question"] }));
+  const noViewer = good.slice(0, -1).concat(sent("h13", "And what comes next?", { devices: ["question"] }));
   assert.ok(S.hookScriptProblems(noViewer, { dossier: d }).some((x) => /about the viewer/.test(x)));
   const late = [...Array.from({ length: 25 }, (_, i) => sent(`p${i}`, "Words words words words words words words words.")), ...good];
   assert.ok(S.hookScriptProblems(late, { dossier: d }).some((x) => /irony pivot .* must land by/.test(x)));
-  const missing = S.hookScriptProblems(good.filter((s) => !s.devices.includes("case")), { dossier: QD });
+  const missing = S.hookScriptProblems(good.filter((s) => !(s.devices || []).includes("case")), { dossier: QD });
   assert.ok(missing.some((x) => /case study/.test(x)));
   assert.ok(missing.some((x) => /anchor quote/.test(x)), "dossier with quotes requires the anchor quote");
+});
+
+test("hook v2 gates: number density, list-of-numbers runs, scenes, joke, irony reversal, label fragments, spoken numbers", () => {
+  const d = { facts: [], quotes: [] };
+  const listy = [
+    sent("a", "Lost decades.", { devices: ["chorus"] }),
+    sent("b", "Most people think forty million Japanese are broke.", { devices: ["myth"] }),
+    sent("c", "Growth was one point one percent.", { devices: ["reveal"] }),
+    sent("d", "Germany fell zero point three percent.", { devices: ["stakes"] }),
+    sent("e", "China owed eighty-six trillion yuan.", { devices: ["stakes"] }),
+    sent("f", "America owes thirty-one trillion dollars.", { devices: ["stakes"] }),
+    sent("g", "Debt hit two hundred fifty percent.", {}),
+    sent("h", "But the irony is.", { devices: ["irony"] }),
+    sent("i", "Here's the catch: demographic drag.", { devices: ["definition"] }),
+  ];
+  const p = S.hookScriptProblems(listy, { dossier: d });
+  for (const re of [/figures before the irony pivot/, /follow another number sentence/, /scene sentence/, /no light joke/, /irony pivot is a fragment/, /cold open says \d+ figures in 9 sentences/]) assert.ok(p.some((x) => re.test(x)), `${re}\n${p.join("\n")}`);
+  const sp = S.styleProblems({ id: "cold", sentences: listy }, { dossier: d });
+  assert.ok(sp.some((x) => /zero point/.test(x)));
+  assert.ok(sp.some((x) => /too many decimals/.test(x)));
+  assert.ok(sp.some((x) => /names a label without saying what it means/.test(x)));
+  // irony must come after the belief
+  const flipped = [sent("x", "But the irony is, Japan is still very rich today.", { devices: ["irony"] }), sent("y", "Most people think it broke.", { devices: ["myth"] }), sent("z", "It owns a lot abroad.")];
+  assert.ok(S.hookScriptProblems(flipped, { dossier: d }).some((x) => /reverse the belief stated BEFORE/.test(x)));
+  // an explained label is fine
+  assert.ok(!S.LABEL_FRAGMENT.test("Here's the catch: fewer workers means less growth for everyone."));
+  // chapters allow one decimal, the cold open none
+  assert.deepStrictEqual(S.spokenNumberProblems([sent("a", "It grew one point nine percent.")], "ch1", []), []);
+  assert.strictEqual(S.spokenNumberProblems([sent("a", "It grew one point nine percent.")], "cold", []).length, 1);
+});
+
+test("thinking knob: env per task, level or budget, default low for the pro script", () => {
+  const { thinkingConfigFor } = require("./gemini");
+  assert.deepStrictEqual(thinkingConfigFor("longform.script", {}), { thinkingLevel: "low" });
+  assert.deepStrictEqual(thinkingConfigFor("longform.script", { GEMINI_THINKING_LONGFORM_SCRIPT: "high" }), { thinkingLevel: "high" });
+  assert.deepStrictEqual(thinkingConfigFor("longform.outline", { GEMINI_THINKING_LONGFORM_OUTLINE: "1024" }), { thinkingBudget: 1024 });
+  assert.strictEqual(thinkingConfigFor("longform.script", { GEMINI_THINKING_LONGFORM_SCRIPT: "default" }), null);
+  assert.strictEqual(thinkingConfigFor("research.distil", {}), null);
+  assert.strictEqual(thinkingConfigFor("longform.script.cold", {}), null); // the hook keeps the model default
+  assert.deepStrictEqual(thinkingConfigFor("longform.script.cold", { GEMINI_THINKING_LONGFORM_SCRIPT_COLD: "low" }), { thinkingLevel: "low" });
+  // a stakes stop said like a person ("it shrank in 2023") is anchored by its year
+  const stops = ["Picture a Bavarian line going idle.", "Their economy shrank in twenty twenty-three.", "Picture a Shanghai tower.", "Developers owed eighty-six trillion yuan.", "Picture a US shopper.", "Debt hit thirty-one trillion dollars."]
+    .map((t, i) => sent(`k${i}`, t, { devices: ["stakes"] }));
+  assert.ok(!S.hookScriptProblems(stops, { dossier: { quotes: [] } }).some((x) => /stakes tour has/.test(x)));
+});
+
+test("writeScript only/previous: redrafts only the named sections", async () => {
+  const { writeScript } = require("./script");
+  const prompts = [];
+  const gemini = { json: async (p) => { prompts.push(p); return { mood: "calm", energy: 2, sentences: [{ text: "Why does it matter to you?" }] }; } };
+  const outline = { title: "T", runningJoke: "j", budget: { wpm: 160 }, coldOpen: { id: "cold", words: 10 }, chapters: [{ id: "ch1", index: 1, title: "A", question: "Why?", words: 10 }], recap: { id: "recap", words: 10 } };
+  const previous = { montageLines: [{ text: "Lost decades.", factIds: [] }], anchorLine: { text: "x", quoteId: null }, sections: ["cold", "ch1", "recap"].map((id) => ({ id, sentences: [{ id: `${id}-s01`, text: "Kept sentence here.", factIds: [] }] })) };
+  const s = await writeScript({ topic: "t", facts: [], glossary: [], timeline: [], quotes: [] }, outline, { gemini, only: ["ch1"], previous, maxRepairs: 0 });
+  assert.strictEqual(prompts.length, 1);
+  assert.match(prompts[0], /CHAPTER 1/);
+  assert.strictEqual(s.sections.find((x) => x.id === "cold").sentences[0].text, "Kept sentence here.");
+  assert.deepStrictEqual(s.montageLines.map((l) => l.text), ["Lost decades."]);
 });
 
 test("montage lines and anchor line", () => {
@@ -172,8 +234,8 @@ test("outline hook skeleton validation", () => {
   const hook = {
     chorus: "Lost decades.", anchorQuote: { quoteId: "Q1" },
     myth: { belief: "b", reveal: "r", factIds: ["F1"] },
-    stakesTour: [{ place: "Tokyo", factId: "F2" }, { place: "Detroit", factId: "F3" }, { place: "Berlin", factId: "F4" }],
-    ironyPivot: { thesis: "t", factIds: ["F5"] }, statDefinitionMetaphor: { factId: "F6", definition: "d", metaphor: "m" },
+    stakesTour: [{ place: "Tokyo", factId: "F2", why: "w", scene: "s" }, { place: "Detroit", factId: "F3", why: "w", scene: "s" }, { place: "Berlin", factId: "F4", why: "w", scene: "s" }],
+    ironyPivot: { thesis: "t", explain: "e", factIds: ["F5"] }, joke: "j", statDefinitionMetaphor: { factId: "F6", definition: "d", metaphor: "m" },
     caseStudy: { name: "Yubari", factIds: ["F7"] }, questionStack: ["How?", "Why?", "What about your job?"],
   };
   const d = { facts, quotes: [{ id: "Q1", text: "q" }] };

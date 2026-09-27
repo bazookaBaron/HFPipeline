@@ -106,4 +106,19 @@ function recordUsage({ task, model, usage, grounded = false, ok = true }) {
   }
 }
 
-module.exports = { modelFor, tierOf, recordUsage, TASKS, DEFAULTS, LEDGER, readEnv };
+/**
+ * Append a priced (non-token) call to the same ledger, e.g. a fal.ai image: {provider, model, cost ($), units}.
+ * Cached reuses are logged with cost 0 and cached: true. Never throws.
+ */
+function recordCost({ task, provider, model, cost = 0, units = 1, cached = false, ok = true, width, height }) {
+  try {
+    const row = { at: new Date().toISOString(), task: task || "unknown", provider: provider || "other", model, cost: Math.round((Number(cost) || 0) * 10000) / 10000, units, cached: !!cached, ok };
+    if (width) Object.assign(row, { width, height });
+    fs.mkdirSync(path.dirname(LEDGER), { recursive: true });
+    fs.appendFileSync(LEDGER, JSON.stringify(row) + "\n");
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+module.exports = { modelFor, tierOf, recordUsage, recordCost, TASKS, DEFAULTS, LEDGER, readEnv };

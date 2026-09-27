@@ -226,6 +226,7 @@ function checkSentenceNumbers(sentence, dossier) {
   const problems = [];
   const factIds = new Set();
   const licensed = [];
+  const figureHits = [];
   for (const c of sentence.calc || []) {
     try {
       const v = evalCalc(c.expr, factValues);
@@ -243,9 +244,20 @@ function checkSentenceNumbers(sentence, dossier) {
     if (isExempt(n)) continue;
     let hit = null;
     if (n.year && years.has(n.value)) { hit = "year"; facts.filter((f) => Number(String(f.year).slice(0, 4)) === n.value).slice(0, 1).forEach((f) => factIds.add(f.id)); }
+    // "less than one percent" / "over two hundred percent": a bound is licensed by a fact on the right side of it
+    const bound = numberBound(sentence.text, n);
+    const within = (c) => (bound === "below" ? Math.abs(c) < n.value : bound === "above" ? Math.abs(c) > n.value : close(n.value, c));
     const fits = (f) => (!n.percent || isPercentUnit(f.unit) || /ratio|share|rate|growth/i.test(f.unit || "") || /%|percent/i.test(f.claim || "")) &&
-      factCandidates(f).some((c) => close(n.value, c));
-    if (!hit) { const f = facts.find((x) => cited.has(x.id) && fits(x)); if (f) { hit = f.id; factIds.add(f.id); } }
+      factCandidates(f).some(within);
+    if (!hit) {
+      const f = facts.find((x) => cited.has(x.id) && fits(x));
+      if (f) {
+        hit = f.id;
+        factIds.add(f.id);
+        scopeProblems(sentence.text, f, n).forEach((x) => problems.push(x));
+        figureHits.push({ n, f });
+      }
+    }
     if (!hit && licensed.some((v) => close(n.value, v))) hit = "calc";
     if (!hit) {
       // a match on a fact the sentence does not cite is often a coincidence ("sixty percent" of a different fact)
@@ -254,7 +266,47 @@ function checkSentenceNumbers(sentence, dossier) {
     }
     if (!hit) problems.push(`"${n.text}" (${fmt(n.value)}${n.percent ? "%" : ""}) matches no dossier fact, year or verified calc`);
   }
+  // one figure + one year in a sentence: the year must be the figure's own year (a 2025 value is not "in 2023")
+  // (only when the year clearly dates the figure: right after it, or a leading "In/By <year>,")
+  const yearNums = nums.filter((x) => x.year);
+  if (figureHits.length === 1 && yearNums.length === 1 && figureHits[0].f.year && Number(figureHits[0].f.year) !== yearNums[0].value) {
+    const { n, f } = figureHits[0];
+    const t = String(sentence.text).toLowerCase();
+    const fi = t.indexOf(n.text.split(" ")[0]), yi = t.indexOf(yearNums[0].text.split(" ")[0], fi + 1);
+    const after = fi >= 0 && yi > fi && t.slice(fi, yi).split(/\s+/).length <= n.text.split(" ").length + 4;
+    const leading = new RegExp(`^(?:in|by|since|back in)\\s+${yearNums[0].text.replace(/[-\s]+/g, "[-\\s]+")}\\s*,`, "i").test(String(sentence.text).trim());
+    if (after || leading) problems.push(`"${n.text}" is ${f.id}'s ${f.year} value but the sentence dates it ${yearNums[0].value}; say the fact's own year`);
+  }
   return { problems, factIds: [...factIds], numbers: nums };
+}
+
+/**
+ * Scope qualifiers that change what a figure measures. When the fact's claim carries one, a sentence that says the
+ * figure must carry it too: "US debt held by the public: 31 trillion" said as "US debt: 31 trillion" is a different,
+ * wrong number (gross debt was ~36 trillion). Each entry: [claim pattern, accepted wordings in the sentence, label].
+ */
+const SCOPES = [
+  [/\bheld by the public\b|\bpublic(?:ly held)? debt\b/i, /\bpublic\b|\binvestors\b|\bmarkets?\b/i, "held by the public"],
+  [/\bnet\b/i, /\bnet\b|\bafter\b|\bminus\b/i, "net"],
+  [/\bper (?:capita|person|head)\b/i, /\bper (?:capita|person|head)\b|\beach (?:person|citizen)\b|\bfor every (?:person|citizen)\b|\bthe average (?:person|citizen)\b/i, "per person"],
+  [/\bper working[- ]age\b/i, /\bper (?:working|worker)|\bworking[- ]age\b|\bfor every worker\b|\beach worker\b|\bper adult\b|\bworking adult\b/i, "per working-age adult"],
+  [/\bhousehold\b/i, /\bhouseholds?\b|\bfamil(?:y|ies)\b|\bhomes?\b/i, "household"],
+  [/\bcore\b/i, /\bcore\b|\bexcluding\b|\bwithout (?:food|fuel|energy)\b/i, "core"],
+];
+/** "less than / under / below / not even X" -> "below"; "more than / over / above X" -> "above"; else null. */
+function numberBound(text, n) {
+  const t = String(text || "").toLowerCase().replace(/[-–]/g, " ");
+  const at = t.indexOf(String(n.text).toLowerCase().replace(/[-–]/g, " ").split(" ")[0]);
+  if (at < 0) return null;
+  const before = t.slice(Math.max(0, at - 20), at);
+  if (/(?:less than|fewer than|under|below|not even|barely)\s+(?:a |an |about )?$/.test(before)) return "below";
+  if (/(?:more than|over|above|upwards of)\s+(?:a |an |about )?$/.test(before)) return "above";
+  return null;
+}
+
+function scopeProblems(text, f, n) {
+  return SCOPES.filter(([inClaim, said]) => inClaim.test(f.claim || "") && !said.test(text))
+    .map(([, , label]) => `"${n.text}" is ${f.id}'s figure for "${label}" (${String(f.claim).slice(0, 70)}); say that scope or the listener hears a different number`);
 }
 
 function fmt(v) {
@@ -262,4 +314,4 @@ function fmt(v) {
   return String(Math.round(v * 1000) / 1000);
 }
 
-module.exports = { claimNumbers, parseSpokenNumbers, isExempt, unitScale, evalCalc, close, checkSentenceNumbers, tokenize };
+module.exports = { claimNumbers, parseSpokenNumbers, isExempt, unitScale, evalCalc, close, checkSentenceNumbers, tokenize, scopeProblems, numberBound, SCOPES };

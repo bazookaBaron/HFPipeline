@@ -151,7 +151,7 @@ test("hook script gate: every skeleton element, stakes with numbers, irony by ~6
   assert.ok(missing.some((x) => /anchor quote/.test(x)), "dossier with quotes requires the anchor quote");
 });
 
-test("hook v2 gates: number density, list-of-numbers runs, scenes, joke, irony reversal, label fragments, spoken numbers", () => {
+test("hook v2 gates: number density, joke, irony reversal, label fragments, spoken numbers", () => {
   const d = { facts: [], quotes: [] };
   const listy = [
     sent("a", "Lost decades.", { devices: ["chorus"] }),
@@ -165,7 +165,7 @@ test("hook v2 gates: number density, list-of-numbers runs, scenes, joke, irony r
     sent("i", "Here's the catch: demographic drag.", { devices: ["definition"] }),
   ];
   const p = S.hookScriptProblems(listy, { dossier: d });
-  for (const re of [/figures before the irony pivot/, /follow another number sentence/, /scene sentence/, /no light joke/, /irony pivot is a fragment/, /cold open says \d+ figures in 9 sentences/]) assert.ok(p.some((x) => re.test(x)), `${re}\n${p.join("\n")}`);
+  for (const re of [/figures before the irony pivot/, /no light joke/, /irony pivot is a fragment/, /cold open says \d+ figures in \d+ words/]) assert.ok(p.some((x) => re.test(x)), `${re}\n${p.join("\n")}`);
   const sp = S.styleProblems({ id: "cold", sentences: listy }, { dossier: d });
   assert.ok(sp.some((x) => /zero point/.test(x)));
   assert.ok(sp.some((x) => /too many decimals/.test(x)));
@@ -206,6 +206,45 @@ test("writeScript only/previous: redrafts only the named sections", async () => 
   assert.match(prompts[0], /CHAPTER 1/);
   assert.strictEqual(s.sections.find((x) => x.id === "cold").sentences[0].text, "Kept sentence here.");
   assert.deepStrictEqual(s.montageLines.map((l) => l.text), ["Lost decades."]);
+});
+
+test("number gate: a figure keeps its scope and its own year (the 'US debt 31 trillion' bug)", () => {
+  const { checkSentenceNumbers } = require("./numbers");
+  const d = { facts: [{ id: "F42", claim: "U.S. federal debt held by the public reached 31 trillion dollars in December 2025.", value: 31, unit: "USD trillion", year: 2025 }, { id: "F9", claim: "another event", year: 2023 }] };
+  const chk = (text) => checkSentenceNumbers({ text, factIds: ["F42"] }, d).problems;
+  assert.match(chk("US debt reaches thirty-one trillion dollars by twenty twenty-five.")[0], /held by the public/);
+  assert.deepStrictEqual(chk("US debt held by the public reached thirty-one trillion dollars in twenty twenty-five."), []);
+  assert.match(chk("US public debt hit thirty-one trillion dollars in twenty twenty-three.")[0], /2025 value but the sentence dates it 2023/);
+  assert.match(chk("In twenty twenty-three, US public debt hit thirty-one trillion dollars.")[0], /dates it 2023/);
+});
+
+test("fragment gate: verbless sentences over 3 words fail; chorus opener, lists, quotes and short punches pass", () => {
+  const secs = [sent("a", "Lost decades in Japan today."), sent("b", "A couple staring at an unfinished Chinese tower."), sent("c", "Same flour. "), sent("d", "No oil, no gold mines, not even a coastline."),
+    sent("e", "In Shenzhen, a young couple still pays a mortgage on a tower nobody finished."), sent("f", "\"Whatever it takes, and believe me, it will be enough\"")];
+  const p = S.fragmentProblems(secs, "cold");
+  assert.strictEqual(p.length, 1);
+  assert.match(p[0], /^b: /);
+  assert.ok(S.hasFiniteVerb("Prices crashed in Tokyo.") && S.hasFiniteVerb("Picture a factory worker in Basel.") && !S.hasFiniteVerb("An American shopper facing soaring bills."));
+});
+
+test("editor pass: kept only when locked tokens survive and gates do not get worse", async () => {
+  const { editColdOpen, lockedTokens, COLD_EXAMPLES } = require("./script");
+  assert.match(COLD_EXAMPLES, /Switzerland/);
+  const cold = { id: "cold", mood: "tension", energy: 3, words: 20, montageLines: [], anchorLine: null, sentences: [sent("cold-s01", "Lost decades."), sent("cold-s02", "In Osaka, Hiro watched prices fall by ten percent.", { factIds: ["F1"] })] };
+  const d = { facts: [{ id: "F1", claim: "prices fell 10%", value: 10, unit: "%" }], glossary: [], quotes: [], timeline: [] };
+  const lk = lockedTokens(cold).map((x) => x.text);
+  assert.ok(lk.includes("ten percent") && lk.includes("Hiro") && lk.includes("Osaka"), lk.join("|"));
+  const lower = await (async () => editColdOpen([cold], [["a", "b", "c", "d", "e", "f", "g", "h"]], d, [{ id: "cold", words: 20 }], { json: async () => ({ sentences: [{ text: "Lost decades." }, { text: "In osaka, hiro watched prices fall by ten percent." }] }) }))();
+  assert.match(lower.note, /dropped Osaka, Hiro|dropped Hiro, Osaka/, "names must keep their capitals");
+  const { checkAll } = require("./script");
+  const base = checkAll([JSON.parse(JSON.stringify(cold))], d);
+  const run = async (reply) => editColdOpen([cold], [base[0].concat(["slack"])], d, [{ id: "cold", words: 20 }], { json: async () => reply });
+  const dropped = await run({ sentences: [{ text: "Lost decades." }, { text: "In Osaka, Hiro watched prices fall a lot." }] });
+  assert.match(dropped.note, /dropped ten percent/);
+  assert.strictEqual(dropped.sections[0], cold);
+  const ok = await run({ sentences: [{ text: "Lost decades." }, { text: "In Osaka, Hiro watched his prices fall by ten percent.", factIds: ["F1"] }] });
+  assert.match(ok.note, /editor accepted/);
+  assert.notStrictEqual(ok.sections[0], cold);
 });
 
 test("montage lines and anchor line", () => {

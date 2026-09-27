@@ -28,8 +28,8 @@
 const { pool } = require("./gemini");
 const { sectionProblems, fkGrade, words } = require("./checks");
 const { factDigest } = require("./outline");
-const { checkSentenceNumbers } = require("./numbers");
-const { MOODS, DEVICES, splitLongSentences, mergeDanglingLeads, fillTags, styleProblems, montageProblems, lengthStats } = require("./style");
+const { checkSentenceNumbers, parseSpokenNumbers } = require("./numbers");
+const { MOODS, DEVICES, splitLongSentences, mergeDanglingLeads, fillTags, styleProblems, montageProblems, lengthStats, quotedSpans } = require("./style");
 
 const SCRIPT_VERSION = "lf-script.v2";
 
@@ -122,10 +122,10 @@ function hookBrief(outline, dossier) {
     dinner). 2-3 very short sentences, ~${alloc(0.08)} words.
  2. anchor quote [quote]: ${q ? `${q.speaker}${q.role ? ` (${q.role})` : ""}${q.year ? `, ${q.year}` : ""}: "${q.text}" - read it word for word in double quotes, quoteId "${q.id}".` : "(no verified quote: skip this step)"}
  3. myth, then reveal [myth], [reveal]: "And while most people think ${(h.myth || {}).belief || "..."}, what they don't realise is ${(h.myth || {}).reveal || "..."}" [${((h.myth || {}).factIds || []).join(", ")}]
- 4. stakes tour [stakes], ~${alloc(0.24)} words, three stops. Each stop = a tiny human scene (who, where, what it looks
-    like; one short sentence, NO number) + ONE number said like a person ("about one in three", "roughly a fifth") + the
-    link to our story in a few words, so the viewer feels why it matters to THEM. Scene and link sentences are tagged
-    [stakes] too. Never two number sentences in a row.
+ 4. stakes tour [stakes], ~${alloc(0.24)} words, three stops. Each stop weaves a tiny human scene (who, where, what they
+    see, as a FULL sentence with a verb) into ONE number said like a person, plus the link to our story, so the viewer
+    feels why it matters to THEM ("In Shenzhen, a young couple still pays a mortgage on a tower nobody finished, and the
+    builders owe more than most countries earn in a year."). Keep each figure's scope and year exactly as in its fact.
 ${st}
  5. irony pivot [irony, pivot]: a real REVERSAL of the belief from step 3, as one full sentence: "But the irony is,
     ..." ${(h.ironyPivot || {}).thesis || ""} [${((h.ironyPivot || {}).factIds || []).join(", ")}]
@@ -175,9 +175,43 @@ Fact ids to use (you may use others): ${(sec.factIds || []).join(", ")}`;
 
 const SCHEMA = (cold) => `{"mood": "<mood>", "energy": <1-5>, "sentences": [{"text": "...", "factIds": ["F3"], "calc": [], "visual": "<visual>", "devices": [], "quoteId": null}]${cold ? `, "montageLines": [{"text": "...", "factIds": []}], "anchorLine": {"text": "...", "quoteId": null}` : ""}}`;
 
+/**
+ * Two ORIGINAL cold opens in the channel voice, on unrelated topics, for the hook few-shot. Their facts are
+ * illustrative only (the model is told never to reuse them). Static text: it sits in the static prompt prefix.
+ */
+const COLD_EXAMPLES = `EXAMPLE COLD OPENS (other topics; copy the flow and voice, never their facts or wording):
+
+Example A - "Why Switzerland is so rich":
+Rich. That's the one word everyone uses for Switzerland. Bankers, chocolate, and watches that cost more than your car.
+Most people think the Swiss got rich by hiding other people's money. What they don't realise is that banks make only
+about a tenth of the economy. On a grey morning in Basel, a lab technician checks a batch of cancer medicine bound for
+hospitals worldwide. That one tray is worth more than a house. But the irony
+is, Switzerland has almost nothing to dig out of the ground. No oil, no gold mines, not even a coastline. So it learned to
+sell brains instead. Economists call that high value added, which just means you charge a lot for what you make. Think
+of a baker who stops selling bread and starts selling wedding cakes. Same flour. Much bigger bill. So the question is,
+how did a small, landlocked country pull this off? Could anyone copy it? And what does it mean for the prices you pay?
+
+Example B - "How Netflix almost died":
+Streaming wars. You've heard the phrase on every tech podcast. And Netflix is always the giant everyone is chasing.
+Most people think Netflix won because it saw the future first. What they don't realise is that in twenty eleven, it
+nearly killed itself. That summer, families across America opened an email saying their plan now cost about sixty
+percent more. Plenty of them simply clicked cancel. Then it moved its DVDs into a new brand called Qwikster. Which,
+to be fair, sounds like a cough syrup. By December, the stock had lost about three quarters of its value. But the
+irony is, that near-death moment is what saved it. Customers kept leaving every month, what the industry calls churn.
+So Netflix started making shows you could not watch anywhere else. Think of a restaurant that loses its regulars and
+finally learns to cook. So the question is, how does a company come back from the
+edge? Why did the fix work? And what does it tell you about the apps you pay for every month?`;
+
 function scriptPrompt(dossier, outline, sec) {
   const map = [`Cold open: ${(outline.hook && outline.hook.ironyPivot && outline.hook.ironyPivot.thesis) || outline.coldOpen.hook}`, ...outline.chapters.map((c) => `Chapter ${c.index} "${c.title}": ${c.question}`), "Recap"].join("\n");
-  return `You write one section of the narration for a YouTube deep-dive: "${outline.title}" (topic: ${dossier.topic}).
+  // static part first (identical across sections and videos) so Gemini implicit caching can reuse the prefix
+  return `You write narration for a YouTube explainer channel (global finance, business and geopolitics).
+
+${STYLE}
+
+${TAGS}
+${sec.id === "cold" ? `\n${COLD_EXAMPLES}\n` : ""}
+NOW YOUR TASK: one section of the narration for the deep-dive "${outline.title}" (topic: ${dossier.topic}).
 Angle: ${dossier.angle}
 Running joke: ${outline.runningJoke}
 Audience: curious people worldwide, 18-35, no finance background. "What's in it for you" means anyone, anywhere.
@@ -193,10 +227,6 @@ ${quoteList(dossier)}
 
 GLOSSARY (explain any of these in plain words, same or next sentence, the first time you use it):
 ${dossier.glossary.map((g) => `${g.term}: ${g.plain}`).join("\n")}
-
-${STYLE}
-
-${TAGS}
 
 ${sectionBrief(outline, sec, dossier)}
 
@@ -257,6 +287,68 @@ function normalizeSection(sec, raw) {
   return out;
 }
 
+// ---------- editor pass (cold open) ----------
+const normTok = (t) => String(t || "").toLowerCase().replace(/[’]/g, "'").replace(/[-–—]/g, " ").replace(/\s+/g, " ").trim();
+
+/** Tokens the editor must not change: spoken numbers, quoted text, capitalised names (not sentence-initial); original case. */
+function lockedTokens(section) {
+  const out = new Map();
+  const add = (t, name = false) => { const k = normTok(t); if (k && !out.has(k)) out.set(k, { text: String(t).trim(), name }); };
+  for (const s of section.sentences) {
+    parseSpokenNumbers(s.text).forEach((n) => add(n.text));
+    quotedSpans(s.text).forEach((q) => add(q.inner));
+    (String(s.text).match(/(?<=\S\s+)[A-Z][A-Za-z'’.-]+/g) || []).forEach((w) => add(w.replace(/['’]s$/, "").replace(/[.]$/, ""), true));
+  }
+  return [...out.values()];
+}
+/** Locked tokens missing from an edit (numbers and quotes case-insensitive; names must keep their capitals). */
+const missingTokens = (locked, section) => {
+  const raw = section.sentences.map((s) => s.text).join(" ");
+  const t = normTok(raw);
+  return locked.filter((x) => (x.name ? !raw.includes(x.text) : !t.includes(normTok(x.text)))).map((x) => x.text);
+};
+
+function editorPrompt(section) {
+  const locked = lockedTokens(section);
+  return `You are the final editor of a spoken YouTube cold open (a relaxed, warm narrator; a smart friend over coffee).
+${COLD_EXAMPLES}
+
+Rewrite the draft below so it flows and has rhythm like the examples: vary sentence length, join choppy fragments into
+full sentences with verbs, add small linking words, keep it simple (grade 5-7) and keep its jokes, direct address
+("you"), pivots ("But the irony is...", "So the question is...") and its structure and order.
+HARD RULES:
+- Keep EVERY one of these tokens exactly as written, same capitals (numbers, names, quotes): ${locked.map((x) => `"${x.text}"`).join(", ")}.
+- Keep the order of the beats: chorus, quote, belief and reveal, the three stakes stops, THEN the irony line, then the rest.
+- No new facts, numbers, names or quotes. Keep each number's scope words and year. Total length within 10% of the draft.
+- Every sentence has a verb and at most 20 words (a quoted line may stand in its own sentence). Keep the irony line
+  within the first 150 words.
+- Each sentence keeps its "factIds", "devices", "visual" (and "quoteId"); when you merge sentences, merge their lists.
+DRAFT:
+${JSON.stringify({ sentences: section.sentences.map(({ text, factIds, devices, visual, quoteId, calc }) => ({ text, factIds, devices, visual, ...(quoteId ? { quoteId } : {}), ...(calc ? { calc } : {}) })) })}
+
+Return JSON: {"sentences": [{"text": "...", "factIds": [], "devices": [], "visual": "...", "quoteId": null, "calc": []}]}`;
+}
+
+/**
+ * One cheap editor call (standard tier, low thinking) over the cold open; the edit is kept only when every locked token
+ * survives and the gates find no more problems than before. Returns {sections, problems, note}.
+ */
+async function editColdOpen(sections, problems, dossier, secs, g, opts = {}) {
+  const i = sections.findIndex((s) => s.id === "cold");
+  if (i < 0 || !sections[i].sentences.length) return { sections, problems, note: "no cold open" };
+  const before = sections[i];
+  const raw = await g.json(editorPrompt(before), { temperature: 0.5, task: "longform.edit", thinking: opts.editThinking || "low" });
+  const edited = autoFix(normalizeSection(secs[i], { ...raw, mood: before.mood, energy: before.energy, montageLines: before.montageLines, anchorLine: before.anchorLine }));
+  edited.montageLines = before.montageLines;
+  edited.anchorLine = before.anchorLine;
+  const missing = missingTokens(lockedTokens(before), edited);
+  if (!edited.sentences.length || missing.length) return { sections, problems, note: `editor dropped ${missing.length ? missing.join(", ") : "everything"}; kept pre-edit` };
+  const trial = sections.map((s, k) => (k === i ? edited : s));
+  const p2 = checkAll(trial, dossier, opts);
+  if (p2[i].length > problems[i].length) return { sections, problems, note: `editor made ${p2[i].length} problems (pre-edit ${problems[i].length}); kept pre-edit: ${p2[i].join(" | ").slice(0, 300)}` };
+  return { sections: trial, problems: p2, note: `editor accepted (${problems[i].length} -> ${p2[i].length} problems)` };
+}
+
 /** Deterministic fixes before any check / LLM repair: split long sentences, fill tags. */
 function autoFix(section) {
   const merges = mergeDanglingLeads(section);
@@ -270,7 +362,8 @@ function checkAll(sections, dossier, opts = {}) {
   const all = sections.flatMap((s) => s.sentences);
   const lastCh = sections.map((s) => s.id).filter((id) => /^ch\d+$/.test(id)).pop();
   return sections.map((s, i) => {
-    const p = sectionProblems(s, { dossier, glossary: dossier.glossary, allSentences: all, wordBudget: s.words, isFirst: i === 0 });
+    // the cold open gets +30 % slack: flowing, full-sentence hooks run a little longer than the budget
+    const p = sectionProblems(s, { dossier, glossary: dossier.glossary, allSentences: all, wordBudget: s.words, isFirst: i === 0, ...(s.id === "cold" ? { wordSlack: [0.8, 1.3] } : {}) });
     styleProblems(s, { dossier, wpm: opts.wpm, isLastChapter: s.id === lastCh }).forEach((x) => p.push(x));
     if (s.id === "cold") {
       montageProblems(s.montageLines, s.anchorLine, dossier).forEach((x) => p.push(x));
@@ -335,6 +428,17 @@ async function writeScript(dossier, outline, opts = {}) {
     problems = checkAll(sections, dossier, { wpm });
     history.push(problems.map((p) => p.length));
   }
+  // editor pass on the cold open (flow and rhythm; one cheap call; kept only when it does not break a gate)
+  let editNote = null;
+  const coldRedrafted = !opts.only || opts.only.includes("cold");
+  if (opts.edit !== false && coldRedrafted) {
+    const r = await editColdOpen(sections, problems, dossier, secs, g, { wpm, editThinking: opts.editThinking });
+    sections = r.sections;
+    problems = r.problems;
+    editNote = r.note;
+    log(`script: cold-open editor: ${editNote}`);
+    history.push(problems.map((p) => p.length));
+  }
   sections.forEach((s, i) => {
     const st = lengthStats(s.sentences);
     s.stats = { words: s.sentences.reduce((a, x) => a + words(x.text).length, 0), fk: Number(fkGrade(s.sentences).toFixed(2)), sentences: s.sentences.length, medianWords: st.median };
@@ -358,6 +462,7 @@ async function writeScript(dossier, outline, opts = {}) {
       fkMax: Math.max(...sections.map((s) => s.stats.fk)),
       problems: problems.reduce((a, p) => a + p.length, 0),
       repairHistory: history,
+      editor: editNote,
     },
   };
 }
@@ -380,4 +485,4 @@ function scriptMarkdown(script, dossier) {
   return L.join("\n") + "\n";
 }
 
-module.exports = { writeScript, scriptMarkdown, scriptPrompt, repairPrompt, normalizeSection, autoFix, checkAll, STYLE, TAGS, SCRIPT_VERSION };
+module.exports = { writeScript, scriptMarkdown, scriptPrompt, repairPrompt, editorPrompt, editColdOpen, lockedTokens, normalizeSection, autoFix, checkAll, STYLE, TAGS, COLD_EXAMPLES, SCRIPT_VERSION };

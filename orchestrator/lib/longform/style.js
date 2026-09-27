@@ -238,6 +238,41 @@ function fillTags(section) {
 // ---------- gates ----------
 const tagged = (sents, d) => sents.filter((s) => (s.devices || []).includes(d));
 
+// ---------- verbless fragments ----------
+// finite-verb heuristic: auxiliaries/modals/contractions, "-ed" past forms, or a common verb (base / -s / irregular past).
+// "-ing" alone does not count: "A couple staring at an unfinished tower." is a fragment.
+const AUX = new Set("am is are was were be been being has have had do does did can could will would shall should may might must isn't aren't wasn't weren't hasn't haven't hadn't doesn't don't didn't can't couldn't won't wouldn't shouldn't".split(" "));
+const VERBS = `ask become begin believe borrow break bring build buy call cause change choose come cost count cut deal decide drop earn end expect face fall feel fight find fix follow get give go grow happen hear help hide hit hold hope imagine keep know last lead learn leave lend let lie like live look lose make matter mean meet miss move need open owe own pay picture pick play print pull push put raise reach read remember rise run save say see seem sell send set shift show shrink sink sit sound spend stand start stay stop suffer take talk teach tell think throw tip trade try turn use wait walk want warn watch win wonder work worry write
+ wipe eat cook climb jump collapse crash soar double triple halve beat burst pop flood dry crack freeze melt slow hire fire quit
+ retire vote tax ship export import invest mint charge rent cancel sign promise admit blame split slash hike lower boost fuel
+ drive feed bet gamble rescue bail default recover survive fail succeed ban allow force block shut sit stare stall shrug laugh
+ cry sigh smile panic flee flow pile dump cash spike plunge tumble surge climb vanish appear seem tank`.split(/\s+/);
+const IRREGULAR = "became began bought broke brought built came chose cost cut dealt did drove fell felt fought found gave got grew heard held hid hit kept knew laid led left lent let lost made meant met paid put ran rose said sank sat saw sent set shrank sold spent stood stuck swung took taught told thought threw understood went won wrote";
+const VERB_FORMS = new Set([
+  ...VERBS,
+  ...VERBS.map((v) => (/(?:s|sh|ch|x|o)$/.test(v) ? `${v}es` : /[^aeiou]y$/.test(v) ? `${v.slice(0, -1)}ies` : `${v}s`)),
+  ...VERBS.map((v) => (/e$/.test(v) ? `${v}d` : /[^aeiou]y$/.test(v) ? `${v.slice(0, -1)}ied` : `${v}ed`)),
+  ...IRREGULAR.split(" "),
+]);
+function hasFiniteVerb(text) {
+  const ws = String(text || "").toLowerCase().replace(/[’]/g, "'").match(/[a-z]+(?:'[a-z]+)?/g) || [];
+  // "-ed" right after a determiner is an adjective ("an unfinished tower", "the owed money")
+  const DET = /^(?:a|an|the|this|that|these|those|its|their|his|her|my|your|our|some|every|each|no)$/;
+  return ws.some((w, i) => {
+    if (AUX.has(w) || /'(?:s|re|ve|d|ll|m)$/.test(w)) return true;
+    const ed = /ed$/.test(w);
+    if (ed && i > 0 && DET.test(ws[i - 1])) return false;
+    return VERB_FORMS.has(w) || (w.length > 4 && ed && /[^e]ed$|[^aeiou]ied$|ted$|ded$/.test(w));
+  });
+}
+/** Verbless sentences longer than 3 words (the cold open's first line - the chorus - and quotes are exempt). */
+function fragmentProblems(sents, sectionId) {
+  // a rhythmic list ("No oil, no gold mines, not even a coastline.") is a device, not a broken sentence
+  const isList = (t) => { const parts = String(t).split(","); return parts.length >= 3 && parts.every((x) => wc(x) <= 4); };
+  return sents.filter((s, i) => !(sectionId === "cold" && i === 0) && wc(s.text) > 3 && !quotedSpans(s.text).length && !isList(s.text) && !hasFiniteVerb(s.text))
+    .map((s) => `${s.id}: "${s.text}" has no verb; make it a full sentence or fold it into the next one`);
+}
+
 const HOOK_MAX_FIGURES_BEFORE_IRONY = 4;
 /** Hard figures a sentence says (years, counting words and verified quotes excluded). */
 const figuresIn = (s, quotes) => parseSpokenNumbers(stripVerifiedQuotes(s.text, quotes)).filter((n) => !isExempt(n) && !n.year);
@@ -259,19 +294,23 @@ function spokenNumberProblems(sents, sectionId, quotes) {
   return p;
 }
 
-/** Cold-open number density: <= 1 figure per 2 sentences, <= 4 before the irony pivot, never two figure sentences in a row. */
+/**
+ * Cold-open number density (catches a hook that reads like a list of numbers; does not dictate sentence shapes):
+ * <= 1 figure per ~25 words (about one per two or three sentences) and <= 4 before the irony pivot. (No rule on
+ * adjacent number sentences: stakes stops woven into full sentences each carry one number, and the editor pass
+ * handles rhythm better than a shape rule.)
+ */
 function numberDensityProblems(sents, quotes, ironyIdx) {
   const p = [];
   const counts = sents.map((s) => figuresIn(s, quotes).length);
   const total = counts.reduce((a, x) => a + x, 0);
-  const max = Math.ceil(sents.length / 2);
-  if (total > max) p.push(`cold open says ${total} figures in ${sents.length} sentences (max ${max}: about one per two or three sentences); keep the ones that hit hardest, say the rest in words`);
+  const nWords = sents.reduce((a, s) => a + wc(s.text), 0);
+  const max = Math.max(3, Math.ceil(nWords / 25));
+  if (total > max) p.push(`cold open says ${total} figures in ${nWords} words (max ${max}: about one per two or three sentences); keep the ones that hit hardest, say the rest in words`);
   if (ironyIdx > 0) {
     const before = counts.slice(0, ironyIdx).reduce((a, x) => a + x, 0);
     if (before > HOOK_MAX_FIGURES_BEFORE_IRONY) p.push(`${before} figures before the irony pivot (max ${HOOK_MAX_FIGURES_BEFORE_IRONY}); one number per stakes stop, the rest as scenes`);
   }
-  const runs = sents.filter((s, i) => i > 0 && counts[i] && counts[i - 1]).map((s) => s.id);
-  if (runs.length) p.push(`${runs.join(", ")} follow another number sentence; the hook must not read like a list of numbers: put a small human scene (who, where, what it looks like) between numbers`);
   return p;
 }
 
@@ -288,12 +327,12 @@ function hookScriptProblems(sents, opts = {}) {
   const anchored = (s) => hasFigure(s.text) || parseSpokenNumbers(s.text).some((n) => n.year);
   const stakes = tagged(sents, "stakes").filter(anchored);
   if (stakes.length < 3) p.push(`cold open stakes tour has ${stakes.length} stop(s) anchored by a number or year; need 3 (one place + one number + year each)`);
-  const scenes = tagged(sents, "stakes").filter((s) => !anchored(s));
-  if (stakes.length >= 3 && scenes.length < 3) p.push(`stakes tour has ${scenes.length} scene sentence(s); wrap each stop's number in a tiny human scene (who, where, what it looks like), tagged "stakes"`);
   if (!tagged(sents, "joke").length) p.push('cold open has no light joke or wry aside (tag it "joke")');
   const myth = sents.findIndex((s) => (s.devices || []).includes("myth"));
   const iro = sents.findIndex((s) => (s.devices || []).includes("irony"));
   if (iro >= 0) {
+    const firstStake = sents.findIndex((s) => (s.devices || []).includes("stakes"));
+    if (firstStake > iro) p.push(`the irony pivot (${sents[iro].id}) comes before the stakes tour; the stakes build up first, then the irony turns them`);
     if (myth < 0 || myth > iro) p.push(`the irony pivot (${sents[iro].id}) must reverse the belief stated BEFORE it ("most people think..." -> "but the irony is...")`);
     if (wc(sents[iro].text) < 7) p.push(`${sents[iro].id}: the irony pivot is a fragment; state the counter-fact as a full sentence`);
     const next = sents[iro + 1];
@@ -334,6 +373,7 @@ function styleProblems(section, opts = {}) {
   });
   const quotes = (opts.dossier && opts.dossier.quotes) || [];
   spokenNumberProblems(sents, section.id, quotes).forEach((x) => p.push(x));
+  fragmentProblems(sents, section.id).forEach((x) => p.push(x));
   sents.forEach((s) => {
     const m = String(s.text).trim().match(LABEL_FRAGMENT);
     if (m) p.push(`${s.id}: "${s.text}" names a label without saying what it means; say the plain meaning first, then (optionally) the name`);
@@ -372,5 +412,5 @@ function montageProblems(montageLines, anchorLine, dossier) {
 module.exports = {
   MOODS, VISUALS, DEVICES, MEDIAN_MAX, LONG_WORDS, LONG_SHARE_MAX, WINDOW_SECONDS, IRONY_BY_SECONDS, MONTAGE_MIN, MONTAGE_MAX, MONTAGE_WORDS,
   DIRECT, PIVOT, lengthStats, windows, splitSentence, splitLongSentences, mergeDanglingLeads, fillTags, styleProblems, hookScriptProblems, montageProblems,
-  quotedSpans, matchQuote, stripVerifiedQuotes, quoteProblems, normQuote, median, numberDensityProblems, spokenNumberProblems, LABEL_FRAGMENT, HOOK_MAX_FIGURES_BEFORE_IRONY,
+  quotedSpans, matchQuote, stripVerifiedQuotes, quoteProblems, normQuote, median, numberDensityProblems, spokenNumberProblems, fragmentProblems, hasFiniteVerb, LABEL_FRAGMENT, HOOK_MAX_FIGURES_BEFORE_IRONY,
 };

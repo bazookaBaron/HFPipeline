@@ -104,6 +104,7 @@ function sectionProblems(section, opts = {}) {
   const sents = section.sentences || [];
   const problems = [];
   if (!sents.length) return ["section has no sentences"];
+  const quotesForLen = (opts.dossier && opts.dossier.quotes) || [];
   const factIdSet = new Set(((opts.dossier && opts.dossier.facts) || []).map((f) => f.id));
   const ids = new Set();
   let figureCount = 0;
@@ -111,7 +112,8 @@ function sectionProblems(section, opts = {}) {
     if (!s.id) s.id = `${section.id || "s"}-${i + 1}`;
     if (ids.has(s.id)) problems.push(`duplicate sentence id ${s.id}`);
     ids.add(s.id);
-    const n = words(s.text).length;
+    // a verified verbatim quote counts as one unit: its length is the speaker's, not ours
+    const n = words(quotesForLen.length ? stripVerifiedQuotes(s.text, quotesForLen) : s.text).length + (quotesForLen.length && stripVerifiedQuotes(s.text, quotesForLen) !== s.text ? 1 : 0);
     if (n > MAX_WORDS) problems.push(`${s.id} has ${n} words (max ${MAX_WORDS}); split it: "${s.text.slice(0, 70)}..."`);
     // verified verbatim quotes (style.js) are the speaker's words: their numbers are not ours to gate
     const quotes = (opts.dossier && opts.dossier.quotes) || [];
@@ -151,7 +153,8 @@ function sectionProblems(section, opts = {}) {
     .forEach((p) => problems.push(p));
   if (opts.wordBudget) {
     const n = sents.reduce((a, s) => a + words(s.text).length, 0);
-    const lo = Math.round(opts.wordBudget * 0.8), hi = Math.round(opts.wordBudget * 1.2);
+    const [loF, hiF] = opts.wordSlack || [0.8, 1.2];
+    const lo = Math.round(opts.wordBudget * loF), hi = Math.round(opts.wordBudget * hiF);
     if (n < lo || n > hi) problems.push(`section has ${n} words; target ${opts.wordBudget} (${lo}-${hi})`);
   }
   if (opts.glossary && opts.allSentences) {

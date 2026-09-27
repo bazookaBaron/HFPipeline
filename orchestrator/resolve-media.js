@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 // CLI: node resolve-media.js --intents intents.json --out <dir> [--cache <dir>] [--concurrency 3] [--no-vision] [--offline]
-// intents.json: [{slot, kind: photo|portrait|logo|video|map|illustration, entity?, intent, mood?, era?, minWidth?, size?, allowIllustration?}]
+// intents.json: [{slot, kind: photo|portrait|logo|video|map|illustration, entity?, intent, mood?, era?, minWidth?, size?, allowIllustration?,
+//                 duration? (video: clip length 4-12 s, default 6), nasa? (also search NASA)}]
 // (or {intents: [...]}). Writes <out>/media-manifest.json, credits.txt, media-report.json.
 
 const fs = require("fs");

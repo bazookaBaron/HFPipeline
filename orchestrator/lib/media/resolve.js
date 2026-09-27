@@ -8,16 +8,17 @@
 const fs = require("fs");
 const path = require("path");
 const { createHttp } = require("./http");
-const { store, ensureCacheDir, DEFAULT_CACHE_DIR } = require("./cache");
+const { store, ensureCacheDir, relFile, DEFAULT_CACHE_DIR } = require("./cache");
 const { planQueries, fallbackPlan } = require("./queries");
 const { vet, verdictProblems } = require("./vision");
 const { qualityProblems, slotSize } = require("./quality");
 const { shortCredit, fullCredit } = require("./credits");
 const { sniffImage, dhash, thumbJpeg, isDuplicate } = require("./image");
+const { processVideo, MIN_HEIGHT: VIDEO_MIN_HEIGHT, MIN_SOURCE_DUR } = require("./video");
 
 const KINDS = new Set(["photo", "portrait", "logo", "video", "map", "illustration"]);
-const VET_PER_STAGE = { commons: 6, openverse: 4, nasa: 3 };
-const MAX_VIDEO_BYTES = 150 * 1024 * 1024;
+const VET_PER_STAGE = { commons: 6, openverse: 4, nasa: 3, "commons:video": 6, "nasa:video": 4 };
+const CLIPS_PER_STAGE = 3; // poster-vetted candidates turned into clips (download + window + frame vetting) per stage
 
 const defaultProviders = () => ({
   commons: require("./providers/commons"),
@@ -109,7 +110,7 @@ async function resolveMedia(intents, opts = {}) {
     used.push(pick.hash);
     const entry = await finalize(pick, intent, ctx);
     manifest[intent.slot] = entry;
-    report.slots[intent.slot] = { intent, status: entry.status, stage: pick.stage, ms: r.ms, plan: r.plan, pick: { id: pick.cand.id, depicts: pick.verdict.depicts, confidence: pick.verdict.confidence }, trace: r.trace };
+    report.slots[intent.slot] = { intent, status: entry.status, kind: entry.kind, fallbackFrom: pick.fallbackFrom, stage: pick.stage, ms: r.ms, plan: r.plan, pick: { id: pick.cand.id, depicts: pick.verdict.depicts, confidence: pick.verdict.confidence }, trace: r.trace };
   }
   report.ms = Date.now() - t0;
   report.http = http.stats;
@@ -126,6 +127,7 @@ function countStatuses(manifest) {
 }
 
 async function resolveSlot(intent, ctx, { exclude = [], skipUrls = new Set(), trace = [] } = {}) {
+  if (intent.kind === "video") return resolveVideoSlot(intent, ctx, { exclude, skipUrls, trace });
   const t = Date.now();
   const { log } = ctx;
   let plan;
@@ -231,16 +233,6 @@ async function gatherCommons(intent, plan, ctx, trace) {
       trace.push({ stage: "commons:search", query: q, error: err.message });
     }
   }
-  if (isVideo) {
-    // real finance footage is rare: fall back to stills of the same subject
-    for (const q of plan.queries.slice(0, 2)) {
-      try {
-        searches.push(await providers.commons.search(http, q, { limit: 12, filetype: "bitmap" }));
-      } catch (err) {
-        trace.push({ stage: "commons:search", query: q, error: err.message });
-      }
-    }
-  }
   const out = [...lists.flat(), ...interleave(searches)];
   if (entity) out.entity = { id: entity.id, label: entity.label, description: entity.description };
   return out;
@@ -258,15 +250,119 @@ async function gatherSearch(name, intent, queries, ctx, trace) {
   return interleave(lists);
 }
 
+// ------------------------------------------------------------------ video slots
+function videoMetaProblems(c, intent) {
+  const p = [];
+  if (!c.posterUrl) p.push("no poster");
+  if (c.duration && c.duration < MIN_SOURCE_DUR) p.push(`duration ${Number(c.duration).toFixed(1)} s < ${MIN_SOURCE_DUR} s`);
+  const w = c.width || 0;
+  const h = c.height || 0;
+  if (w && h) {
+    if (Math.min(w, h) < VIDEO_MIN_HEIGHT) p.push(`resolution ${w}x${h} < ${VIDEO_MIN_HEIGHT}p`);
+    const s = slotSize(intent);
+    const a = w / h;
+    if (a < s.aspect[0] || a > s.aspect[1]) p.push(`aspect ${a.toFixed(2)} outside ${s.aspect[0]}-${s.aspect[1]} for ${s.name}`);
+  }
+  return p;
+}
+
+async function gatherNasaVideo(intent, queries, ctx, trace) {
+  const lists = [];
+  for (const q of queries) {
+    try {
+      lists.push(await ctx.providers.nasa.searchVideo(ctx.http, q, { limit: 10 }));
+    } catch (err) {
+      trace.push({ stage: "nasa:video", query: q, error: err.message });
+    }
+  }
+  return interleave(lists);
+}
+
+/**
+ * kind "video": Commons video (entity category + search), then NASA video when relevant. Posters are
+ * vetted first (cheap relevance filter), then up to CLIPS_PER_STAGE candidates become clips (lib/media/video.js:
+ * window without cuts/black/fades, 3 frames vetted). No acceptable clip -> the still pipeline for the same
+ * intent (kind photo), flagged fallbackFrom: "video".
+ */
+async function resolveVideoSlot(intent, ctx, { exclude = [], skipUrls = new Set(), trace = [] } = {}) {
+  const t = Date.now();
+  const { log } = ctx;
+  let plan;
+  try {
+    plan = await planQueries(intent, { gemini: ctx.gemini, cacheDir: ctx.cacheDir, log });
+  } catch (err) {
+    trace.push({ stage: "queries", error: err.message });
+    plan = { queries: [intent.entity || intent.intent], rubric: intent.intent, nasaRelevant: false, wikidataSearch: intent.entity || null };
+  }
+  log(`[${intent.slot}] video: ${plan.queries.join(" | ")}`);
+  const stages = [["commons:video", () => gatherCommons(intent, plan, ctx, trace)]];
+  if (plan.nasaRelevant || intent.nasa === true) stages.push(["nasa:video", () => gatherNasaVideo(intent, plan.queries.slice(0, 3), ctx, trace)]);
+  for (const [stage, gather] of stages) {
+    let cands;
+    try {
+      cands = await gather();
+    } catch (err) {
+      trace.push({ stage, error: err.message });
+      continue;
+    }
+    const ranked = await screenAndVet(stage, cands, intent, plan, ctx, { exclude, skipUrls, trace });
+    const entry = trace.filter((x) => x.stage === stage).pop() || {};
+    entry.clipRejects = [];
+    // Commons files still pending a licence review (e.g. YouTube imports) are rejected: the CC tag is
+    // unverified, which is too risky for a monetised channel
+    for (let k = ranked.length - 1; k >= 0; k--) {
+      if (!ranked[k].cand.licenceReview) continue;
+      entry.clipRejects.push({ id: ranked[k].cand.id, why: ["licence review pending"] });
+      ranked.splice(k, 1);
+    }
+    ranked.sort((a, b) => b.score - a.score);
+    let tried = 0;
+    for (const r of ranked) {
+      if (tried >= CLIPS_PER_STAGE) break;
+      tried++;
+      const c = { ...r.cand };
+      if (c.assetUrl && c.fileUrl === c.assetUrl) {
+        try {
+          const rend = await ctx.providers.nasa.renditions(ctx.http, c);
+          if (!rend) {
+            entry.clipRejects.push({ id: c.id, why: ["no mp4 rendition"] });
+            continue;
+          }
+          c.fileUrl = rend.url;
+          c.rendition = rend.label;
+        } catch (err) {
+          entry.clipRejects.push({ id: c.id, why: [`asset manifest: ${err.message.slice(0, 80)}`] });
+          continue;
+        }
+      }
+      const v = await processVideo(c, intent, { cacheDir: ctx.cacheDir, gemini: ctx.gemini, useVision: ctx.useVision, log, rubric: plan.rubric, subject: cands.entity });
+      if (!v.ok) {
+        entry.clipRejects.push({ id: c.id, why: v.why });
+        log(`[${intent.slot}] clip rejected ${c.id}: ${v.why.join("; ").slice(0, 160)}`);
+        continue;
+      }
+      if (isDuplicate(v.hash, exclude)) {
+        entry.clipRejects.push({ id: c.id, why: ["duplicate (dHash)"] });
+        continue;
+      }
+      entry.clips = 1;
+      const verdict = { ...r.verdict, ...v.verdict, focal: v.verdict.focal || r.verdict.focal };
+      return { ranked: [{ ...r, cand: c, hash: v.hash, verdict, video: v, stage }], plan, trace, ms: Date.now() - t };
+    }
+  }
+  log(`[${intent.slot}] no acceptable clip: falling back to stills`);
+  const { duration, ...rest } = intent;
+  const photo = await resolveSlot({ ...rest, kind: "photo" }, ctx, { exclude, skipUrls, trace });
+  return { ...photo, ranked: photo.ranked.map((x) => ({ ...x, fallbackFrom: "video" })), ms: Date.now() - t };
+}
+
 function metadataProblems(c, intent) {
   const p = [];
   if (!c.licence || !c.licence.allowed) p.push(`licence: ${(c.licence && (c.licence.reason || c.licence.label)) || "unknown"}`);
   if (c.licence && c.licence.attribution && !c.author) p.push("no author for attribution");
-  if (c.mediaType === "video") {
-    if ((c.origWidth || 0) < 1280) p.push(`video width ${c.origWidth} < 1280`);
-    if (c.bytes && c.bytes > MAX_VIDEO_BYTES) p.push("video too large");
-    if (!c.posterUrl) p.push("no poster");
-  } else p.push(...qualityProblems(c, intent));
+  if (c.mediaType === "video") p.push(...videoMetaProblems(c, intent));
+  else if (intent.kind === "video") p.push("not a video");
+  else p.push(...qualityProblems(c, intent));
   return p;
 }
 
@@ -335,7 +431,8 @@ async function screenAndVet(stage, cands, intent, plan, ctx, { exclude, skipUrls
   const ranked = [];
   items.forEach((it, k) => {
     const v = verdicts[k];
-    const p = verdictProblems(v, intent.kind);
+    // a video poster is only a relevance pre-filter: title cards / captions / bugs are judged on the trimmed window's frames
+    const p = verdictProblems(v, intent.kind).filter((x) => intent.kind !== "video" || !/^(heavy text|watermark)$/.test(x));
     if (p.length) {
       entry.rejects.push({ id: it.cand.id, why: p });
       return;
@@ -401,7 +498,90 @@ async function illustrationCandidate(intent, plan, ctx, trace) {
   return null;
 }
 
+async function finalizeVideo(pick, intent, ctx) {
+  const c = pick.cand;
+  const v = pick.video;
+  const m = v.meta;
+  const rec = { kind: "video", source: c.source, provider: c.provider, title: c.title, author: c.author, licence: c.licence, pageUrl: c.pageUrl, fileUrl: c.fileUrl };
+  const credit = shortCredit(rec);
+  const creditFull = fullCredit(rec);
+  const sha = require("crypto").createHash("sha256").update(v.mp4).digest("hex");
+  const dir = path.join(ctx.cacheDir, sha.slice(0, 2));
+  fs.mkdirSync(dir, { recursive: true });
+  const posterAbs = path.join(dir, `${sha}.poster.jpg`);
+  const lastAbs = path.join(dir, `${sha}.last.jpg`);
+  fs.writeFileSync(posterAbs, v.poster);
+  fs.writeFileSync(lastAbs, v.last);
+  const poster = relFile(posterAbs);
+  const lastFrame = relFile(lastAbs);
+  const focal = pick.verdict.focal || [0, 0, 1, 1];
+  const size = pick.size || (Math.min(m.sourceWidth, m.sourceHeight) >= 720 ? slotSize(intent).name : "card");
+  const sidecar = {
+    kind: "video",
+    source: c.source,
+    via: c.via,
+    id: c.id,
+    title: c.title,
+    pageUrl: c.pageUrl || null,
+    fileUrl: c.fileUrl || null,
+    rendition: c.rendition || null,
+    author: c.author || null,
+    licence: c.licence.label,
+    licenceUrl: c.licence.url || null,
+    licenceReview: !!c.licenceReview,
+    sa: !!c.licence.sa,
+    credit,
+    creditFull,
+    width: m.width,
+    height: m.height,
+    duration: m.clipDur,
+    clipDur: m.clipDur,
+    fps: m.fps,
+    trimIn: m.trimIn,
+    trimOut: m.trimOut,
+    trimApprox: !!m.trimApprox,
+    sourceDuration: m.sourceDuration,
+    sourceWidth: m.sourceWidth,
+    sourceHeight: m.sourceHeight,
+    focal,
+    poster,
+    lastFrame,
+    dhash: pick.hash,
+    query: c.query || null,
+    intent: intent.intent,
+    vision: { depicts: pick.verdict.depicts, confidence: pick.verdict.confidence, unvetted: !!pick.verdict.unvetted, frames: pick.verdict.frames },
+    edits: "trimmed, scaled, re-encoded (H.264, no audio)",
+    fetchedAt: new Date().toISOString(),
+    resolverVersion: 1,
+  };
+  const s = store(ctx.cacheDir, v.mp4, "mp4", sidecar);
+  return {
+    status: "ok",
+    kind: "video",
+    source: c.source,
+    sha: s.sha,
+    file: s.file,
+    poster,
+    lastFrame,
+    clipDur: m.clipDur,
+    fps: m.fps,
+    width: m.width,
+    height: m.height,
+    credit,
+    creditFull,
+    licence: c.licence.label,
+    licenceUrl: c.licence.url || null,
+    focal,
+    pageUrl: c.pageUrl || null,
+    depicts: pick.verdict.depicts || undefined,
+    size,
+    trimIn: m.trimIn,
+    trimOut: m.trimOut,
+  };
+}
+
 async function finalize(pick, intent, ctx) {
+  if (pick.video) return finalizeVideo(pick, intent, ctx);
   const c = pick.cand;
   let buf;
   let ext;
@@ -409,19 +589,16 @@ async function finalize(pick, intent, ctx) {
     buf = c.data;
     ext = c.ext;
   } else {
-    buf = await ctx.http.getBuffer(c.fileUrl, { maxBytes: c.mediaType === "video" ? MAX_VIDEO_BYTES : 40 * 1024 * 1024 });
-    if (c.mediaType === "video") ext = /\.ogv$/i.test(c.fileUrl) ? "ogv" : "webm";
-    else {
-      const info = sniffImage(buf);
-      ext = info ? info.ext : "jpg";
-      if (info && info.width) {
-        c.width = info.width;
-        c.height = info.height;
-      }
+    buf = await ctx.http.getBuffer(c.fileUrl, { maxBytes: 40 * 1024 * 1024 });
+    const info = sniffImage(buf);
+    ext = info ? info.ext : "jpg";
+    if (info && info.width) {
+      c.width = info.width;
+      c.height = info.height;
     }
   }
   const rec = {
-    kind: intent.kind,
+    kind: pick.fallbackFrom ? "photo" : intent.kind,
     source: c.source,
     provider: c.provider,
     title: c.title,
@@ -435,7 +612,7 @@ async function finalize(pick, intent, ctx) {
   const creditFull = fullCredit(rec);
   const status = c.source === "illustration" ? "illustration" : "ok";
   const sidecar = {
-    kind: c.mediaType === "video" ? "video" : "image",
+    kind: "image",
     source: c.source,
     via: c.via,
     provider: c.provider || undefined,
@@ -480,6 +657,7 @@ async function finalize(pick, intent, ctx) {
     pageUrl: c.pageUrl || null,
     depicts: pick.verdict.depicts || undefined,
     size: pick.size || slotSize(intent).name,
+    ...(pick.fallbackFrom ? { fallbackFrom: pick.fallbackFrom } : {}),
   };
 }
 

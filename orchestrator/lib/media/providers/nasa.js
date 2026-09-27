@@ -50,9 +50,71 @@ function parseResults(json, query) {
   return out;
 }
 
+// ---- videos: search media_type=video; the asset manifest (collection.json) lists the mp4 renditions
+function nasaLicence(d, author) {
+  const thirdParty = THIRD_PARTY.test(`${d.description || ""} ${author}`) || (author && !/nasa/i.test(author) && !d.center);
+  return thirdParty
+    ? { id: "unknown", label: "third-party", allowed: false, reason: "NASA item credited to a third party", sa: false, attribution: false, url: "" }
+    : { id: "pd", label: "Public domain", allowed: true, sa: false, attribution: false, url: "https://www.nasa.gov/nasa-brand-center/images-and-media/" };
+}
+
+function parseVideoResults(json, query) {
+  const out = [];
+  for (const it of (json && json.collection && json.collection.items) || []) {
+    const d = (it.data || [])[0];
+    if (!d || d.media_type !== "video" || !it.href) continue;
+    const poster = pickLink(it.links);
+    const author = d.photographer || d.secondary_creator || "";
+    out.push({
+      source: "nasa",
+      via: "nasa:video",
+      query,
+      id: d.nasa_id,
+      title: d.title || d.nasa_id,
+      pageUrl: `https://images.nasa.gov/details/${encodeURIComponent(d.nasa_id)}`,
+      // resolved to an mp4 rendition by renditions() before processing; the manifest URL is the dedupe key until then
+      fileUrl: it.href,
+      assetUrl: it.href,
+      posterUrl: poster ? poster.href : undefined,
+      origWidth: 0,
+      origHeight: 0,
+      width: 0,
+      height: 0,
+      mime: "video/mp4",
+      mediaType: "video",
+      author,
+      licence: nasaLicence(d, author),
+      description: String(d.description || "").slice(0, 300),
+      hasCaptions: (it.links || []).some((l) => l.rel === "captions"),
+    });
+  }
+  return out;
+}
+
+async function searchVideo(http, query, { limit = 10 } = {}) {
+  const json = await http.getJson(`${API}?q=${encodeURIComponent(query)}&media_type=video&page_size=${limit}`);
+  return parseVideoResults(json, query);
+}
+
+/** mp4 renditions from an asset manifest (array of URLs), best first: ~large (1080p), ~medium (720p), ~orig */
+function pickVideoRendition(list) {
+  const arr = Array.isArray(list) ? list : list && list.collection ? (list.collection.items || []).map((i) => i.href) : [];
+  const urls = arr.map((u) => String(u).replace(/^http:\/\//, "https://")).filter((u) => /\.mp4$/i.test(u));
+  for (const k of ["~large.mp4", "~medium.mp4", "~orig.mp4"]) {
+    const u = urls.find((x) => x.endsWith(k));
+    if (u) return { url: encodeURI(decodeURI(u)), label: k.slice(1, -4) };
+  }
+  return null;
+}
+
+async function renditions(http, cand) {
+  const list = await http.getJson(String(cand.assetUrl).replace(/ /g, "%20"));
+  return pickVideoRendition(list);
+}
+
 async function search(http, query, { limit = 12 } = {}) {
   const json = await http.getJson(`${API}?q=${encodeURIComponent(query)}&media_type=image&page_size=${limit}`);
   return parseResults(json, query);
 }
 
-module.exports = { search, parseResults, pickLink, API };
+module.exports = { search, parseResults, pickLink, API, searchVideo, parseVideoResults, pickVideoRendition, renditions };

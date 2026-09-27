@@ -1,0 +1,34 @@
+{
+  "version": "media-manifest.v1",
+  "note": "from out/media-video-proof (lib/media video resolver, 2026-09-27)",
+  "slots": {
+    "ship": {
+      "status": "ok",
+      "kind": "video",
+      "source": "commons",
+      "sha": "e5d4c99be72eaea40c879612f3433eaac62f06d2f7c64ecfa137c8a438ce068f",
+      "file": "assets/media/cache/e5/e5d4c99be72eaea40c879612f3433eaac62f06d2f7c64ecfa137c8a438ce068f.mp4",
+      "poster": "assets/media/cache/e5/e5d4c99be72eaea40c879612f3433eaac62f06d2f7c64ecfa137c8a438ce068f.poster.jpg",
+      "lastFrame": "assets/media/cache/e5/e5d4c99be72eaea40c879612f3433eaac62f06d2f7c64ecfa137c8a438ce068f.last.jpg",
+      "clipDur": 6,
+      "fps": 30,
+      "width": 1920,
+      "height": 1080,
+      "credit": "Video: USDAgov / Wikimedia Commons · Public domain",
+      "creditFull": "\"20201119-TFAA-LSC-0045-CLIP\" · by USDAgov · Wikimedia Commons: https://commons.wikimedia.org/wiki/File:20201119-TFAA-LSC-0045-CLIP.webm · Public domain",
+      "licence": "Public domain",
+      "licenceUrl": null,
+      "focal": [
+        0,
+        0.3,
+        0.52,
+        0.45
+      ],
+      "pageUrl": "https://commons.wikimedia.org/wiki/File:20201119-TFAA-LSC-0045-CLIP.webm",
+      "depicts": "Large COSCO container ship docked at a port with cranes",
+      "size": "full",
+      "trimIn": 14,
+      "trimOut": 20
+    }
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "version": "storyboard.v3",
+  "profile": "LF",
+  "frame": {
+    "w": 1920,
+    "h": 1080
+  },
+  "topic": "Video clip smoke test",
+  "chapter": {
+    "index": 1,
+    "count": 1,
+    "title": "Moving pictures"
+  },
+  "mediaManifest": "lf-video-smoke.media.json",
+  "entities": {},
+  "sentences": [
+    {
+      "id": "s1",
+      "text": "Every single day, giant container ships load up and leave the world's busiest ports for the open sea."
+    },
+    {
+      "id": "s2",
+      "text": "One ship can carry twenty thousand boxes, and every single one of them is tracked from port to port."
+    }
+  ],
+  "scaffolds": [
+    {
+      "id": "port",
+      "template": "lfFull",
+      "from": "s1",
+      "slots": {
+        "photo": {
+          "id": "portclip",
+          "props": {
+            "slot": "ship"
+          }
+        },
+        "lowerThird": {
+          "id": "portlt",
+          "props": {
+            "tag": "Global trade",
+            "title": "Ships, cranes and boxes",
+            "sub": "Real footage from the resolver"
+          }
+        },
+        "overlays": [
+          {
+            "id": "portco",
+            "type": "callout",
+            "at": [
+              72,
+              16
+            ],
+            "w": 330,
+            "anchor": {
+              "text": "ports."
+            },
+            "props": {
+              "value": "Daily",
+              "text": "Loaded and gone",
+              "tone": "blue"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "boxes",
+      "template": "lfNumber",
+      "from": "s2",
+      "slots": {
+        "number": {
+          "id": "teu",
+          "props": {
+            "eyebrow": "One ship",
+            "value": 20000,
+            "unit": "boxes",
+            "context": "on the largest container ships"
+          }
+        },
+        "right": [
+          {
+            "id": "tracked",
+            "type": "callout",
+            "anchor": {
+              "text": "tracked"
+            },
+            "props": {
+              "value": "Tracked",
+              "text": "port to port",
+              "tone": "blue"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "events": []
+}

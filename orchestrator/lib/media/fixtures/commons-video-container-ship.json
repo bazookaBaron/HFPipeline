@@ -1,0 +1,1101 @@
+{
+ "batchcomplete": true,
+ "continue": {
+  "gsroffset": 6,
+  "continue": "gsroffset||"
+ },
+ "query": {
+  "pages": [
+   {
+    "pageid": 24619621,
+    "ns": 6,
+    "title": "File:İstanbul Boğazı - Haydarpaşa Limanı - Şubat 2013.ogv",
+    "index": 6,
+    "imagerepository": "local",
+    "videoinfo": [
+     {
+      "size": 11840935,
+      "width": 800,
+      "height": 592,
+      "duration": 22.714920634920635,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b6/%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv/500px--%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+      "thumbwidth": 800,
+      "thumbheight": 592,
+      "thumbattribs": [],
+      "url": "https://upload.wikimedia.org/wikipedia/commons/b/b6/%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=24619621",
+      "extmetadata": {
+       "DateTime": {
+        "value": "2013-02-12 14:40:25",
+        "source": "mediawiki-metadata",
+        "hidden": ""
+       },
+       "ObjectName": {
+        "value": "İstanbul Boğazı - Haydarpaşa Limanı - Şubat 2013",
+        "source": "mediawiki-metadata"
+       },
+       "CommonsMetadataExtension": {
+        "value": 1.2,
+        "source": "extension",
+        "hidden": ""
+       },
+       "Categories": {
+        "value": "Port of Haydarpaşa|Selimiye, Istanbul|Self-published work|Videos of container ships",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "Assessments": {
+        "value": "",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "ImageDescription": {
+        "value": "İstanbul - Port of Haydarpaşa",
+        "source": "commons-desc-page"
+       },
+       "DateTimeOriginal": {
+        "value": "2013-02-12 16:32:58",
+        "source": "commons-desc-page"
+       },
+       "Credit": {
+        "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:VikiPicture\" title=\"User:VikiPicture\">VikiPicture</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY-SA 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "UsageTerms": {
+        "value": "Creative Commons Attribution-Share Alike 3.0",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "LicenseUrl": {
+        "value": "https://creativecommons.org/licenses/by-sa/3.0",
+        "source": "commons-desc-page"
+       },
+       "Copyrighted": {
+        "value": "True",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "License": {
+        "value": "cc-by-sa-3.0",
+        "source": "commons-templates",
+        "hidden": ""
+       }
+      },
+      "mime": "application/ogg",
+      "derivatives": [
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/b/b6/%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+        "type": "video/ogg; codecs=\"theora, vorbis\"",
+        "width": 800,
+        "height": 592,
+        "bandwidth": 4170275
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/b/b6/%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv/%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv.240p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "240p.vp9.webm",
+        "width": 324,
+        "height": 240,
+        "bandwidth": 409920
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/b/b6/%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv/%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv.360p.mpeg4.mov",
+        "type": "video/quicktime; codecs=\"mp4v\"",
+        "transcodekey": "360p.mpeg4.mov",
+        "width": 486,
+        "height": 360,
+        "bandwidth": 935176
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/b/b6/%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv/%C4%B0stanbul_Bo%C4%9Faz%C4%B1_-_Haydarpa%C5%9Fa_Liman%C4%B1_-_%C5%9Eubat_2013.ogv.480p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "480p.vp9.webm",
+        "width": 648,
+        "height": 480,
+        "bandwidth": 1362552
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "ns": 14,
+      "title": "Category:CC-BY-SA-3.0"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Port of Haydarpaşa"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Self-published work"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Selimiye, Istanbul"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of container ships"
+     }
+    ]
+   },
+   {
+    "pageid": 91304211,
+    "ns": 6,
+    "title": "File:Container Ship Dashcam Around The World In 70 Days Timelapse, 4k, 60fps.webm",
+    "index": 3,
+    "imagerepository": "local",
+    "videoinfo": [
+     {
+      "size": 1167453145,
+      "width": 1920,
+      "height": 1080,
+      "duration": 1723.741,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm/960px--Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+      "thumbwidth": 960,
+      "thumbheight": 540,
+      "responsiveUrls": {
+       "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/7a/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm/1920px--Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo"
+      },
+      "thumbattribs": [],
+      "url": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse,_4k,_60fps.webm",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=91304211",
+      "extmetadata": {
+       "DateTime": {
+        "value": "2020-06-18 13:42:33",
+        "source": "mediawiki-metadata",
+        "hidden": ""
+       },
+       "ObjectName": {
+        "value": "Container Ship Dashcam Around The World In 70 Days Timelapse, 4k, 60fps",
+        "source": "mediawiki-metadata"
+       },
+       "CommonsMetadataExtension": {
+        "value": 1.2,
+        "source": "extension",
+        "hidden": ""
+       },
+       "Categories": {
+        "value": "Port of Baltimore|Suez Canal|Ambient music|Port of New York and New Jersey|Featured media|Videos from YouTube|Media of the day|Videos of 2018|Videos with music|Uploaded with video2commons|License reviewed by YouTubeReviewBot|Featured media nominated by Eatcha|Time-lapse videos of transport|Videos of ports and harbours|Videos of container ships|Videos of the Panama Canal|Featured media of time-lapse videos|Featured media uploaded by Eatcha|Videos of intermodal containers",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "Assessments": {
+        "value": "",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "ImageDescription": {
+        "value": "Over 250,000 combined over a 70 day period documenting the voyage of a neopanamax container ship. \n<p>The route starts at Hong Kong in mid-November 2017, and is a circular route continuously sailing e",
+        "source": "commons-desc-page"
+       },
+       "DateTimeOriginal": {
+        "value": "2018-03-18",
+        "source": "commons-desc-page"
+       },
+       "Credit": {
+        "value": "<bdi lang=\"en\" dir=\"ltr\"><a href=\"//commons.wikimedia.org/wiki/Commons:YouTube_files\" title=\"Commons:YouTube files\">YouTube</a>: <a rel=\"nofollow\" class=\"external text\" href=\"https://www.youtube.com/watch?v=TR3aXzVJTO0\"><bdi lang=\"\">Container Ship Dashcam - Around The World In 70 Days (Timelapse, 4k, 60fps)</bdi></a> – View/save archived versions on <a rel=\"nofollow\" class=\"external text\" href=\"https://web.archive.org/web/*/https://www.youtube.com/watch?v=TR3aXzVJTO0\">archive.org</a></bdi>",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.youtube.com/channel/UCEayKrw6sj2vjFmvPP43eYw\">Jonathan Fielding</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "UsageTerms": {
+        "value": "Creative Commons Attribution 3.0",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Attribution": {
+        "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.youtube.com/channel/UCEayKrw6sj2vjFmvPP43eYw\">Jonathan Fielding</a>",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "LicenseUrl": {
+        "value": "https://creativecommons.org/licenses/by/3.0",
+        "source": "commons-desc-page"
+       },
+       "Copyrighted": {
+        "value": "True",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "License": {
+        "value": "cc-by-3.0",
+        "source": "commons-templates",
+        "hidden": ""
+       }
+      },
+      "mime": "video/webm",
+      "derivatives": [
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "width": 1920,
+        "height": 1080,
+        "bandwidth": 5418229
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/7/7a/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm.240p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "240p.vp9.webm",
+        "width": 426,
+        "height": 240,
+        "bandwidth": 373352
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/7/7a/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm.360p.mpeg4.mov",
+        "type": "video/quicktime; codecs=\"mp4v\"",
+        "transcodekey": "360p.mpeg4.mov",
+        "width": 640,
+        "height": 360,
+        "bandwidth": 1636376
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/7/7a/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm.480p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "480p.vp9.webm",
+        "width": 854,
+        "height": 480,
+        "bandwidth": 1108112
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/7/7a/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm/Container_Ship_Dashcam_Around_The_World_In_70_Days_Timelapse%2C_4k%2C_60fps.webm.1080p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "1080p.vp9.webm",
+        "width": 1920,
+        "height": 1080,
+        "bandwidth": 3986048
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "ns": 14,
+      "title": "Category:Ambient music"
+     },
+     {
+      "ns": 14,
+      "title": "Category:CC-BY-3.0"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Featured media"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Featured media nominated by Eatcha"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Featured media of time-lapse videos"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Featured media uploaded by Eatcha"
+     },
+     {
+      "ns": 14,
+      "title": "Category:License reviewed by YouTubeReviewBot"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Media of the day"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Port of Baltimore"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Port of New York and New Jersey"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Suez Canal"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Time-lapse videos of transport"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Uploaded with video2commons"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos from YouTube"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of 2018"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of container ships"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of intermodal containers"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of ports and harbours"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of the Panama Canal"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos with music"
+     }
+    ]
+   },
+   {
+    "pageid": 96786891,
+    "ns": 6,
+    "title": "File:Joe Biden touring the Port of New Orleans.ogv",
+    "index": 4,
+    "imagerepository": "local",
+    "videoinfo": [
+     {
+      "size": 1949814,
+      "width": 640,
+      "height": 640,
+      "duration": 4.938271604938272,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Joe_Biden_touring_the_Port_of_New_Orleans.ogv/500px--Joe_Biden_touring_the_Port_of_New_Orleans.ogv.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+      "thumbwidth": 640,
+      "thumbheight": 640,
+      "thumbattribs": [],
+      "url": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Joe_Biden_touring_the_Port_of_New_Orleans.ogv?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Joe_Biden_touring_the_Port_of_New_Orleans.ogv",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=96786891",
+      "extmetadata": {
+       "DateTime": {
+        "value": "2020-11-24 21:49:17",
+        "source": "mediawiki-metadata",
+        "hidden": ""
+       },
+       "ObjectName": {
+        "value": "Joe Biden touring the Port of New Orleans",
+        "source": "mediawiki-metadata"
+       },
+       "CommonsMetadataExtension": {
+        "value": 1.2,
+        "source": "extension",
+        "hidden": ""
+       },
+       "Categories": {
+        "value": "Port of New Orleans|Executive Office of the President files|2016-02-17|Joe Biden in Louisiana|February 2016 in New Orleans|Joe Biden in February 2016|Videos of Joe Biden in 2016|Joe Biden and Cedric Richmond",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "Assessments": {
+        "value": "",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "ImageDescription": {
+        "value": "Here, the Vice President tours the new intermodal terminal at the Port of New Orleans -- the recipient of a $16.7 million grant through our TIGER program, which was established by the Recovery Act. An",
+        "source": "commons-desc-page"
+       },
+       "DateTimeOriginal": {
+        "value": "2016-02-17",
+        "source": "commons-desc-page"
+       },
+       "Credit": {
+        "value": "<a rel=\"nofollow\" class=\"external free\" href=\"https://www.instagram.com/p/BB5YyDwFwXO/\">https://www.instagram.com/p/BB5YyDwFwXO/</a>",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "The White House",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "Public domain",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "UsageTerms": {
+        "value": "Public domain",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Copyrighted": {
+        "value": "False",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "License": {
+        "value": "pd",
+        "source": "commons-templates",
+        "hidden": ""
+       }
+      },
+      "mime": "application/ogg",
+      "derivatives": [
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/c/ce/Joe_Biden_touring_the_Port_of_New_Orleans.ogv?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+        "type": "video/ogg; codecs=\"theora\"",
+        "width": 640,
+        "height": 640,
+        "bandwidth": 3158698
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/ce/Joe_Biden_touring_the_Port_of_New_Orleans.ogv/Joe_Biden_touring_the_Port_of_New_Orleans.ogv.240p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "240p.vp9.webm",
+        "width": 240,
+        "height": 240,
+        "bandwidth": 236736
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/ce/Joe_Biden_touring_the_Port_of_New_Orleans.ogv/Joe_Biden_touring_the_Port_of_New_Orleans.ogv.360p.mpeg4.mov",
+        "type": "video/quicktime; codecs=\"mp4v\"",
+        "transcodekey": "360p.mpeg4.mov",
+        "width": 360,
+        "height": 360,
+        "bandwidth": 1026224
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/c/ce/Joe_Biden_touring_the_Port_of_New_Orleans.ogv/Joe_Biden_touring_the_Port_of_New_Orleans.ogv.480p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "480p.vp9.webm",
+        "width": 480,
+        "height": 480,
+        "bandwidth": 825280
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "ns": 14,
+      "title": "Category:2016-02-17"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Executive Office of the President files"
+     },
+     {
+      "ns": 14,
+      "title": "Category:February 2016 in New Orleans"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Joe Biden and Cedric Richmond"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Joe Biden in February 2016"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Joe Biden in Louisiana"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Port of New Orleans"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of Joe Biden in 2016"
+     }
+    ]
+   },
+   {
+    "pageid": 108026034,
+    "ns": 6,
+    "title": "File:Angela Oulu 20210724.webm",
+    "index": 5,
+    "imagerepository": "local",
+    "videoinfo": [
+     {
+      "size": 21741782,
+      "width": 1920,
+      "height": 1080,
+      "duration": 15.059000000000001,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Angela_Oulu_20210724.webm/960px--Angela_Oulu_20210724.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+      "thumbwidth": 960,
+      "thumbheight": 540,
+      "responsiveUrls": {
+       "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/d/d0/Angela_Oulu_20210724.webm/1920px--Angela_Oulu_20210724.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo"
+      },
+      "thumbattribs": [],
+      "url": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Angela_Oulu_20210724.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Angela_Oulu_20210724.webm",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=108026034",
+      "extmetadata": {
+       "DateTime": {
+        "value": "2021-07-31 06:52:33",
+        "source": "mediawiki-metadata",
+        "hidden": ""
+       },
+       "ObjectName": {
+        "value": "Angela Oulu 20210724",
+        "source": "mediawiki-metadata"
+       },
+       "CommonsMetadataExtension": {
+        "value": 1.2,
+        "source": "extension",
+        "hidden": ""
+       },
+       "Categories": {
+        "value": "Taken with Huawei P30 Pro|CC-Zero|Angela (ship, 2005)|Port of Oulu|Self-published work|Videos by Estormiz|Media of the day|Videos of watercraft|Videos of 2021 from Finland|July 2021 in Oulu|Videos taken on 2021-07-24|Videos from Oulu",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "Assessments": {
+        "value": "",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "ImageDescription": {
+        "value": "Container ship Angela has just departed Port of Oulu.",
+        "source": "commons-desc-page"
+       },
+       "DateTimeOriginal": {
+        "value": "Taken on 24 July 2021",
+        "source": "commons-desc-page"
+       },
+       "Credit": {
+        "value": "<span class=\"int-own-work\" lang=\"en\">Own work</span>",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a href=\"//commons.wikimedia.org/wiki/User:Estormiz\" title=\"User:Estormiz\">Estormiz</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "UsageTerms": {
+        "value": "Creative Commons Zero, Public Domain Dedication",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "false",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "LicenseUrl": {
+        "value": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+        "source": "commons-desc-page"
+       },
+       "Copyrighted": {
+        "value": "True",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "License": {
+        "value": "cc0",
+        "source": "commons-templates",
+        "hidden": ""
+       }
+      },
+      "mime": "video/webm",
+      "derivatives": [
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/d/d0/Angela_Oulu_20210724.webm?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+        "type": "video/webm; codecs=\"vp9\"",
+        "width": 1920,
+        "height": 1080,
+        "bandwidth": 11550186
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d0/Angela_Oulu_20210724.webm/Angela_Oulu_20210724.webm.240p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "240p.vp9.webm",
+        "width": 426,
+        "height": 240,
+        "bandwidth": 316344
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d0/Angela_Oulu_20210724.webm/Angela_Oulu_20210724.webm.360p.mpeg4.mov",
+        "type": "video/quicktime; codecs=\"mp4v\"",
+        "transcodekey": "360p.mpeg4.mov",
+        "width": 640,
+        "height": 360,
+        "bandwidth": 994552
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d0/Angela_Oulu_20210724.webm/Angela_Oulu_20210724.webm.480p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "480p.vp9.webm",
+        "width": 854,
+        "height": 480,
+        "bandwidth": 1258888
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/d/d0/Angela_Oulu_20210724.webm/Angela_Oulu_20210724.webm.1080p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "1080p.vp9.webm",
+        "width": 1920,
+        "height": 1080,
+        "bandwidth": 5030456
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "ns": 14,
+      "title": "Category:Angela (ship, 2005)"
+     },
+     {
+      "ns": 14,
+      "title": "Category:CC-Zero"
+     },
+     {
+      "ns": 14,
+      "title": "Category:July 2021 in Oulu"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Media of the day"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Port of Oulu"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Self-published work"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Taken with Huawei P30 Pro"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos by Estormiz"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos from Oulu"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of 2021 from Finland"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of watercraft"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos taken on 2021-07-24"
+     }
+    ]
+   },
+   {
+    "pageid": 141534595,
+    "ns": 6,
+    "title": "File:Aerial views of a container terminal at the Port of Cork, Cork, Ireland.webm",
+    "index": 1,
+    "imagerepository": "local",
+    "videoinfo": [
+     {
+      "size": 234272104,
+      "width": 3840,
+      "height": 2160,
+      "duration": 136.36,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm/960px--Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+      "thumbwidth": 960,
+      "thumbheight": 540,
+      "responsiveUrls": {
+       "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/3c/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm/1920px--Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo"
+      },
+      "thumbattribs": [],
+      "url": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Aerial_views_of_a_container_terminal_at_the_Port_of_Cork,_Cork,_Ireland.webm",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=141534595",
+      "extmetadata": {
+       "DateTime": {
+        "value": "2023-11-29 00:09:48",
+        "source": "mediawiki-metadata",
+        "hidden": ""
+       },
+       "ObjectName": {
+        "value": "Aerial views of a container terminal at the Port of Cork, Cork, Ireland",
+        "source": "mediawiki-metadata"
+       },
+       "CommonsMetadataExtension": {
+        "value": 1.2,
+        "source": "extension",
+        "hidden": ""
+       },
+       "Categories": {
+        "value": "Media from YouTube|Container terminals|Port of Cork|License review needed (video)|Drone videos from Ireland|Videos without audio|Videos of ports and harbours",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "Assessments": {
+        "value": "",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "ImageDescription": {
+        "value": "Aerial views of a container terminal at the Port of Cork, Cork, Ireland.",
+        "source": "commons-desc-page"
+       },
+       "DateTimeOriginal": {
+        "value": "2022-12-10",
+        "source": "commons-desc-page"
+       },
+       "Credit": {
+        "value": "<bdi lang=\"en\" dir=\"ltr\"><a href=\"//commons.wikimedia.org/wiki/Commons:YouTube_files\" title=\"Commons:YouTube files\">YouTube</a>: <a rel=\"nofollow\" class=\"external text\" href=\"https://www.youtube.com/watch?v=vaOQ52TqWUg\"><bdi lang=\"\">https://www.youtube.com/watch?v=vaOQ52TqWUg</bdi></a> – View/save archived versions on <a rel=\"nofollow\" class=\"external text\" href=\"https://web.archive.org/web/*/https://www.youtube.com/watch?v=vaOQ52TqWUg\">archive.org</a></bdi>",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.youtube.com/@FilmingCork\">FILMING CORK</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "UsageTerms": {
+        "value": "Creative Commons Attribution 3.0",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "LicenseUrl": {
+        "value": "https://creativecommons.org/licenses/by/3.0",
+        "source": "commons-desc-page"
+       },
+       "Copyrighted": {
+        "value": "True",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "License": {
+        "value": "cc-by-3.0",
+        "source": "commons-templates",
+        "hidden": ""
+       }
+      },
+      "mime": "video/webm",
+      "derivatives": [
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/3/3c/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+        "type": "video/webm; codecs=\"vp9\"",
+        "width": 3840,
+        "height": 2160,
+        "bandwidth": 13744329
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/3/3c/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm.240p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "240p.vp9.webm",
+        "width": 426,
+        "height": 240,
+        "bandwidth": 250432
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/3/3c/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm.360p.mpeg4.mov",
+        "type": "video/quicktime; codecs=\"mp4v\"",
+        "transcodekey": "360p.mpeg4.mov",
+        "width": 640,
+        "height": 360,
+        "bandwidth": 834128
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/3/3c/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm.480p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "480p.vp9.webm",
+        "width": 854,
+        "height": 480,
+        "bandwidth": 809688
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/3/3c/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm/Aerial_views_of_a_container_terminal_at_the_Port_of_Cork%2C_Cork%2C_Ireland.webm.1080p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "1080p.vp9.webm",
+        "width": 1920,
+        "height": 1080,
+        "bandwidth": 3274440
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "ns": 14,
+      "title": "Category:CC-BY-3.0"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Container terminals"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Drone videos from Ireland"
+     },
+     {
+      "ns": 14,
+      "title": "Category:License review needed (video)"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Media from YouTube"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Port of Cork"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos of ports and harbours"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos without audio"
+     }
+    ]
+   },
+   {
+    "pageid": 141534626,
+    "ns": 6,
+    "title": "File:Aerial views at night of Cork Container Terminal (CCT) in Ringaskiddy, County Cork, Ireland.webm",
+    "index": 2,
+    "imagerepository": "local",
+    "videoinfo": [
+     {
+      "size": 124369242,
+      "width": 3840,
+      "height": 2160,
+      "duration": 89.24,
+      "thumburl": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm/960px--Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo",
+      "thumbwidth": 960,
+      "thumbheight": 540,
+      "responsiveUrls": {
+       "2": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0f/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm/1920px--Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo"
+      },
+      "thumbattribs": [],
+      "url": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+      "descriptionurl": "https://commons.wikimedia.org/wiki/File:Aerial_views_at_night_of_Cork_Container_Terminal_(CCT)_in_Ringaskiddy,_County_Cork,_Ireland.webm",
+      "descriptionshorturl": "https://commons.wikimedia.org/w/index.php?curid=141534626",
+      "extmetadata": {
+       "DateTime": {
+        "value": "2023-11-29 00:11:18",
+        "source": "mediawiki-metadata",
+        "hidden": ""
+       },
+       "ObjectName": {
+        "value": "Aerial views at night of Cork Container Terminal (CCT) in Ringaskiddy, County Cork, Ireland",
+        "source": "mediawiki-metadata"
+       },
+       "CommonsMetadataExtension": {
+        "value": 1.2,
+        "source": "extension",
+        "hidden": ""
+       },
+       "Categories": {
+        "value": "Media from YouTube|Container terminals|Port of Cork|License review needed (video)|Drone videos|Drone videos from Ireland|Videos without audio",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "Assessments": {
+        "value": "",
+        "source": "commons-categories",
+        "hidden": ""
+       },
+       "ImageDescription": {
+        "value": "Aerial views at night of Cork Container Terminal (CCT) in Ringaskiddy, County Cork, Ireland.",
+        "source": "commons-desc-page"
+       },
+       "DateTimeOriginal": {
+        "value": "2023-01-06",
+        "source": "commons-desc-page"
+       },
+       "Credit": {
+        "value": "<bdi lang=\"en\" dir=\"ltr\"><a href=\"//commons.wikimedia.org/wiki/Commons:YouTube_files\" title=\"Commons:YouTube files\">YouTube</a>: <a rel=\"nofollow\" class=\"external text\" href=\"https://www.youtube.com/watch?v=4pTOWYIQciM\"><bdi lang=\"\">https://www.youtube.com/watch?v=4pTOWYIQciM</bdi></a> – View/save archived versions on <a rel=\"nofollow\" class=\"external text\" href=\"https://web.archive.org/web/*/https://www.youtube.com/watch?v=4pTOWYIQciM\">archive.org</a></bdi>",
+        "source": "commons-desc-page"
+       },
+       "Artist": {
+        "value": "<a rel=\"nofollow\" class=\"external text\" href=\"https://www.youtube.com/@FilmingCork\">FILMING CORK</a>",
+        "source": "commons-desc-page"
+       },
+       "LicenseShortName": {
+        "value": "CC BY 3.0",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "UsageTerms": {
+        "value": "Creative Commons Attribution 3.0",
+        "source": "commons-desc-page"
+       },
+       "AttributionRequired": {
+        "value": "true",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "LicenseUrl": {
+        "value": "https://creativecommons.org/licenses/by/3.0",
+        "source": "commons-desc-page"
+       },
+       "Copyrighted": {
+        "value": "True",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "Restrictions": {
+        "value": "",
+        "source": "commons-desc-page",
+        "hidden": ""
+       },
+       "License": {
+        "value": "cc-by-3.0",
+        "source": "commons-templates",
+        "hidden": ""
+       }
+      },
+      "mime": "video/webm",
+      "derivatives": [
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/0/0f/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm?utm_source=commons.wikimedia.org&utm_campaign=api&utm_content=original",
+        "type": "video/webm; codecs=\"vp9\"",
+        "width": 3840,
+        "height": 2160,
+        "bandwidth": 11149192
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/0f/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm.240p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "240p.vp9.webm",
+        "width": 426,
+        "height": 240,
+        "bandwidth": 206984
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/0f/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm.360p.mpeg4.mov",
+        "type": "video/quicktime; codecs=\"mp4v\"",
+        "transcodekey": "360p.mpeg4.mov",
+        "width": 640,
+        "height": 360,
+        "bandwidth": 835976
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/0f/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm.480p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "480p.vp9.webm",
+        "width": 854,
+        "height": 480,
+        "bandwidth": 683696
+       },
+       {
+        "src": "https://upload.wikimedia.org/wikipedia/commons/transcoded/0/0f/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm/Aerial_views_at_night_of_Cork_Container_Terminal_%28CCT%29_in_Ringaskiddy%2C_County_Cork%2C_Ireland.webm.1080p.vp9.webm",
+        "type": "video/webm; codecs=\"vp9, opus\"",
+        "transcodekey": "1080p.vp9.webm",
+        "width": 1920,
+        "height": 1080,
+        "bandwidth": 2742080
+       }
+      ]
+     }
+    ],
+    "categories": [
+     {
+      "ns": 14,
+      "title": "Category:CC-BY-3.0"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Container terminals"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Drone videos"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Drone videos from Ireland"
+     },
+     {
+      "ns": 14,
+      "title": "Category:License review needed (video)"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Media from YouTube"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Port of Cork"
+     },
+     {
+      "ns": 14,
+      "title": "Category:Videos without audio"
+     }
+    ]
+   }
+  ]
+ },
+ "limits": {
+  "categories": 500
+ }
+}

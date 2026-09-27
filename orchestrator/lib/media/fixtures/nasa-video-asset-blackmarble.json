@@ -1,0 +1,104 @@
+{
+ "collection": {
+  "version": "1.1",
+  "href": "http://images-api.nasa.gov/asset/GSFC_20181210_BlackMarble_m12616_PuertoRico",
+  "items": [
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~orig.mp4"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico.srt"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~large.mp4"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~medium.mp4"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~mobile.mp4"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~preview.mp4"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~small.mp4"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/metadata.json"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~small_1.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~small_2.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~small_3.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~small.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~small_4.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~small_5.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~large_1.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~large_2.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~large_3.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~large.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~large_4.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~large_5.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~thumb_1.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~thumb_2.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~thumb_3.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~thumb.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~thumb_4.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~thumb_5.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~medium_1.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~medium_2.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~medium_3.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~medium.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~medium_4.jpg"
+   },
+   {
+    "href": "http://images-assets.nasa.gov/video/GSFC_20181210_BlackMarble_m12616_PuertoRico/GSFC_20181210_BlackMarble_m12616_PuertoRico~medium_5.jpg"
+   }
+  ]
+ }
+}

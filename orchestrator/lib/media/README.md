@@ -37,6 +37,19 @@ CLI: `node orchestrator/resolve-media.js --intents intents.json --out dir [--off
 - `status: "fallback"` carries `reason` and no file: the module renders its no-image state.
 - Draw `credit` on frame whenever the media is visible, and put the `credits.txt` lines in the description.
 
+### Video slots (kind `video`, `lib/media/video.js`)
+```json
+{"status": "ok", "kind": "video", "file": "assets/media/cache/ab/<sha>.mp4", "poster": "…/<sha>.poster.jpg",
+ "lastFrame": "…/<sha>.last.jpg", "clipDur": 6.0, "fps": 30, "width": 1920, "height": 1080, "trimIn": 14, "trimOut": 20,
+ "credit": "Video: Jane Doe / Wikimedia Commons · CC BY 3.0", "creditFull": "…", "licence": "…", "focal": [x, y, w, h], "size": "full|card"}
+```
+- **Sources:** Commons video (`filetype:video`, `prop=videoinfo`; the 1080p/720p WebM transcode is used, not the original), then NASA Image and Video Library videos when relevant (`nasa: true` or the query plan says so; `~large.mp4`, then `~medium.mp4`). Openverse has no video endpoint (`/v1/video/` is 404; audio only), so it is skipped.
+- **Selection:** licence gate as for images; source >= 3 s and >= 480 lines (720+ for full-bleed, else `size: "card"`); the poster is vetted first for relevance only, then up to 3 candidates per stage become clips.
+- **Clip:** long sources are never downloaded whole: 6 frames are grabbed remotely (range requests), the best one anchors a 30 s stream-copied excerpt (200 MB cap); sources <= 45 s are copied whole. The window (`intent.duration`, 4-12 s, default 6) has no hard cut inside (ffmpeg scene score > 0.3), no black or fading frame, and the most motion. 3 frames of it are vetted (on intent, no burned-in subtitles/captions/title cards, no channel bug or watermark); a failing window makes way for the next best.
+- **Output:** H.264 High, yuv420p, 30 fps, no audio, CRF 20, `+faststart`, 1080 lines (or 720 from a 480p source; no upscale > 1.5x; aspect kept), plus poster (first frame) and last-frame JPEGs. Sidecar: source, pageUrl, fileUrl, rendition, author, licence, credit, creditFull, width, height, duration/clipDur, trimIn/trimOut (source time; approximate to the keyframe for excerpts), fps, focal, poster, lastFrame, fetchedAt.
+- **Fallback:** no acceptable clip -> the still pipeline for the same intent: `{status: "ok", kind: "image", fallbackFrom: "video", …}` (credited "Photo: …").
+- **Renderer:** `compile.js` copies `clipDur`/`lastFrame` into the slot props, and the manifest's `kind` wins over the storyboard's (a fallen-back still renders as an image). The root media layer plays the clip once and holds `lastFrame` for the rest of the run; `checkMedia` needs a non-black first frame.
+
 ## Chain and gates
 - **Chain:** Wikidata claims (P18, P154 for logos, P41, P242), then the entity's Commons category, then Commons search, then Openverse, then NASA (only when relevant), then AI illustration (kind `illustration` or `allowIllustration`), then fallback.
 - **Licences allowed:** PD, CC0, CC BY, CC BY-SA, GODL-India.
@@ -45,5 +58,5 @@ CLI: `node orchestrator/resolve-media.js --intents intents.json --out dir [--off
 - **Vision:** Gemini vets up to 6 candidates per stage. It rejects a candidate that is off-intent, from the wrong era, shows the subject only incidentally, has a watermark or heavy text (any text for illustrations), is graphic, or is a screenshot.
 - **Politeness:** User-Agent `HFPipeline-media/0.1 (debopriyo.debnath1999@gmail.com)`, at most 5 requests/s, Openverse spaced 3.2 s apart and capped at 60 per run, backoff on 429/5xx, and API responses cached for 24 h.
 
-Tests: `node --test orchestrator/lib/media/*.test.js` (offline, recorded fixtures).
-Contact sheet: `python orchestrator/lib/media/contact_sheet.py <outDir>`.
+Tests: `node --test orchestrator/lib/media/*.test.js` (offline, recorded fixtures; video tests generate their clip with ffmpeg lavfi).
+Contact sheet: `python orchestrator/lib/media/contact_sheet.py <outDir>` (video tiles: poster + 2 mid frames + duration/trim).

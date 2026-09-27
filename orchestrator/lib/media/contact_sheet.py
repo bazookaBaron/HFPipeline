@@ -2,8 +2,10 @@
 
 usage: python contact_sheet.py <out-dir-with-media-manifest.json> [sheet.png]
 """
+import io
 import json
 import os
+import subprocess
 import sys
 import textwrap
 
@@ -23,6 +25,31 @@ def font(size):
     return ImageFont.load_default()
 
 
+def video_frame(path, t, w):
+    """one frame of a clip at t seconds, as a PIL image (ffmpeg)"""
+    r = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t:.3f}", "-i", path, "-frames:v", "1", "-vf", f"scale={w}:-2", "-f", "image2", "-c:v", "mjpeg", "pipe:1"], capture_output=True)
+    return Image.open(io.BytesIO(r.stdout)).convert("RGB")
+
+
+def video_tile(sheet, d, e, x, y, tw, th, f_s):
+    """poster (first frame) large + two mid frames, then clip facts"""
+    p = e["file"] if os.path.isabs(e["file"]) else os.path.join(VIDEO_ENGINE, e["file"])
+    dur = float(e.get("clipDur") or 0)
+    pw, ph = tw * 2 // 3, th * 2 // 3
+    poster = Image.open(e["poster"] if os.path.isabs(e["poster"]) else os.path.join(VIDEO_ENGINE, e["poster"])).convert("RGB")
+    poster.thumbnail((pw, ph))
+    sheet.paste(poster, (x, y))
+    for k, frac in enumerate((1 / 3, 2 / 3)):
+        im = video_frame(p, dur * frac, tw - pw)
+        im.thumbnail((tw - pw, ph // 2))
+        sheet.paste(im, (x + pw, y + k * (ph // 2)))
+        d.text((x + pw + 4, y + k * (ph // 2) + 2), f"{dur * frac:.1f}s", fill="white", font=f_s)
+    d.text((x + 4, y + 2), "0.0s poster", fill="white", font=f_s)
+    facts = f"VIDEO {dur:.2f} s  trim {e.get('trimIn')}-{e.get('trimOut')} s  {e.get('width')}x{e.get('height')} @{e.get('fps')}"
+    d.text((x + 6, y + ph + 8), facts, fill=(0, 0, 0), font=f_s)
+    d.text((x + 6, y + ph + 28), os.path.basename(p)[:20] + "…mp4", fill=(90, 90, 90), font=f_s)
+
+
 def main():
     out = sys.argv[1]
     dest = sys.argv[2] if len(sys.argv) > 2 else os.path.join(out, "contact-sheet.png")
@@ -38,7 +65,12 @@ def main():
         x = 16 + (n % cols) * (tw + 16)
         y = 16 + (n // cols) * (th + cap + 16)
         d.rectangle([x, y, x + tw, y + th], fill=(225, 225, 220))
-        if e.get("file"):
+        if e.get("file") and e.get("kind") == "video" and e.get("poster"):
+            try:
+                video_tile(sheet, d, e, x, y, tw, th, f_s)
+            except Exception as ex:  # noqa: BLE001
+                d.text((x + 8, y + 8), f"cannot open clip: {ex}", fill=(200, 0, 0), font=f_s)
+        elif e.get("file"):
             p = e["file"] if os.path.isabs(e["file"]) else os.path.join(VIDEO_ENGINE, e["file"])
             try:
                 im = Image.open(p).convert("RGB")
@@ -53,7 +85,7 @@ def main():
         d.rectangle([x, y + th, x + tw, y + th + 24], fill=COLORS.get(st, (90, 90, 90)))
         info = rep.get("slots", {}).get(slot, {})
         dims = f"  {e.get('width')}x{e.get('height')}" if e.get("width") else ""
-        stage = info.get("stage", "")
+        stage = info.get("stage", "") + ("  (video -> still)" if e.get("fallbackFrom") else "")
         d.text((x + 6, y + th + 3), f"{st.upper()}  {slot}{dims}  {stage}", fill="white", font=f_b)
         intent = info.get("intent", {}).get("intent", "")
         lines = [e.get("credit", "")] if st != "fallback" else []

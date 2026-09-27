@@ -225,7 +225,7 @@ function runLongformRender(jobId, config) {
   const minutes = [3, 8, 10, 12].includes(Number(config.minutes)) ? Number(config.minutes) : 10;
   const outDir = path.join(RENDERS_DIR, jobId);
   fs.mkdirSync(outDir, { recursive: true });
-  const args = ["make-longform.js", "--topic", topic, "--minutes", String(minutes), "--out", outDir, "--music", config.musicBed === false ? "off" : "ambient"];
+  const args = ["make-longform.js", "--topic", topic, "--minutes", String(minutes), "--out", outDir, "--music", config.musicBed === false ? "off" : "auto"];
   jobs.appendLog(jobId, "meta", `$ node ${args.map((a) => (/\s/.test(a) ? JSON.stringify(a) : a)).join(" ")}`);
   jobs.appendLog(jobId, "meta", `cwd: ${ORCHESTRATOR_DIR}`);
   jobs.setStatus(jobId, "running");

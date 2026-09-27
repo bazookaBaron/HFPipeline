@@ -139,7 +139,7 @@ function chapterRules(list, duration) {
 const clean = (s) => String(s || "").replace(/\s+/g, " ").trim();
 
 /**
- * @param {{outline, script, dossier, chapters: [{id, title, start}], credits: string, topic}} o
+ * @param {{outline, script, dossier, chapters: [{id, title, start}], credits: string, music?: string[], topic}} o
  */
 function descriptionMd(o) {
   const { outline, dossier, chapters } = o;
@@ -176,6 +176,13 @@ function descriptionMd(o) {
   if (credits.length) {
     lines.push("## Image credits", "");
     credits.forEach((l) => lines.push(`- ${l.replace(/^\[[^\]]+\]\s*/, "")}`));
+    lines.push("");
+  }
+  // music credit lines from the music plan (musicPlan.js: one per library track used)
+  const music = (o.music || []).map((l) => String(l).trim()).filter(Boolean);
+  if (music.length) {
+    lines.push("## Music", "");
+    music.forEach((l) => lines.push(`- ${l}`));
     lines.push("");
   }
   lines.push("---", "", "Not financial advice. This video is for education and entertainment only; figures are rounded and come from the public sources listed above. Images and illustrations marked \"AI-generated\" are generic generated scenes, not photographs of real people or events.", "");

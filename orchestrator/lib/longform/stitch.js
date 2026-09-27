@@ -9,8 +9,10 @@
  *      CRF 18 GOP 60, AAC 48 kHz stereo 192k) and padded with its last frame + silence so the voice
  *      gap across each chapter join is ~0.9 s (pace.js chapterGap);
  *   2. concat demuxer, stream copy (identical params make this exact); durations are verified;
- *   3. ONE continuous music bed over the whole stitched audio (tools/sfx_mix.py with no cues:
- *      ducked under speech, +3 dB swells on the chapter cards) so the bed never restarts per chapter;
+ *   3. music over the whole stitched audio (tools/sfx_mix.py with no cues, ducked under speech, +3 dB
+ *      swells on the chapter cards): either a musicPlan.js plan (one library/procedural bed per section,
+ *      switching only at section/scene boundaries with a bass drop-out, see tools/music_switch.py) or ONE
+ *      continuous procedural bed (--music ambient|lofi|pulse);
  *   4. re-master the whole to -14 LUFS / TP <= -1 dBTP (lib/video/audioMaster.js).
  */
 
@@ -87,22 +89,28 @@ async function concatSegments({ segments, output, log }) {
  * Lay one continuous bed over the stitched audio and master the whole.
  * @returns {{stats, bed}} master stats (integratedLufs, loudnessRangeLu, truePeakDbtp, ...)
  */
-async function musicAndMaster({ stitched, workDir, output, music = "ambient", swell = [], duration, log = () => {}, python = process.env.SFX_PYTHON || "python" }) {
+async function musicAndMaster({ stitched, workDir, output, music = "ambient", plan = null, swell = [], duration, log = () => {}, python = process.env.SFX_PYTHON || "python" }) {
   fs.mkdirSync(workDir, { recursive: true });
   const voiceWav = path.join(workDir, "stitched-audio.wav");
   await ff(["-y", "-v", "error", "-i", stitched, "-vn", "-ac", "2", "-ar", "48000", "-c:a", "pcm_s16le", voiceWav], log);
   let mixWav = voiceWav;
   let bed = null;
-  if (music) {
+  if (music || plan) {
     const cues = path.join(workDir, "no-cues.json");
     fs.writeFileSync(cues, JSON.stringify({ cues: [] }));
     mixWav = path.join(workDir, "stitched-mix.wav");
-    const args = [path.join(__dirname, "..", "..", "tools", "sfx_mix.py"), cues, voiceWav, mixWav, "--music", music, "--duration", String(duration), "--music-stem", path.join(workDir, "music-bed.wav")];
+    const args = [path.join(__dirname, "..", "..", "tools", "sfx_mix.py"), cues, voiceWav, mixWav, "--duration", String(duration), "--music-stem", path.join(workDir, "music-bed.wav")];
+    if (plan) {
+      const planFile = path.join(workDir, "music-plan.json");
+      fs.writeFileSync(planFile, JSON.stringify(plan, null, 1));
+      args.push("--music-plan", planFile);
+    } else args.push("--music", music);
     if (swell.length) args.push("--swell", JSON.stringify(swell));
     const r = spawnSync(python, args, { encoding: "utf-8", windowsHide: true, maxBuffer: 16 * 1024 * 1024 });
     if (r.status !== 0) throw new Error(`music bed failed: ${(r.stderr || "").slice(-600)}`);
     bed = JSON.parse(String(r.stdout).trim().split(/\r?\n/).pop());
-    log(`music: "${music}" bed ${bed.bedDb} dB under the voice, ducked ${bed.duckDb} dB, ${swell.length} chapter swell(s)`);
+    if (plan) log(`music: ${plan.segments.length} bed(s) (${plan.segments.filter((x) => x.source === "library").length} library), switches at ${plan.transitions.map((t) => t.toFixed(1)).join(", ") || "-"} s, ${swell.length} chapter swell(s)`);
+    else log(`music: "${music}" bed ${bed.bedDb} dB under the voice, ducked ${bed.duckDb} dB, ${swell.length} chapter swell(s)`);
   }
   const premaster = path.join(workDir, "premaster.mp4");
   await ff(["-y", "-v", "error", "-i", stitched, "-i", mixWav, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-t", String(duration), "-movflags", "+faststart", premaster], log);

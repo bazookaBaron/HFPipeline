@@ -6,7 +6,7 @@
  *
  *   node make-longform.js --topic "Why Kingfisher went bankrupt" [--minutes 10] [--out dir]
  *     [--from research|data|outline|script|storyboards|media|render|stitch|master|gates|package|thumbnail]
- *     [--chapters "cold,1,3,recap"] [--no-render] [--offline] [--replay <dir>] [--music ambient|lofi|pulse|off]
+ *     [--chapters "cold,1,3,recap"] [--no-render] [--offline] [--replay <dir>] [--music auto|ambient|lofi|pulse|off]
  *     [--quality looks] [--keep-going]
  *
  * Stages (each writes its artefact under --out and is skipped on a re-run when the artefact exists and
@@ -34,8 +34,11 @@
  *                                                 uniform re-encode + last-frame/silence pad (~0.9 s voice gap at
  *                                                 every chapter join), concat demuxer (stream copy), durations verified
  *   master       final/video.mp4, final/master.json
- *                                                 ONE continuous music bed over the stitched audio (ducked, +3 dB on
- *                                                 chapter cards), then -14 LUFS / TP <= -1 over the whole video
+ *                                                 music (--music auto: final/music-plan.json, one free-library bed
+ *                                                 per section switching at section/scene boundaries, procedural
+ *                                                 fallback per mood -- lib/longform/musicPlan.js; ambient|lofi|pulse:
+ *                                                 ONE procedural bed), ducked, +3 dB on chapter cards, then -14 LUFS /
+ *                                                 TP <= -1 over the whole video
  *   gates        final/gates.json                loudness, frame size/fps, durations, captions, YouTube chapter rules,
  *                                                 per-chapter gate results aggregated
  *   package      final/captions.srt, description.md, credits.txt, metadata.json
@@ -58,6 +61,7 @@ const { spawn, spawnSync } = require("child_process");
 const SL = require("./lib/longform/storyboardLF");
 const PK = require("./lib/longform/package");
 const ST = require("./lib/longform/stitch");
+const MP = require("./lib/longform/musicPlan");
 const { pool } = require("./lib/longform/gemini");
 const { matchLibrary } = require("./lib/media/library");
 
@@ -66,7 +70,7 @@ const RENDER_VERSION = "lf-render.1";
 
 // ------------------------------------------------------------------------------------ helpers
 function parseArgs(argv) {
-  const a = { minutes: 10, music: "ambient", quality: "looks", sbParallel: 3, renderParallel: 2 };
+  const a = { minutes: 10, music: "auto", quality: "looks", sbParallel: 3, renderParallel: 2 };
   for (let i = 2; i < argv.length; i++) {
     const k = argv[i];
     const v = () => {
@@ -540,14 +544,33 @@ async function main() {
     const st = stitchInfo.chapters[i].start;
     (timelines[i].spec.scaffolds || []).filter((s) => s.template === "lfChapter").forEach((s) => swell.push([Number((st + s.t0).toFixed(3)), Number((st + s.t1).toFixed(3))]));
   });
-  const masterKey = hash({ stitchKey, music: a.music, swell });
+  // music plan (v2 plan section 5): one free-library bed per section, procedural fallback per mood
+  let musicPlan = null;
+  if (a.music === "auto") {
+    const planJson = path.join(P.finalDir, "music-plan.json");
+    const tags = MP.sectionTags(sections.map((id) => (script.sections || []).find((x) => x.id === id) || { id }));
+    const ix = MP.refreshIndex({ log });
+    if (ix.error) log(`music library: ${ix.error}`);
+    const index = MP.loadIndex();
+    const planKey = hash({ stitchKey, tags, lib: index.tracks.map((t) => [t.id, t.hash, t.credit]), v: 1 });
+    const prev = exists(planJson) ? readJson(planJson) : null;
+    if (prev && prev.key === planKey && prev.segments.every((x) => x.source !== "library" || exists(x.track.path))) musicPlan = prev;
+    else {
+      musicPlan = { key: planKey, ...MP.planMusic({ index, chapters: MP.chaptersFromStitch(stitchInfo.chapters, timelines), tags, history: MP.readHistory(), videoId: slug(topic) }) };
+      writeJson(planJson, musicPlan);
+    }
+    log(`music plan (${index.tracks.length} library track(s)${index.problems.length ? `; ${index.problems.length} skipped: ${index.problems.slice(0, 3).join("; ")}` : ""}):\n${MP.timelineText(musicPlan)}`);
+    MP.planProblems(musicPlan, stitchInfo.duration).forEach((p) => log(`music plan problem: ${p}`));
+  }
+  const masterKey = hash({ stitchKey, music: a.music, swell, plan: musicPlan && musicPlan.key });
   let master;
   if (!redo("master") && exists(video) && exists(masterJson) && readJson(masterJson).key === masterKey) {
     master = readJson(masterJson);
     stageSkip("master", "reusing final/video.mp4");
   } else {
-    const r = await ST.musicAndMaster({ stitched, workDir: path.join(P.stitchDir, "audio"), output: video, music: a.music, swell, duration: stitchInfo.duration, log });
-    master = { key: masterKey, music: a.music, swell, bed: r.bed, stats: r.stats };
+    const r = await ST.musicAndMaster({ stitched, workDir: path.join(P.stitchDir, "audio"), output: video, music: musicPlan ? null : a.music, plan: musicPlan, swell, duration: stitchInfo.duration, log });
+    master = { key: masterKey, music: a.music, swell, bed: r.bed, stats: r.stats, musicCredits: musicPlan ? musicPlan.credits : [] };
+    if (musicPlan) MP.recordUsage(musicPlan, slug(topic));
     writeJson(masterJson, master);
     stageDone("master", `I ${r.stats.integratedLufs} LUFS, LRA ${r.stats.loudnessRangeLu} LU, TP ${r.stats.truePeakDbtp} dBTP`);
   }
@@ -589,8 +612,9 @@ async function main() {
   const usedSlots = new Set(timelines.flatMap((t) => t.spec.mediaSlots || []));
   const usedManifest = Object.fromEntries(Object.entries(manifest.slots).filter(([k, e]) => usedSlots.has(k) && e.status !== "fallback"));
   const credits = require("./lib/media/resolve").creditsText(usedManifest);
-  fs.writeFileSync(path.join(P.finalDir, "credits.txt"), credits);
-  fs.writeFileSync(path.join(P.finalDir, "description.md"), PK.descriptionMd({ outline, dossier, chapters: ytChapters, credits, topic }));
+  const musicCredits = master.musicCredits || [];
+  fs.writeFileSync(path.join(P.finalDir, "credits.txt"), credits + (musicCredits.length ? `\n\nMusic\n\n${musicCredits.join("\n")}\n` : ""));
+  fs.writeFileSync(path.join(P.finalDir, "description.md"), PK.descriptionMd({ outline, dossier, chapters: ytChapters, credits, music: musicCredits, topic }));
   let titles = PK.titleOptions(outline, topic);
   let titleSource = "deterministic";
   if (!a.offline) {

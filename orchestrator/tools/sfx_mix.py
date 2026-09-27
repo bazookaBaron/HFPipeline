@@ -2,7 +2,7 @@
 SFX synth + mixer for v3 videos (no downloaded assets: every sound is synthesized, deterministic).
 
   python sfx_mix.py cues.json narration.wav out.wav [--stem sfx_only.wav]
-         [--music lofi|ambient|pulse --duration sec --music-stem bed_only.wav --music-seed n]
+         [--music lofi|ambient|pulse | --music-plan plan.json] [--duration sec --music-stem bed_only.wav --music-seed n]
 
 cues.json: {"cues": [{"t": sec, "kind": "tick|blip|pop|whoosh|swish|keys|roll|strike|chime", "dur"?: sec,
             "var"?: int, "gain"?: dB offset}]}
@@ -13,6 +13,8 @@ before mastering, whatever the TTS level is.
 --music adds the optional synthesized bed (music_bed.py; off unless asked): placed BED_DB under the voice
 (K-weighted, speech-active frames) and ducked DUCK_DB more under speech by a sidechain from the narration
 envelope (20 ms look-ahead, ~40 ms down, recovers over ~250 ms in pauses), so pauses keep a continuous floor.
+--music-plan plan.json (instead of --music): per-section library/procedural beds with bass drop-out
+transitions (music_switch.py; plan from orchestrator/lib/longform/musicPlan.js).
 --duration pads the mix to the video length so the bed's 2 s fade-out ends on the last frame.
 """
 import json
@@ -232,6 +234,43 @@ def duck_gain(active, hop, n):
     return 10 ** (np.interp(np.arange(n), t_frames, g) / 20)
 
 
+def duck_env(active, hop, n):
+    """0..1 ducking envelope (1 = fully ducked): down in ~40 ms at speech, back up over ~250 ms in pauses"""
+    fr = hop / SR
+    down, up = fr / 0.04, fr / 0.25
+    e = np.zeros(len(active))
+    cur = 0.0
+    for i, a in enumerate(active):
+        cur = min(1.0, cur + down) if a else max(0.0, cur - up)
+        e[i] = cur
+    t_frames = (np.arange(len(e)) + 0.5) * hop
+    return np.interp(np.arange(n), t_frames, e)
+
+
+def add_music_plan(voice, plan_path, swell=None):
+    """per-section beds from a musicPlan.js plan (music_switch.py): pause level segment.levelDb vs the
+    speech loudness, ducked segment.duckDb more under speech, +3 dB chapter-card swells"""
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    import music_switch
+
+    plan = json.loads(Path(plan_path).read_text(encoding="utf-8"))
+    n = len(voice)
+    bed, level, depth, info = music_switch.render_plan(plan, n)
+    active, hop = speech_mask(voice)
+    frame_mask = np.repeat(active, hop)
+    frame_mask = np.concatenate([frame_mask, np.zeros(n - len(frame_mask), dtype=bool)])[:n]
+    v_db = 10 * math.log10(k_weight_ms(voice, frame_mask) or k_weight_ms(voice) or 1e-6)
+    g_db = (v_db - music_switch.TARGET_RMS_DB) + level + depth * duck_env(active, hop, n)
+    out = bed * (10 ** (g_db / 20) * swell_gain(n, swell))[:, None]
+    stats = {
+        "music": "plan",
+        "segments": info["segments"],
+        "transitions": info["transitions"],
+        "speechPct": round(100 * float(frame_mask.mean()), 1),
+    }
+    return out, stats
+
+
 def swell_gain(n, windows, db=3.0, ramp=0.4):
     """+db over each [t0, t1] window (seconds) with linear ramps -- the LF chapter-card swell"""
     g = np.zeros(n)
@@ -279,7 +318,8 @@ def main():
         tmp = Path(td) / "n.wav"
         subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", narr_p, "-ar", str(SR), "-ac", "2", "-c:a", "pcm_s16le", str(tmp)], check=True)
         voice = read_wav(tmp)
-    if music and opt("--duration"):
+    plan_p = opt("--music-plan")
+    if (music or plan_p) and opt("--duration"):
         n_total = int(round(float(opt("--duration")) * SR))
         if n_total > len(voice):
             voice = np.concatenate([voice, np.zeros((n_total - len(voice), 2))])
@@ -304,7 +344,11 @@ def main():
         seg[:, 0] += s[: len(seg)] * g * math.sqrt(0.5 - pan / 2) * math.sqrt(2)
         seg[:, 1] += s[: len(seg)] * g * math.sqrt(0.5 + pan / 2) * math.sqrt(2)
     bed, mstats = (None, {})
-    if music:
+    if plan_p:
+        bed, mstats = add_music_plan(voice, plan_p, json.loads(opt("--swell")) if opt("--swell") else None)
+        if opt("--music-stem"):
+            write_wav(opt("--music-stem"), bed)
+    elif music:
         bed, mstats = add_music(voice, music, int(opt("--music-seed") or 7), json.loads(opt("--swell")) if opt("--swell") else None)
         if opt("--music-stem"):
             write_wav(opt("--music-stem"), bed)

@@ -72,7 +72,9 @@ test("LF: media slots resolve from the manifest, credits planned, no presenter, 
   assert.match(plane.props.src, /^assets\/media\/cache\/3f\//);
   assert.match(plane.props.credit, /CC BY-SA 4\.0/);
   assert.ok(mods.find((m) => m.id === "jokeart").props.missing, "fallback slot -> missing");
-  assert.ok(spec.credits.some((c) => c.module === "kfplane" && c.where === "inside"));
+  // centre-stage heroes credit on the frame line (bottom-left), never inside the card
+  assert.ok(spec.credits.some((c) => c.where === "frame" && c.text.includes(plane.props.credit)));
+  assert.ok(!spec.credits.some((c) => c.module === "kfplane"));
   assert.ok(spec.credits.some((c) => c.where === "frame"), "backdrop / thumbnails credit the frame line");
   assert.ok(mods.some((m) => m.id === "lfhead") && mods.some((m) => m.id === "lfprog"));
   // without a manifest every media fill falls back (no src, no credit)

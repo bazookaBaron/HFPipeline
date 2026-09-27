@@ -22,14 +22,14 @@
  *     annotation ops (highlight, arrow, zoomTo) ride the hero (plan §6 mix rule).
  *
  *   lfCold     full-bleed photo (bottom scrim) + centred kinetic headline + rails + overlays (cold open)
- *   lfStage    centred hero (photo | mapCard | chart) + left/right rails + top title or lower-third headline
+ *   lfStage    centred hero (photo | countryMap | worldMap | mapCard | chart) + left/right rails + top title or lower-third headline
  *   lfSplit    DEPRECATED alias of lfStage (photo -> hero, stack -> title + rails)
  *   lfFull     full-bleed photo/video + centred lower third (<= 1.5 s) + rails + overlays; frame credit
  *   lfChart    centred title + centred barChart|lineChart + rails (side -> rails) + mandatory source
  *   lfNumber   centred bigNumber (count-up) + rails (portrait, chips); backdrop = full bleed, centre scrim
  *   lfCompare  centred title + compareCols centred, VS chip on the centre line
  *   lfTimeline centred title + eraTimeline band across the centre
- *   lfMap      centred mapCard hero + rails
+ *   lfMap      centred countryMap (default) | worldMap | mapCard hero + rails
  *   lfHeadline headlineCard centred over a centred photo (collage) + rails
  *   lfChapter  centred poster: photo card on the axis, chapter number / title / promise / progress below
  *   lfJoke     centred art card + punchline plate over its bottom edge + sticker on its corner
@@ -223,7 +223,8 @@ function lfStage(sc) {
   const tb = s.title ? topTitle(sc, s.title) : null;
   const host = heroRect(size, !!tb);
   const mods = tb ? tb.mods.slice() : [];
-  const graphic = type === "barChart" || type === "lineChart";
+  // vector maps sit like charts: rails clear of the card (their legend / labels live inside it)
+  const graphic = type === "barChart" || type === "lineChart" || type === "worldMap" || type === "countryMap";
   if (type === "photo") mods.push(photoMod(sc, heroFill, host, "hero", size === "full" ? { card: false, creditPos: "frame", scrim: s.scrim, backdrop: true } : { creditPos: "frame" }));
   else mods.push(mod(sc, heroFill, type, host, "hero", type === "mapCard" ? { props: { creditPos: "frame" } } : {}));
   mods.push(...railMods(sc, s, host, { overlap: graphic ? -RAIL.clear : type === "mapCard" ? 40 : RAIL.overlap }));
@@ -317,7 +318,7 @@ function lfTimeline(sc) {
 
 function lfMap(sc) {
   const s = sc.slots || {};
-  return lfStage({ ...sc, slots: { ...s, hero: { type: "mapCard", ...(s.map || {}) }, photo: undefined, left: s.left, right: [].concat(s.right || [], s.side || []) } });
+  return lfStage({ ...sc, slots: { ...s, hero: { type: "countryMap", ...(s.map || {}) }, photo: undefined, left: s.left, right: [].concat(s.right || [], s.side || []) } });
 }
 
 function lfHeadline(sc) {

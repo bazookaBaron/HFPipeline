@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Build the compact vector-map assets (world-110m.json, world-50m.json) from Natural Earth admin-0
-countries GeoJSON (public domain; provenance in README.md).
+Build the compact vector-map assets (world-110m.json, world-50m.json) from the Natural Earth admin-0
+countries India point-of-view GeoJSON at 1:10m (public domain; provenance in README.md). The file names keep
+their old "110m" / "50m" names: they mean world detail / regional detail.
 
-    python build_geo.py <ne_110m_admin_0_countries.geojson> <ne_50m_admin_0_countries.geojson>
+    python build_geo.py <ne_10m_admin_0_countries_ind.geojson>
 
 Output per file:
   { "version": "geo.v1", "source": "...", "projection": "naturalEarth1", "scale": S,
@@ -170,18 +171,22 @@ def build(src, scale, tol, min_area, label):
 
 
 def main():
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print(__doc__)
         sys.exit(2)
     import os
 
     here = os.path.dirname(os.path.abspath(__file__))
+    src = sys.argv[1]
+    # both files come from the 1:10m India point-of-view layer (India's official boundary: all of J&K and
+    # Ladakh incl. Gilgit-Baltistan and Aksai Chin), simplified to world / regional detail
+    label = "Natural Earth 5.1.1 admin-0 countries, India point of view (ne_10m_admin_0_countries_ind), public domain; simplified to {}"
     jobs = [
-        (sys.argv[1], "world-110m.json", 1000, 0, 4, "Natural Earth 5.1.1 admin-0 countries 1:110m (public domain)"),
-        (sys.argv[2], "world-50m.json", 5000, 2.5, 30, "Natural Earth 5.1.1 admin-0 countries 1:50m (public domain)"),
+        ("world-110m.json", 1000, 1.2, 6, label.format("world detail")),
+        ("world-50m.json", 5000, 3.0, 60, label.format("regional detail")),
     ]
-    for src, name, scale, tol, min_area, label in jobs:
-        out = build(src, scale, tol, min_area, label)
+    for name, scale, tol, min_area, lab in jobs:
+        out = build(src, scale, tol, min_area, lab)
         p = os.path.join(here, name)
         with open(p, "w", encoding="utf-8", newline="\n") as fh:
             json.dump(out, fh, ensure_ascii=False, separators=(",", ":"), sort_keys=True)

@@ -1,14 +1,17 @@
-# Vector maps: worldMap / countryMap (integration notes)
+# Vector maps: worldMap / countryMap
+
+**Status (2026-09-27):** sections 1-3 are integrated into `catalog.js`, `templates-lf.js` and `storyboardLF.js` (`lf-sb.3`, `mapProblems`).
+The geo assets use the Natural Earth **India point-of-view** layer.
 
 The pieces already built:
 
-- **Geo assets:** `video-engine/assets/geo/world-{110m,50m}.json`. They are Natural Earth 5.1.1 admin-0 (public domain). Provenance is in the README there.
+- **Geo assets:** `video-engine/assets/geo/world-{110m,50m}.json`. They are Natural Earth 5.1.1 admin-0, India point of view, 1:10m, simplified (public domain). Provenance is in the README there.
 - **Stage module:** `video-engine/compositions/components/lib/stage/modules-map.js`. It is registered in `composeStage.js` and in `tools/layout_audit.js`.
 - **Compile-time resolver:** `orchestrator/lib/video/v3/geo.js`, called from `compile.js` for every `worldMap` / `countryMap` module and its events. It:
   - fits the views to the module rect;
   - projects points;
   - culls the paths to what the views can show;
-  - picks 1:50m for zoomed views and 1:110m for world views.
+  - picks the regional file for zoomed views and the world file for world views.
 - **Proof:** `fixtures/v3/lf-map-smoke.json` (free template, 1920x1080). Run it through `tools/v3-dryrun.js`, then `tools/stage-preview.js --check` and `tools/layout_audit.js`.
 
 ## 1. Catalog entries
@@ -51,6 +54,6 @@ Add a deterministic check: compile with the real `geo.js`. It throws on unknown 
 
 ## 4. Known caveats
 
-- **De facto boundaries.** Natural Earth's default layer shows Kashmir split along the LoC and Aksai Chin as China. For Indian viewers this is sensitive; see the README in `assets/geo`. Keep India maps framed on the story region, or get an OK to download the 1:10m India point-of-view layer.
-- **Choropleth scope.** A choropleth colours only countries present in the view's path set. World views at 1:110m leave out micro-states.
+- **Boundaries.** The maps show India's official boundary: all of J&K and Ladakh, including Gilgit-Baltistan and Aksai Chin. See the README in `assets/geo`.
+- **Choropleth scope.** A choropleth colours only countries present in the view's path set. World views use the world file, which drops the smallest islands.
 - **One map per id.** A map module keeps its camera state across scaffolds when the same id persists. Use a new id for a new map.

@@ -11,7 +11,7 @@
   { "id": "s2", "text": "Karachi is Pakistan's biggest port and its financial capital." },
   { "id": "s3", "text": "Over the last decade, a lot of the money that built its roads and power plants came from Beijing." },
   { "id": "s4", "text": "Pakistan is not alone: across the developing world, foreign debt is now a big share of national income." },
-  { "id": "s5", "text": "Pakistan's own ratio has climbed from about twenty-three percent in twenty fifteen to a peak of forty in twenty twenty." }
+  { "id": "s5", "text": "Pakistan's own ratio has climbed from about twenty-three percent in twenty fifteen to nearly forty by twenty twenty-three." }
  ],
  "scaffolds": [
   {
@@ -40,6 +40,6 @@
   { "sentence": "s3", "anchor": { "text": "decade," }, "op": "zoomTo", "target": "map1", "value": { "isos": ["PAK", "CHN"] } },
   { "sentence": "s3", "anchor": { "text": "came" }, "op": "arrow", "target": "map1", "value": { "from": { "city": "Karachi" }, "to": { "city": "Beijing" }, "label": "debt", "tone": "red" } },
   { "sentence": "s4", "anchor": { "text": "developing" }, "op": "choropleth", "target": "map2", "value": { "series": "S3", "title": "External debt stocks" } },
-  { "sentence": "s5", "anchor": { "text": "peak" }, "op": "annotate", "target": "chart1", "value": { "i": 11, "text": "Peak: 40.0% in 2020" } }
+  { "sentence": "s5", "anchor": { "text": "nearly" }, "op": "annotate", "target": "chart1", "value": { "text": "39.4% in 2023" } }
  ]
 }

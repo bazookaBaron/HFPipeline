@@ -71,11 +71,13 @@ This happens in `compileStoryboard(sb, timeline, { media, data })`, through `lib
 
 - **The source line always comes from the data.** Charts must have a source (compile throws without one). A series ref satisfies that rule.
 - **Missing data throws.** An unknown id throws. So does a ref when no data.json is given. The compiler never invents a number.
-- **Where the data comes from:**
-  - `generate-video-v3.js --data <file>`, or `sb.dataFile` (relative to the storyboard);
-  - `make-longform.js` sets `dataFile` on a chapter storyboard only when that storyboard has a series ref;
-  - the render key then includes a hash of the series.
-- **For storyboardLF (to add once the framing work lands):**
-  - list `dossier.dataSeries` in the chapter prompt: `S1 time PAK "% of GNI" 2010-2023`;
-  - ask for `{series: "S1"}` instead of typed-in points whenever a chart shows one of them;
-  - leave `unit` and `source` out of the prompt: they come from data.json.
+- **Where the data comes from:** `compileStoryboard` reads `opts.data` first, then `sb.data`.
+  - `opts.data` is `generate-video-v3.js --data <file>` or `sb.dataFile` (relative to the storyboard).
+  - `sb.data` is the snapshot a storyboard carries. `storyboardLF.assemble` embeds the series the chapter references, so
+    the chapter always renders the numbers it was validated against. The render key covers them, because they are part
+    of the storyboard.
+- **storyboardLF (integrated, prompt `lf-sb.3`):**
+  - `make-longform` passes `ctx.data` (data.json);
+  - the chapter prompt lists every series as a `DATA SERIES` block (id, kind, country, indicator, unit, years, latest value)
+    and asks for `{series: "S#"}` refs, with no typed points, unit or source;
+  - the chart source check accepts a series ref.

@@ -102,7 +102,10 @@
     var n = div("note", el, text);
     n.style.setProperty("--nc", col);
     var tw = L.measure(text, 700, 21) + 32;
-    Object.assign(n.style, { left: Math.max(0, x - tw / 2) + "px", top: y + "px" });
+    // centred on its point, but kept inside the card: a note on the last (or first) point would
+    // otherwise spill past the edge, so it slides inward (the leader line still marks the point)
+    var left = Math.max(0, Math.min(x - tw / 2, L.W(el) - tw - 4));
+    Object.assign(n.style, { left: left + "px", top: y + "px" });
     c.tl.set(n, { autoAlpha: 0 }, 0);
     c.tl.fromTo(n, { autoAlpha: 0, y: 8 }, { autoAlpha: 1, y: 0, duration: 0.25, ease: "back.out(1.7)", immediateRender: false }, t);
     if (lineTo !== undefined) {
@@ -205,6 +208,8 @@
       var every = Math.max(1, Math.ceil(n / 9));
       labels.forEach(function (lb, i) {
         if (i % every && i !== n - 1) return;
+        // the last label always shows; a regular tick too close to it would collide ("2020" + "2023")
+        if (i !== n - 1 && n - 1 - i < every) return;
         var xl = div("xl", el, String(lb));
         Object.assign(xl.style, { left: sx(i) - 70 + "px", width: "140px", top: box.y1 + 12 + "px" });
       });

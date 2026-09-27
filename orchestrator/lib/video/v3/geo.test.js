@@ -31,10 +31,10 @@ const clone = (x) => JSON.parse(JSON.stringify(x));
 test("geo assets: both resolutions present, keyed by ISO3, small enough to commit", () => {
   const a = fs.statSync(path.join(G.GEO_DIR, "world-110m.json")).size;
   const b = fs.statSync(path.join(G.GEO_DIR, "world-50m.json")).size;
-  assert.ok(a + b < 3 * 1024 * 1024, `${a + b} bytes`);
+  assert.ok(a + b < 1024 * 1024, `${a + b} bytes`);
   const g = G.load("50m");
   assert.strictEqual(g.projection, "naturalEarth1");
-  ["IND", "PAK", "CHN", "FRA", "NOR", "USA", "XKX"].forEach((k) => assert.ok(g.countries[k], k));
+  ["IND", "PAK", "CHN", "FRA", "NOR", "USA", "SRB"].forEach((k) => assert.ok(g.countries[k], k));
   // France zooms to the mainland, not French Guiana
   assert.ok(g.countries.FRA.b[0] > -1000 && g.countries.FRA.B[0] < -4000);
 });
@@ -108,4 +108,47 @@ test("series refs: lineChart points + source from data.json; barChart bars; erro
   bad.scaffolds[2].slots.modules[0].props.series = "S9";
   assert.throws(() => compileStoryboard(bad, synthTimeline(bad), { data: DATA }), /unknown data series "S9"/);
   assert.throws(() => compileStoryboard(clone(SB), synthTimeline(SB), {}), /no data\.json was given/);
+});
+
+test("LF integration: lfMap defaults to countryMap, lfStage takes a map hero, storyboardLF embeds the series it uses", () => {
+  const SL = require("../../longform/storyboardLF");
+  const section = { id: "ch9", sentences: SB.sentences };
+  const raw = {
+    scaffolds: [
+      { id: "a", template: "lfMap", from: "s1", slots: { map: { id: "mp", props: { focus: ["IND", "PAK"] } } } },
+      { id: "b", template: "lfStage", from: "s4", slots: { hero: { id: "wm", type: "worldMap", props: { choropleth: { series: "S3", title: "External debt" } } } } },
+      { id: "c", template: "lfChart", from: "s5", slots: { chart: { id: "ch", type: "lineChart", props: { title: "Pakistan", series: "S1" } } } },
+    ],
+    events: [
+      { sentence: "s3", anchor: { text: "decade," }, op: "zoomTo", target: "mp", value: { isos: ["PAK", "CHN"] } },
+      { sentence: "s3", anchor: { text: "lot" }, op: "pin", target: "mp", value: { city: "Karachi" } },
+    ],
+  };
+  const sb = SL.assemble(raw, { section, meta: { index: 2, count: 4, title: "Loans" }, topic: "t", data: DATA });
+  assert.deepStrictEqual(sb.data.series.map((s) => s.id), ["S1", "S3"]);
+  const spec = compileStoryboard(sb, synthTimeline(sb)); // no opts.data: uses the embedded snapshot
+  const mods = Object.fromEntries(spec.scaffolds.flatMap((s) => s.modules).map((m) => [m.id, m]));
+  assert.strictEqual(mods.mp.type, "countryMap");
+  assert.strictEqual(mods.wm.type, "worldMap");
+  assert.ok(mods.wm.props.choropleth.cls.PAK !== undefined);
+  assert.strictEqual(mods.ch.props.source, DATA.series[0].source);
+  const P = SL.mapProblems(spec);
+  assert.ok(P.some((p) => /after zoomTo/.test(p)), P.join(" | "));
+  assert.ok(/S1 time PAK/.test(SL.dataSeriesLines({ data: DATA })));
+  assert.ok(/MAPS \(vector/.test(SL.buildPromptLF({ section, meta: { kind: "chapter", index: 2, count: 4, title: "Loans" }, dossier: { facts: [] }, outline: { chapters: [] }, topic: "t", data: DATA })));
+});
+
+test("storyboardLF: a series note quoting another metric is rewritten to its point", () => {
+  const SL = require("../../longform/storyboardLF");
+  const sb = {
+    data: { series: [DATA.series[0]] },
+    scaffolds: [{ id: "c", template: "lfChart", slots: { chart: { id: "ch", type: "lineChart", props: { series: "S1", from: 2010 } } } }],
+    events: [
+      { op: "annotate", target: "ch", value: { i: 14, text: "2023: debt hits $130B" } },
+      { op: "annotate", target: "ch", value: { i: 11, text: "2020 peak: 40.0%" } },
+    ],
+  };
+  assert.strictEqual(SL.fixSeriesNotes(sb), 1);
+  assert.strictEqual(sb.events[0].value.text, "2023: 39.4%");
+  assert.strictEqual(sb.events[1].value.text, "2020 peak: 40.0%");
 });

@@ -33,7 +33,8 @@ const { validateIntents } = require("../media/resolve");
 const { claimNumbers, unitScale, evalCalc, close } = require("./numbers");
 
 const FRAME = { w: 1920, h: 1080 };
-const PROMPT_VERSION = "lf-sb.2";
+const PROMPT_VERSION = "lf-sb.3"; // .3: vector maps (countryMap / worldMap) + data-series refs
+const { CITIES } = require("../video/v3/geo");
 const PILOT = path.join(__dirname, "..", "..", "fixtures", "v3", "lf-pilot.json");
 const LF_MEDIA = new Set(["photo", "photoGrid", "portraitCard", "mapCard", "media"]);
 const LF_CHROME = new Set(["lfHeader", "lfProgress", "lfCredit"]);
@@ -78,6 +79,94 @@ function zoomLabelProblems(spec) {
         }
       }
     });
+  });
+  return out;
+}
+
+/**
+ * Deterministic repair (the model keeps putting a fact from another metric on a series line, e.g.
+ * "$9.8B" on a months-of-imports point): a lineChart note that quotes a figure other than its point's
+ * value is rewritten to "<year>: <value><unit>". Returns the number of notes rewritten.
+ */
+function fixSeriesNotes(sb) {
+  if (!sb.data || !Array.isArray(sb.data.series)) return 0;
+  const byId = Object.fromEntries(sb.data.series.map((x) => [x.id, x]));
+  const charts = {};
+  const walk = (v) => {
+    if (Array.isArray(v)) return v.forEach(walk);
+    if (!v || typeof v !== "object") return;
+    if (v.type === "lineChart" && v.id && v.props && typeof v.props.series === "string") charts[v.id] = v.props;
+    Object.values(v).forEach(walk);
+  };
+  walk(sb.scaffolds);
+  let n = 0;
+  (sb.events || []).forEach((e) => {
+    const p = charts[String(e.target || "").split(".")[0]];
+    if (e.op !== "annotate" || !p || !byId[p.series] || !e.value) return;
+    let pts = (byId[p.series].points || []).slice();
+    if (p.from !== undefined) pts = pts.filter((q) => q.x >= Number(p.from));
+    if (p.to !== undefined) pts = pts.filter((q) => q.x <= Number(p.to));
+    if (p.last !== undefined) pts = pts.slice(-Number(p.last));
+    const i = (Number(e.value.i || e.value.point) || pts.length) - 1;
+    const pt = pts[Math.min(Math.max(0, i), pts.length - 1)];
+    if (!pt) return;
+    if (!(i >= 0 && i < pts.length)) e.value.i = pts.indexOf(pt) + 1;
+    const nums = (String(e.value.text || "").match(/\d[\d,]*(?:\.\d+)?/g) || []).map((x) => Number(x.replace(/,/g, ""))).filter((x) => !(Number.isInteger(x) && x >= 1900 && x <= 2100));
+    if (!nums.some((x) => Math.abs(x - pt.y) > Math.max(0.051, Math.abs(pt.y) * 0.02)) && i === pts.indexOf(pt)) return;
+    const unit = String(p.unit || byId[p.series].unit || "");
+    const u = /^%/.test(unit) ? "%" : unit ? " " + unit.split(/\s+/)[0] : "";
+    e.value.text = `${pt.x}: ${pt.y}${u}`;
+    n++;
+  });
+  return n;
+}
+
+/** a note on a data-series line must quote that point (value in the series unit) or no figure at all */
+function seriesNoteProblems(spec) {
+  const out = [];
+  const byId = {};
+  spec.scaffolds.forEach((sc) => sc.modules.forEach((m) => (byId[m.id] = m)));
+  spec.events.forEach((e) => {
+    const m = byId[String(e.target || "").split(".")[0]];
+    if (e.op !== "annotate" || !m || m.type !== "lineChart" || !(m.props || {}).dataSeries) return;
+    const v = e.value || {};
+    const pts = (m.props.points || ((m.props.series || [])[(Number(v.series) || 1) - 1] || {}).points || []);
+    const pt = pts[(Number(v.i || v.point) || pts.length) - 1];
+    if (!pt) return out.push(`annotate on ${m.id}: point ${v.i} does not exist (the series has ${pts.length} points, 1-based)`);
+    const nums = (String(v.text || "").match(/\d[\d,]*(?:\.\d+)?/g) || []).map((x) => Number(x.replace(/,/g, ""))).filter((x) => !(Number.isInteger(x) && x >= 1900 && x <= 2100));
+    nums.forEach((x) => {
+      if (Math.abs(x - pt.y) > Math.max(0.051, Math.abs(pt.y) * 0.02)) out.push(`annotate "${v.text}" on ${m.id} (point ${pt.x} = ${pt.y} ${m.props.unit || ""}): a note on a data series shows that point's value (${pt.y}) or only words; ${x} is not it`);
+    });
+  });
+  return out;
+}
+
+/** vector-map pacing and density (lib/longform/MAPS.md) on the compiled spec */
+function mapProblems(spec) {
+  const out = [];
+  const maps = {};
+  spec.scaffolds.forEach((sc) => sc.modules.forEach((m) => (m.type === "worldMap" || m.type === "countryMap") && (maps[m.id] = maps[m.id] || { m, scs: [] }).scs.push(sc)));
+  Object.values(maps).forEach(({ m, scs }) => {
+    const evs = spec.events.filter((e) => String(e.target || "").split(".")[0] === m.id).sort((a, b) => a.t - b.t);
+    const p = m.props || {};
+    const pins = (p.pins || []).length + evs.filter((e) => e.op === "pin").length;
+    const arrows = (p.arrows || []).length + evs.filter((e) => e.op === "arrow").length;
+    if (pins > 4) out.push(`map ${m.id}: ${pins} pins (max 4)`);
+    const at = [].concat((p.pins || []).map((x) => x.at), evs.filter((e) => e.op === "pin").map((e) => (e.value || {}).at)).filter(Boolean).map((q) => q.join(","));
+    if (new Set(at).size < at.length) out.push(`map ${m.id}: two pins on the same spot (a props.pins entry and a pin event, or the same city twice); keep one`);
+    if (arrows > 3) out.push(`map ${m.id}: ${arrows} arrows (max 3)`);
+    scs.forEach((sc) => {
+      const z = evs.filter((e) => e.op === "zoomTo" && e.t >= sc.t0 && e.t < sc.t1);
+      if (z.length > 1) out.push(`map ${m.id}: ${z.length} zoomTo events in scaffold ${sc.id} (max 1 per scene)`);
+    });
+    evs.forEach((e, i) => {
+      if (e.op !== "zoomTo") return;
+      const nxt = evs[i + 1];
+      if (nxt && nxt.t - e.t < 1.4) out.push(`map ${m.id}: ${nxt.op} on "${nxt.word}" lands ${(nxt.t - e.t).toFixed(1)} s after zoomTo on "${e.word}" (the camera needs 1.4 s): anchor it on a later word`);
+    });
+    [].concat(p.pins || [], p.arrows || [], evs.filter((e) => e.op === "pin" || e.op === "arrow").map((e) => e.value || {}))
+      .filter((x) => String(x.label || "").length > 14)
+      .forEach((x) => out.push(`map ${m.id}: label "${x.label}" is ${String(x.label).length} characters (max 14)`));
   });
   return out;
 }
@@ -203,6 +292,16 @@ CADENCE (relaxed documentary pace, ~160 words/min):
 - The "highlight" op on lfText / headlineCard sweeps a marker over props.highlight, so any text you highlight MUST carry props.highlight (a phrase copied verbatim from its title).
 NUMBERS ON SCREEN:
 - bigNumber / barChart / lineChart values come ONLY from the FACTS below (value or a figure stated in the claim, in display units: ₹550 crore -> value 550, unit "crore"), a year, or a calc the narration already makes. Never invent data. Every chart has a "source" line naming where the numbers come from (e.g. "Company filings via Mint, 2012").
+- DATA SERIES (listed below when the dossier has them) are real World Bank series. When a chart shows one, reference it instead of typing numbers: lineChart props {"title", "series": "S1", "from"?: 2010} (or "series": ["S1","S2"] for two lines), barChart props {"title", "series": "S1", "last"?: 6}. Points, unit and the source line are filled in by the compiler: do NOT write points / bars / unit / source for a series chart. Annotate points with {"i": <1-based point>, "text"}.
+MAPS (vector, exact, animated on the words -- prefer them over mapCard images):
+- countryMap {focus: [ISO3 codes, 1-4]} for where-is-it / border / neighbour / trade-route beats; worldMap for global comparisons. Use them as the lfMap hero ("map": {"type": "countryMap", "props": {...}}) or an lfStage hero.
+- Events on the words: highlight {iso, tone} on the country's name, pin {city} (or {lonlat: [lon, lat]}) on the city, arrow {from: {city|iso}, to: {city|iso}, label} on the verb of the flow ("lent", "exports", "borrowed"), zoomTo {isos: [...]} when the story moves region.
+- A pin sits exactly where its label says: pin {city} only for that named city (label = the city or something IN it); any other place (a plant, a dam, a port town not listed) needs {lonlat: [lon, lat]}. Put each pin EITHER in props.pins (shown on entrance) OR as a pin event (on its word), never both.
+- An annotate note on a series chart shows THAT point's value in the series' unit and/or a short event label ("2008: 1.7 months", "IMF deal"); never a figure from another metric (no "$8.6B" on a months-of-imports line).
+- When the narration talks about a trend a DATA SERIES covers (reserves, debt, deficits, GDP over years), show it as a series chart (lfChart with a lineChart {"series": "S#"}) rather than retyping figures.
+- At most 1 zoomTo per scene, and leave >= 1.4 s after a zoomTo before the next event on that map (the camera takes 1.2 s). At most 3 arrows and 4 pins per map; pin / arrow labels <= 14 characters.
+- A world choropleth uses ONLY a DATA SERIES of kind "map": worldMap props {"choropleth": {"series": "S6", "title": "<= 4 words"}} or a choropleth event {"series": "S6"}. Never type map values.
+- Country codes are ISO3 (IND, PAK, CHN, LKA, USA ...). Named cities: ${Object.keys(CITIES).join(", ")}; any other place needs lonlat.
 - Digits live on screen; narration spells numbers (it is fixed -- do not touch it).
 - bigNumber: prefer count "enter" (counts up as the card appears; enter it on the number word with "anchor" when the number is said later). count "op" shows 0 until its count event, so only use it with a count event within ~1 s of the card's entrance.
 MEDIA SLOTS:
@@ -227,6 +326,7 @@ function buildPromptLF({ section, meta, dossier, outline, topic, extraNotes }) {
   const timeline = (dossier.timeline || []).map((t) => `${t.year}: ${t.event}`).join("\n");
   const entities = (dossier.entities || []).map((e) => `${e.name} (${e.kind})`).join(", ");
   const calcs = section.sentences.flatMap((s) => (s.calc || []).map((c) => `${s.id}: ${c.expr}`));
+  const series = dataSeriesLines(arguments[0]);
   const plan = scenePlan(section);
   const first =
     meta.kind === "cold"
@@ -245,7 +345,7 @@ ${calcs.length ? `Verified calcs in the narration (their results may be shown): 
 FACTS (the only source of on-screen numbers):
 ${facts}
 
-TIMELINE:
+${series ? `DATA SERIES (World Bank; reference them as {"series": "<id>"}; never retype the values):\n${series}\n\n` : ""}TIMELINE:
 ${timeline}
 
 ENTITIES (use these names for media "entity"): ${entities}
@@ -253,7 +353,7 @@ ENTITIES (use these names for media "entity"): ${entities}
 STRUCTURE
 - ${first}
 - This section runs about ${plan.seconds} s at the narration pace: use about ${plan.scenes} scaffolds (a new one every 6-8 s, 1-3 sentences each), and make at least ${plan.graphic} of them GRAPHIC-ONLY (lfChart, lfNumber without backdrop, lfCompare without photos, lfTimeline, lfHeadline without photo) so real media shows ~50-65 % of the time.
-- "pauses" (optional): a longer breath after a sentence that closes a paragraph, 0.5-0.7 s. Default gaps are 0.35 s.
+${series ? `- REAL DATA: when this section talks about something a DATA SERIES measures (reserves, external debt, debt service, deficits, GDP ...), at least one scene is an lfChart whose chart is a lineChart {"series": "<id>", "from"?: <year>} of that series -- NOT a barChart of hand-picked fact values. Its annotate events land on the years the narration names.\n` : ""}- "pauses" (optional): a longer breath after a sentence that closes a paragraph, 0.5-0.7 s. Default gaps are 0.35 s.
 
 ${LF_GRAMMAR}
 
@@ -291,7 +391,33 @@ Return the corrected full JSON {"scaffolds","events","media","pauses"?}. Keep ev
 // assembly + validation
 
 /** model output -> storyboard.v3 (narration always from the script) */
-function assemble(raw, { section, meta, topic }) {
+/** "S1 time PAK Pakistan: External debt stocks (% of GNI) [% of GNI], 1990-2023 ..." lines for the prompt */
+function dataSeriesLines(ctx) {
+  const list = (ctx.data && ctx.data.series) || [];
+  return list
+    .map((x) =>
+      x.kind === "map"
+        ? `${x.id} map (all countries, ${x.year}): ${x.indicatorName || x.metric} [${x.unit}] -- for worldMap choropleths`
+        : `${x.id} time ${x.country} ${x.countryName || ""}: ${x.indicatorName || x.metric} [${x.unit}], ${x.points[0].x}-${x.points[x.points.length - 1].x} (${x.points.length} points), latest ${x.points[x.points.length - 1].y} (${x.points[x.points.length - 1].x})`
+    )
+    .join("\n");
+}
+
+/** every {series: "<id>"} referenced in scaffolds / events */
+function referencedSeries(sb) {
+  const out = new Set();
+  const walk = (v) => {
+    if (Array.isArray(v)) return v.forEach(walk);
+    if (!v || typeof v !== "object") return;
+    [].concat(v.series || []).forEach((x) => typeof x === "string" && out.add(x));
+    Object.values(v).forEach(walk);
+  };
+  walk(sb.scaffolds);
+  walk(sb.events);
+  return out;
+}
+
+function assemble(raw, { section, meta, topic, data }) {
   const r = raw && typeof raw === "object" ? raw : {};
   const pauses = r.pauses && typeof r.pauses === "object" ? r.pauses : {};
   const sentences = section.sentences.map((s) => {
@@ -300,7 +426,7 @@ function assemble(raw, { section, meta, topic }) {
     if (Number.isFinite(p)) out.pauseAfter = Math.min(0.9, Math.max(0.35, p));
     return out;
   });
-  return {
+  const sb = {
     version: "storyboard.v3",
     profile: "LF",
     frame: { ...FRAME },
@@ -313,6 +439,11 @@ function assemble(raw, { section, meta, topic }) {
     events: Array.isArray(r.events) ? r.events : [],
     mediaIntents: Array.isArray(r.media) ? r.media : Array.isArray(r.mediaIntents) ? r.mediaIntents : [],
   };
+  // the referenced data series travel WITH the storyboard (sb.data, read by compile): the chapter
+  // renders the exact numbers it was validated against, whatever data.json does later
+  const refs = referencedSeries(sb);
+  if (refs.size && data && Array.isArray(data.series)) sb.data = { version: data.version || "data.v1", series: data.series.filter((x) => refs.has(x.id)) };
+  return sb;
 }
 
 /** every props.slot referenced anywhere in the scaffolds */
@@ -464,7 +595,8 @@ function screenNumbers(sb) {
     if (type === "barChart" || (where.endsWith("chart") && Array.isArray(p.bars))) (p.bars || []).forEach((b, i) => out.push({ where: `${where}.bars[${i}]`, value: Number(b.value) }));
     if (type === "lineChart" || (where.endsWith("chart") && (p.points || p.series))) {
       (p.points || []).forEach((pt, i) => out.push({ where: `${where}.points[${i}]`, value: Number(pt.y) }));
-      (p.series || []).forEach((se, j) => (se.points || []).forEach((pt, i) => out.push({ where: `${where}.series[${j}].points[${i}]`, value: Number(pt.y) })));
+      // a data-series ref ({series: "S1"} / ["S1","S2"]) carries no typed numbers: the compiler fills them from data.json
+      [].concat(p.series || []).filter((se) => se && typeof se === "object").forEach((se, j) => (se.points || []).forEach((pt, i) => out.push({ where: `${where}.series[${j}].points[${i}]`, value: Number(pt.y) })));
     }
   };
   (sb.scaffolds || []).forEach((sc) => {
@@ -526,7 +658,7 @@ async function validateChapter(sb, ctx, opts = {}) {
   declared.forEach((s) => s && !used.has(s) && P.push(`media slot "${s}" is declared but never used; drop it (every slot costs a lookup)`));
   // charts: mandatory source line, numbers from the dossier only
   chartFills(sb).forEach(({ sc, f }) => {
-    if (!String((f.props || {}).source || "").trim()) P.push(`scaffold ${sc.id}: chart ${f.id || ""} needs props.source (where the numbers come from)`);
+    if (!String((f.props || {}).source || "").trim() && !(f.props || {}).series) P.push(`scaffold ${sc.id}: chart ${f.id || ""} needs props.source (where the numbers come from)`);
   });
   const allowed = allowedNumbers(dossier, section);
   screenNumbers(sb).forEach(({ where, value }) => {
@@ -569,6 +701,8 @@ async function validateChapter(sb, ctx, opts = {}) {
       P.push(`event[${i}] highlight on ${m.id}: ${m.type} needs props.highlight (a phrase copied from its title) to sweep; add one or target another module`);
   });
   P.push(...zoomLabelProblems(spec));
+  P.push(...mapProblems(spec));
+  P.push(...seriesNoteProblems(spec));
   // a bigNumber with count "op" shows 0 until its count event: that must follow its entrance closely
   spec.scaffolds.forEach((sc) =>
     sc.modules
@@ -744,6 +878,8 @@ async function generateChapterStoryboard(ctx, opts = {}) {
       continue;
     }
     sb = assemble(raw, ctx);
+    const fixed = fixSeriesNotes(sb);
+    if (fixed) log(`[${ctx.section.id}] rewrote ${fixed} data-series note(s) to quote their point`);
     let v = await validateChapter(sb, ctx, { log, layoutAudit: opts.layoutAudit });
     // long holds are the one near-miss the model oscillates on (fixing a hold, it restructures and
     // breaks the mix): fill them deterministically before spending another model call
@@ -855,4 +991,9 @@ module.exports = {
   referencedSlots,
   fillHolds,
   zoomLabelProblems,
+  mapProblems,
+  seriesNoteProblems,
+  fixSeriesNotes,
+  referencedSeries,
+  dataSeriesLines,
 };

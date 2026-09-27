@@ -181,7 +181,8 @@ function scaleFor(unit, values, hint, basis) {
   }
   const m = max / div;
   const byMag = m >= 1000 ? 0 : m >= 10 ? 1 : 2;
-  const decimals = div === 1 && Number.isInteger(hint) && hint >= 0 && hint <= 3 ? hint : byMag;
+  // the API's decimal hint, but never fewer than 1 decimal below 100 (months of imports: 2.8, not 3)
+  const decimals = div === 1 && Number.isInteger(hint) && hint >= 0 && hint <= 3 ? Math.max(hint, m >= 100 ? 0 : 1) : byMag;
   return { div, unit: u, decimals };
 }
 

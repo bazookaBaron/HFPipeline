@@ -289,7 +289,8 @@ async function main() {
     return { generate: SL.liveGenerate({ log }), kind: "live" };
   };
   const sbPath = (id) => path.join(P.sbDir, `${id}.json`);
-  const ctxFor = (id) => ({ section: sectionOf(id), meta: SL.chapterMeta(script, outline, id), dossier, outline, topic });
+  // data: the World Bank series (data.json); storyboardLF lists them and embeds the ones a chapter uses (sb.data)
+  const ctxFor = (id) => ({ section: sectionOf(id), meta: SL.chapterMeta(script, outline, id), dossier, outline, topic, data: exists(P.data) ? readJson(P.data) : null });
 
   async function makeStoryboard(id, extraProblems, previous) {
     const ctx = ctxFor(id);
@@ -342,11 +343,8 @@ async function main() {
     const { intents, renames } = SL.mergeIntents(chapters);
     const key = hash({ intents, v: 1 });
     const keyPath = path.join(P.mediaDir, "media.key");
-    const { hasSeriesRef } = require("./lib/video/v3/series");
     for (const { id, sb } of chapters) {
       sb.mediaManifest = path.relative(path.join(P.chDir, id), manifestPath).split(path.sep).join("/");
-      // chart / map series refs ({series: "S1"}) resolve at compile from data.json (lib/longform/DATA.md)
-      if (hasSeriesRef(sb.scaffolds) || hasSeriesRef(sb.events)) sb.dataFile = path.relative(path.join(P.chDir, id), P.data).split(path.sep).join("/");
       writeJson(chSbPath(id), sb);
     }
     writeJson(path.join(P.mediaDir, "intents.json"), intents);
@@ -408,7 +406,7 @@ async function main() {
     const manifest = readJson(manifestPath);
     const used = [...SL.referencedSlots(sb)].sort().map((s) => [s, manifest.slots[s] || null]);
     const endcard = id === lastSection;
-    const opts = { music: false, captions: false, endcard, quality: a.quality, v: RENDER_VERSION, ...(sb.dataFile && exists(P.data) ? { data: hash(readJson(P.data).series) } : {}) };
+    const opts = { music: false, captions: false, endcard, quality: a.quality, v: RENDER_VERSION };
     const { lfMeta, ...sbKey } = sb; // lfMeta (attempt stats) never changes the picture
     const key = hash({ sb: sbKey, used, opts });
     const mp4 = path.join(dir, "chapter.mp4");

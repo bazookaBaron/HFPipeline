@@ -22,6 +22,8 @@
 
 const { findAnchorIndex } = require("./timeline");
 const { buildMediaLayer } = require("./media");
+const { resolveSeries, seriesIndex, hasSeriesRef } = require("./series"); // data.json series refs (lib/longform/DATA.md)
+const { resolveMaps } = require("./geo"); // worldMap / countryMap: views, paths, points (lib/longform/MAPS.md)
 const { TEMPLATES: DH_TEMPLATES } = require("./templates-dh");
 const { GENERIC_TEMPLATES } = require("./templates-generic");
 const { LC_TEMPLATES } = require("./templates-lc");
@@ -82,10 +84,17 @@ function resolveSlots(v, slots, used) {
       out.src = String(e.file).replace(/\\/g, "/");
       out.credit = v.credit || e.credit || "";
       if (!v.focal && Array.isArray(e.focal)) out.focal = e.focal;
-      out.kind = v.kind || e.kind || "image";
+      // the manifest decides image vs video: a video intent that fell back to a still (fallbackFrom) must render as an image
+      out.kind = e.kind || v.kind || "image";
       out.mediaStatus = e.status || "ok";
       if (e.width && e.height) out.mediaSize = [e.width, e.height];
       if (e.poster) out.poster = v.poster || e.poster;
+      if (out.kind === "video") {
+        // root media layer (media.js): trims never run past the clip; the rest holds lastFrame
+        if (e.clipDur && !v.clipDur) out.clipDur = e.clipDur;
+        if (e.lastFrame && !v.lastFrame) out.lastFrame = e.lastFrame;
+      }
+      if (e.fallbackFrom) out.fallbackFrom = e.fallbackFrom;
     }
   }
   return out;
@@ -144,6 +153,8 @@ function compileStoryboard(sb, timeline, opts = {}) {
   const { sentenceTimes, words, totalSeconds } = timeline;
   const isLF = (sb.profile || "DH") === "LF";
   const mediaSlots = normalizeManifest(opts.media);
+  // opts.data = data.json ({series}); else the series snapshot a storyboard carries (sb.data, storyboardLF)
+  const dataIdx = seriesIndex(opts.data || sb.data);
   const usedSlots = new Set();
   const sIndex = new Map(sb.sentences.map((s, i) => [s.id, i]));
   const tBy = new Map(sentenceTimes.map((t) => [t.id, t]));
@@ -174,6 +185,7 @@ function compileStoryboard(sb, timeline, opts = {}) {
     const t1 = i + 1 < scs.length ? scs[i + 1].t0 : totalSeconds;
     const built = TEMPLATES[x.sc.template](x.sc, sb.entities || {}, sb);
     if (isLF) built.modules.forEach((m) => (m.props = resolveSlots(m.props || {}, mediaSlots, usedSlots)));
+    built.modules.forEach((m) => hasSeriesRef(m.props) && (m.props = resolveSeries(m.props, dataIdx, `scaffold ${x.sc.id} module ${m.id}`, m.type)));
     const modules = built.modules.map((m) => {
       const fill = findFill(x.sc, m.id);
       const anchor = m.anchor || (fill && fill.anchor);
@@ -264,8 +276,10 @@ function compileStoryboard(sb, timeline, opts = {}) {
       const live = scaffolds.find((s) => t >= s.t0 - 1e-6 && t < s.t1);
       if (!live || !live.modules.some((m) => m.id === modId)) throw new Error(`event[${i}] ${ev.op} -> "${ev.target}" at ${t}s: module not on screen (scaffold ${live ? live.id : "none"})`);
     }
-    return { t, op: ev.op, target: ev.target, value: ev.value, word: w.text, wordIndex: w.i };
+    const value = hasSeriesRef(ev.value) ? resolveSeries(ev.value, dataIdx, `event[${i}] ${ev.op}`, null, false) : ev.value;
+    return { t, op: ev.op, target: ev.target, value, word: w.text, wordIndex: w.i };
   });
+  resolveMaps(scaffolds, events); // no-op without map modules
 
   events.push(...chromeEvents);
   // root-level timed <video> trims for media windows (lib/video/v3/media.js)

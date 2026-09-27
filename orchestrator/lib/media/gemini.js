@@ -7,7 +7,7 @@ const path = require("path");
 
 const API = "https://generativelanguage.googleapis.com/v1beta/models";
 const DEFAULT_IMAGE_MODEL = "gemini-3.1-flash-image"; // verified with the key 2026-09-26 (1376x768 at 16:9)
-const { modelFor, recordUsage } = require("../ai/models");
+const { modelFor, recordUsage, beforeCall, thinkingConfigFor } = require("../ai/models");
 
 function readEnv() {
   const envPath = path.join(__dirname, "..", "..", "..", "scripting-pipeline", ".env");
@@ -49,6 +49,7 @@ function createGemini(opts = {}) {
   const log = opts.log || (() => {});
 
   async function call(m, body, task) {
+    beforeCall(task); // budget guard: throws {budget, fatal} when the run is over its budget
     let delay = 2000;
     for (let attempt = 0; ; attempt++) {
       const res = await fetchImpl(`${API}/${m}:generateContent`, {
@@ -80,6 +81,7 @@ function createGemini(opts = {}) {
     }
   }
 
+  let thinkingUnsupported = false;
   async function jsonOnce(prompt, o = {}) {
     const parts = [{ text: prompt }];
     for (const img of o.images || []) {
@@ -87,10 +89,21 @@ function createGemini(opts = {}) {
       parts.push({ inlineData: { mimeType: img.mime || "image/jpeg", data: Buffer.from(img.data).toString("base64") } });
     }
     const task = o.task || (o.images && o.images.length ? "media.vision" : "media.queries");
-    const data = await call(o.model || pick(task), {
+    // thinking per task (lib/ai/models.js THINKING_DEFAULTS: search queries run at "low")
+    const thinkingConfig = thinkingUnsupported ? null : thinkingConfigFor(task, env);
+    const body = (tc) => ({
       contents: [{ role: "user", parts }],
-      generationConfig: { responseMimeType: "application/json", temperature: o.temperature == null ? 0 : o.temperature },
-    }, task);
+      generationConfig: { responseMimeType: "application/json", temperature: o.temperature == null ? 0 : o.temperature, ...(tc ? { thinkingConfig: tc } : {}) },
+    });
+    let data;
+    try {
+      data = await call(o.model || pick(task), body(thinkingConfig), task);
+    } catch (err) {
+      // a model that rejects the thinking knob still gets the call, at its default thinking
+      if (!thinkingConfig || !/\b400\b/.test(err.message) || !/thinking/i.test(err.message)) throw err;
+      thinkingUnsupported = true;
+      data = await call(o.model || pick(task), body(null), task);
+    }
     const text = ((data.candidates || [])[0]?.content?.parts || []).map((p) => p.text || "").join("");
     return extractJson(text);
   }

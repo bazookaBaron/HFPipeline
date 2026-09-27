@@ -71,8 +71,8 @@
     // ---- flow ----
     P + ".l2-flow .nd{position:absolute;border-radius:18px;background:" + T.card + ";border:2px solid " + T.line + ";box-shadow:0 16px 38px rgba(30,28,20,.10);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}",
     P + ".l2-flow .nd[data-hl='1']{border-color:var(--nc);box-shadow:0 0 0 3px var(--nc),0 16px 38px rgba(30,28,20,.14);}",
-    P + ".l2-flow .ic{width:74px;height:74px;border-radius:50%;background:var(--nt);color:var(--nc);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}",
-    P + ".l2-flow .nl{font-size:26px;font-weight:800;letter-spacing:-.015em;line-height:1.1;color:" + T.ink + ";padding:0 14px;}",
+    P + ".l2-flow .ic{width:96px;height:96px;border-radius:50%;background:var(--nt);color:var(--nc);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}",
+    P + ".l2-flow .nl{font-size:30px;font-weight:800;letter-spacing:-.015em;line-height:1.1;color:" + T.ink + ";padding:0 14px;}",
     P + ".l2-flow .ns{font-family:" + MONO + ";font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:" + T.muted + ";margin-top:6px;}",
     P + ".l2-flow .fl{position:absolute;height:36px;line-height:32px;padding:0 13px;border-radius:18px;background:" + T.card + ";border:2px solid var(--fc);font-size:19px;font-weight:750;color:" + T.ink + ";white-space:nowrap;box-shadow:0 8px 18px rgba(30,28,20,.10);}",
     // ---- pictogram ----
@@ -536,8 +536,8 @@
       var flows = (p.flows || []).slice(0, 6);
       if (nodes.length < 2) throw new Error("flowDiagram: needs 2-5 nodes");
       var layout = p.layout || (nodes.length >= 4 ? "hub" : "row");
-      var bw = Math.min(290, Math.max(220, (w - 80) / nodes.length - 90));
-      var bh = 206;
+      var bw = Math.min(340, Math.max(230, (w - 80) / nodes.length - 110));
+      var bh = Math.min(260, Math.round(h * 0.4));
       var pos = {};
       if (layout === "row") {
         nodes.forEach(function (n, i) {
@@ -564,9 +564,9 @@
         var ic = div("ic", nd);
         ic.style.setProperty("--nt", tint(n.tone || "blue"));
         ic.style.setProperty("--nc", col);
-        ic.appendChild(icon(LINE, n.icon || "coin", 40, col, 1.9));
+        ic.appendChild(icon(LINE, n.icon || "coin", 52, col, 1.8));
         var nl = div("nl", nd, n.label || n.id);
-        nl.style.fontSize = L.fit(n.label || n.id, 800, 26, 18, bw - 28, 2) + "px";
+        nl.style.fontSize = L.fit(n.label || n.id, 800, 30, 18, bw - 28, 2) + "px";
         if (n.sub) div("ns", nd, n.sub);
         c.entity("n_" + n.id, nd);
         hideAt0(c, nd);
@@ -706,7 +706,7 @@
       var figTxt = fig || String(filled);
       while (figSize > 90 && L.measure(figTxt + "  of " + total, 800, figSize) * 0.8 > tw) figSize -= 10;
       figEl.style.fontSize = figSize + "px";
-      var of = place(div("of", el, fig ? "" : "of " + total), tx + L.measure(figTxt, 800, figSize) * 0.96 + 18, 0);
+      var of = place(div("of", el, fig ? "" : "of " + total), tx + L.measure(figTxt, 800, figSize) * 1.04 + 26, 0);
       var lbl = place(div("lb", el, p.label || ""), tx, 0, tw);
       var lh = L.lineCount(p.label || "", 800, 34, tw) * 39;
       var unitH = p.unit ? 40 : 0;

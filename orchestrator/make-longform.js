@@ -274,6 +274,26 @@ async function main() {
   const sectionOf = (id) => script.sections.find((s) => s.id === id);
   log(`sections: ${sections.join(", ")}${partial ? " (subset)" : ""}`);
 
+  // ---------------------------------------------------------------- visual beat sheet (plan §6.1)
+  // which visual each scene shows (maps / graphics / media / cards, variety rules); cached by content key,
+  // at most one lite Gemini call per video. storyboards get their section's scenes as a fixed SCENE PLAN.
+  const beatsPath = path.join(out, "beats.json");
+  let beats = null;
+  {
+    const BS = require("./lib/longform/beatSheet");
+    const bctx = { dossier, data: exists(P.data) ? readJson(P.data) : null, log };
+    const prevBeats = exists(beatsPath) ? readJson(beatsPath) : null;
+    const fresh = await BS.buildBeatSheet(script, bctx); // deterministic (no model call without ctx.gemini)
+    if (prevBeats && prevBeats.key === fresh.key && !redo("script")) beats = prevBeats;
+    else {
+      beats = a.offline ? fresh : await BS.buildBeatSheet(script, { ...bctx, gemini: (() => { try { return gemini(); } catch (_) { return null; } })() });
+      writeJson(beatsPath, beats);
+    }
+    const bp = BS.planProblems(beats);
+    log(`beat sheet: ${beats.stats.contentScenes} scenes, mix ${JSON.stringify(beats.stats.byCategory)}${bp.length ? `; notes: ${bp.join("; ")}` : ""}`);
+  }
+  const planFor = (id) => (beats && beats.sections[id] ? beats.sections[id].scenes : null);
+
   // ---------------------------------------------------------------- storyboards
   const replayGen = (id) => {
     if (!a.replay) return null;
@@ -294,7 +314,7 @@ async function main() {
   };
   const sbPath = (id) => path.join(P.sbDir, `${id}.json`);
   // data: the World Bank series (data.json); storyboardLF lists them and embeds the ones a chapter uses (sb.data)
-  const ctxFor = (id) => ({ section: sectionOf(id), meta: SL.chapterMeta(script, outline, id), dossier, outline, topic, data: exists(P.data) ? readJson(P.data) : null });
+  const ctxFor = (id) => ({ section: sectionOf(id), meta: SL.chapterMeta(script, outline, id), dossier, outline, topic, data: exists(P.data) ? readJson(P.data) : null, plan: planFor(id) });
 
   async function makeStoryboard(id, extraProblems, previous) {
     const ctx = ctxFor(id);
@@ -317,7 +337,7 @@ async function main() {
   const storyboards = {};
   const todo = [];
   for (const id of sections) {
-    const want = SL.sectionHash(sectionOf(id), SL.chapterMeta(script, outline, id));
+    const want = SL.sectionHash(sectionOf(id), SL.chapterMeta(script, outline, id), SL.planKey(planFor(id)));
     if (!redo("storyboards") && exists(sbPath(id)) && (readJson(sbPath(id)).lfMeta || {}).hash === want) storyboards[id] = readJson(sbPath(id));
     else todo.push(id);
   }

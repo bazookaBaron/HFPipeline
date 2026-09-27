@@ -39,6 +39,7 @@ const TASKS = {
   "research.plan": "lite",
   "longform.metadata": "lite",
   "longform.thumbnail": "lite",
+  "longform.beats": "lite", // visual beat sheet: hints for sentences the rules cannot place (<= 1 call / video)
   "longform.sceneRewrite": "lite", // media gate: graphics-only rewrite of the scenes whose slot has no usable media
   // standard
   storyboard: "standard",

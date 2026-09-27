@@ -224,7 +224,7 @@ function lfStage(sc) {
   const host = heroRect(size, !!tb);
   const mods = tb ? tb.mods.slice() : [];
   // vector maps sit like charts: rails clear of the card (their legend / labels live inside it)
-  const graphic = type === "barChart" || type === "lineChart" || type === "worldMap" || type === "countryMap";
+  const graphic = type === "barChart" || type === "lineChart" || type === "worldMap" || type === "countryMap" || type === "routeMap";
   if (type === "photo") mods.push(photoMod(sc, heroFill, host, "hero", size === "full" ? { card: false, creditPos: "frame", scrim: s.scrim, backdrop: true } : { creditPos: "frame" }));
   else mods.push(mod(sc, heroFill, type, host, "hero", type === "mapCard" ? { props: { creditPos: "frame" } } : {}));
   mods.push(...railMods(sc, s, host, { overlap: graphic ? -RAIL.clear : type === "mapCard" ? 40 : RAIL.overlap }));
@@ -415,8 +415,11 @@ function lfChrome(sb, scaffolds, chromeEvents, BRAND, frameCredits) {
   });
 }
 
+// set 2 (quote / feature graphics / split screen / flash burst): templates-lf2.js, built on these helpers
+const LF2 = require("./templates-lf2")({ G, mod, stack, railMods, topTitle, overlays, heroRect });
+
 module.exports = {
-  LF_TEMPLATES: { lfCold, lfStage, lfSplit, lfFull, lfChart, lfNumber, lfCompare, lfTimeline, lfMap, lfHeadline, lfChapter, lfJoke, lfRecap, lfEnd },
+  LF_TEMPLATES: { lfCold, lfStage, lfSplit, lfFull, lfChart, lfNumber, lfCompare, lfTimeline, lfMap, lfHeadline, lfChapter, lfJoke, lfRecap, lfEnd, ...LF2 },
   lfChrome,
   lfPreferred,
   LF_GRID: { X, S, ...G, HERO, RAIL },

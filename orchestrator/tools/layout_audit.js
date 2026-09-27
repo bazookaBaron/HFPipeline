@@ -44,6 +44,7 @@ const LIBS = [
   "compositions/components/lib/stage/modules-lf.js",
   "compositions/components/lib/stage/modules-chart.js",
   "compositions/components/lib/stage/modules-map.js",
+  "compositions/components/lib/stage/modules-lf2.js",
 ];
 
 function harnessHtml(spec, duration, frame = { w: 1080, h: 1920 }) {

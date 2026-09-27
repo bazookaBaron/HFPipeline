@@ -27,7 +27,7 @@ const PROFILES = {
   BP: { example: path.join(FIX, "chat-bp.json"), templates: ["bpScene", "bpHost"], bpm: [48, 67], maxGap: 3.5, lifeMedian: [2.5, 5.0], nodeX: [0.15, 0.85], forbiddenOps: ["retype"] },
   // LF 16:9 long-form chapters (plan §6, provisional): a visual change every <= 5 s, scene life 6-10 s, 18-35 beats/min.
   // LF storyboards are written per chapter by lib/longform (P6), not by this 9:16 generator.
-  LF: { example: path.join(FIX, "lf-pilot.json"), templates: ["lfCold", "lfStage", "lfSplit", "lfFull", "lfChart", "lfNumber", "lfCompare", "lfTimeline", "lfMap", "lfHeadline", "lfChapter", "lfJoke", "lfRecap", "lfEnd", "free"], bpm: [18, 40], maxGap: 5.0, lifeMedian: [5.0, 10.0], nodeX: [0.1, 0.9], forbiddenOps: ["retype", "slam"], syn: { word: 0.36, gap: 0.35 } },
+  LF: { example: path.join(FIX, "lf-pilot.json"), templates: ["lfCold", "lfStage", "lfSplit", "lfFull", "lfChart", "lfNumber", "lfCompare", "lfTimeline", "lfMap", "lfHeadline", "lfChapter", "lfJoke", "lfRecap", "lfEnd", "lfQuote", "lfFeature", "lfDuo", "lfFlash", "free"], bpm: [18, 40], maxGap: 5.0, lifeMedian: [5.0, 10.0], nodeX: [0.1, 0.9], forbiddenOps: ["retype", "slam"], syn: { word: 0.36, gap: 0.35 } },
 };
 
 // synthetic pacing that approximates the delivered pace (215 wpm incl. 0.2 s sentence gaps)

@@ -380,6 +380,7 @@ function buildStageComposition({ runId, totalDuration, spec, narrationRelPath, w
     <script src="compositions/components/lib/stage/modules-lf.js"></script>
     <script src="compositions/components/lib/stage/modules-chart.js"></script>
     <script src="compositions/components/lib/stage/modules-map.js"></script>
+    <script src="compositions/components/lib/stage/modules-lf2.js"></script>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body { margin: 0; width: ${frame.w}px; height: ${frame.h}px; overflow: hidden; background: #000; }

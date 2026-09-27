@@ -289,6 +289,7 @@ function compileStoryboard(sb, timeline, opts = {}) {
     return { t, op: ev.op, target: ev.target, value, word: w.text, wordIndex: w.i };
   });
   resolveMaps(scaffolds, events); // no-op without map modules
+  require("./lf2").resolveLF2(scaffolds, events); // LF set-2 modules: barRace frames, word-driven auto flags
 
   events.push(...chromeEvents);
   // root-level timed <video> trims for media windows (lib/video/v3/media.js)

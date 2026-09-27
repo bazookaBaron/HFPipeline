@@ -17,6 +17,11 @@
  *   arrows: [{from, to, label?, tone?, bend?}]           from/to = {iso|lonlat|city} or "PAK" / "city:Karachi"
  *   choropleth: {values: {ISO3: n}, unit?, source?, breaks?: [..4], title?} or {series: "S3"} (data.json)
  *   labels: false                   no country-name labels on highlighted countries
+ *   intro: "world" | "region" | [ISO3]   establishing flight from a wide view into the view (props.introView)
+ *   counters: [{at, value, prefix?, suffix?, label?}]   frosted counter cards pinned to a place
+ *   routeMap: stops [{city|iso|lonlat, label?}] (2-5), legs? [{from, to, label?}] (1-based, default chained),
+ *             mode? air|sea|land -> pins (stop: true) + arrows (route: true); view fits the stops unless focus
+ * Every map ships a graticule (geo.grat) and each country's label point (c) for the focus lift.
  * Events (values resolved here): highlight {iso, tone?, label?}, pin {...point, label?}, arrow {from, to, label?},
  *   zoomTo {isos | view, dur?}, choropleth {values | series}, dim {iso}.
  */
@@ -26,7 +31,7 @@ const path = require("path");
 
 const GEO_DIR = path.resolve(__dirname, "..", "..", "..", "..", "video-engine", "assets", "geo");
 const UNITS = 5000;
-const MAP_TYPES = new Set(["worldMap", "countryMap"]);
+const MAP_TYPES = new Set(["worldMap", "countryMap", "routeMap"]);
 const cache = {};
 function load(res) {
   if (!cache[res]) {
@@ -202,7 +207,7 @@ function pathsFor(views, keep) {
       if (iso === "ATA" && !(keep && keep.has("ATA"))) return; // Antarctica only when asked for
       const meets = (b) => !(b[2] < v[0] - mx || b[0] > v[0] + v[2] + mx || b[3] < v[1] - my || b[1] > v[1] + v[3] + my);
       if (!(c.P || [c.B]).some((pb) => meets(scaleBox(pb, g.k)))) return;
-      if (fine || !pick[iso]) pick[iso] = { iso, n: c.n, d: c.d, k: g.k, res: fine ? "50m" : "110m" };
+      if (fine || !pick[iso]) pick[iso] = { iso, n: c.n, d: c.d, k: g.k, res: fine ? "50m" : "110m", c: labelPoint(iso) };
     });
   });
   return Object.values(pick).sort((a, b) => (a.iso < b.iso ? -1 : 1));
@@ -234,6 +239,70 @@ function normArrow(a, where) {
 }
 
 /**
+ * Faint graticule (every 20 degrees, lat -60..80) as one path in map units, sampled every 2 degrees so the
+ * Natural Earth curvature shows. Shipped once per map module (props.geo.grat).
+ */
+let GRAT = null;
+function graticule() {
+  if (GRAT) return GRAT;
+  const r = (v) => Math.round(v);
+  const parts = [];
+  for (let lon = -180; lon <= 180; lon += 20) {
+    const pts = [];
+    for (let lat = -60; lat <= 80; lat += 2) pts.push(project(lon, lat));
+    parts.push("M" + pts.map((p) => `${r(p[0])} ${r(p[1])}`).join("L"));
+  }
+  for (let lat = -60; lat <= 80; lat += 20) {
+    const pts = [];
+    for (let lon = -180; lon <= 180; lon += 2) pts.push(project(lon, lat));
+    parts.push("M" + pts.map((p) => `${r(p[0])} ${r(p[1])}`).join("L"));
+  }
+  GRAT = parts.join("");
+  return GRAT;
+}
+
+/** view [x, y, w, h] fitted around projected points (routes), grown to the rect aspect */
+function pointsView(pts, aspect, pad) {
+  const xs = pts.map((p) => p[0]);
+  const ys = pts.map((p) => p[1]);
+  const b = [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+  // never tighter than ~6 degrees of longitude (a city-to-city hop still shows its coastline)
+  const minW = 6 * (UNITS * Math.PI / 180) * 0.87;
+  if (b[2] - b[0] < minW) {
+    const m = (b[0] + b[2]) / 2;
+    b[0] = m - minW / 2;
+    b[2] = m + minW / 2;
+  }
+  return fitBox(b, aspect, pad);
+}
+
+/** routeMap stops -> pins + chained legs (arrows flagged `route`) */
+function normRoute(p, where) {
+  const stops = (p.stops || []).map((s, i) => {
+    const x = typeof s === "string" ? { city: s } : s;
+    return { at: point(x, `${where} stop ${i + 1}`), label: x.label !== undefined ? String(x.label) : x.city ? String(x.city).replace(/\b\w/g, (m) => m.toUpperCase()) : "", tone: x.tone || p.tone || "blue" };
+  });
+  if (stops.length < 2) throw new Error(`${where}: routeMap needs 2-5 stops`);
+  if (stops.length > 5) throw new Error(`${where}: routeMap takes at most 5 stops (got ${stops.length})`);
+  const legs = (p.legs && p.legs.length ? p.legs : stops.slice(1).map((_, i) => ({ from: i + 1, to: i + 2 }))).map((l, i) => {
+    const a = stops[Number(l.from) - 1];
+    const b = stops[Number(l.to) - 1];
+    if (!a || !b) throw new Error(`${where}: leg ${i + 1} names a stop that does not exist (stops are 1-based)`);
+    return { from: a.at, to: b.at, label: l.label || "", tone: l.tone || p.tone || "blue", bend: l.bend === undefined ? (p.mode === "land" ? 0.08 : 0.24) : Number(l.bend), route: true };
+  });
+  return { stops, legs };
+}
+
+/** frosted counter cards pinned to a place: {at: iso|city|lonlat, value, prefix?, suffix?, decimals?, label?} */
+function normCounter(k, where) {
+  const x = k || {};
+  const at = point(x.at !== undefined ? x.at : x, `${where} counter`);
+  const value = Number(x.value);
+  if (!Number.isFinite(value)) throw new Error(`${where}: counter needs a numeric value`);
+  return { at, value, prefix: x.prefix || "", suffix: x.suffix || "", decimals: Number(x.decimals) || 0, label: x.label || "", tone: x.tone || "blue", from: x.from === undefined ? 0 : Number(x.from) };
+}
+
+/**
  * Resolve every map module (props) and the events that target it, in place on the compiled spec.
  * scaffolds: compiled scaffolds (modules with rect/props); events: compiled events [{t, op, target, value}].
  */
@@ -254,8 +323,26 @@ function resolveMaps(scaffolds, events) {
       if (p.geo) return; // already resolved (a module persisting across scaffolds shares the object)
       const where = `map ${id}`;
       const pad = p.pad === undefined ? 0.14 : Number(p.pad);
-      const view = p.view !== undefined && p.view !== "world" ? viewOf(p.view, aspect, 0, where) : viewOf(p.focus, aspect, pad, where, m.type === "worldMap" || p.view === "world");
+      const route = m.type === "routeMap" ? normRoute(p, where) : null;
+      const view =
+        p.view !== undefined && p.view !== "world"
+          ? viewOf(p.view, aspect, 0, where)
+          : route && !(p.focus || []).length && p.view !== "world"
+            ? pointsView(route.stops.map((s) => s.at), aspect, p.pad === undefined ? 0.22 : pad)
+            : viewOf(p.focus, aspect, pad, where, m.type !== "countryMap" || p.view === "world");
       views.push(view);
+      // establishing shot: the camera opens wide (world / the region around the view / given countries) and flies in
+      let introView = null;
+      if (p.intro) {
+        if (p.intro === "world") introView = viewOf("world", aspect, 0, where);
+        else if (p.intro === "region") {
+          const k = 3.2;
+          const cx = view[0] + view[2] / 2;
+          const cy = view[1] + view[3] / 2;
+          introView = [cx - (view[2] * k) / 2, cy - (view[3] * k) / 2, view[2] * k, view[3] * k].map((v) => Math.round(v * 10) / 10);
+        } else introView = viewOf([].concat(p.intro), aspect, pad, where);
+        views.push(introView);
+      }
       const hl = (p.highlight || []).map((h) => normHighlight(h, where));
       if (m.type === "countryMap" && p.labels !== false) (p.focus || []).forEach((iso) => hl.find((h) => h.iso === String(iso).toUpperCase()) || hl.push(normHighlight({ iso, tone: "none", label: true }, where)));
       hl.forEach((h) => p.labels !== false && m.type === "countryMap" && !h.label && h.tone !== "none" && (h.label = normHighlight({ iso: h.iso, label: true }, where).label));
@@ -263,11 +350,17 @@ function resolveMaps(scaffolds, events) {
         ...p,
         view,
         highlight: hl,
-        pins: (p.pins || []).map((x) => normPin(x, where)),
-        arrows: (p.arrows || []).map((x) => normArrow(x, where)),
+        pins: (p.pins || []).map((x) => normPin(x, where)).concat(route ? route.stops.map((s) => ({ ...s, stop: true })) : []),
+        arrows: (p.arrows || []).map((x) => normArrow(x, where)).concat(route ? route.legs : []),
         choropleth: p.choropleth ? choroplethOf(p.choropleth, where) : null,
+        counters: (p.counters || []).map((x) => normCounter(x, where)),
+        introView,
       };
+      if (route) m.props.auto = p.auto !== false && !(events || []).some((e) => e.op === "leg" && String(e.target || "").split(".")[0] === id);
       delete m.props.pad;
+      delete m.props.stops;
+      delete m.props.legs;
+      delete m.props.intro;
     });
     (events || [])
       .filter((e) => String(e.target || "").split(".")[0] === id)
@@ -283,11 +376,13 @@ function resolveMaps(scaffolds, events) {
         else if (e.op === "pin") e.value = normPin(v, where);
         else if (e.op === "arrow") e.value = normArrow(v, where);
         else if (e.op === "choropleth") e.value = choroplethOf(v, where);
+        else if (e.op === "counter") e.value = normCounter(v, where);
+        else if (e.op === "leg") e.value = { i: Number(v.i) || 1 };
       });
     const keep = new Set(list.flatMap((m) => [].concat(m.props.focus || [], (m.props.highlight || []).map((h) => h.iso))).map((x) => String(x).toUpperCase()));
     const countries = pathsFor(views, keep);
     list.forEach((m) => {
-      if (!m.props.geo) m.props.geo = { units: UNITS, countries };
+      if (!m.props.geo) m.props.geo = { units: UNITS, countries, grat: graticule() };
     });
     // the same geo object for every appearance (the stage builds a module once)
     const shared = list[0].props.geo;

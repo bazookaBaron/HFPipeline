@@ -317,16 +317,17 @@ Rewrite the draft below so it flows and has rhythm like the examples: vary sente
 full sentences with verbs, add small linking words, keep it simple (grade 5-7) and keep its jokes, direct address
 ("you"), pivots ("But the irony is...", "So the question is...") and its structure and order.
 HARD RULES:
-- Keep EVERY one of these tokens exactly as written, same capitals (numbers, names, quotes): ${locked.map((x) => `"${x.text}"`).join(", ")}.
+- Keep EVERY locked token (listed after these rules) exactly as written, same capitals (numbers, names, quotes).
 - Keep the order of the beats: chorus, quote, belief and reveal, the three stakes stops, THEN the irony line, then the rest.
 - No new facts, numbers, names or quotes. Keep each number's scope words and year. Total length within 10% of the draft.
 - Every sentence has a verb and at most 20 words (a quoted line may stand in its own sentence). Keep the irony line
   within the first 150 words.
 - Each sentence keeps its "factIds", "devices", "visual" (and "quoteId"); when you merge sentences, merge their lists.
-DRAFT:
-${JSON.stringify({ sentences: section.sentences.map(({ text, factIds, devices, visual, quoteId, calc }) => ({ text, factIds, devices, visual, ...(quoteId ? { quoteId } : {}), ...(calc ? { calc } : {}) })) })}
+Return JSON: {"sentences": [{"text": "...", "factIds": [], "devices": [], "visual": "...", "quoteId": null, "calc": []}]}
 
-Return JSON: {"sentences": [{"text": "...", "factIds": [], "devices": [], "visual": "...", "quoteId": null, "calc": []}]}`;
+LOCKED TOKENS: ${locked.map((x) => `"${x.text}"`).join(", ")}
+DRAFT:
+${JSON.stringify({ sentences: section.sentences.map(({ text, factIds, devices, visual, quoteId, calc }) => ({ text, factIds, devices, visual, ...(quoteId ? { quoteId } : {}), ...(calc ? { calc } : {}) })) })}`;
 }
 
 /**
@@ -404,7 +405,13 @@ async function writeScript(dossier, outline, opts = {}) {
   // (an empty section is always the worst draft, whatever its problem count says)
   const score = (s, p) => (s.sentences.length ? p.length : Infinity);
   const best = sections.map((s, i) => ({ section: s, n: score(s, problems[i]) }));
+  const { costMode } = require("../ai/models");
   for (let round = 1; round <= (opts.maxRepairs ?? 3) && problems.some((p) => p.length); round++) {
+    // budget >= 80 % (lib/longform/budget.js): one repair round at most, on the cheaper tier
+    if (round > 1 && costMode() !== "normal") {
+      log("script: budget tight; no further repair rounds");
+      break;
+    }
     // only failing sections are re-sent (cost)
     const todo = sections.map((s, i) => i).filter((i) => problems[i].length);
     log(`script: repair round ${round}: ${todo.map((i) => `${sections[i].id}(${problems[i].length})`).join(" ")}`);
@@ -431,7 +438,8 @@ async function writeScript(dossier, outline, opts = {}) {
   // editor pass on the cold open (flow and rhythm; one cheap call; kept only when it does not break a gate)
   let editNote = null;
   const coldRedrafted = !opts.only || opts.only.includes("cold");
-  if (opts.edit !== false && coldRedrafted) {
+  // the editor is a polish pass: skipped when the budget is tight
+  if (opts.edit !== false && coldRedrafted && costMode() === "normal") {
     const r = await editColdOpen(sections, problems, dossier, secs, g, { wpm, editThinking: opts.editThinking });
     sections = r.sections;
     problems = r.problems;

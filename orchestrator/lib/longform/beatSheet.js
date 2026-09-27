@@ -142,7 +142,8 @@ function hintOf(s, places, ctx) {
  */
 async function refineHints(list, gemini, log) {
   const open = list.filter((x) => x.source === "default");
-  if (!gemini || open.length < 3) return 0;
+  // optional: skipped when the run's budget is tight (lib/longform/budget.js)
+  if (!gemini || open.length < 3 || require("../ai/models").costMode() !== "normal") return 0;
   const prompt = `Classify each narration sentence of a documentary by the ONE visual that best shows it.
 Classes: ${HINTS.join(", ")} (geo = a place or movement between places matters; number = one big figure; trend = change over time; compare = two things side by side; quote = someone's words; person = a named person; event = a dated happening; concept = an idea/mechanism; joke = a comic aside).
 Return ONLY JSON {"hints": {"<id>": "<class>"}}.

@@ -268,7 +268,8 @@ async function makeOutline(dossier, opts = {}) {
       ? `${outlinePrompt(dossier, budget)}\n\nYOUR PREVIOUS OUTLINE:\n${JSON.stringify(raw)}\n\nFix these problems and return the full corrected JSON:\n- ${problems.join("\n- ")}`
       : outlinePrompt(dossier, budget);
     log(`outline attempt ${i + 1}${problems.length ? ` (fixing ${problems.length})` : ""}`);
-    raw = await g.json(prompt, { temperature: 0.8, task: "longform.outline" });
+    // a repair round is its own task (low thinking, never batched, one tier down when the budget is tight)
+    raw = await g.json(prompt, { temperature: 0.8, task: i ? "longform.outline.repair" : "longform.outline" });
     problems = outlineProblems(raw, dossier, budget);
     problems.forEach((x) => log(`  - ${x}`));
     if (!problems.length) break;

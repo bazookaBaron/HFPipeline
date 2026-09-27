@@ -7,7 +7,7 @@
  *   node make-longform.js --topic "Why Kingfisher went bankrupt" [--minutes 10] [--out dir]
  *     [--from research|data|outline|script|storyboards|media|render|stitch|master|gates|package|thumbnail]
  *     [--chapters "cold,1,3,recap"] [--no-render] [--offline] [--replay <dir>] [--music auto|ambient|lofi|pulse|off]
- *     [--quality looks] [--keep-going]
+ *     [--quality looks] [--keep-going] [--batch] [--budget-usd N|off]
  *
  * Stages (each writes its artefact under --out and is skipped on a re-run when the artefact exists and
  * its content key still matches; --from <stage> redoes that stage and everything after it):
@@ -48,9 +48,16 @@
  *                                                 legibility/contrast/subject checks); key = hash(inputs); a failure
  *                                                 here is reported but never fails the run
  *
+ * Cost (LONGFORM-V2-PLAN §9, lib/longform/budget.js): --budget-usd N (default ~$6 per 12 min, LF_BUDGET_USD /
+ * LF_BUDGET_USD_PER_MIN) tracks the video's spend from the usage ledger; at 80 % repairs get cheaper and optional
+ * retries stop, at 100 % the run stops cleanly (exit 5, resumable). final/cost.json + a per-stage summary are
+ * written on every exit. --batch sends research, outline, script and first-pass storyboards through the Gemini
+ * Batch API (half price, polled, resumable from <out>/batch); interactive is the default.
+ *
  * Progress: human lines "[lf] ..." plus one machine line per stage event on stdout:
  *   @@lf {"stage":"render","status":"start|progress|done|skip|fail","detail":"...", ...}
- * Exit codes: 0 ok, 1 failure, 3 finished with failing gates, 4 Gemini unavailable (402 credits depleted / auth).
+ * Exit codes: 0 ok, 1 failure, 3 finished with failing gates, 4 Gemini unavailable (402 credits depleted / auth),
+ * 5 budget stop (--budget-usd reached; re-run with a higher budget to resume).
  */
 
 const fs = require("fs");
@@ -64,6 +71,7 @@ const ST = require("./lib/longform/stitch");
 const MP = require("./lib/longform/musicPlan");
 const { pool } = require("./lib/longform/gemini");
 const { matchLibrary } = require("./lib/media/library");
+const BG = require("./lib/longform/budget");
 
 const STAGES = ["research", "data", "outline", "script", "storyboards", "media", "render", "stitch", "master", "gates", "package", "thumbnail"];
 const RENDER_VERSION = "lf-render.1";
@@ -91,6 +99,8 @@ function parseArgs(argv) {
     else if (k === "--keep-going") a.keepGoing = true;
     else if (k === "--render-parallel") a.renderParallel = Number(v());
     else if (k === "--storyboard-parallel") a.sbParallel = Number(v());
+    else if (k === "--batch") a.batch = true;
+    else if (k === "--budget-usd") a.budgetUsd = v();
     else if (k === "-h" || k === "--help") a.help = true;
     else throw new Error(`unknown argument ${k}`);
   }
@@ -108,6 +118,7 @@ const hash = (v) => crypto.createHash("sha256").update(typeof v === "string" ? v
 const exists = (p) => fs.existsSync(p);
 
 function emit(stage, status, extra = {}) {
+  if (status === "start") BG.stage(stage); // ledger rows from here on count for this stage (final/cost.json)
   process.stdout.write(`@@lf ${JSON.stringify({ stage, status, ...extra })}\n`);
 }
 function log(m) {
@@ -149,6 +160,7 @@ async function main() {
   if (a.from && STAGES.indexOf(a.from) < 0) throw new Error(`--from must be one of ${STAGES.join(", ")}`);
   const out = path.resolve(a.out || path.join(__dirname, "output", "lf", slug(a.topic || "longform")));
   fs.mkdirSync(out, { recursive: true });
+  BG.start({ out, minutes: a.minutes, flag: a.budgetUsd, log });
   const P = {
     dossier: path.join(out, "dossier.json"),
     data: path.join(out, "data.json"),
@@ -172,7 +184,7 @@ async function main() {
   let geminiRest = null;
   const gemini = () => {
     if (a.offline) throw new Fatal("--offline: this stage needs Gemini and has no saved artefact");
-    if (!geminiRest) geminiRest = require("./lib/longform/gemini").loadGeminiRest({ log: (m) => log(m) });
+    if (!geminiRest) geminiRest = require("./lib/longform/gemini").loadGeminiRest({ log: (m) => log(m), batch: !!a.batch, batchDir: path.join(out, "batch") });
     return geminiRest;
   };
   const run = { out, stages: {} };
@@ -259,7 +271,7 @@ async function main() {
   } else {
     const { writeScript } = require("./lib/longform/script");
     try {
-      script = await writeScript(dossier, outline, { gemini: gemini(), log });
+      script = await writeScript(dossier, outline, { gemini: gemini(), log, concurrency: a.batch ? 16 : undefined });
     } catch (err) {
       if (isBilling(err)) throw new Fatal(billingMessage("script", err, out));
       throw err;
@@ -279,6 +291,7 @@ async function main() {
   // at most one lite Gemini call per video. storyboards get their section's scenes as a fixed SCENE PLAN.
   const beatsPath = path.join(out, "beats.json");
   let beats = null;
+  BG.stage("beats");
   {
     const BS = require("./lib/longform/beatSheet");
     const bctx = { dossier, data: exists(P.data) ? readJson(P.data) : null, log };
@@ -310,7 +323,7 @@ async function main() {
     const r = replayGen(id);
     if (r) return { generate: r, kind: "replay" };
     if (a.offline) return null;
-    return { generate: SL.liveGenerate({ log }), kind: "live" };
+    return { generate: SL.liveGenerate({ log, batch: !!a.batch, batchDir: path.join(out, "batch") }), kind: "live" };
   };
   const sbPath = (id) => path.join(P.sbDir, `${id}.json`);
   // data: the World Bank series (data.json); storyboardLF lists them and embeds the ones a chapter uses (sb.data)
@@ -343,7 +356,8 @@ async function main() {
   }
   if (todo.length) {
     const errors = [];
-    await pool(todo, a.sbParallel, async (id) => {
+    // --batch: every first pass in one batch job (repairs stay interactive)
+    await pool(todo, a.batch ? todo.length : a.sbParallel, async (id) => {
       try {
         storyboards[id] = await makeStoryboard(id);
       } catch (err) {
@@ -392,7 +406,7 @@ async function main() {
             try {
               return await fn(...x);
             } catch (err) {
-              if (isBilling(err)) billing = billing || err;
+              if (isBilling(err) || err.budget) billing = billing || err;
               throw err;
             }
           };
@@ -513,7 +527,8 @@ async function main() {
       renders[id] = await renderOne(id);
     });
     const failed = sections.filter((id) => !renders[id].ok || !renders[id].gatesOk);
-    const repairable = failed.filter((id) => (renders[id].repair || []).includes("storyboard") && generatorFor(id) && generatorFor(id).kind === "live");
+    // budget >= 80 %: no optional regeneration rounds
+    const repairable = failed.filter((id) => (renders[id].repair || []).includes("storyboard") && generatorFor(id) && generatorFor(id).kind === "live" && BG.optional());
     if (!failed.length || round === 2 || !repairable.length) break;
     // failure policy (plan §7): regenerate only the failing chapter's storyboard, twice at most
     for (const id of repairable) {
@@ -714,8 +729,19 @@ async function main() {
 }
 
 main()
-  .then((code) => process.exit(code || 0))
+  .then((code) => {
+    BG.finish(code === 3 ? "gates-failed" : "ok");
+    process.exit(code || 0);
+  })
   .catch((err) => {
+    // a budget stop surfaces as whatever error the stage wrapped it in; the guard knows it stopped
+    if (BG.stopped()) {
+      BG.finish("budget-stop");
+      emit("run", "fail", { budget: true, detail: `budget reached (${String(err.message).slice(0, 200)})` });
+      process.stderr.write(`[lf] BUDGET STOP: ${err.message}\n`);
+      process.exit(5);
+    }
+    BG.finish("failed");
     if (err instanceof Fatal) {
       emit("run", "fail", { fatal: true, detail: err.message });
       process.stderr.write(`[lf] FATAL: ${err.message}\n`);

@@ -206,7 +206,9 @@ test("research: source markers and dossier finalisation never invent URLs", () =
     { id: "F3", claim: "one source", sourceIds: ["S1"], confidence: "high" },
   ], entities: [{ name: "Kingfisher", kind: "airline" }], glossary: [{ term: "NPA", plain: "a loan that stopped being repaid" }], dataAsks: [{ metric: "m", worldBankIndicator: "DT.DOD.DECT.GN.ZS", years: [2000, 2020] }] }, "t", "a", reg.list);
   assert.deepStrictEqual(d.facts.map((f) => f.id), ["F1", "F3"]);
-  assert.strictEqual(d.facts[0].value, 9000);
+  // global audience: crore amounts are normalised to billions (9,000 crore = 90 billion)
+  assert.strictEqual(d.facts[0].value, 90);
+  assert.strictEqual(d.facts[0].unit, "INR billion");
   assert.strictEqual(d.facts[0].sources[1].url, "https://b.example/y");
   assert.strictEqual(d.facts[1].confidence, "medium");
   assert.strictEqual(d.entities[0].kind, "concept");

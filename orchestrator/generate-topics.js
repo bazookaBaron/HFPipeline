@@ -216,18 +216,18 @@ function buildLongPrompt(count, avoidTopics, mix = {}) {
   const mixBlock = Object.keys(mix).length
     ? `\n\nAlready planned per category (${LONG_CATEGORIES.map((c) => `${c}: ${mix[c] || 0}`).join(", ")}); favour the categories with the fewest.`
     : "";
-  return `Plan ${count} distinct topics for a YouTube finance deep-research channel. Each topic becomes an 8-12 minute 16:9 documentary-style explainer split into chapters, told in very simple language with examples and light humour, for a mainly Indian audience. Return exactly ${count} ideas.
+  return `Plan ${count} distinct topics for a YouTube finance deep-research channel. Each topic becomes an 8-12 minute 16:9 documentary-style explainer split into chapters, told in very simple language with examples and light humour, for a GLOBAL English-speaking audience. Return exactly ${count} ideas.
 
 The channel's style, from real titles: "Deep research on the business model of Amul", "Why Kingfisher went bankrupt", "What's the financial burden of Europe", "How Pakistan fell into a debt trap", "How should we research commodities before investing". Do not copy these; match their spirit: one clear question with a story behind it, researchable from public, reputable sources (annual reports, regulators, central banks, IMF/World Bank data, court records, major newspapers).
 
 Categories (use exactly these tags, balanced across the calendar):
-- "business-model": how a company (Indian or global) actually makes money: moat, unit economics, distribution.
+- "business-model": how a company (from any country) actually makes money: moat, unit economics, distribution.
 - "collapse-turnaround": documented corporate collapses, bankruptcies or turnarounds and the mechanics behind them.
 - "country-economics": sovereign and national economics: debt, currency, trade, budgets, bailouts, inflation.
 - "sectors-commodities": how a sector or commodity works and how to research it, as education only, never advice.
 - "money-systems": money systems explained: banking, payments, credit, taxes, central banks, market plumbing.
 
-Audience mix: about 60% of topics centred on India or South Asia, about 40% global (other countries, global companies, world systems) with clear relevance for an Indian viewer.
+Audience mix: this is a global channel. About 75% of topics are international (the US, Europe, China, Japan, Latin America, the Middle East, Africa, global companies and world systems), spread across regions; at most about 25% are centred on India or South Asia. Pick stories a viewer anywhere would find interesting.
 
 Rules:
 - Neutral, factual framing. No sensational or defamatory wording: never call people or companies scammers, frauds, thieves or crooks; for a documented case use neutral terms such as "accounting scandal" or "insolvency" and stay within what courts, regulators or filings established.
@@ -324,8 +324,9 @@ function isLongDuplicate(candidate, avoidTopics, accepted = []) {
 function longCaps(count) {
   return {
     category: Math.ceil(count / LONG_CATEGORIES.length) + 1,
-    local: Math.max(1, Math.ceil(count * 0.7)),
-    global: Math.max(1, Math.ceil(count * 0.5)),
+    // global channel: India/South Asia at most ~30%, international at least ~70%
+    local: Math.max(1, Math.ceil(count * 0.3)),
+    global: Math.max(1, Math.ceil(count * 0.9)),
   };
 }
 

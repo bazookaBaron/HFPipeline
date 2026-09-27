@@ -10,14 +10,14 @@ const {
   scheduleDates, parseDays, loadPastLongformTitles, LONG_CATEGORIES,
 } = require("../generate-topics");
 
-const item = (topic, category, entities, extra = {}) => ({ topic, category, angle: `Hook for ${topic}?`, entities, region: "india", ...extra });
+const item = (topic, category, entities, extra = {}) => ({ topic, category, angle: `Hook for ${topic}?`, entities, region: "global", ...extra });
 
 test("long prompt: finance deep-dive contract, categories, mix, safety, avoid list", () => {
   const prompt = buildLongPrompt(16, ["Why Kingfisher Airlines went bankrupt"], { "business-model": 3 });
   for (const phrase of [
-    "exactly 16", "8-12 minute", "16:9", "Indian audience", "Amul", "Kingfisher", "Pakistan",
+    "exactly 16", "8-12 minute", "16:9", "GLOBAL English-speaking audience", "Amul", "Kingfisher", "Pakistan",
     ...LONG_CATEGORIES.map((c) => `"${c}"`),
-    "60%", "40%", "Never investment advice", "defamatory", "Geopolitics: neutral", "reputable sources",
+    "75%", "25%", "Never investment advice", "defamatory", "Geopolitics: neutral", "reputable sources",
     '"angle"', '"entities"', '"whyNow"', '"region"', "Why Kingfisher Airlines went bankrupt", "business-model: 3",
   ]) assert.ok(prompt.includes(phrase), phrase);
   assert.ok(!prompt.includes("CS/tech"), "long prompt must not reuse the short prompt");
@@ -89,6 +89,10 @@ test("appendUniqueLong balances categories and region until relaxed", () => {
   appendUniqueLong(raw, relaxed, [], 4, { enforceBalance: false });
   assert.equal(relaxed.length, 4);
   assert.throws(() => appendUniqueLong({ nope: 1 }, [], [], 2), /did not return a topic array/);
+  // global channel: India/South Asia topics capped at ceil(0.3 * count)
+  const local = [];
+  appendUniqueLong(raw.map((t) => ({ ...t, region: "india" })), local, [], 4, {});
+  assert.equal(local.length, 2);
 });
 
 test("collectLongTopics refills remaining slots with the running mix, never persists, fails when exhausted", async () => {

@@ -13,13 +13,14 @@ const { sectionProblems, fkGrade, words } = require("./checks");
 const { factDigest } = require("./outline");
 
 const STYLE = `VOICE AND STYLE (this is spoken narration, read by a relaxed, warm narrator):
-- Talk like a smart friend explaining over chai: "So here's the thing.", "Now, you might think...", "Okay, pause.".
+- Talk like a smart friend explaining over coffee: "So here's the thing.", "Now, you might think...", "Okay, pause.".
   Relaxed, not hyped. Contractions are good. Vary sentence length, but keep EVERY sentence at 22 words or fewer, most 8-15.
 - Very simple words. Grade 6-7 reading level. Prefer "money it owed" to "liabilities", "cheap" to "cost-effective".
   When a finance term is needed, say it and explain it in plain words in the SAME or the NEXT sentence
   ("That's called working capital. Basically, the cash a business needs to run day to day.").
 - Example-led: after any abstract idea, make it concrete within two sentences with "imagine", "think of", "for example",
-  using everyday Indian life (a chai stall, a family budget, an EMI on a phone, a kirana shop's khata, a Diwali sale).
+  using everyday life any viewer worldwide knows (a coffee stand, a family budget, a phone on instalments, a credit-card
+  bill, a corner shop's tab, a holiday sale). The audience is global: explain any local term or institution in plain words.
   Carry the chapter's worked example through the explanation instead of piling up new ones.
 - Comedy that actually lands: dry understatement ("Which, in hindsight, was a bold plan."), a deadpan narrator aside,
   rule of three with a twist, a punchline that is a short sentence on its own, and absurd-but-true comparisons whose
@@ -37,11 +38,11 @@ const STYLE = `VOICE AND STYLE (this is spoken narration, read by a relaxed, war
 - No investment advice (no buy/sell/should-invest). No "subscribe/like/follow/share" and no "in this video" or "welcome back".
 
 NUMBERS (checked by a machine against the facts):
-- Spell every number as words for the voice: "nine thousand crore rupees", "forty-two percent", "twenty twelve" or
+- Spell every number as words for the voice: "ninety billion rupees", "forty-two percent", "twenty twelve" or
   "two thousand twelve" for years, "one point two billion dollars". NEVER write digits.
-- Round for the ear: at most two significant figures ("about nine thousand crore", "about fourteen thousand crore",
-  "about four rupees", "around five percent"). Never say "point" followed by two digits. Indian rupee amounts use crore
-  or lakh crore; every other currency (incl. Pakistani rupees, dollars, euros) uses million / billion / trillion. Keep
+- Round for the ear: at most two significant figures ("about ninety billion rupees", "about one point four billion dollars",
+  "about four rupees", "around five percent"). Never say "point" followed by two digits. The audience is global: EVERY
+  currency (rupees, dollars, euros, yuan...) uses million / billion / trillion, never lakh or crore. Keep
   one style for the same quantity across the whole script; never "seven thousand million".
 - Only compare two figures directly when they measure the same kind of thing at comparable times; otherwise describe
   them separately. Do not draw conclusions the facts do not state (e.g. "the banks came out ahead").
@@ -50,7 +51,7 @@ NUMBERS (checked by a machine against the facts):
   Right after a big figure, make it feel real with one comparison.
 - Every number you say must be a FACT value (you may round it: 9,091 -> "about nine thousand") or a year from the facts/timeline,
   or the result of a calc, and the sentence must list that fact id in "factIds". Counting words one to ten are free.
-- Indian scale words are welcome for rupee amounts (lakh, crore); keep the fact's currency.
+- Keep the fact's currency; for a big non-dollar amount a dollar comparison helps only when it is a fact or a calc.
 - Comparisons: if you say a number you computed (e.g. "that's about twenty-five crore rupees a day"), add to that
   sentence "calc": [{"expr": "F12 / 365"}] using fact ids, + - * / ( ) and plain constants. A fact id stands for the
   fact's FULL value in base units (a fact "9000 INR crore" = 90,000,000,000 rupees; "38 %" = 38). The machine

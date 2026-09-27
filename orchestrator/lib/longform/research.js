@@ -28,7 +28,7 @@ function writeJson(p, v) { fs.mkdirSync(path.dirname(p), { recursive: true }); f
 function planPrompt(topic) {
   return `You plan research for an 8-12 minute YouTube deep-dive on finance, business, economics or geo-finance.
 Topic: "${topic}"
-Audience: curious Indian viewers aged 18-35 with no finance background.
+Audience: curious viewers worldwide aged 18-35 with no finance background (a global channel).
 
 Return JSON: {"angle": "<the one viewer question the video answers, <= 20 words>",
  "questions": ["..."]}
@@ -115,7 +115,7 @@ Return JSON exactly:
 Rules:
 - 30-50 facts. Only facts stated in the notes, each citing 1+ source ids that appear right after it. Never invent a source id.
 - Numeric facts: "value" is the bare number as reported (9000, not "9,000"); "unit" carries currency and scale word, from:
-  "INR crore", "INR lakh crore" (write value in lakh crore), "INR billion", "USD million", "USD billion", "EUR billion", "%", "% of GDP",
+  "INR billion" (convert crore: 9,000 crore = 90 billion), "INR trillion", "USD million", "USD billion", "EUR billion", "%", "% of GDP",
   "aircraft", "employees", "people", "litres per day", "years", or another plain count noun. Percentages: value 38, unit "%".
   Keep one figure per fact. If sources disagree, add both as separate facts and set confidence "low".
 - confidence: high = 2+ sources agree; medium = one reputable source; low = contested or estimate.
@@ -151,7 +151,18 @@ function finalizeDossier(raw, topic, angle, sources) {
     let confidence = ["high", "medium", "low"].includes(f.confidence) ? f.confidence : "medium";
     if (confidence === "high" && srcs.length < 2) confidence = "medium";
     if (vet.ugcOnly) confidence = "low";
-    facts.push({ id, claim: String(f.claim || "").trim(), ...(value !== null ? { value, unit: String(f.unit || "").trim() } : {}), ...(year ? { year } : {}), sources: srcs, confidence });
+    // global audience: lakh / crore amounts become billion / trillion (1 crore = 1e7, 1 lakh crore = 1e12)
+    let unit = String(f.unit || "").trim();
+    const scale = unit.toLowerCase().split(/[^a-z]+/);
+    if (value !== null && scale.includes("lakh") && scale.includes("crore")) unit = unit.replace(/lakh[^a-z]*crore/i, "trillion");
+    else if (value !== null && (scale.includes("crore") || scale.includes("crores"))) {
+      value = Math.round((value / 100) * 1000) / 1000;
+      unit = unit.replace(/crores?/i, "billion");
+    } else if (value !== null && (scale.includes("lakh") || scale.includes("lakhs"))) {
+      value = Math.round((value / 10) * 1000) / 1000;
+      unit = unit.replace(/lakhs?/i, "million");
+    }
+    facts.push({ id, claim: String(f.claim || "").trim(), ...(value !== null ? { value, unit } : {}), ...(year ? { year } : {}), sources: srcs, confidence });
   });
   const ids = new Set(facts.map((f) => f.id));
   const timeline = (raw.timeline || []).map((t) => ({ year: Number(String(t.year).match(/\d{4}/)?.[0]) || null, event: String(t.event || ""), factIds: (t.factIds || []).filter((x) => ids.has(x)) }))

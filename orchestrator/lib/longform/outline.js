@@ -47,7 +47,7 @@ function factDigest(dossier) {
 
 function outlinePrompt(dossier, budget) {
   const n = budget.chapters.length;
-  return `You outline a ${budget.minutes}-minute YouTube deep-dive (16:9, no presenter on screen, narrated) for curious Indian viewers aged 18-35 with no finance background.
+  return `You outline a ${budget.minutes}-minute YouTube deep-dive (16:9, no presenter on screen, narrated) for curious viewers worldwide aged 18-35 with no finance background (a global English-speaking audience).
 Topic: "${dossier.topic}"
 Angle: ${dossier.angle}
 Summary: ${dossier.summary}
@@ -66,7 +66,7 @@ Return JSON:
  "coldOpen": {"hook": "<the most surprising tension, in one line>", "beats": ["..."], "promise": "<what the viewer will understand by the end>", "factIds": ["F1"], "visuals": [<visual>]},
  "chapters": [{"id": "ch1", "title": "<2-5 words>", "question": "<the one question this chapter answers>",
    "beats": ["<${isShort(budget) ? "2-3" : "4-6"} causal story beats, in order>"],
-   "example": "<one concrete worked example or analogy from everyday Indian life (a chai stall, a family budget, an EMI on a phone, a kirana khata, a wedding loan) that maps onto the mechanism>",
+   "example": "<one concrete worked example or analogy from everyday life that any viewer worldwide recognises (a coffee stand, a family budget, a phone bought on instalments, a credit-card bill, a corner shop's tab); local colour from the story's own country is welcome when it is explained that maps onto the mechanism>",
    "comedicBeat": "<one light, self-aware joke or absurd-but-true comparison; comparisons must be computable from fact values, say which>",
    "callback": "<how the running joke appears here, or empty>",
    "factIds": ["F3", "F7"],

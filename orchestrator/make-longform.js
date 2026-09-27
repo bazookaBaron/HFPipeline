@@ -421,11 +421,13 @@ async function main() {
     const res = await new Promise((resolve) => {
       const c = spawn(process.execPath, args, { windowsHide: true });
       let stdout = "";
+      let stderr = "";
       let tail = [];
       const logf = fs.createWriteStream(path.join(dir, "render.log"));
       c.stdout.on("data", (d) => (stdout += d.toString()));
       c.stderr.on("data", (d) => {
         logf.write(d);
+        stderr += d.toString();
         String(d)
           .split(/\r?\n/)
           .filter(Boolean)
@@ -437,7 +439,7 @@ async function main() {
       });
       c.on("close", (code) => {
         logf.end();
-        resolve({ code, stdout, tail });
+        resolve({ code, stdout, stderr, tail });
       });
     });
     if (res.code !== 0) {
@@ -445,7 +447,7 @@ async function main() {
       const lay = res.tail.filter((l) => /layout audit failed|compile failed/.test(l)).map((l) => l.replace(/^.*?(layout audit failed|compile failed)/, "$1"));
       // hyperframes check errors (text hidden / overflowing) are layout problems too: name the texts
       if (res.tail.some((l) => /hyperframes check failed/.test(l))) {
-        const out = String(res.stdout || "");
+        const out = String(res.stdout || "") + String(res.stderr || "");
         const texts = [...out.matchAll(/"severity":\s*"error"[\s\S]*?"message":\s*"([^"]+)"[\s\S]*?"text":\s*"([^"]*)"/g)].map((m) => `${m[1]} ("${m[2]}")`);
         lay.push(`composition check failed: ${[...new Set(texts)].slice(0, 4).join("; ") || "see render.log"} -- shorten or move that text`);
       }

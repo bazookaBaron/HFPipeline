@@ -232,7 +232,11 @@ def main():
     live = sorted(set(live))
     gaps = [b - a for a, b in zip([0.0] + live, live + [total])]
     lives = [s["t1"] - s["t0"] for s in spec["scaffolds"]]
-    gate("beats_per_min", B["beats_per_min"][0] <= bpm <= B["beats_per_min"][1], round(bpm, 1), B["beats_per_min"], repair="storyboard")
+    bpm_band = B["beats_per_min"]
+    if B is LF and total < 35:
+        # short LF sections (cold open, recap ticking off takeaways) run denser than a full chapter
+        bpm_band = (bpm_band[0], 48)
+    gate("beats_per_min", bpm_band[0] <= bpm <= bpm_band[1], round(bpm, 1), bpm_band, repair="storyboard")
     gate("max_visual_gap_s", max(gaps) <= B["max_visual_gap_s"], round(max(gaps), 2), f"<= {B['max_visual_gap_s']}", repair="storyboard")
     med = statistics.median(lives)
     gate("scaffold_life_median_s", B["scaffold_life_median_s"][0] <= med <= B["scaffold_life_median_s"][1], round(med, 2), B["scaffold_life_median_s"], repair="storyboard")

@@ -30,6 +30,10 @@ function buildVisionPrompt(intent, rubric, n, subject) {
 Slot kind: ${intent.kind}${intent.entity ? `; subject: ${intent.entity}` : ""}
 Wanted: ${intent.intent}${eraLine(intent)}${subjectLine(intent, subject)}
 The wanted subject must be the main focus of the picture, not something small or incidental in the background.
+Location: a picture cannot prove WHERE a generic scene is (a field, a harbour, banknotes on a table, a factory floor).
+For such scenes judge only what is visible: accept a plausible match, and reject for location only when something
+visible contradicts it (readable signs or landmarks from another country, a different currency, another airline).
+Named people, buildings, logos and products still must plausibly be that exact subject.
 Rubric: ${rubric || intent.intent}
 There are ${n} images, labelled "Image #1" ... "Image #${n}". Judge each one on its own.
 
@@ -111,7 +115,7 @@ function verdictProblems(v, kind) {
  */
 async function vet(items, intent, rubric, { gemini, cacheDir, subject } = {}) {
   if (!items.length) return [];
-  const keys = items.map((it) => sha(`v4|${it.hash}|${intent.kind}|${intent.entity || ""}|${intent.era || ""}|${intent.intent}|${rubric}|${(subject && subject.id) || ""}`));
+  const keys = items.map((it) => sha(`v5|${it.hash}|${intent.kind}|${intent.entity || ""}|${intent.era || ""}|${intent.intent}|${rubric}|${(subject && subject.id) || ""}`));
   const dir = cacheDir ? path.join(cacheDir, "_vision") : null;
   const cached = keys.map((k) => (dir && fs.existsSync(path.join(dir, k + ".json")) ? JSON.parse(fs.readFileSync(path.join(dir, k + ".json"), "utf8")) : null));
   const todo = items.map((it, i) => i).filter((i) => !cached[i]);

@@ -443,6 +443,12 @@ async function main() {
     if (res.code !== 0) {
       // a layout / compile failure on the REAL timing is a storyboard problem: feed it back like a gate
       const lay = res.tail.filter((l) => /layout audit failed|compile failed/.test(l)).map((l) => l.replace(/^.*?(layout audit failed|compile failed)/, "$1"));
+      // hyperframes check errors (text hidden / overflowing) are layout problems too: name the texts
+      if (res.tail.some((l) => /hyperframes check failed/.test(l))) {
+        const out = String(res.stdout || "");
+        const texts = [...out.matchAll(/"severity":\s*"error"[\s\S]*?"message":\s*"([^"]+)"[\s\S]*?"text":\s*"([^"]*)"/g)].map((m) => `${m[1]} ("${m[2]}")`);
+        lay.push(`composition check failed: ${[...new Set(texts)].slice(0, 4).join("; ") || "see render.log"} -- shorten or move that text`);
+      }
       const r = { id, key, ok: false, error: `generate-video-v3 exit ${res.code}: ${res.tail.slice(-4).join(" | ")}`, repair: lay.length ? ["storyboard"] : [], gateFails: lay };
       writeJson(rj, r);
       return r;

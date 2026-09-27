@@ -278,7 +278,8 @@
         b.frame.style.background = "transparent";
       }
       var frame = b.frame;
-      if (p.scrim) div("ph-scrim s-" + p.scrim, frame);
+      // no scrim over the no-image fallback card (it would cover its label)
+      if (p.scrim && p.src && !p.missing) div("ph-scrim s-" + p.scrim, frame);
       var veil = div("ph-veil", frame);
       if (p.veil) veil.style.opacity = String(p.veil);
       var w = W(el) - (p.card !== false ? 6 : 0);
@@ -546,7 +547,13 @@
       var widest = fmt(Math.max(Math.abs(val), Math.abs(from)));
       var unitTxt = p.unit || "";
       var size = p.size || 200;
-      while (size > 72 && L.measure(widest, 800, size) * 0.96 + (unitTxt ? L.measure(unitTxt, 700, size * 0.3) + size * 0.2 : 0) > w) size -= 4;
+      var rowW = function (sz) {
+        return L.measure(widest, 800, sz) * 0.96 + (unitTxt ? L.measure(unitTxt, 700, sz * 0.3) + sz * 0.2 : 0);
+      };
+      var minSize = p.card ? 56 : 72;
+      while (size > minSize && rowW(size) > w) size -= 4;
+      // a long unit ("of total exports") that still does not fit beside the figure goes on its own line
+      var unitBelow = !!unitTxt && rowW(size) > w;
       v.style.fontSize = size + "px";
       if (p.tone) v.style.color = L.tone(p.tone, T.ink);
       v.textContent = fmt(counting ? from : val);
@@ -555,6 +562,12 @@
         u.className = "u";
         u.textContent = unitTxt;
         u.style.fontSize = Math.round(size * 0.3) + "px";
+        if (unitBelow) {
+          u.style.display = "block";
+          u.style.marginLeft = "0";
+          u.style.whiteSpace = "normal";
+          u.style.fontSize = L.fit(unitTxt, 700, Math.round(size * 0.3), 16, w, 2) + "px";
+        }
         row.appendChild(u);
       }
       if (p.context) {

@@ -15,7 +15,7 @@ const path = require("path");
 
 const ENV_PATH = path.join(__dirname, "..", "..", "..", "scripting-pipeline", ".env");
 const API = "https://generativelanguage.googleapis.com/v1beta/models";
-const { modelFor, recordUsage } = require("../ai/models");
+const { modelFor, recordUsage, beforeCall, thinkingConfigFor, THINKING_DEFAULTS } = require("../ai/models");
 
 function readEnv() {
   const env = {};
@@ -32,6 +32,9 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const FATAL = /\b(400|401|402|403|404)\b|API key not valid|PERMISSION_DENIED|credits are depleted/i;
 
 /**
+ * opts.batch: true (or a batcher from lib/ai/batch.js) sends the first-pass tasks (BATCH_TASKS: research,
+ * outline, script, first-pass storyboards) through the Gemini Batch API at half price; repairs stay interactive.
+ * A failed batch falls back to an interactive call. opts.batchDir holds the resume state (job names, results).
  * @returns {{grounded:(text:string)=>Promise<{text:string, queries:string[], chunks:{uri:string,title:string}[], supports:object[]}>,
  *            json:(prompt:string, opts?:{temperature?:number})=>Promise<object>, model:string}}
  */
@@ -45,13 +48,33 @@ function loadGeminiRest(opts = {}) {
   const log = opts.log || (() => {});
   const maxAttempts = opts.maxAttempts || 5;
   const timeoutMs = opts.timeoutMs || 240000;
+  const fetchImpl = opts.fetch || globalThis.fetch;
+  let batcher = null;
+  let batchSet = null;
+  if (opts.batch) {
+    const B = require("../ai/batch");
+    batcher = typeof opts.batch === "object" ? opts.batch : B.createBatcher({ apiKey, stateDir: opts.batchDir || path.join(__dirname, "..", "..", "output", "batch"), log, fetch: opts.fetch });
+    batchSet = B.batchTasks();
+  }
 
-  async function call(body, label, task) {
+  async function call(body, label, task, o = {}) {
     const m = pick(task);
+    beforeCall(task); // budget guard: throws {budget, fatal} when the run is over its budget
+    if (batcher && batchSet.has(task) && !o.interactive) {
+      try {
+        const data = await batcher.submit({ model: m, request: body, task, grounded: !!body.tools });
+        const cand = (data.candidates || [])[0];
+        if (cand && cand.content) return cand;
+        log(`  gemini ${label}: batch returned an empty candidate (finishReason ${cand && cand.finishReason}); asking interactively`);
+      } catch (err) {
+        if (err.fatal) throw err;
+        log(`  gemini ${label}: batch failed (${String(err.message).slice(0, 160)}); asking interactively`);
+      }
+    }
     let lastErr;
     for (let i = 0; i < maxAttempts; i++) {
       try {
-        const res = await fetch(`${API}/${encodeURIComponent(m)}:generateContent`, {
+        const res = await fetchImpl(`${API}/${encodeURIComponent(m)}:generateContent`, {
           method: "POST",
           headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
           body: JSON.stringify(body),
@@ -104,7 +127,8 @@ function loadGeminiRest(opts = {}) {
       };
       let cand;
       try {
-        cand = await call(body, "json", task);
+        // a re-ask after unparseable JSON never goes back to the batch (the same request would get the same answer)
+        cand = await call(body, "json", task, { interactive: i > 0 });
       } catch (err) {
         // a model that rejects the thinking knob still gets the call, at its default thinking
         if (thinkingConfig && /\b400\b/.test(err.message) && /thinking/i.test(err.message)) {
@@ -131,22 +155,11 @@ function loadGeminiRest(opts = {}) {
 
 /**
  * Thinking knob per task (cost): GEMINI_THINKING_<TASK> (dots -> underscores, e.g. GEMINI_THINKING_LONGFORM_SCRIPT)
- * in the process env or scripting-pipeline/.env, else THINKING_DEFAULTS. Values: minimal | low | medium | high
- * (Gemini 3 thinkingLevel), a number (thinkingBudget tokens), or "default" (send nothing: the model's own default).
+ * in the process env or scripting-pipeline/.env, else THINKING_DEFAULTS (lib/ai/models.js: low for repairs,
+ * rewrites, beats and queries; the model default for the outline and the cold open). Values: minimal | low | medium |
+ * high (Gemini 3 thinkingLevel), a number (thinkingBudget tokens), or "default" (send nothing: the model's own default).
  * A caller may pass o.thinkingTask to look up a finer key (script.js uses "longform.script.cold" for the hook).
- * Cold-open A/B (LF v2 WS-F, Japan): model default = $0.19 (12.6k thinking tokens), 298 words, 5 gate problems, stakes
- * stops kept their causal links; "low" = $0.04 (0 thinking), 394 words, 9 problems, irony at ~75 s. So chapters
- * default to "low" (cheap, fine) and the hook keeps the model default.
  */
-const THINKING_DEFAULTS = { "longform.script": "low", "longform.script.cold": "default" };
-function thinkingConfigFor(task, env = {}, override) {
-  const key = `GEMINI_THINKING_${String(task).toUpperCase().replace(/[^A-Z0-9]+/g, "_")}`;
-  const v = String(override ?? process.env[key] ?? env[key] ?? THINKING_DEFAULTS[task] ?? "default").trim().toLowerCase();
-  if (!v || v === "default") return null;
-  if (/^\d+$/.test(v)) return { thinkingBudget: Number(v) };
-  if (["minimal", "low", "medium", "high"].includes(v)) return { thinkingLevel: v };
-  return null;
-}
 
 /** Run async fn over items with at most `n` in flight; preserves order. */
 async function pool(items, n, fn) {

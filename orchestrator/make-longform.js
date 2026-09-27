@@ -396,7 +396,17 @@ async function main() {
     const counts = Object.values(slots).reduce((c, e) => ((c[e.status] = (c[e.status] || 0) + 1), c), {});
     stageDone("media", `${intents.length} slots: ${JSON.stringify(counts)}`, { counts });
   }
+  // media gate (plan §3): a scene whose slot has no usable media (after the resolver ladder) is rewritten
+  // graphics-only on the cheap tier -- only those scaffolds; the rest of the chapter storyboard stays
+  async function mediaGateStage() {
+    const gen = a.offline ? null : SL.liveSceneGenerate({ log });
+    const g = await SL.mediaGate({ sections, storyboards, manifest: readJson(manifestPath), ctxFor, generate: gen, log, onChange: (id, sb) => writeJson(sbPath(id), sb) });
+    if (g.changed.length) await mediaStage(false);
+    if (g.failed.length) log(`media gate: ${g.failed.map((f) => `${f.id} (${f.slots.join(",")})`).join("; ")} still reference unusable media; the render gate will fail them`);
+    run.mediaGate = g;
+  }
   await mediaStage(redo("media"));
+  await mediaGateStage();
   if (a.noRender) {
     log("--no-render: stopping after the media stage");
     writeJson(path.join(out, "run.json"), run);
@@ -491,6 +501,7 @@ async function main() {
       storyboards[id] = await makeStoryboard(id, renders[id].gateFails.map((f) => `rendered chapter (real voice timing) failed: ${f}`), storyboards[id]);
     }
     await mediaStage(false);
+    await mediaGateStage();
   }
   const bad = sections.filter((id) => !renders[id].ok || !renders[id].gatesOk);
   if (bad.length) {
@@ -610,7 +621,7 @@ async function main() {
   fs.writeFileSync(path.join(P.finalDir, "captions.srt"), PK.srt(cues));
   const manifest = readJson(manifestPath);
   const usedSlots = new Set(timelines.flatMap((t) => t.spec.mediaSlots || []));
-  const usedManifest = Object.fromEntries(Object.entries(manifest.slots).filter(([k, e]) => usedSlots.has(k) && e.status !== "fallback"));
+  const usedManifest = Object.fromEntries(Object.entries(manifest.slots).filter(([k, e]) => usedSlots.has(k) && e.status !== "fallback" && e.status !== "namecard"));
   const credits = require("./lib/media/resolve").creditsText(usedManifest);
   const musicCredits = master.musicCredits || [];
   fs.writeFileSync(path.join(P.finalDir, "credits.txt"), credits + (musicCredits.length ? `\n\nMusic\n\n${musicCredits.join("\n")}\n` : ""));

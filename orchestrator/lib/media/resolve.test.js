@@ -72,6 +72,7 @@ function fakeProviders({ commons = [], openverse = [], nasa = [], order }) {
     commons: { search: hit("commons", commons), files: async () => [], category: async () => [] },
     openverse: { search: hit("openverse", openverse) },
     nasa: { search: hit("nasa", nasa) },
+    fal: null, // never the real fal.ai client in tests
     illustrate: {
       illustrate: async () => {
         order.push("illustrate");
@@ -158,7 +159,7 @@ test("chain: vision rejects Commons, NASA only when relevant, then illustration 
       { slot: "a", kind: "photo", intent: "jet fuel truck", allowIllustration: false },
       { slot: "b", kind: "photo", intent: "jet fuel truck at night", allowIllustration: true },
     ],
-    { cacheDir: tmpCache(), http: fakeHttp([]), providers, gemini, concurrency: 1 }
+    { cacheDir: tmpCache(), http: fakeHttp([]), providers, gemini, concurrency: 1, ladder: false }
   );
   assert.strictEqual(manifest.a.status, "fallback");
   assert.match(manifest.a.reason, /commons: 1 found, 1 eligible, 1 vetted, 0 passed/);
@@ -228,6 +229,7 @@ test("full-bleed slot with only portrait-orientation pictures degrades to a card
     http: fakeHttp([]),
     providers,
     gemini: fakeGemini(),
+    ladder: false,
   });
   assert.strictEqual(strict.manifest.hq.status, "fallback");
 });
@@ -252,4 +254,106 @@ test("illustration with text is regenerated up to 2 more times", async () => {
   assert.strictEqual(order.filter((o) => o === "illustrate").length, 3);
   assert.strictEqual(manifest.ill.status, "illustration");
   assert.strictEqual(report.slots.ill.trace[0].rejects.length, 2);
+});
+
+// ------------------------------------------------------------------ escalation ladder (plan §3)
+// gemini fake for the ladder: query plan, ladder plan, and vision verdicts that pass only the rubric
+// mentioning `passWhen` (e.g. the related courthouse); the exact-person rubric always fails
+function ladderGemini({ passWhen = null, calls = [] } = {}) {
+  return {
+    imageModel: "fake-image",
+    calls,
+    json: async (prompt, o = {}) => {
+      if (/You write image search queries/.test(prompt)) {
+        calls.push("plan");
+        return { queries: ["Thomas Griesa", "Judge Griesa"], rubric: "must show Judge Thomas Griesa", wikidataSearch: "Thomas Griesa", entityClass: "federal judge", nasaRelevant: false };
+      }
+      if (/no usable photo of the exact subject exists/.test(prompt)) {
+        calls.push("ladder");
+        return { related: [{ query: "Moynihan Courthouse", wikidata: null, label: "Moynihan Courthouse" }], scene: "an empty wood-panelled federal courtroom", role: "U.S. District Judge", context: "Ordered Argentina to pay holdouts in full" };
+      }
+      calls.push("vision");
+      const pass = !!passWhen && prompt.includes(passWhen);
+      return { results: (o.images || []).map((_, k) => ({ i: k + 1, matches: pass, confidence: 0.9, focal: [0.1, 0.1, 0.8, 0.8], depicts: pass ? "courthouse" : "someone else" })) };
+    },
+  };
+}
+const GRIESA = { slot: "griesaPhoto", kind: "photo", entity: "Thomas Griesa", intent: "U.S. Judge Thomas Griesa in a courtroom setting", era: "2014", size: "card" };
+
+test("ladder (b): a person slot with no usable photo gets a related institution photo", async () => {
+  const order = [];
+  const providers = fakeProviders({ order });
+  providers.commons.search = async (_h, q) => {
+    order.push(`commons:${q}`);
+    return /Courthouse/.test(q) ? [cand("commons", "img3", { title: "Moynihan Courthouse facade" })] : [cand("commons", "img1")];
+  };
+  const { manifest, report } = await resolveMedia([GRIESA], { cacheDir: tmpCache(), http: fakeHttp([]), providers, gemini: ladderGemini({ passWhen: "Moynihan Courthouse" }) });
+  const e = manifest.griesaPhoto;
+  assert.strictEqual(e.status, "ok");
+  assert.strictEqual(e.ladder, "related");
+  assert.strictEqual(e.related, "Moynihan Courthouse");
+  assert.ok(order.includes("commons:Moynihan Courthouse"));
+  assert.ok(!order.includes("illustrate"), "a person slot never gets an AI illustration of the person");
+  assert.ok(report.slots.griesaPhoto.trace.some((t) => t.stage === "ladder:related:commons" && t.passed === 1));
+});
+
+test("ladder (c): generic scene through the fal hook, prompt without the person's name", async () => {
+  const order = [];
+  const providers = fakeProviders({ order });
+  const falCalls = [];
+  const dir = tmpCache();
+  const f = path.join(dir, "scene.jpg");
+  fs.writeFileSync(f, IMGS.img4);
+  providers.fal = { generateImage: async (o) => (falCalls.push(o), { file: f, model: "fake-fal", prompt: `photo: ${o.prompt}`, cost: 0.03 }) };
+  const { manifest } = await resolveMedia([GRIESA], { cacheDir: tmpCache(), http: fakeHttp([]), providers, gemini: ladderGemini({ passWhen: "A generic scene" }) });
+  const e = manifest.griesaPhoto;
+  assert.strictEqual(e.status, "generated"); // fal photoreal (WS-B status), an AI image either way
+  assert.strictEqual(e.ladder, "scene");
+  assert.strictEqual(e.credit, "AI-generated image");
+  assert.strictEqual(falCalls.length, 1);
+  assert.ok(!/Griesa/.test(falCalls[0].prompt), falCalls[0].prompt);
+  assert.match(falCalls[0].prompt, /no people/);
+  assert.ok(!order.includes("illustrate"));
+});
+
+test("ladder (c) without fal uses the illustrator with a no-faces prompt", async () => {
+  const order = [];
+  const providers = fakeProviders({ order });
+  const seen = [];
+  providers.illustrate.illustrate = async (_g, it) => (seen.push(it.intent), { data: IMGS.img5, mime: "image/jpeg", prompt: it.intent, model: "fake-image" });
+  const { manifest } = await resolveMedia([GRIESA], { cacheDir: tmpCache(), http: fakeHttp([]), providers, gemini: ladderGemini({ passWhen: "A generic scene" }) });
+  assert.strictEqual(manifest.griesaPhoto.status, "illustration");
+  assert.strictEqual(seen.length, 1);
+  assert.match(seen[0], /^generic scene, no people's faces: /);
+  assert.ok(!/Griesa/.test(seen[0]));
+});
+
+test("ladder (d): nothing usable -> a name card entry (never status fallback), no credit line", async () => {
+  const order = [];
+  const providers = fakeProviders({ order, commons: [cand("commons", "img1")] });
+  const outDir = path.join(tmpCache(), "out");
+  const { manifest, report } = await resolveMedia([GRIESA], { cacheDir: tmpCache(), outDir, http: fakeHttp([]), providers, gemini: ladderGemini({ passWhen: null }) });
+  const e = manifest.griesaPhoto;
+  assert.strictEqual(e.status, "namecard");
+  assert.strictEqual(e.kind, "namecard");
+  assert.deepStrictEqual({ ...e.namecard }, { name: "Thomas Griesa", initials: "TG", role: "U.S. District Judge", year: "2014", context: "Ordered Argentina to pay holdouts in full", person: true });
+  assert.strictEqual(report.counts.namecard, 1);
+  assert.doesNotMatch(fs.readFileSync(path.join(outDir, "credits.txt"), "utf8"), /griesa/i);
+});
+
+test("ladder offline (no model): deterministic related query + name card from the intent", async () => {
+  const { planLadder, nameCard, initials } = require("./ladder");
+  const lp = await planLadder(GRIESA, { entityClass: "federal judge" }, {});
+  assert.strictEqual(lp.source, "rules");
+  assert.strictEqual(lp.related[0].query, "courthouse");
+  assert.ok(!/Griesa/.test(lp.scene) && /no people/.test(lp.scene));
+  const nc = nameCard(GRIESA, { entityClass: "federal judge" }, { label: "Thomas Poole Griesa", description: "American judge (1930-2017)" }, lp);
+  assert.strictEqual(nc.initials, "TG");
+  assert.strictEqual(nc.role, "American Judge");
+  assert.strictEqual(initials("International Monetary Fund"), "IF");
+  assert.strictEqual(initials("IMF"), "IMF");
+  const order = [];
+  const { manifest } = await resolveMedia([GRIESA], { cacheDir: tmpCache(), http: fakeHttp([]), providers: fakeProviders({ order }) });
+  assert.strictEqual(manifest.griesaPhoto.status, "namecard");
+  assert.ok(order.includes("commons:courthouse"), order.join(","));
 });

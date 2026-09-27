@@ -62,6 +62,17 @@
     P + ".ph-fb{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background-color:#ecebe4;background-image:repeating-linear-gradient(135deg,rgba(22,32,42,.035) 0 2px,transparent 2px 14px);color:#8b8f8c;text-align:center;padding:24px;}",
     P + ".ph-fb .l{font-size:26px;font-weight:700;color:" + T.ink2 + ";max-width:90%;}",
     P + ".ph-fb .s{font-family:" + MONO + ";font-size:15px;letter-spacing:.12em;color:" + T.muted + ";text-transform:uppercase;}",
+    // ---- name card (media ladder rung d: no usable picture) ----
+    P + ".ph-nc{position:absolute;inset:0;background:#fff;overflow:hidden;}",
+    P + ".ph-nc .nc-side{position:absolute;top:0;bottom:0;right:0;background:" + T.ink + ";background-image:repeating-linear-gradient(135deg,rgba(255,255,255,.045) 0 2px,transparent 2px 18px);}",
+    P + ".ph-nc .nc-side:before{content:'';position:absolute;left:0;top:0;bottom:0;width:8px;background:" + T.red + ";}",
+    P + ".ph-nc .nc-disc{position:absolute;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 10px rgba(255,255,255,.14),0 14px 34px rgba(0,0,0,.28);color:" + T.ink + ";font-weight:800;letter-spacing:-.02em;}",
+    P + ".ph-nc .nc-body{position:absolute;top:0;bottom:0;left:0;display:flex;flex-direction:column;justify-content:center;}",
+    P + ".ph-nc .nc-eb{font-family:" + MONO + ";font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:" + T.muted + ";}",
+    P + ".ph-nc .nc-nm{font-weight:800;letter-spacing:-.02em;line-height:1.02;color:" + T.ink + ";}",
+    P + ".ph-nc .nc-rl{font-weight:650;color:" + T.blue + ";line-height:1.2;}",
+    P + ".ph-nc .nc-rule{height:5px;width:72px;background:" + T.red + ";border-radius:3px;}",
+    P + ".ph-nc .nc-cx{font-weight:500;color:" + T.ink2 + ";line-height:1.3;}",
     // ---- photoGrid / portrait ----
     P + ".pg-cell{position:absolute;}",
     P + ".pg-cell .ph-cap{position:absolute;left:12px;bottom:12px;padding:5px 10px;border-radius:6px;background:rgba(247,246,241,.95);font-size:19px;font-weight:700;color:" + T.ink + ";white-space:nowrap;}",
@@ -202,8 +213,13 @@
       if (p.fit === "contain" || opts.contain) img.style.objectFit = "contain";
       img.style.objectPosition = (fc[0] * 100).toFixed(1) + "% " + (fc[1] * 100).toFixed(1) + "%";
       zoom.appendChild(img);
+    } else if (p.namecard && opts.fallback !== false) {
+      // on the frame, not the zoom layer: zoomTo / push-in never scale the typeset card past its edges
+      nameCard(frame, p.namecard, W(parent), H(parent), opts);
     } else if (opts.fallback !== false) {
       var fb = div(opts.fbClass || "ph-fb", zoom);
+      // compile marks media without a usable file (props.placeholder); v3_gates fails a chapter that shows one
+      fb.setAttribute("data-placeholder", String(p.slot || "missing"));
       if (!opts.fbClass) {
         fb.appendChild(L.glyph(opts.icon || "camera", opts.small ? 40 : 64, "#8b8f8c", 1.6));
         var lbl = p.fallbackLabel || p.alt || p.label || "";
@@ -213,7 +229,69 @@
     }
     push.style.transformOrigin = (fc[0] * 100).toFixed(1) + "% " + (fc[1] * 100).toFixed(1) + "%";
     var ovl = div("ph-ovl", zoom);
-    return { frame: frame, push: push, zoom: zoom, ovl: ovl, missing: missing };
+    // a name card is designed content: it gets the push-in like a photo (no credit, no scrim: no src)
+    var nc = missing && !!p.namecard && opts.fallback !== false;
+    // picture annotations (highlight boxes, arrows) mean nothing on a name card: they stay hidden
+    if (nc) ovl.style.display = "none";
+    return { frame: frame, push: push, zoom: zoom, ovl: ovl, missing: missing && !nc, namecard: nc };
+  }
+
+  /**
+   * Name card (media ladder rung d): white card, navy monogram panel on the right (red edge), name /
+   * role / year / one-line context typeset on the left. Small or tall frames: panel on top, name below.
+   * nc = {name, initials, role?, year?, context?}
+   */
+  function nameCard(host, nc, w, h, opts) {
+    w = w || 600;
+    h = h || 400;
+    var card = div("ph-nc", host);
+    card.setAttribute("data-namecard", "1");
+    var wide = w >= 520 && w >= h * 1.2 && !opts.small;
+    var side = div("nc-side", card);
+    var disc = div("nc-disc", side, String(nc.initials || "?").slice(0, 3));
+    var d;
+    if (wide) {
+      var sw = Math.round(w * 0.36);
+      side.style.width = sw + "px";
+      d = Math.round(Math.min(sw * 0.62, h * 0.5));
+      Object.assign(disc.style, { width: d + "px", height: d + "px", left: Math.round((sw - d) / 2 + 4) + "px", top: Math.round((h - d) / 2) + "px" });
+    } else {
+      var sh = opts.small ? h : Math.round(h * 0.52);
+      Object.assign(side.style, { left: "0", width: "auto", bottom: "auto", height: sh + "px" });
+      d = Math.round(Math.min(w * 0.5, sh * 0.62));
+      Object.assign(disc.style, { width: d + "px", height: d + "px", left: Math.round((w - d) / 2) + "px", top: Math.round((sh - d) / 2) + "px" });
+    }
+    disc.style.fontSize = Math.round(d * (String(nc.initials || "").length > 2 ? 0.3 : 0.38)) + "px";
+    if (opts.small && !wide) return card;
+    var body = div("nc-body", card);
+    var pad = Math.round(Math.max(28, Math.min(64, w * 0.055)));
+    var bw;
+    if (wide) {
+      bw = w - Math.round(w * 0.36) - 2 * pad;
+      Object.assign(body.style, { left: pad + "px", width: bw + "px", gap: Math.round(h * 0.028) + "px" });
+    } else {
+      bw = w - 2 * pad;
+      Object.assign(body.style, { left: pad + "px", width: bw + "px", top: Math.round(h * 0.52) + "px", gap: Math.round(h * 0.02) + "px" });
+    }
+    var scale = wide ? Math.min(1, h / 560) : Math.min(1, (h * 0.48) / 300);
+    var eb = [nc.year, nc.person === false ? "" : "Profile"].filter(Boolean).join("  ·  ");
+    if (eb) {
+      var e = div("nc-eb", body, eb);
+      e.style.fontSize = Math.round(Math.max(13, 18 * scale)) + "px";
+    }
+    var nm = div("nc-nm", body, nc.name || "");
+    nm.style.fontSize = L.fit(nc.name || "", 800, Math.round(Math.max(26, 68 * scale)), Math.round(Math.max(20, 30 * scale)), bw, 2) + "px";
+    if (nc.role) {
+      var rl = div("nc-rl", body, nc.role);
+      rl.style.fontSize = Math.round(Math.max(17, 30 * scale)) + "px";
+    }
+    if (nc.context && (wide || h >= 360)) {
+      var rule = div("nc-rule", body);
+      rule.style.margin = Math.round(6 * scale) + "px 0";
+      var cx = div("nc-cx", body, nc.context);
+      cx.style.fontSize = Math.round(Math.max(16, 25 * scale)) + "px";
+    }
+    return card;
   }
 
   // quadratic arrow path (px) with a numeric length; bend > 0 curves to the left of from->to

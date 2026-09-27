@@ -1000,7 +1000,203 @@ function mergeIntents(chapters) {
   return { intents, renames };
 }
 
+// ---------------------------------------------------------------------------------------------
+// media gate (plan §3): between media and render, a scene whose slot has no usable media is
+// rewritten graphics-only. ONLY the scaffolds that reference the slot change; the rest stays.
+
+/** a manifest entry the renderer cannot draw as designed media (a name card counts as designed) */
+function unusableEntry(e) {
+  return !e || e.status === "fallback" || (!e.file && e.status !== "namecard");
+}
+
+function slotsIn(v, out = new Set()) {
+  if (Array.isArray(v)) v.forEach((x) => slotsIn(x, out));
+  else if (v && typeof v === "object") {
+    if (typeof v.slot === "string") out.add(v.slot);
+    Object.values(v).forEach((x) => slotsIn(x, out));
+  }
+  return out;
+}
+
+/** scaffold id -> the sentence ids it spans (from its "from" up to the next scaffold's) */
+function scaffoldSentences(sb) {
+  const ids = (sb.sentences || []).map((s) => s.id);
+  const starts = (sb.scaffolds || []).map((sc) => Math.max(0, ids.indexOf(sc.from)));
+  const out = {};
+  (sb.scaffolds || []).forEach((sc, i) => {
+    const end = i + 1 < starts.length ? starts[i + 1] : ids.length;
+    out[sc.id] = ids.slice(starts[i], Math.max(starts[i] + 1, end));
+  });
+  return out;
+}
+
+function pruneIntents(sb) {
+  const used = referencedSlots(sb);
+  sb.mediaIntents = (sb.mediaIntents || []).filter((it) => it && used.has(it.slot));
+  return sb;
+}
+
+function buildSceneRewritePrompt(ctx, sb, ids, sentences, slots) {
+  return `${buildPromptLF(ctx)}
+
+CURRENT STORYBOARD FOR THIS SECTION (it passed validation; keep it):
+${JSON.stringify({ scaffolds: sb.scaffolds, events: sb.events, media: sb.mediaIntents })}
+
+MEDIA GATE: there is no usable picture for media slot(s) ${slots.join(", ")}. Rewrite ONLY scaffold(s) ${ids.join(", ")} as GRAPHIC-ONLY scenes: no props.slot anywhere in them and no photo / photoGrid / portraitCard / mapCard modules. Use lfText, bigNumber, callout, lowerThird, charts, eraTimeline, compareCols without photos, headlineCard without photo, countryMap / worldMap. Keep each rewritten scaffold's "id" and "from". Every other scaffold stays exactly as it is.
+Return ONLY {"scaffolds": [<the ${ids.length} rewritten scaffold(s)>], "events": [<ALL events on sentences ${sentences.join(", ")}; they replace the old events on those sentences>]}.`;
+}
+
+function applySceneRewrite(sb, raw, ids, sentences) {
+  const out = JSON.parse(JSON.stringify(sb));
+  const repl = new Map(((raw && raw.scaffolds) || []).filter((s) => s && ids.includes(s.id)).map((s) => [s.id, s]));
+  const missing = ids.filter((id) => !repl.has(id));
+  if (missing.length) throw new Error(`rewrite did not return scaffold(s) ${missing.join(", ")}`);
+  out.scaffolds = out.scaffolds.map((s) => (repl.has(s.id) ? { ...repl.get(s.id), id: s.id, from: s.from } : s));
+  const set = new Set(sentences);
+  out.events = (out.events || []).filter((e) => !set.has(e.sentence)).concat(((raw && raw.events) || []).filter((e) => e && set.has(e.sentence)));
+  return pruneIntents(out);
+}
+
+/**
+ * Deterministic graphics-only variant (no model): a media fill on a bad slot becomes an lfText plate
+ * (eyebrow = its tag, title = the subject), grid items on a bad slot are dropped, and picture ops
+ * aimed at a replaced module go.
+ */
+function deterministicGraphicsOnly(sb, ids, badSlots) {
+  const out = JSON.parse(JSON.stringify(sb));
+  const bad = new Set(badSlots);
+  const intentOf = (slot) => (out.mediaIntents || []).find((it) => it && it.slot === slot) || {};
+  const replaced = new Set();
+  const fix = (v) => {
+    if (Array.isArray(v)) {
+      for (let i = v.length - 1; i >= 0; i--) {
+        const x = v[i];
+        // a grid item / timeline thumbnail on a bad slot: drop it
+        if (x && typeof x === "object" && typeof x.slot === "string" && bad.has(x.slot) && !x.props) v.splice(i, 1);
+        else fix(x);
+      }
+      return;
+    }
+    if (!v || typeof v !== "object") return;
+    const p = v.props;
+    if (p && typeof p === "object" && typeof p.slot === "string" && bad.has(p.slot)) {
+      const it = intentOf(p.slot);
+      const title = String(p.fallbackLabel || it.entity || p.tag || p.name || it.intent || "").slice(0, 60);
+      v.type = "lfText";
+      v.props = { eyebrow: p.tag && p.tag !== title ? String(p.tag).slice(0, 40) : it.era ? String(it.era) : "", title, plate: true };
+      if (v.id) replaced.add(v.id);
+      return;
+    }
+    Object.values(v).forEach(fix);
+  };
+  out.scaffolds.forEach((sc) => ids.includes(sc.id) && fix(sc.slots));
+  const keep = new Set(["reveal", "remove", "text", "tone", "dim", "undim"]);
+  out.events = (out.events || []).filter((e) => !replaced.has(String(e.target || "").split(".")[0]) || keep.has(e.op));
+  return pruneIntents(out);
+}
+
+/** live rewrite call on the cheap tier (task longform.sceneRewrite) */
+function liveSceneGenerate(opts = {}) {
+  const { loadGeminiRest } = require("./gemini");
+  const g = loadGeminiRest({ log: opts.log, maxAttempts: opts.maxAttempts || 2 });
+  return (prompt) => g.json(prompt, { task: "longform.sceneRewrite", temperature: 0.4 });
+}
+
+/**
+ * Rewrite the scaffolds that reference `badSlots` graphics-only; re-validated with validateChapter.
+ * Model first (<= 2 tries, cheap tier), deterministic variant second.
+ * @returns {Promise<{storyboard, scaffolds: string[], how: "model"|"rules"}>}
+ */
+async function rewriteScenesGraphicsOnly(sb, badSlots, ctx, opts = {}) {
+  const log = opts.log || (() => {});
+  const bad = new Set(badSlots);
+  const ids = (sb.scaffolds || []).filter((sc) => [...slotsIn(sc.slots)].some((s) => bad.has(s))).map((sc) => sc.id);
+  if (!ids.length) return { storyboard: sb, scaffolds: [], how: "none" };
+  const spans = scaffoldSentences(sb);
+  const sentences = [...new Set(ids.flatMap((id) => spans[id] || []))];
+  const tried = [];
+  const check = async (cand) => {
+    let v = await validateChapter(cand, ctx, { log, layoutAudit: opts.layoutAudit });
+    if (v.problems.some(isHoldProblem) && fillHolds(cand)) v = await validateChapter(cand, ctx, { log, layoutAudit: opts.layoutAudit });
+    return v;
+  };
+  const done = (cand, how) => {
+    cand.lfMeta = { ...(sb.lfMeta || {}), mediaGate: { slots: [...bad], scaffolds: ids, how } };
+    return { storyboard: cand, scaffolds: ids, how };
+  };
+  if (opts.generate) {
+    let problems = [];
+    for (let attempt = 1; attempt <= 2; attempt++) {
+      let prompt = buildSceneRewritePrompt(ctx, sb, ids, sentences, [...bad]);
+      if (problems.length) prompt += `\n\nYOUR PREVIOUS REWRITE FAILED VALIDATION:\n${problems.map((p) => "- " + p).join("\n")}\nFix exactly these.`;
+      try {
+        const raw = await opts.generate(prompt, { section: ctx.section.id, attempt, kind: "sceneRewrite" });
+        const cand = applySceneRewrite(sb, raw, ids, sentences);
+        const left = [...slotsIn(cand.scaffolds.filter((s) => ids.includes(s.id)).map((s) => s.slots))].filter((s) => bad.has(s));
+        const v = left.length ? { problems: [`rewritten scaffolds still use slot(s) ${left.join(", ")}`] } : await check(cand);
+        if (!v.problems.length) return done(cand, "model");
+        problems = v.problems;
+      } catch (err) {
+        if (isFatal(err)) throw err;
+        problems = [`rewrite failed: ${err.message}`];
+      }
+      tried.push(...problems.map((p) => `model ${attempt}: ${p}`));
+      log(`[${ctx.section.id}] media gate rewrite ${attempt}/2: ${problems.slice(0, 3).join(" | ")}`);
+    }
+  }
+  const cand = deterministicGraphicsOnly(sb, ids, [...bad]);
+  const v = await check(cand);
+  if (!v.problems.length) return done(cand, "rules");
+  tried.push(...v.problems.map((p) => `rules: ${p}`));
+  const err = new Error(`[${ctx.section.id}] media gate: scaffold(s) ${ids.join(", ")} could not be rewritten graphics-only: ${tried.slice(0, 6).join(" | ")}`);
+  err.problems = tried;
+  throw err;
+}
+
+/**
+ * The media gate over every rendered section. `manifest` uses the merged (renamed) slot names, so the
+ * merge is replayed on copies to map them back to each storyboard's own names. Mutates `storyboards`.
+ * @returns {Promise<{changed: {id, slots, scaffolds, how}[], failed: {id, slots, error}[]}>}
+ */
+async function mediaGate({ sections, storyboards, manifest, ctxFor, generate = null, log = () => {}, layoutAudit, onChange }) {
+  const slots = (manifest && (manifest.slots || manifest)) || {};
+  const chapters = sections.map((id) => ({ id, sb: JSON.parse(JSON.stringify(storyboards[id])) }));
+  const { renames } = mergeIntents(chapters);
+  const changed = [];
+  const failed = [];
+  for (const { id, sb } of chapters) {
+    const bad = [...referencedSlots(sb)].filter((s) => unusableEntry(slots[s]));
+    if (!bad.length) continue;
+    const own = referencedSlots(storyboards[id]);
+    const back = (s) => {
+      const olds = Object.entries(renames[id] || {}).filter(([, n]) => n === s).map(([o]) => o);
+      return olds.find((o) => own.has(o)) || s;
+    };
+    const local = [...new Set(bad.map(back))];
+    log(`media gate ${id}: no usable media for ${local.join(", ")}; rewriting those scenes graphics-only`);
+    try {
+      const r = await rewriteScenesGraphicsOnly(storyboards[id], local, ctxFor(id), { generate, log, layoutAudit });
+      storyboards[id] = r.storyboard;
+      if (onChange) onChange(id, r.storyboard);
+      changed.push({ id, slots: local, scaffolds: r.scaffolds, how: r.how });
+      log(`media gate ${id}: rewrote ${r.scaffolds.join(", ")} (${r.how})`);
+    } catch (err) {
+      if (err.fatal || isFatal(err)) throw err;
+      failed.push({ id, slots: local, error: err.message });
+      log(`media gate ${id}: ${err.message}`);
+    }
+  }
+  return { changed, failed };
+}
+
 module.exports = { seriesConsistencyProblems,
+  mediaGate,
+  rewriteScenesGraphicsOnly,
+  deterministicGraphicsOnly,
+  applySceneRewrite,
+  scaffoldSentences,
+  unusableEntry,
+  liveSceneGenerate,
   compositionProblems,
   FRAME,
   MIX,

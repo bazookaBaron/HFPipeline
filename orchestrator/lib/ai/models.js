@@ -39,6 +39,7 @@ const TASKS = {
   "research.plan": "lite",
   "longform.metadata": "lite",
   "longform.thumbnail": "lite",
+  "longform.sceneRewrite": "lite", // media gate: graphics-only rewrite of the scenes whose slot has no usable media
   // standard
   storyboard: "standard",
   carousel: "standard",

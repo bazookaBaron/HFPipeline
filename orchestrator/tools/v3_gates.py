@@ -423,6 +423,69 @@ def lf_gates(video, spec, total, gate):
     short += [f"{k2} {r[1] - r[0]:.1f}s" for k2, r in runs.items() if r[1] - r[0] < 2.5]
     gate("photo_hold_min_s", not short, short or "all >= 2.5 s", ">= 2.5 s per photo run", hard=False)
 
+    # ---- no empty frames (plan §3): no placeholder media on screen, no flat media rect ----
+    ph = placeholders(spec)
+    gate("no_placeholders", not ph, ph[:6] or "no placeholder media", "no module draws the grey no-image placeholder (media gate must rewrite the scene)", repair="storyboard")
+    blank = blank_media(video, spec)
+    gate("blank_media", not blank, blank[:6] or "every media rect has content", f"media rect <= {int(BLANK_FLAT * 100)}% one flat colour at each scene's mid-time", repair="storyboard")
+
+
+BLANK_FLAT = 0.85
+
+
+def has_placeholder(v):
+    if isinstance(v, list):
+        return any(has_placeholder(x) for x in v)
+    if isinstance(v, dict):
+        return bool(v.get("placeholder")) or any(has_placeholder(x) for k, x in v.items() if isinstance(x, (dict, list)))
+    return False
+
+
+def placeholders(spec):
+    """modules whose props (or nested media objects) compile marked as placeholder (no usable file)"""
+    out = []
+    for s in spec["scaffolds"]:
+        if s["t1"] - s["t0"] <= 0:
+            continue
+        for m in s["modules"]:
+            if has_placeholder(m.get("props") or {}):
+                out.append(f"{s['id']}/{m['id']} @{s['t0']:.1f}s")
+    return out
+
+
+def flat_fraction(raw, rect, step=4):
+    """share of sampled pixels in the rect's most common colour (16 levels per channel)"""
+    x0, y0, w, h = (int(round(v)) for v in rect)
+    bins, n = {}, 0
+    for y in range(max(0, y0 + 4), min(H, y0 + h - 4), step):
+        for x in range(max(0, x0 + 4), min(W, x0 + w - 4), step):
+            r, g, b = px(raw, x, y)
+            k = (r >> 4, g >> 4, b >> 4)
+            bins[k] = bins.get(k, 0) + 1
+            n += 1
+    return (max(bins.values()) / n) if n else 0.0
+
+
+def blank_media(video, spec):
+    """one frame per scene at mid-time: a media module whose rect is > BLANK_FLAT one flat colour fails"""
+    out = []
+    for s in spec["scaffolds"]:
+        mods = [m for m in s["modules"] if m["type"] in LF_MEDIA and m["type"] != "mapCard" and (media_ok(m) or (m.get("props") or {}).get("namecard"))
+                and (m.get("props") or {}).get("kind") != "map" and m.get("rect") and m["rect"][2] >= 120 and m["rect"][3] >= 120]
+        if not mods or s["t1"] - s["t0"] < 0.5:
+            continue
+        raw = None
+        for m in mods:
+            t = min(s["t1"] - 0.1, max((s["t0"] + s["t1"]) / 2, s["t0"] + (m.get("at") or 0) + 0.8))
+            raw = frame(video, t)
+            if len(raw) < W * H * 3:
+                out.append(f"{s['id']}/{m['id']}: no frame at {t:.2f}")
+                continue
+            f = flat_fraction(raw, m["rect"])
+            if f > BLANK_FLAT:
+                out.append(f"{s['id']}/{m['id']} @{t:.1f}s: media rect {100 * f:.0f}% one flat colour")
+    return out
+
 
 if __name__ == "__main__":
     main()

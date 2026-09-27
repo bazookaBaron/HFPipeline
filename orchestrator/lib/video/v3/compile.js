@@ -76,8 +76,17 @@ function resolveSlots(v, slots, used) {
   if (typeof v.slot === "string") {
     used.add(v.slot);
     const e = slots ? slots[v.slot] : null;
-    if (!e || e.status === "fallback" || !e.file) {
+    if (e && e.status === "namecard" && e.namecard) {
+      // ladder rung (d): the module draws a designed name card (no file, no credit)
       out.missing = true;
+      out.mediaStatus = "namecard";
+      out.namecard = { ...e.namecard };
+      delete out.src;
+    } else if (!e || e.status === "fallback" || !e.file) {
+      // no usable media: the module would draw its grey placeholder. Mark it (props.placeholder ->
+      // data-placeholder on the DOM) so v3_gates fails the chapter instead of shipping an empty frame
+      out.missing = true;
+      out.placeholder = true;
       out.mediaStatus = e ? e.status || "fallback" : "missing";
       delete out.src;
     } else {

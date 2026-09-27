@@ -20,12 +20,28 @@ const KINDS = new Set(["photo", "portrait", "logo", "video", "map", "illustratio
 const VET_PER_STAGE = { commons: 6, openverse: 4, nasa: 3, "commons:video": 6, "nasa:video": 4 };
 const CLIPS_PER_STAGE = 3; // poster-vetted candidates turned into clips (download + window + frame vetting) per stage
 
+const { planLadder, nameCard, isPersonSlot } = require("./ladder");
+
+/** optional photoreal generator (lib/media/fal.js, plan §4); null when absent or not configured */
+function optionalFal() {
+  let fal = null;
+  try {
+    fal = require("./fal");
+  } catch (_) {
+    return null;
+  }
+  if (!fal || typeof fal.generateImage !== "function") return null;
+  if (typeof fal.available === "function" && !fal.available()) return null;
+  return fal;
+}
+
 const defaultProviders = () => ({
   commons: require("./providers/commons"),
   wikidata: require("./providers/wikidata"),
   openverse: require("./providers/openverse"),
   nasa: require("./providers/nasa"),
   illustrate: require("./providers/illustrate"),
+  fal: optionalFal(),
 });
 
 function validateIntents(intents) {
@@ -76,7 +92,7 @@ async function resolveMedia(intents, opts = {}) {
   const providers = { ...defaultProviders(), ...(opts.providers || {}) };
   const gemini = opts.gemini || null;
   const useVision = opts.vision !== false && !!gemini;
-  const ctx = { cacheDir, log, http, providers, gemini, useVision };
+  const ctx = { cacheDir, log, http, providers, gemini, useVision, ladder: opts.ladder !== false };
 
   // phase 1: slots in parallel, each returns its ranked passing candidates
   const results = new Array(list.length);
@@ -103,6 +119,12 @@ async function resolveMedia(intents, opts = {}) {
       pick = r.ranked.find((x) => !isDuplicate(x.hash, used));
     }
     if (!pick) {
+      // ladder rung (d): a designed name card, never an empty frame
+      if (r.namecard) {
+        manifest[intent.slot] = { status: "namecard", kind: "namecard", namecard: r.namecard, ladder: "namecard", reason: r.reason || "no acceptable media" };
+        report.slots[intent.slot] = { intent, status: "namecard", ms: r.ms, plan: r.plan, trace: r.trace };
+        continue;
+      }
       manifest[intent.slot] = { status: "fallback", kind: intent.kind, reason: r.reason || "no acceptable media" };
       report.slots[intent.slot] = { intent, status: "fallback", ms: r.ms, plan: r.plan, trace: r.trace };
       continue;
@@ -110,7 +132,7 @@ async function resolveMedia(intents, opts = {}) {
     used.push(pick.hash);
     const entry = await finalize(pick, intent, ctx);
     manifest[intent.slot] = entry;
-    report.slots[intent.slot] = { intent, status: entry.status, kind: entry.kind, fallbackFrom: pick.fallbackFrom, stage: pick.stage, ms: r.ms, plan: r.plan, pick: { id: pick.cand.id, depicts: pick.verdict.depicts, confidence: pick.verdict.confidence }, trace: r.trace };
+    report.slots[intent.slot] = { intent, status: entry.status, kind: entry.kind, fallbackFrom: pick.fallbackFrom, ladder: pick.ladder, stage: pick.stage, ms: r.ms, plan: r.plan, pick: { id: pick.cand.id, depicts: pick.verdict.depicts, confidence: pick.verdict.confidence }, trace: r.trace };
   }
   report.ms = Date.now() - t0;
   report.http = http.stats;
@@ -121,7 +143,7 @@ async function resolveMedia(intents, opts = {}) {
 }
 
 function countStatuses(manifest) {
-  const c = { ok: 0, illustration: 0, fallback: 0 };
+  const c = { ok: 0, illustration: 0, namecard: 0, fallback: 0 };
   for (const e of Object.values(manifest)) c[e.status] = (c[e.status] || 0) + 1;
   return c;
 }
@@ -174,9 +196,17 @@ async function resolveSlot(intent, ctx, { exclude = [], skipUrls = new Set(), tr
       if (ranked.length) return { ranked: ranked.map((r) => ({ ...r, size: "card" })), plan, trace, ms: Date.now() - t };
     }
   }
+  // ladder (plan §3): (b) a related institution / place photo, before any AI imagery
+  const ladder = ctx.ladder && intent.ladder !== false && intent.kind !== "illustration" && intent.kind !== "logo" && intent.kind !== "map";
+  let lp = null;
+  if (ladder) {
+    lp = await planLadder(intent, plan, { gemini: ctx.gemini, cacheDir: ctx.cacheDir, log }).catch(() => null);
+    const rel = lp ? await relatedCandidates(intent, lp, ctx, { exclude, skipUrls, trace }) : [];
+    if (rel.length) return { ranked: rel, plan, trace, ms: Date.now() - t };
+  }
   // no real photo: a labelled AI illustration stands in for places, objects and concepts (never for a
-  // person: portraits and people entities fall back to the module's typeset card instead)
-  const person = intent.kind === "portrait" || /person|human|politician|judge|businessman|businesswoman|official|economist|minister|president|founder|ceo/i.test(String(plan.entityClass || ""));
+  // person: portraits and people entities go to the generic-scene rung, then the name card)
+  const person = isPersonSlot(intent, plan);
   const illustrate = intent.kind === "illustration" || (intent.allowIllustration !== undefined ? intent.allowIllustration : (intent.kind === "photo" || intent.kind === "video") && !person);
   if (illustrate) {
     try {
@@ -187,11 +217,127 @@ async function resolveSlot(intent, ctx, { exclude = [], skipUrls = new Set(), tr
       log(`[${intent.slot}] illustration failed: ${err.message}`);
     }
   }
-  return { ranked: [], plan, trace, ms: Date.now() - t, reason: summariseTrace(trace) };
+  // (c) a generic generated scene with nobody identifiable in it (fal photoreal when configured; the
+  // Gemini illustrator otherwise, unless it just failed on this slot)
+  if (ladder && lp && intent.kind !== "logo" && intent.kind !== "map" && (ctx.providers.fal || (!illustrate && ctx.gemini))) {
+    try {
+      const r = await genericSceneCandidate(intent, lp, ctx, trace);
+      if (r) return { ranked: [r], plan, trace, ms: Date.now() - t };
+    } catch (err) {
+      trace.push({ stage: "ladder:scene", error: err.message });
+      log(`[${intent.slot}] generic scene failed: ${err.message}`);
+    }
+  }
+  // (d) the name card (built in phase 2 when nothing above is usable)
+  const entity = (trace.find((x) => x.entity) || {}).entity || null;
+  const namecard = ctx.ladder && intent.ladder !== false ? nameCard(intent, plan, entity, lp) : null;
+  return { ranked: [], plan, trace, ms: Date.now() - t, reason: summariseTrace(trace), namecard };
+}
+
+/** ladder rung (b): real photos of a related institution / place (Commons, then Openverse) */
+async function relatedCandidates(intent, lp, ctx, { exclude, skipUrls, trace }) {
+  const kind = intent.kind === "portrait" || intent.kind === "video" ? "photo" : intent.kind;
+  for (const rel of (lp.related || []).slice(0, 2)) {
+    const rIntent = { ...intent, kind, entity: rel.wikidata || undefined, intent: `${rel.label}${intent.era ? ` (${intent.era})` : ""}`, era: undefined };
+    delete rIntent.duration;
+    const rPlan = {
+      queries: [...new Set([rel.query, rel.label].filter(Boolean))],
+      wikidataSearch: rel.wikidata || null,
+      entityClass: "building or place",
+      rubric: `The picture must clearly show ${rel.label} (a building, institution or place, not a portrait of a person). It is wrong if it shows something else or is dominated by an identifiable person.`,
+      nasaRelevant: false,
+    };
+    const stages = [
+      ["commons", () => gatherCommons(rIntent, rPlan, ctx, trace)],
+      ["openverse", () => gatherSearch("openverse", rIntent, rPlan.queries.slice(0, 1), ctx, trace)],
+    ];
+    for (const [stage, gather] of stages) {
+      let cands;
+      try {
+        cands = await gather();
+      } catch (err) {
+        trace.push({ stage: `ladder:related:${stage}`, error: err.message });
+        continue;
+      }
+      const ranked = await screenAndVet(stage, cands, rIntent, rPlan, ctx, { exclude, skipUrls, trace, label: `ladder:related:${stage}` });
+      if (ranked.length) {
+        ctx.log(`[${intent.slot}] ladder: related photo of ${rel.label}`);
+        return ranked.map((r) => ({ ...r, ladder: "related", related: rel.label, ...(intent.kind === "video" ? { fallbackFrom: "video" } : {}) }));
+      }
+    }
+  }
+  return [];
+}
+
+/** ladder rung (c): a generic generated scene (no identifiable person), vetted when vision is on */
+async function genericSceneCandidate(intent, lp, ctx, trace) {
+  const entry = { stage: "ladder:scene", attempts: 0 };
+  trace.push(entry);
+  const scene = String(lp.scene || "").trim();
+  if (!scene) return null;
+  const fal = ctx.providers.fal;
+  const rubric = `A generic scene: ${scene}. It fails (matches=false) if it shows a recognisable real person, a face as the main subject, a real brand logo, or does not show the scene. Any letters, words or numbers count as heavyText.`;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    entry.attempts++;
+    let data;
+    let model;
+    let prompt;
+    let via;
+    if (fal) {
+      const r = await fal.generateImage({ prompt: scene, slotId: `${intent.slot}-scene${attempt ? `-${attempt}` : ""}`, cacheDir: ctx.cacheDir, seed: attempt ? 7919 * attempt + 17 : undefined, log: ctx.log });
+      data = fs.readFileSync(r.file);
+      model = r.model;
+      prompt = r.prompt;
+      via = `fal:${r.model}`;
+    } else {
+      const img = await ctx.providers.illustrate.illustrate(ctx.gemini, { ...intent, entity: undefined, intent: `generic scene, no people's faces: ${scene}` });
+      data = img.data;
+      model = img.model;
+      prompt = img.prompt;
+      via = "gemini:image";
+    }
+    const info = sniffImage(data);
+    if (!info) continue;
+    const hash = await dhash(data);
+    let verdict = { matches: true, confidence: 0.7, watermark: false, heavyText: false, graphic: false, isScreenshot: false, focal: [0, 0, 1, 1], depicts: scene };
+    if (ctx.useVision) {
+      try {
+        [verdict] = await vet([{ hash, thumb: await thumbJpeg(data, 768) }], { ...intent, kind: "illustration", entity: undefined, intent: scene }, rubric, { gemini: ctx.gemini, cacheDir: ctx.cacheDir });
+      } catch (err) {
+        entry.rejects = (entry.rejects || []).concat([{ why: [`vision: ${err.message.slice(0, 80)}`] }]);
+        continue;
+      }
+      const p = verdictProblems(verdict, "illustration");
+      if (p.length) {
+        entry.rejects = (entry.rejects || []).concat([{ why: p }]);
+        continue;
+      }
+    }
+    entry.passed = 1;
+    const cand = {
+      source: "illustration",
+      via,
+      id: `ai:${intent.slot}:scene`,
+      title: scene,
+      width: info.width,
+      height: info.height,
+      mediaType: "image",
+      licence: { id: "ai", label: "AI-generated", allowed: true, sa: false, attribution: false, url: "" },
+      author: "",
+      model,
+      prompt,
+      data,
+      ext: info.ext,
+      credit: fal ? "AI-generated image" : undefined,
+    };
+    ctx.log(`[${intent.slot}] ladder: generic scene (${via})`);
+    return { cand, hash, verdict, stage: "ladder:scene", ladder: "scene", score: verdict.confidence };
+  }
+  return null;
 }
 
 function summariseTrace(trace) {
-  const bits = trace.map((s) => (s.error ? `${s.stage}: error (${String(s.error).slice(0, 80)})` : s.stage === "illustration" ? `illustration: ${s.attempts || 0} attempt(s) rejected` : `${s.stage}: ${s.found || 0} found, ${s.eligible || 0} eligible, ${s.vetted || 0} vetted, 0 passed`));
+  const bits = trace.map((s) => (s.error ? `${s.stage}: error (${String(s.error).slice(0, 80)})` : s.stage === "illustration" || s.stage === "ladder:scene" ? `${s.stage}: ${s.attempts || 0} attempt(s) rejected` : `${s.stage}: ${s.found || 0} found, ${s.eligible || 0} eligible, ${s.vetted || 0} vetted, 0 passed`));
   return bits.join("; ") || "no candidates";
 }
 
@@ -629,8 +775,8 @@ async function finalize(pick, intent, ctx) {
     fileUrl: c.fileUrl,
     model: c.model,
   };
-  const credit = shortCredit(rec);
-  const creditFull = fullCredit(rec);
+  const credit = c.credit || shortCredit(rec);
+  const creditFull = c.credit ? `${c.credit} (${c.model || "image model"}) for this video; not a photograph.` : fullCredit(rec);
   const status = c.source === "illustration" ? (/^fal:/.test(c.via || "") ? "generated" : "illustration") : "ok";
   const sidecar = {
     kind: "image",
@@ -679,13 +825,15 @@ async function finalize(pick, intent, ctx) {
     depicts: pick.verdict.depicts || undefined,
     size: pick.size || slotSize(intent).name,
     ...(pick.fallbackFrom ? { fallbackFrom: pick.fallbackFrom } : {}),
+    ...(pick.ladder ? { ladder: pick.ladder } : {}),
+    ...(pick.related ? { related: pick.related } : {}),
   };
 }
 
 function creditsText(manifest) {
   const lines = ["Image credits", ""];
   for (const [slot, e] of Object.entries(manifest)) {
-    if (e.status === "fallback") continue;
+    if (e.status === "fallback" || e.status === "namecard" || !e.creditFull) continue;
     lines.push(e.creditFull.startsWith("[") ? e.creditFull : `[${slot}] ${e.creditFull}`);
   }
   return lines.join("\n") + "\n";

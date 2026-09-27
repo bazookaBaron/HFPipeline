@@ -155,7 +155,7 @@ test("chain: vision rejects Commons, NASA only when relevant, then illustration 
   const gemini = fakeGemini({ plan: { nasaRelevant: true }, visionPass: () => false });
   const { manifest } = await resolveMedia(
     [
-      { slot: "a", kind: "photo", intent: "jet fuel truck" },
+      { slot: "a", kind: "photo", intent: "jet fuel truck", allowIllustration: false },
       { slot: "b", kind: "photo", intent: "jet fuel truck at night", allowIllustration: true },
     ],
     { cacheDir: tmpCache(), http: fakeHttp([]), providers, gemini, concurrency: 1 }
@@ -223,7 +223,7 @@ test("full-bleed slot with only portrait-orientation pictures degrades to a card
   assert.strictEqual(manifest.hq.status, "ok");
   assert.strictEqual(manifest.hq.size, "card");
   assert.ok(report.slots.hq.trace.some((t) => t.stage === "commons:card" && t.passed === 1));
-  const strict = await resolveMedia([{ slot: "hq", kind: "photo", intent: "bank headquarters tower", allowCard: false }], {
+  const strict = await resolveMedia([{ slot: "hq", kind: "photo", intent: "bank headquarters tower", allowCard: false, allowIllustration: false }], {
     cacheDir: tmpCache(),
     http: fakeHttp([]),
     providers,

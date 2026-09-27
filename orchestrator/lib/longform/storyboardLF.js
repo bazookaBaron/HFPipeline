@@ -141,6 +141,38 @@ function seriesNoteProblems(spec) {
   return out;
 }
 
+/**
+ * Figures that share a scene with a data-series chart must agree with it: a headline or number card
+ * that quotes a year the chart plots, with a value > 20 % away from that point (e.g. a national
+ * Dec-to-Dec inflation of 211 % next to the World Bank annual average of 133.5 %), reads as an error.
+ */
+function seriesConsistencyProblems(spec) {
+  const out = [];
+  const YEAR = /\b(19[5-9]\d|20[0-4]\d)\b/g;
+  const figures = (t) => (String(t || "").match(/\d[\d,]*(?:\.\d+)?/g) || []).map((x) => Number(x.replace(/,/g, ""))).filter((x) => !(Number.isInteger(x) && x >= 1900 && x <= 2100));
+  spec.scaffolds.forEach((sc) => {
+    const charts = sc.modules.filter((m) => (m.type === "lineChart" || m.type === "barChart") && (m.props || {}).dataSeries);
+    if (!charts.length) return;
+    const byYear = {};
+    charts.forEach((m) => (m.props.points || []).forEach((pt) => (byYear[pt.x] = pt.y)));
+    sc.modules.forEach((m) => {
+      if (charts.includes(m)) return;
+      const p = m.props || {};
+      const texts = [];
+      if (m.type === "bigNumber") texts.push({ text: [p.eyebrow, p.context].join(" "), nums: [Number(p.value)] });
+      [p.text, p.headline, p.title, p.kicker].filter(Boolean).forEach((t) => texts.push({ text: t, nums: figures(t) }));
+      texts.forEach(({ text, nums }) => {
+        const years = (String(text).match(YEAR) || []).map(Number).filter((y) => byYear[y] !== undefined);
+        years.forEach((y) => nums.filter(Number.isFinite).forEach((x) => {
+          const ref = byYear[y];
+          if (Math.abs(x - ref) > Math.max(1, Math.abs(ref) * 0.2)) out.push(`scaffold ${sc.id}: ${m.id} shows ${x} for ${y} but the chart in the same scene plots ${ref} for ${y}; use the chart's value, or move the other figure to its own scene and name its measure (e.g. "December-to-December")`);
+        }));
+      });
+    });
+  });
+  return [...new Set(out)];
+}
+
 /** vector-map pacing and density (lib/longform/MAPS.md) on the compiled spec */
 function mapProblems(spec) {
   const out = [];
@@ -703,6 +735,7 @@ async function validateChapter(sb, ctx, opts = {}) {
   P.push(...zoomLabelProblems(spec));
   P.push(...mapProblems(spec));
   P.push(...seriesNoteProblems(spec));
+  P.push(...seriesConsistencyProblems(spec));
   // a bigNumber with count "op" shows 0 until its count event: that must follow its entrance closely
   spec.scaffolds.forEach((sc) =>
     sc.modules
@@ -967,7 +1000,7 @@ function mergeIntents(chapters) {
   return { intents, renames };
 }
 
-module.exports = {
+module.exports = { seriesConsistencyProblems,
   compositionProblems,
   FRAME,
   MIX,

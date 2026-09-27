@@ -174,7 +174,11 @@ async function resolveSlot(intent, ctx, { exclude = [], skipUrls = new Set(), tr
       if (ranked.length) return { ranked: ranked.map((r) => ({ ...r, size: "card" })), plan, trace, ms: Date.now() - t };
     }
   }
-  if (intent.kind === "illustration" || intent.allowIllustration) {
+  // no real photo: a labelled AI illustration stands in for places, objects and concepts (never for a
+  // person: portraits and people entities fall back to the module's typeset card instead)
+  const person = intent.kind === "portrait" || /person|human|politician|judge|businessman|businesswoman|official|economist|minister|president|founder|ceo/i.test(String(plan.entityClass || ""));
+  const illustrate = intent.kind === "illustration" || (intent.allowIllustration !== undefined ? intent.allowIllustration : (intent.kind === "photo" || intent.kind === "video") && !person);
+  if (illustrate) {
     try {
       const r = await illustrationCandidate(intent, plan, ctx, trace);
       if (r) return { ranked: [r], plan, trace, ms: Date.now() - t };
@@ -382,6 +386,20 @@ async function screenAndVet(stage, cands, intent, plan, ctx, { exclude, skipUrls
   if (cands.entity) entry.entity = cands.entity;
   trace.push(entry);
   if (!eligible.length) return [];
+
+  // spend the vetting budget on the most on-topic candidates first: a broad entity's Commons category
+  // (e.g. "Argentina") is mostly recent news photos, so rank by title overlap with the intent/queries;
+  // Wikidata claim images keep priority, ties keep provider order
+  const words = (t) => new Set(String(t || "").toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").match(/[a-z0-9]{3,}/g) || []);
+  const want = words([intent.intent, ...(plan.queries || [])].join(" "));
+  const rel = (c) => {
+    if (String(c.via || "").startsWith("wikidata:")) return 1e3;
+    let n = 0;
+    words(c.title || c.id).forEach((w) => want.has(w) && n++);
+    return n;
+  };
+  eligible.forEach((c, i) => (c._rank = i));
+  eligible.sort((a, b) => rel(b) - rel(a) || a._rank - b._rank);
 
   // download (vet-sized), hash, drop duplicates of each other / of earlier slots
   const budget = VET_PER_STAGE[stage] || 4;

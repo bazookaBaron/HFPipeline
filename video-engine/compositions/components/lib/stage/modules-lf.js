@@ -208,7 +208,7 @@
         fb.appendChild(L.glyph(opts.icon || "camera", opts.small ? 40 : 64, "#8b8f8c", 1.6));
         var lbl = p.fallbackLabel || p.alt || p.label || "";
         if (lbl && !opts.small) div("l", fb, lbl);
-        div("s", fb, opts.small ? "" : "No licensed image");
+        // a designed typeset card (icon + label), never an apology on screen
       }
     }
     push.style.transformOrigin = (fc[0] * 100).toFixed(1) + "% " + (fc[1] * 100).toFixed(1) + "%";
@@ -548,7 +548,10 @@
       var unitTxt = p.unit || "";
       var size = p.size || 200;
       var rowW = function (sz) {
-        return L.measure(widest, 800, sz) * 0.96 + (unitTxt ? L.measure(unitTxt, 700, sz * 0.3) + sz * 0.2 : 0);
+        // measure the widest string actually shown (count-up start or final value) with a safety margin:
+        // canvas metrics run a few % under the rendered heavy digits
+        var fig = Math.max(L.measure(fmt(val), 800, sz), L.measure(fmt(from), 800, sz), L.measure(widest, 800, sz));
+        return fig * 1.04 + (unitTxt ? L.measure(unitTxt, 700, sz * 0.3) * 1.06 + sz * 0.2 : 0);
       };
       var minSize = p.card ? 56 : 72;
       while (size > minSize && rowW(size) > w) size -= 4;

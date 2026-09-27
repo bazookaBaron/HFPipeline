@@ -715,21 +715,25 @@
       var tw = w - tx;
       var fig = p.figure !== undefined ? String(p.figure) : null;
       var figSize = 190;
-      var figEl = place(div("fig", el, fig || "0"), tx, 0);
+      // figure + "of N" share one baseline row (flex), so they can never collide
+      var frow = place(div("", el), tx, 0, tw);
+      Object.assign(frow.style, { display: "flex", alignItems: "baseline", gap: "18px", whiteSpace: "nowrap" });
+      var figEl = div("fig", frow, fig || "0");
+      figEl.style.position = "static";
       var fmt = function (x) {
         return String(Math.round(x));
       };
       var figTxt = fig || String(filled);
       while (figSize > 90 && L.measure(figTxt + "  of " + total, 800, figSize) * 0.8 > tw) figSize -= 10;
       figEl.style.fontSize = figSize + "px";
-      var of = place(div("of", el, fig ? "" : "of " + total), tx + L.measure(figTxt, 800, figSize) * 0.8 + 16, 0);
+      var of = div("of", frow, fig ? "" : "of " + total);
+      of.style.position = "static";
       var lbl = place(div("lb", el, p.label || ""), tx, 0, tw);
       var lh = L.lineCount(p.label || "", 800, 40, tw) * 46;
       var unitH = p.unit ? 40 : 0;
       var blockH = figSize * 0.9 + 22 + lh + (unitH ? 24 + unitH : 0);
       var by = Math.round((h - blockH) / 2);
-      figEl.style.top = by + "px";
-      of.style.top = by + figSize * 0.9 - 44 + "px";
+      frow.style.top = by + "px";
       lbl.style.top = by + figSize * 0.9 + 22 + "px";
       var un = null;
       if (p.unit) {
@@ -760,7 +764,7 @@
             hideAt0(c, ic);
             c.tl.fromTo(ic, { autoAlpha: 0, scale: 0.6 }, { autoAlpha: 1, scale: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, t + 0.1 + (j % cols) * 0.02 + Math.floor(j / cols) * 0.035);
           });
-          [figEl, of, lbl].concat(un ? [un] : []).forEach(function (n, k) {
+          [frow, lbl].concat(un ? [un] : []).forEach(function (n, k) {
             popIn(c, n, t + 0.25 + 0.1 * k, { ease: "power3.out" });
           });
           if (p.auto !== false) fillTo(filled, t + 0.9);

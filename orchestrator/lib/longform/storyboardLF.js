@@ -13,9 +13,11 @@
  *        scene life) + media intents (schema, every slot referenced/declared) + charts (source
  *        line, numbers only from the dossier / years / the section's verified calcs)
  *     -> layout audit (tools/layout_audit.js, real DOM at 1920x1080, synthetic timing)
- *     -> repair loop: problems go back to the model with its previous output; at most 3 attempts,
- *        then the deterministic long-hold filler (storyboardGen.autoFillGaps). Billing/auth errors
- *        (HTTP 402 credits depleted, 401/403) are fatal and never retried.
+ *     -> deterministic auto-fixes first (storyboardFix.js: text length, overlaps, cadence, variety, number
+ *        formatting, holds); only what code cannot fix goes back to the model:
+ *     -> repair loop (at most 5 attempts): problems local to a few scaffolds -> SCENE repair (sceneRepair.js:
+ *        only those scaffolds + minimal context, spliced back); structural problems -> whole-chapter repair.
+ *        Billing/auth errors (HTTP 402 credits depleted, 401/403) and budget stops are fatal and never retried.
  *
  * Output storyboard fields beyond storyboard.v3: `chapter` {index, count, title} (lfChrome kicker +
  * progress; index 0 = cold open, no chrome), `section` (script section id), `mediaIntents`
@@ -805,6 +807,8 @@ async function validateChapter(sb, ctx, opts = {}) {
     const spec0 = compileStoryboard(sb, tl, { mascot: false, media: opts.layoutMedia || layoutManifest(sb) });
     const la = await auditLayout({ spec: spec0, duration: tl.totalSeconds, log });
     P.push(...la.problems.map((p) => "layout " + describe(p)), ...la.buildProblems.map((p) => "renderer: " + p));
+    // the raw findings (module, text, px over) drive the deterministic text / overlap fixes (storyboardFix.js)
+    return { problems: P, report, layout: la.problems };
   } catch (err) {
     log(`  (layout audit skipped: ${err.message})`);
   }
@@ -979,11 +983,16 @@ function summaryLine(report) {
 // ---------------------------------------------------------------------------------------------
 // generation
 
-/** live generator: Gemini REST JSON mode, task longform.storyboard (standard tier) */
+/**
+ * live generator: Gemini REST JSON mode. The first pass is task longform.storyboard (standard tier; batchable
+ * with opts.batch), a scene repair longform.storyboard.scene, a whole-chapter repair longform.storyboard.repair
+ * (both low thinking, one tier cheaper when the budget is tight).
+ */
+const GEN_TASK = { first: "longform.storyboard", scene: "longform.storyboard.scene", repair: "longform.storyboard.repair" };
 function liveGenerate(opts = {}) {
   const { loadGeminiRest } = require("./gemini");
-  const g = loadGeminiRest({ log: opts.log, maxAttempts: opts.maxAttempts || 3 });
-  return (prompt) => g.json(prompt, { task: "longform.storyboard", temperature: 0.6 });
+  const g = loadGeminiRest({ log: opts.log, maxAttempts: opts.maxAttempts || 3, batch: opts.batch, batchDir: opts.batchDir });
+  return (prompt, info = {}) => g.json(prompt, { task: GEN_TASK[info.kind] || GEN_TASK.first, temperature: info.kind === "scene" || info.kind === "repair" ? 0.4 : 0.6 });
 }
 
 /**
@@ -992,8 +1001,11 @@ function liveGenerate(opts = {}) {
  * emphasis beat on the word in the middle of the hold, on the best module on screen (text / number /
  * headline first, then a photo highlight box). Returns the number of beats added.
  */
-function fillHolds(sb) {
+function fillHolds(sb, opts = {}) {
   const PR = PROFILES.LF;
+  // opts.minGap: fill every gap longer than this (default: the holds the validator flags); opts.max: at most this
+  // many beats, widest gaps first (storyboardFix uses both to lift beats/min into the band)
+  const minGap = opts.minGap || PR.maxGap - 0.3;
   const tl = syntheticTimeline(sb, PR.syn);
   let spec;
   try {
@@ -1012,8 +1024,11 @@ function fillHolds(sb) {
   const norm = (x) => String(x).toLowerCase().replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, "");
   let added = 0;
   sb.events = sb.events || [];
-  for (let i = 1; i < pts.length; i++) {
-    if (pts[i] - pts[i - 1] <= PR.maxGap - 0.3) continue;
+  const gaps = [];
+  for (let i = 1; i < pts.length; i++) if (pts[i] - pts[i - 1] > minGap) gaps.push(i);
+  if (opts.max) gaps.sort((a, b) => pts[b] - pts[b - 1] - (pts[a] - pts[a - 1]));
+  for (const i of gaps) {
+    if (opts.max && added >= opts.max) break;
     const mid = (pts[i] + pts[i - 1]) / 2;
     const w = tl.words.reduce((b, x) => (Math.abs(x.start - mid) < Math.abs(b.start - mid) ? x : b), tl.words[0]);
     const sc = spec.scaffolds.find((s) => w.start >= s.t0 && w.start < s.t1);
@@ -1036,7 +1051,8 @@ function fillHolds(sb) {
 const isHoldProblem = (p) => /^a hold (of|without)|^no visual change for/.test(p);
 
 function isFatal(err) {
-  return !!(err && (err.fatal && /\b(401|402|403)\b/.test(err.message) || FATAL.test(String(err.message || err))));
+  // err.budget: the run's --budget-usd guard refused the call (lib/longform/budget.js); never retried
+  return !!(err && (err.budget || (err.fatal && /\b(401|402|403)\b/.test(err.message)) || FATAL.test(String(err.message || err))));
 }
 
 /**
@@ -1045,57 +1061,113 @@ function isFatal(err) {
  * @returns {Promise<{storyboard, attempts: {problems: string[]}[]}>}
  */
 async function generateChapterStoryboard(ctx, opts = {}) {
-  const generate = opts.generate || liveGenerate({ log: opts.log });
+  const generate = opts.generate || liveGenerate({ log: opts.log, batch: opts.batch, batchDir: opts.batchDir });
   const log = opts.log || (() => {});
-  const max = opts.maxAttempts || 5;
+  const { applyAutoFixes, better } = require("./storyboardFix");
+  const SR = require("./sceneRepair");
+  const { costMode } = require("../ai/models");
+  let max = opts.maxAttempts || 5;
   const attempts = [];
-  let raw = opts.previous || null;
+  // opts.previous (+ extraProblems): repair a storyboard that passed here but failed later (render gates)
+  let sb = opts.previous ? assemble(opts.previous.sentences ? SR.rawOf(opts.previous) : opts.previous, ctx) : null;
   let problems = opts.extraProblems || [];
   let report = null;
-  let sb = null;
+  let forceChapter = false;
+  let tight = false;
+  const validate = async (cand) => {
+    let v = await validateChapter(cand, ctx, { log, layoutAudit: opts.layoutAudit });
+    // long holds are the one near-miss the model oscillates on (fixing a hold, it restructures and
+    // breaks the mix): fill them deterministically before spending another model call
+    if (v.problems.some(isHoldProblem) && fillHolds(cand)) v = await validateChapter(cand, ctx, { log, layoutAudit: opts.layoutAudit });
+    return v;
+  };
   for (let i = 0; i < max; i++) {
-    const prompt = raw ? buildRepairPromptLF(ctx, raw, problems, summaryLine(report)) : buildPromptLF(ctx);
-    log(`[${ctx.section.id}] storyboard attempt ${i + 1}/${max}${raw ? ` (repairing ${problems.length} problem(s))` : ""}`);
+    // budget >= 80 %: no optional retries -- at most two more (cheaper-tier) repairs for this chapter
+    if (i > 0 && !tight && costMode() !== "normal") {
+      tight = true;
+      max = Math.min(max, i + 2);
+      log(`[${ctx.section.id}] budget tight: at most ${max - i} more repair(s), cheaper tier`);
+    }
+    let kind = "first";
+    let rp = null;
+    if (sb) {
+      rp = forceChapter ? { mode: "chapter", why: "the last scene repair did not help" } : SR.planRepair(sb, problems);
+      kind = rp.mode === "scene" ? "scene" : "repair";
+    }
+    forceChapter = false;
+    const prompt = kind === "first" ? buildPromptLF(ctx) : kind === "scene" ? SR.buildSceneRepairPrompt(ctx, sb, rp.ids, rp.sentences, problems) : buildRepairPromptLF(ctx, SR.rawOf(sb), problems, summaryLine(report));
+    log(`[${ctx.section.id}] storyboard attempt ${i + 1}/${max}${kind === "scene" ? ` (scene repair of ${rp.ids.join(", ")}: ${problems.length} problem(s))` : kind === "repair" ? ` (whole-chapter repair of ${problems.length} problem(s); ${rp.why})` : ""}`);
+    let raw;
     try {
-      raw = await generate(prompt, { section: ctx.section.id, attempt: i + 1 });
+      raw = await generate(prompt, { section: ctx.section.id, attempt: i + 1, kind });
     } catch (err) {
-      problems = [`model call failed: ${err.message}`];
-      attempts.push({ problems });
+      attempts.push({ problems: [`model call failed: ${err.message}`], kind });
       if (isFatal(err)) {
         const fatal = new Error(`model unavailable (not retried): ${err.message}`);
         fatal.fatal = true;
+        fatal.budget = !!err.budget;
         fatal.attempts = attempts;
         throw fatal;
       }
+      if (!sb) problems = [`model call failed: ${err.message}`];
       continue;
     }
-    sb = assemble(raw, ctx);
-    const fixed = fixSeriesNotes(sb);
+    let cand;
+    if (kind === "scene") {
+      try {
+        cand = SR.applySceneRepair(sb, raw, rp.ids, rp.sentences);
+      } catch (err) {
+        attempts.push({ problems: [`scene repair: ${err.message}`], kind });
+        log(`  - scene repair unusable (${err.message}); next attempt repairs the whole chapter`);
+        forceChapter = true;
+        continue;
+      }
+    } else cand = assemble(raw, ctx);
+    const fixed = fixSeriesNotes(cand);
     if (fixed) log(`[${ctx.section.id}] rewrote ${fixed} data-series note(s) to quote their point`);
-    let v = await validateChapter(sb, ctx, { log, layoutAudit: opts.layoutAudit });
-    // long holds are the one near-miss the model oscillates on (fixing a hold, it restructures and
-    // breaks the mix): fill them deterministically before spending another model call
-    if (v.problems.some(isHoldProblem)) {
-      const n = fillHolds(sb);
-      if (n) {
-        log(`[${ctx.section.id}] filled ${n} long hold(s) with emphasis beats`);
-        v = await validateChapter(sb, ctx, { log, layoutAudit: opts.layoutAudit });
+    let v = await validate(cand);
+    // deterministic fixes before any further model call (storyboardFix.js)
+    let nFixes = 0;
+    if (v.problems.length) {
+      const af = await applyAutoFixes(cand, ctx, v, validate);
+      if (af.fixes.length) {
+        nFixes = af.fixes.length;
+        log(`[${ctx.section.id}] auto-fixed ${nFixes}: ${af.fixes.slice(0, 6).join(" | ")}${nFixes > 6 ? " | ..." : ""}`);
+        cand = af.storyboard;
+        v = af.validation;
       }
     }
+    // a scene repair that made the chapter worse is dropped (the whole chapter is repaired next)
+    if (kind === "scene" && !better(v, { problems, report }) && v.problems.length >= problems.length) {
+      attempts.push({ problems: v.problems, report: v.report, kind, fixes: nFixes, reverted: true });
+      log(`  - scene repair did not help (${v.problems.length} vs ${problems.length} problem(s)); reverted`);
+      forceChapter = true;
+      continue;
+    }
+    sb = cand;
     problems = v.problems;
     report = v.report;
-    attempts.push({ problems, report });
+    attempts.push({ problems, report, kind, fixes: nFixes });
     problems.forEach((p) => log(`  - ${p}`));
     if (!problems.length) return finish(sb, ctx, attempts);
   }
-  const err = new Error(`[${ctx.section.id}] storyboard still invalid after ${max} attempts: ${problems.join(" | ")}`);
+  const err = new Error(`[${ctx.section.id}] storyboard still invalid after ${attempts.length} attempts: ${problems.join(" | ")}`);
   err.attempts = attempts;
   err.last = sb;
   throw err;
 }
 
 function finish(sb, ctx, attempts) {
-  sb.lfMeta = { hash: sectionHash(ctx.section, ctx.meta, planKey(ctx.plan)), plan: planKey(ctx.plan) || undefined, promptVersion: PROMPT_VERSION, attempts: attempts.length, report: attempts[attempts.length - 1].report };
+  const last = attempts[attempts.length - 1];
+  sb.lfMeta = {
+    hash: sectionHash(ctx.section, ctx.meta, planKey(ctx.plan)),
+    plan: planKey(ctx.plan) || undefined,
+    promptVersion: PROMPT_VERSION,
+    attempts: attempts.length,
+    calls: attempts.map((a) => a.kind || "first").join(","),
+    autoFixes: attempts.reduce((n, a) => n + (a.fixes || 0), 0),
+    report: last.report,
+  };
   return { storyboard: sb, attempts };
 }
 
@@ -1283,7 +1355,8 @@ async function rewriteScenesGraphicsOnly(sb, badSlots, ctx, opts = {}) {
     cand.lfMeta = { ...(sb.lfMeta || {}), mediaGate: { slots: [...bad], scaffolds: ids, how } };
     return { storyboard: cand, scaffolds: ids, how };
   };
-  if (opts.generate) {
+  // budget tight (>= 80 %): the model rewrite is optional -- straight to the deterministic variant
+  if (opts.generate && require("../ai/models").costMode() === "normal") {
     let problems = [];
     for (let attempt = 1; attempt <= 2; attempt++) {
       let prompt = buildSceneRewritePrompt(ctx, sb, ids, sentences, [...bad]);
@@ -1349,6 +1422,8 @@ async function mediaGate({ sections, storyboards, manifest, ctxFor, generate = n
 }
 
 module.exports = { seriesConsistencyProblems,
+  planLines,
+  GEN_TASK,
   varietyProblems,
   sceneKind,
   planKey,

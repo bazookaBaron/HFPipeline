@@ -209,7 +209,10 @@
       var dd = Math.sqrt((q[0] - cx) * (q[0] - cx) + (q[1] - cy) * (q[1] - cy)) / Math.sqrt(cx * cx + cy * cy);
       byIso[ct.iso] = { ct: ct, land: land, core: core, halo: halo, dist: Math.min(1.6, dd), c: ct.c };
     });
-    gGlow.setAttribute("opacity", "0.3");
+    // the network halo only while the borders draw on (and on regional views): at world scale a halo on every
+    // border reads as blur, so it fades once drawn; focus edges / the top choropleth class keep their own glow
+    var worldScale = (p.view || [0, 0, 1, 1])[2] > 0.5 * 27000;
+    gGlow.setAttribute("opacity", worldScale ? "0.22" : "0.3");
 
     // stroke widths in map units follow 1 / scale (dash layers cannot use non-scaling strokes)
     function setSW(v, t) {
@@ -321,6 +324,7 @@
         c.tl.fromTo([b.core, b.halo], { attr: { "stroke-dashoffset": 1 } }, { attr: { "stroke-dashoffset": 0 }, duration: 1.1, ease: "power2.inOut", immediateRender: false }, at);
         c.tl.fromTo(b.land, { fill: SEA }, { fill: LAND, duration: 0.7, ease: "power1.out", immediateRender: false }, at + 0.15);
       });
+      if (worldScale || p.choropleth) c.tl.to(gGlow, { opacity: 0, duration: 0.6, ease: "power1.out" }, t + 1.9);
     }
     // before the entrance everything is blank paper
     Object.keys(byIso).forEach(function (k) {
@@ -638,6 +642,7 @@
     });
     function choropleth(v, t) {
       if (!v) return;
+      c.tl.to(gGlow, { opacity: 0, duration: 0.4 }, t);
       var top = v.colors.length - 1;
       Object.keys(v.cls)
         .filter(function (k) {
@@ -651,10 +656,10 @@
           // the highest class glows softly
           if (v.cls[iso] === top) {
             var b = byIso[iso];
-            var ha = { d: b.ct.d, fill: "none", stroke: glow, "stroke-width": 5, "vector-effect": "non-scaling-stroke", opacity: 0 };
+            var ha = { d: b.ct.d, fill: "none", stroke: glow, "stroke-width": 3, "vector-effect": "non-scaling-stroke", opacity: 0 };
             if (b.ct.k && b.ct.k !== 1) ha.transform = "scale(" + b.ct.k + ")";
             var hot = svg("path", ha, gTop);
-            c.tl.to(hot, { attr: { opacity: 0.9 }, duration: 0.5, ease: "power2.out" }, tt + 0.25);
+            c.tl.to(hot, { attr: { opacity: 0.55 }, duration: 0.5, ease: "power2.out" }, tt + 0.25);
           }
         });
       if (!legendEl) {

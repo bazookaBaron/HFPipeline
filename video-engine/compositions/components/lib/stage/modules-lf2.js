@@ -59,37 +59,39 @@
     P + ".l2-tl .ax{position:absolute;height:4px;border-radius:2px;background:#d8d5cb;transform-origin:0 50%;}",
     P + ".l2-tl .axp{position:absolute;height:4px;border-radius:2px;background:" + T.ink + ";transform-origin:0 50%;}",
     P + ".l2-tl .tk{position:absolute;width:2px;height:12px;background:#c9c5b9;}",
-    P + ".l2-tl .tkl{position:absolute;width:80px;margin-left:-40px;text-align:center;font-family:" + MONO + ";font-size:15px;font-weight:600;color:" + T.muted + ";}",
-    P + ".l2-tl .pin{position:absolute;width:20px;height:20px;margin:-10px 0 0 -10px;border-radius:50%;background:" + T.card + ";border:4px solid var(--ec);box-sizing:border-box;box-shadow:0 0 0 5px rgba(247,246,241,.9);}",
+    P + ".l2-tl .tkl{position:absolute;width:90px;margin-left:-45px;text-align:center;font-family:" + MONO + ";font-size:18px;font-weight:600;color:" + T.muted + ";}",
+    P + ".l2-tl .pin{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:" + T.card + ";border:4px solid var(--ec);box-sizing:border-box;box-shadow:0 0 0 5px rgba(247,246,241,.9);}",
     P + ".l2-tl .pin.on{background:var(--ec);}",
     P + ".l2-tl .stem{position:absolute;width:2px;margin-left:-1px;background:var(--ec);opacity:.55;}",
-    P + ".l2-tl .ev{position:absolute;padding:14px 18px 15px;border-radius:14px;background:" + T.card + ";border:1.5px solid " + T.line + ";box-shadow:0 14px 34px rgba(30,28,20,.10);}",
-    P + ".l2-tl .ev .y{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ec);}",
-    P + ".l2-tl .ev .l{font-size:21px;font-weight:650;line-height:1.22;color:" + T.ink + ";margin-top:7px;}",
+    P + ".l2-tl .ev{position:absolute;padding:18px 22px 19px;border-radius:16px;background:" + T.card + ";border:2px solid " + T.line + ";box-shadow:0 14px 34px rgba(30,28,20,.10);}",
+    P + ".l2-tl .ev[data-on='1']{border-color:var(--ec);box-shadow:0 0 0 3px var(--ec),0 20px 44px rgba(30,28,20,.18);}",
+    P + ".l2-tl .rg{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;border:3px solid var(--ec);box-sizing:border-box;}",
+    P + ".l2-tl .ev .y{font-size:42px;font-weight:800;letter-spacing:-.03em;line-height:1;color:var(--ec);}",
+    P + ".l2-tl .ev .l{font-size:24px;font-weight:650;line-height:1.22;color:" + T.ink + ";margin-top:8px;}",
     P + ".l2-tl .ph{position:absolute;width:2px;margin-left:-1px;background:" + T.ink + ";}",
-    P + ".l2-tl .phb{position:absolute;height:36px;line-height:36px;padding:0 12px;border-radius:9px;background:" + T.ink + ";color:#fff;font-family:" + MONO + ";font-size:19px;font-weight:700;letter-spacing:.04em;white-space:nowrap;}",
+    P + ".l2-tl .phb{position:absolute;height:40px;line-height:40px;padding:0 14px;border-radius:10px;background:" + T.ink + ";color:#fff;font-family:" + MONO + ";font-size:21px;font-weight:700;letter-spacing:.04em;white-space:nowrap;}",
     // ---- flow ----
     P + ".l2-flow .nd{position:absolute;border-radius:18px;background:" + T.card + ";border:2px solid " + T.line + ";box-shadow:0 16px 38px rgba(30,28,20,.10);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;}",
     P + ".l2-flow .nd[data-hl='1']{border-color:var(--nc);box-shadow:0 0 0 3px var(--nc),0 16px 38px rgba(30,28,20,.14);}",
-    P + ".l2-flow .ic{width:96px;height:96px;border-radius:50%;background:var(--nt);color:var(--nc);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}",
-    P + ".l2-flow .nl{font-size:30px;font-weight:800;letter-spacing:-.015em;line-height:1.1;color:" + T.ink + ";padding:0 14px;}",
-    P + ".l2-flow .ns{font-family:" + MONO + ";font-size:14px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:" + T.muted + ";margin-top:6px;}",
-    P + ".l2-flow .fl{position:absolute;height:36px;line-height:32px;padding:0 13px;border-radius:18px;background:" + T.card + ";border:2px solid var(--fc);font-size:19px;font-weight:750;color:" + T.ink + ";white-space:nowrap;box-shadow:0 8px 18px rgba(30,28,20,.10);}",
+    P + ".l2-flow .ic{width:112px;height:112px;border-radius:50%;background:var(--nt);color:var(--nc);display:flex;align-items:center;justify-content:center;margin-bottom:12px;}",
+    P + ".l2-flow .nl{font-size:36px;font-weight:800;letter-spacing:-.015em;line-height:1.1;color:" + T.ink + ";padding:0 14px;}",
+    P + ".l2-flow .ns{font-family:" + MONO + ";font-size:17px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:" + T.muted + ";margin-top:6px;}",
+    P + ".l2-flow .fl{position:absolute;height:48px;line-height:43px;padding:0 20px;border-radius:24px;background:" + T.card + ";border:2.5px solid var(--fc);font-size:26px;font-weight:800;color:" + T.ink + ";white-space:nowrap;box-shadow:0 8px 18px rgba(30,28,20,.10);}",
     // ---- pictogram ----
     P + ".l2-pic .ic{position:absolute;color:#d9d6cc;}",
     P + ".l2-pic .fig{position:absolute;font-weight:800;letter-spacing:-.045em;line-height:.9;color:var(--pc);white-space:nowrap;}",
     P + ".l2-pic .of{position:absolute;font-size:34px;font-weight:700;color:" + T.ink2 + ";white-space:nowrap;}",
-    P + ".l2-pic .lb{position:absolute;font-size:34px;font-weight:800;letter-spacing:-.02em;line-height:1.14;color:" + T.ink + ";}",
-    P + ".l2-pic .un{position:absolute;display:flex;align-items:center;gap:10px;font-family:" + MONO + ";font-size:16px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:" + T.muted + ";white-space:nowrap;}",
+    P + ".l2-pic .lb{position:absolute;font-size:40px;font-weight:800;letter-spacing:-.02em;line-height:1.14;color:" + T.ink + ";}",
+    P + ".l2-pic .un{position:absolute;display:flex;align-items:center;gap:10px;font-family:" + MONO + ";font-size:19px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:" + T.muted + ";white-space:nowrap;}",
     // ---- bar race ----
     P + ".l2-race .ttl{position:absolute;left:0;top:0;font-size:32px;font-weight:800;letter-spacing:-.02em;color:" + T.ink + ";white-space:nowrap;}",
     P + ".l2-race .unit{position:absolute;left:0;top:46px;font-family:" + MONO + ";font-size:15px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:" + T.muted + ";white-space:nowrap;}",
     P + ".l2-race .row{position:absolute;left:0;right:0;}",
-    P + ".l2-race .nm{position:absolute;left:0;text-align:right;font-size:22px;font-weight:700;color:" + T.ink + ";white-space:nowrap;}",
+    P + ".l2-race .nm{position:absolute;left:0;text-align:right;font-size:26px;font-weight:700;color:" + T.ink + ";white-space:nowrap;}",
     P + ".l2-race .bar{position:absolute;border-radius:0 8px 8px 0;background:var(--bc);transform-origin:0 50%;}",
     P + ".l2-race .row[data-top='1'] .bar{box-shadow:0 0 18px rgba(47,125,246,.45);}",
     P + ".l2-race .row[data-top='1'] .nm{color:var(--bc);font-weight:800;}",
-    P + ".l2-race .vl{position:absolute;font-size:22px;font-weight:800;color:" + T.ink + ";white-space:nowrap;}",
+    P + ".l2-race .vl{position:absolute;font-size:26px;font-weight:800;color:" + T.ink + ";white-space:nowrap;}",
     P + ".l2-race .yr{position:absolute;right:0;font-weight:800;letter-spacing:-.05em;line-height:.85;color:#d6d2c6;white-space:nowrap;text-align:right;}",
     // ---- split / stack ----
     P + ".l2-split .half{position:absolute;top:0;bottom:0;overflow:hidden;}",
@@ -113,6 +115,7 @@
     P + ".l2-doc .rf{position:absolute;font-family:" + MONO + ";font-size:16px;font-weight:600;letter-spacing:.12em;color:#5b6166;white-space:nowrap;}",
     P + ".l2-doc .rl{position:absolute;height:2px;background:#2b3238;opacity:.8;}",
     P + ".l2-doc .ln{position:absolute;font-family:Georgia,'Times New Roman',serif;font-size:23px;line-height:1.3;color:#3b4247;white-space:nowrap;overflow:hidden;}",
+    P + ".l2-doc .ill{position:absolute;right:18px;top:16px;padding:5px 10px;border-radius:6px;background:rgba(22,32,42,.08);font-family:" + MONO + ";font-size:16px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#4c5358;}",
     P + ".l2-doc .gb{position:absolute;height:9px;border-radius:5px;background:#dcd6c6;}",
     P + ".l2-doc .stp{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;border:7px solid var(--sc);border-radius:14px;color:var(--sc);padding:10px 34px 12px;white-space:nowrap;box-shadow:inset 0 0 0 4px rgba(255,255,255,.0);}",
     P + ".l2-doc .stp .in{position:absolute;inset:7px;border:2.5px solid var(--sc);border-radius:7px;}",
@@ -123,6 +126,7 @@
     P + ".l2-flash .fr img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;}",
     P + ".l2-flash .fr .fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#ecebe4;background-image:repeating-linear-gradient(135deg,rgba(22,32,42,.04) 0 2px,transparent 2px 14px);font-size:54px;font-weight:800;color:" + T.ink2 + ";}",
     P + ".l2-flash .fr .cp{position:absolute;left:40px;bottom:40px;padding:8px 14px;border-radius:8px;background:rgba(247,246,241,.94);font-family:" + MONO + ";font-size:18px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:" + T.ink + ";white-space:nowrap;}",
+    P + ".l2-flash .cr{position:absolute;right:24px;bottom:22px;max-width:60%;padding:3px 8px;border-radius:5px;background:rgba(247,246,241,.92);font-family:" + MONO + ";font-size:13px;font-weight:500;line-height:17px;color:#2f3538;white-space:nowrap;}",
     P + ".l2-flash .wf{position:absolute;inset:0;background:#fff;}",
     P + ".l2-flash .kk{position:absolute;left:50%;top:50%;padding:18px 36px 20px;border-radius:14px;background:" + T.ink + ";color:#fff;font-size:76px;font-weight:900;letter-spacing:-.01em;white-space:nowrap;box-shadow:0 30px 70px rgba(0,0,0,.45);}",
   ].join("\n");
@@ -435,24 +439,24 @@
         ticks.push(tk, tl2);
       }
       // cards alternate above / below; a card that would overlap its same-side neighbour rises a tier
-      var cardW = Math.min(300, Math.max(210, (ax.x1 - ax.x0) / Math.max(2, Math.ceil(items.length / 2)) - 20));
+      var cardW = Math.min(360, Math.max(250, (ax.x1 - ax.x0) / Math.max(2, Math.ceil(items.length / 2)) - 24));
       var last = { up: [], dn: [] };
       var nodes = items.map(function (it, k) {
         var col = tone(it.tone || p.tone || (k === items.length - 1 ? "red" : "blue"));
         var up = k % 2 === 0;
         var x = X(it.year);
-        var lines = L.lineCount(it.label, 650, 21, cardW - 36);
-        var ch = 34 + 7 + lines * 26 + 29;
+        var lines = L.lineCount(it.label, 650, 24, cardW - 48);
+        var ch = 42 + 8 + lines * 30 + 37;
         var side = up ? last.up : last.dn;
         var tier = 0;
         side.forEach(function (o) {
           if (Math.abs(o.x - x) < cardW + 16) tier = Math.max(tier, o.tier + 1);
         });
         side.push({ x: x, tier: tier });
-        var gap = 46 + tier * (ch + 18);
+        var gap = 96 + tier * (ch + 18);
         var cx = Math.max(0, Math.min(w - cardW, x - cardW / 2));
         var cy = up ? ax.y - gap - ch : ax.y + gap + (tier ? 0 : 20);
-        if (!up && tier === 0) cy = ax.y + 66;
+        if (!up && tier === 0) cy = ax.y + 110;
         var stem = place(div("stem", el), x, up ? cy + ch : ax.y, undefined, up ? ax.y - cy - ch : cy - ax.y);
         stem.style.setProperty("--ec", col);
         var card = place(div("ev", el), cx, cy, cardW);
@@ -461,11 +465,14 @@
         div("l", card, it.label);
         var pin = place(div("pin", el), x, ax.y);
         pin.style.setProperty("--ec", col);
+        var rg = place(div("rg", el), x, ax.y);
+        rg.style.setProperty("--ec", col);
+        hideAt0(c, rg);
         c.entity("e" + (k + 1), card);
         [stem, card, pin].forEach(function (n) {
           hideAt0(c, n);
         });
-        return { it: it, x: x, stem: stem, card: card, pin: pin, up: up };
+        return { it: it, x: x, stem: stem, card: card, pin: pin, rg: rg, up: up };
       });
       // the playhead is a dark year pill riding the axis itself
       var ph = place(div("ph", el), ax.x0, ax.y - 16, undefined, 32);
@@ -477,6 +484,7 @@
       phb.style.zIndex = "3";
       var at = { x: ax.x0, year: y0 };
       var shown = {};
+      var active = null;
       function go(i, t) {
         var n = nodes[i - 1];
         if (!n) throw new Error("timeline: no item " + i);
@@ -495,6 +503,14 @@
         c.tl.set(n.stem, { autoAlpha: 1, transformOrigin: n.up ? "50% 100%" : "50% 0%" }, ta);
         c.tl.fromTo(n.stem, { scaleY: 0 }, { scaleY: 1, duration: 0.25, ease: "power2.out", immediateRender: false }, ta + 0.05);
         popIn(c, n.card, ta + 0.18, { y: n.up ? 16 : -16 });
+        // the active event: its card rings in its tone, its pin pulses; the previous one steps back
+        c.tl.set(n.card, { attr: { "data-on": "1" } }, ta + 0.18);
+        c.tl.fromTo(n.rg, { autoAlpha: 0.9, scale: 1 }, { autoAlpha: 0, scale: 2.8, duration: 0.8, ease: "power2.out", repeat: 1, immediateRender: false }, ta + 0.1);
+        if (active) {
+          c.tl.set(active.card, { attr: { "data-on": "0" } }, ta + 0.18);
+          c.tl.to(active.card, { autoAlpha: 0.72, duration: 0.3 }, ta + 0.18);
+        }
+        active = n;
         at = { x: n.x, year: n.it.year };
       }
       var entered = false;
@@ -536,8 +552,8 @@
       var flows = (p.flows || []).slice(0, 6);
       if (nodes.length < 2) throw new Error("flowDiagram: needs 2-5 nodes");
       var layout = p.layout || (nodes.length >= 4 ? "hub" : "row");
-      var bw = Math.min(340, Math.max(230, (w - 80) / nodes.length - 110));
-      var bh = Math.min(260, Math.round(h * 0.4));
+      var bw = Math.min(360, Math.max(270, (w - 80) / nodes.length - 200));
+      var bh = Math.min(300, Math.round(h * 0.46));
       var pos = {};
       if (layout === "row") {
         nodes.forEach(function (n, i) {
@@ -564,9 +580,9 @@
         var ic = div("ic", nd);
         ic.style.setProperty("--nt", tint(n.tone || "blue"));
         ic.style.setProperty("--nc", col);
-        ic.appendChild(icon(LINE, n.icon || "coin", 52, col, 1.8));
+        ic.appendChild(icon(LINE, n.icon || "coin", 62, col, 1.7));
         var nl = div("nl", nd, n.label || n.id);
-        nl.style.fontSize = L.fit(n.label || n.id, 800, 30, 18, bw - 28, 2) + "px";
+        nl.style.fontSize = L.fit(n.label || n.id, 800, 36, 24, bw - 32, 2) + "px";
         if (n.sub) div("ns", nd, n.sub);
         c.entity("n_" + n.id, nd);
         hideAt0(c, nd);
@@ -601,11 +617,11 @@
         p1 = edge(b.q, cc, 22);
         var d = "M" + f1(p0[0]) + " " + f1(p0[1]) + " Q" + f1(cc[0]) + " " + f1(cc[1]) + " " + f1(p1[0]) + " " + f1(p1[1]);
         var len = qlen(p0, cc, p1);
-        var base = svg("path", { d: d, fill: "none", stroke: col, "stroke-opacity": 0.28, "stroke-width": 10, "stroke-linecap": "round", pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1 }, s);
-        var dots = svg("path", { d: d, fill: "none", stroke: col, "stroke-width": 9, "stroke-linecap": "round", "stroke-dasharray": "0.1 26", opacity: 0 }, s);
+        var base = svg("path", { d: d, fill: "none", stroke: col, "stroke-opacity": 0.3, "stroke-width": 16, "stroke-linecap": "round", pathLength: 1, "stroke-dasharray": "1 1", "stroke-dashoffset": 1 }, s);
+        var dots = svg("path", { d: d, fill: "none", stroke: col, "stroke-width": 13, "stroke-linecap": "round", "stroke-dasharray": "0.1 32", opacity: 0 }, s);
         var ang = (Math.atan2(p1[1] - cc[1], p1[0] - cc[0]) * 180) / Math.PI;
         var head = svg("g", { transform: "translate(" + f1(p1[0]) + " " + f1(p1[1]) + ") rotate(" + f1(ang) + ")" }, s);
-        svg("path", { d: "M-18 -12 L4 0 L-18 12 Z", fill: col, stroke: T.card, "stroke-width": 2, "stroke-linejoin": "round" }, head);
+        svg("path", { d: "M-26 -17 L6 0 L-26 17 Z", fill: col, stroke: T.card, "stroke-width": 2, "stroke-linejoin": "round" }, head);
         hideAt0(c, head);
         var lb = null;
         if (f.label) {
@@ -706,9 +722,9 @@
       var figTxt = fig || String(filled);
       while (figSize > 90 && L.measure(figTxt + "  of " + total, 800, figSize) * 0.8 > tw) figSize -= 10;
       figEl.style.fontSize = figSize + "px";
-      var of = place(div("of", el, fig ? "" : "of " + total), tx + L.measure(figTxt, 800, figSize) * 1.04 + 26, 0);
+      var of = place(div("of", el, fig ? "" : "of " + total), tx + L.measure(figTxt, 800, figSize) * 0.8 + 16, 0);
       var lbl = place(div("lb", el, p.label || ""), tx, 0, tw);
-      var lh = L.lineCount(p.label || "", 800, 34, tw) * 39;
+      var lh = L.lineCount(p.label || "", 800, 40, tw) * 46;
       var unitH = p.unit ? 40 : 0;
       var blockH = figSize * 0.9 + 22 + lh + (unitH ? 24 + unitH : 0);
       var by = Math.round((h - blockH) / 2);
@@ -785,7 +801,7 @@
       if (p.source) place(div("l2-src", el, "Source: " + p.source), 0, h - 22);
       var plot = { y0: headH + 14, y1: h - srcH - 10 };
       var rowH = (plot.y1 - plot.y0) / topN;
-      var barH = Math.min(52, rowH * 0.72);
+      var barH = Math.min(58, rowH * 0.74);
       var nameW = 230;
       var bx = nameW + 20;
       var bmax = w - bx - 150;
@@ -807,7 +823,7 @@
         if (hl) r.setAttribute("data-top", "1");
         r.style.setProperty("--bc", hl ? tone(p.tone || "blue") : "#9fb0c4");
         var n = place(div("nm", r, nm), 0, (rowH - 30) / 2, nameW);
-        n.style.fontSize = L.fit(String(nm), 700, 22, 14, nameW, 1) + "px";
+        n.style.fontSize = L.fit(String(nm), 700, 26, 16, nameW, 1) + "px";
         var b = place(div("bar", r), bx, (rowH - barH) / 2, bmax, barH);
         var v = place(div("vl", r, ""), bx, (rowH - 30) / 2);
         c.entity("r_" + String(nm).replace(/[^A-Za-z0-9]+/g, "_"), r);
@@ -1084,9 +1100,12 @@
       place(div("fold", paper), 0, Math.round(h * 0.52), pw);
       var m = 64;
       var em = place(div("em", paper), m, 50, 64, 64);
-      em.appendChild(icon(LINE, "govt", 36, "#3d4750", 1.7));
-      var hd = place(div("hd", paper, p.title || "OFFICIAL NOTICE"), m + 86, 56);
-      hd.style.fontSize = L.fit(String(p.title || "OFFICIAL NOTICE").toUpperCase(), 700, 30, 18, pw - m * 2 - 90, 1, "Georgia, serif") + "px";
+      em.appendChild(icon(LINE, "doc", 34, "#3d4750", 1.7));
+      // never passed off as a real document: a fixed corner tag says it is an illustration
+      c.entity("illustration", div("ill", paper, "Illustration"));
+      var title = p.title || "Notice";
+      var hd = place(div("hd", paper, title), m + 86, 56);
+      hd.style.fontSize = L.fit(String(title).toUpperCase(), 700, 30, 18, pw - m * 2 - 90 - 150, 1, "Georgia, serif") + "px";
       if (p.ref) place(div("rf", paper, p.ref), m + 86, 98);
       place(div("rl", paper), m, 138, pw - 2 * m);
       var y = 172;
@@ -1177,6 +1196,11 @@
           fr.appendChild(img);
         } else div("fb", fr, it.label || it.fallbackLabel || "");
         if (it.label) div("cp", fr, it.label);
+        // the credit chip sits outside the (scaling) frame, shown exactly while its frame is
+        if (it.credit && it.src && !it.missing) {
+          fr._cr = div("cr", el, String(it.credit).length > 80 ? String(it.credit).slice(0, 79) + "\u2026" : it.credit);
+          hideAt0(c, fr._cr);
+        }
         c.entity("f" + (i + 1), fr);
         hideAt0(c, fr);
         return fr;
@@ -1195,8 +1219,12 @@
         frames.forEach(function (fr, i) {
           var ti = t + i * per;
           c.tl.set(fr, { autoAlpha: 1 }, ti);
+          if (fr._cr) c.tl.set(fr._cr, { autoAlpha: 1 }, ti);
           c.tl.fromTo(fr, { scale: 1.1 }, { scale: 1, duration: per + 0.1, ease: "power2.out", immediateRender: false }, ti);
-          if (i < frames.length - 1) c.tl.set(fr, { autoAlpha: 0 }, ti + per);
+          if (i < frames.length - 1) {
+            c.tl.set(fr, { autoAlpha: 0 }, ti + per);
+            if (fr._cr) c.tl.set(fr._cr, { autoAlpha: 0 }, ti + per);
+          }
           c.tl.fromTo(wf, { autoAlpha: 0.75 }, { autoAlpha: 0, duration: Math.min(0.1, per * 0.6), ease: "power1.out", immediateRender: false }, ti);
         });
         var last = frames[frames.length - 1];

@@ -342,6 +342,7 @@ MEDIA SLOTS:
 - Reuse a slot across scenes when it is the same picture (e.g. the airline's plane in a split, then as a timeline thumb). 4-9 distinct slots per chapter.
 - illustration = AI art for jokes/analogies/concepts ONLY (lfJoke art); never real people or real news events, never text in the image. Real people -> portrait; companies -> logo or photo.
 - A headline is REBUILT with headlineCard (typeset), never a screenshot; paraphrase and mark it "Paraphrased ... · retypeset" in note.
+- documentStamp is an ILLUSTRATION (the page says so): generic wording only ("Suspension of debt payments", a dossier date); never an invented decree / law number, ministry letterhead or official reference -- those only when the exact string is in the FACTS.
 COLOUR: red = cost/loss/failure, blue = the neutral subject/money in, green = gains/recovery, amber = warnings. Max 3 hues per scene. TONES ${TONES.join(", ")}.`;
 
 /** scene budget for a section at the LF pace (160 wpm incl. 0.35 s gaps) */
@@ -706,10 +707,12 @@ async function validateChapter(sb, ctx, opts = {}) {
   P.push(...varietyProblems(sb, ctx.plan));
   // set-2 module props (quoteCard, timeline, flowDiagram, ..., routeMap): authoring schema
   {
-    const { lf2Problems } = require("../video/v3/lf2");
+    const { lf2Problems, docStampProblems, dossierText } = require("../video/v3/lf2");
+    const dtext = dossierText(dossier);
     (sb.scaffolds || []).forEach((sc) => Object.entries(sc.slots || {}).forEach(([k, v]) => [].concat(v || []).forEach((f) => {
       const type = f && (f.type || { quote: "quoteCard", split: "splitScreen", burst: "flashBurst" }[k]);
       if (type) P.push(...lf2Problems(type, f.props, `${sc.id}.${k}`));
+      if (type === "documentStamp") P.push(...docStampProblems(f.props || {}, dtext, `${sc.id}.${k}`));
     })));
   }
   // media intents

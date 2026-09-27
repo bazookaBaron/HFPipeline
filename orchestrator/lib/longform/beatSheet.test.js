@@ -183,3 +183,14 @@ test("compile: set-2 templates lay out, word-driven modules switch auto off, rou
   // resolveLF2 is idempotent on an already compiled spec
   resolveLF2(spec.scaffolds, spec.events);
 });
+
+test("documentStamp honesty: invented numbers / letterheads fail, dossier strings and generic text pass", () => {
+  const { docStampProblems } = require("../video/v3/lf2");
+  const dossier = "Argentina defaulted on $132 billion in December 2001. Decree 1606/2001 was published.";
+  assert.deepStrictEqual(docStampProblems({ title: "Debt notice", lines: ["Suspension of debt payments"], date: "December 2001", stamp: "DEFAULT" }, dossier, "d"), []);
+  assert.deepStrictEqual(docStampProblems({ title: "Debt notice", ref: "Decree 1606/2001", stamp: "DEFAULT" }, dossier, "d"), []);
+  const P = docStampProblems({ title: "Ministerio de Economia", ref: "Decreto 999/2002", lines: ["Principal: US$ 77,000"], stamp: "DEFAULT" }, dossier, "d").join("\n");
+  assert.match(P, /title "Ministerio de Economia" reads like a real official letterhead/);
+  assert.match(P, /shows 999\/2002/);
+  assert.match(P, /shows 77,000/);
+});

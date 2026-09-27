@@ -163,4 +163,32 @@ function lf2Problems(type, p, where) {
   return P;
 }
 
-module.exports = { resolveLF2, raceFrames, DRIVERS, lf2Problems, LINE_ICONS, SOLID_ICONS };
+/**
+ * documentStamp honesty (the page is always an ILLUSTRATION): generic wording only. Any figure (digits) and any
+ * official-sounding title / reference (ministry, decree, law no., court, central bank ...) must appear VERBATIM
+ * in the dossier (claims, sources, timeline) -- never an invented decree number or letterhead.
+ * dossierText = everything the research verified, as one string.
+ */
+const OFFICIAL = /\b(ministry|ministerio|minister|decree|decreto|resolution|resoluci[oó]n|law\s+no|ley\s+n|gazette|bolet[ií]n|department|treasury|court|tribunal|central\s+bank|banco\s+central|republic|rep[uú]blica|official)\b/i;
+function docStampProblems(p, dossierText, where) {
+  const P = [];
+  const hay = String(dossierText || "").toLowerCase();
+  const inDossier = (x) => hay.includes(String(x).toLowerCase().trim());
+  const fields = [["title", p.title], ["ref", p.ref], ["date", p.date], ...((p.lines || []).map((l, i) => [`lines[${i}]`, l]))];
+  fields.forEach(([k, v]) => {
+    if (!v) return;
+    const s = String(v);
+    (s.match(/\d[\d,./-]*\d|\d/g) || []).forEach((num) => {
+      const bare = num.replace(/[,./-]/g, "");
+      if (!inDossier(num) && !(bare.length === 4 && inDossier(bare))) P.push(`${where}: documentStamp ${k} "${s.slice(0, 50)}" shows ${num}, which is not in the dossier; keep document text generic (no invented numbers)`);
+    });
+    if ((k === "title" || k === "ref") && OFFICIAL.test(s) && !inDossier(s)) P.push(`${where}: documentStamp ${k} "${s.slice(0, 50)}" reads like a real official letterhead / reference but is not in the dossier verbatim; use generic wording (e.g. "Debt notice") -- the page is an illustration`);
+  });
+  return P;
+}
+function dossierText(dossier) {
+  const d = dossier || {};
+  return [].concat((d.facts || []).map((f) => `${f.claim || ""} ${f.value ?? ""} ${f.year ?? ""} ${f.source || ""} ${f.quote || ""}`), (d.timeline || []).map((t) => `${t.year} ${t.event}`), (d.sources || []).map((s) => `${s.title || ""} ${s.publisher || ""}`), (d.quotes || []).map((q) => `${q.text || q.quote || ""} ${q.speaker || q.source || ""} ${q.date || ""}`)).join("\n");
+}
+
+module.exports = { resolveLF2, raceFrames, DRIVERS, lf2Problems, docStampProblems, dossierText, LINE_ICONS, SOLID_ICONS };

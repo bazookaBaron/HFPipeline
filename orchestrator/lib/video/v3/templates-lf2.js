@@ -15,8 +15,8 @@
  */
 
 const FEATURE = {
-  timeline: { w: 1728, h: 640 },
-  flowDiagram: { w: 1600, h: 640 },
+  timeline: { w: 1728, h: 720 },
+  flowDiagram: { w: 1728, h: 640 },
   pictogramGrid: { w: 1520, h: 600 },
   barRace: { w: 1440, h: 660 },
   documentStamp: { w: 1060, h: 700 },
@@ -74,7 +74,9 @@ module.exports = function lf2Templates(h) {
   function lfFlash(sc) {
     const s = sc.slots || {};
     if (!s.burst) throw new Error(`scaffold ${sc.id}: lfFlash needs slots.burst (props flashBurst)`);
-    return { layout: "full", modules: [mod(sc, s.burst, "flashBurst", [0, 0, G.W, G.H], "burst")] };
+    // each quick frame credits its own picture on the frame (the frame credit line would list them all at once)
+    const props = { ...(s.burst.props || {}), items: ((s.burst.props || {}).items || []).map((it) => (it && typeof it === "object" ? { ...it, creditPos: "none" } : it)) };
+    return { layout: "full", modules: [mod(sc, { ...s.burst, props }, "flashBurst", [0, 0, G.W, G.H], "burst")] };
   }
 
   return { lfQuote, lfFeature, lfDuo, lfFlash };

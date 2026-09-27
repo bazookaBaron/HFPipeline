@@ -855,7 +855,7 @@ function isFatal(err) {
 async function generateChapterStoryboard(ctx, opts = {}) {
   const generate = opts.generate || liveGenerate({ log: opts.log });
   const log = opts.log || (() => {});
-  const max = opts.maxAttempts || 3;
+  const max = opts.maxAttempts || 5;
   const attempts = [];
   let raw = opts.previous || null;
   let problems = opts.extraProblems || [];

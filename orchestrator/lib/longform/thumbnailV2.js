@@ -26,7 +26,7 @@ const fal = require("../media/fal");
 const { thumbJpeg, sniffImage } = require("../media/image");
 
 const { W, H, MAX_BYTES } = TH;
-const VERSION = "lf-thumb.2";
+const VERSION = "lf-thumb.3";
 const MIN_HEAD = 56;
 const MIN_SECONDARY = 30;
 const MIN_CONTRAST = 4.5;
@@ -54,18 +54,89 @@ function mainPerson(o) {
   return p ? p.name : null;
 }
 
-function conceptPrompt({ outline, dossier, topic, stat, person }) {
+// ------------------------------------------------------------------------------ place cue
+
+// flag colours for the outline fill / light (public flag colours; fallback: channel yellow)
+const FLAG = {
+  ARG: ["#74acdf", "#ffffff", "#f6b40e"], IND: ["#ff9933", "#ffffff", "#138808"], PAK: ["#01411c", "#ffffff", "#01411c"],
+  LKA: ["#ffbe29", "#8d153a", "#00534e"], BGD: ["#006a4e", "#f42a41", "#006a4e"], CHN: ["#de2910", "#ffde00", "#de2910"],
+  USA: ["#b22234", "#ffffff", "#3c3b6e"], GBR: ["#012169", "#ffffff", "#c8102e"], RUS: ["#ffffff", "#0039a6", "#d52b1e"],
+  JPN: ["#ffffff", "#bc002d", "#ffffff"], BRA: ["#009c3b", "#ffdf00", "#002776"], TUR: ["#e30a17", "#ffffff", "#e30a17"],
+  GRC: ["#0d5eaf", "#ffffff", "#0d5eaf"], VEN: ["#ffcc00", "#00247d", "#cf142b"], EGY: ["#ce1126", "#ffffff", "#000000"],
+  ZWE: ["#006400", "#ffd200", "#d40000"], LBN: ["#ed1c24", "#ffffff", "#00a651"], NGA: ["#008751", "#ffffff", "#008751"],
+  MEX: ["#006847", "#ffffff", "#ce1126"], ZAF: ["#007a4d", "#ffb612", "#de3831"], KOR: ["#ffffff", "#cd2e3a", "#0047a0"],
+  DEU: ["#000000", "#dd0000", "#ffce00"], FRA: ["#0055a4", "#ffffff", "#ef4135"], ITA: ["#009246", "#ffffff", "#ce2b37"],
+  ESP: ["#aa151b", "#f1bf00", "#aa151b"], IRN: ["#239f40", "#ffffff", "#da0000"], SAU: ["#006c35", "#ffffff", "#006c35"],
+  UKR: ["#0057b7", "#ffd700", "#0057b7"], IDN: ["#ff0000", "#ffffff", "#ff0000"], NPL: ["#dc143c", "#003893", "#dc143c"],
+};
+
+let GEO = null;
+function geo() {
+  if (!GEO) GEO = JSON.parse(fs.readFileSync(path.join(REPO, "video-engine", "assets", "geo", "world-50m.json"), "utf-8"));
+  return GEO;
+}
+
+/**
+ * The country the story is about: a country named in the title/topic/angle (longest name wins), else the
+ * dossier's first place entity that is a country. -> {iso, name, colors} | null
+ */
+function placeOf(o) {
+  if (o.place !== undefined) return o.place;
+  let g;
+  try {
+    g = geo();
+  } catch (_) {
+    return null;
+  }
+  const byName = Object.entries(g.countries).map(([iso, c]) => [iso, String(c.n || "")]).filter(([, n]) => n.length > 3);
+  const find = (text) => {
+    const t = ` ${String(text || "").toLowerCase()} `;
+    const hits = byName.filter(([, n]) => new RegExp(`[^a-z]${n.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}[^a-z]`).test(t));
+    return hits.sort((a, b) => b[1].length - a[1].length)[0] || null;
+  };
+  let hit = find(`${(o.outline && o.outline.title) || ""} ${o.topic || ""} ${(o.dossier && o.dossier.angle) || ""}`);
+  if (!hit) for (const e of (o.dossier && o.dossier.entities) || []) if (/place|country/i.test(e.kind || "") && (hit = find(e.name))) break;
+  if (!hit) return null;
+  return { iso: hit[0], name: hit[1], colors: FLAG[hit[0]] || ["#ffd21f", "#ffffff", "#ffd21f"] };
+}
+
+/** glowing country outline (India-POV Natural Earth shapes, video-engine/assets/geo): opaque box height h, centred at (cx, cy) */
+function outlineSvg(place, { h, cx, cy, mode = "halo" }) {
+  const c = geo().countries[place.iso];
+  if (!c || !c.d) return null;
+  const [x0, y0, x1, y1] = c.b;
+  const bw = x1 - x0;
+  const bh = y1 - y0;
+  const scale = h / bh;
+  const w = bw * scale;
+  const u = 1 / scale; // map units per px
+  const [c1, c2, c3] = place.colors;
+  const glow = c1 === "#ffffff" ? c2 : c1;
+  const op = mode === "hero" ? 0.36 : mode === "badge" ? 0.45 : 0.25;
+  const id = `o${Math.round(cx)}${Math.round(cy)}`;
+  const r = (n) => Math.round(n);
+  const box = { x: r(cx - w / 2), y: r(cy - h / 2), w: r(w), h: r(h) };
+  const svg = `<svg class="cut" style="left:${box.x}px;top:${box.y}px;width:${box.w}px;height:${box.h}px;overflow:visible${mode === "halo" ? ";opacity:.85" : ""}" viewBox="${x0} ${y0} ${bw} ${bh}">
+<defs><linearGradient id="${id}g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c1}"/><stop offset=".5" stop-color="${c2}"/><stop offset="1" stop-color="${c3}"/></linearGradient>
+<filter id="${id}f" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="${(14 * u).toFixed(1)}" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+<path d="${c.d}" fill="url(#${id}g)" fill-opacity="${op}" stroke="${glow}" stroke-width="${((mode === "hero" ? 5 : 3.5) * u).toFixed(1)}" stroke-linejoin="round" filter="url(#${id}f)"/>
+</svg>`;
+  return { svg, box };
+}
+
+function conceptPrompt({ outline, dossier, topic, stat, person, place }) {
   return [
     "You design 3 alternative YouTube thumbnails for a documentary-style finance/economics explainer.",
     `Video title: "${clean(outline && outline.title)}". Topic: ${clean(topic)}. Angle: ${clean(dossier && dossier.angle)}.`,
     person ? `A real photo of ${person} is cut out on the right of the thumbnail.` : "There is no person on the thumbnail; a story prop is the hero.",
     stat ? `The only number you may use is ${stat.text}${stat.label ? ` (${stat.label})` : ""}.` : "Use no numbers.",
+    place ? `The story is about ${place.name}: EVERY background scene must read as ${place.name} at a glance through a recognisable landmark, skyline or street of ${place.name} (a different one per concept, e.g. its capital's skyline at dusk, a famous government building, a famous monument), dramatic but not pitch dark.` : "",
     "For each concept:",
     ' "headline": 2-4 words (max 22 characters), huge on the thumbnail; stakes or curiosity; complements the title, never repeats it; no emojis, no hashtags, no lies, and never accuse a real person or institution of a crime (no "stolen", "fraud", "scam" unless the title says so).',
     ' "power": exactly ONE word of the headline, the emotional word, shown in colour.',
     ' "subtitle": 2-5 words for a small strip under the headline (context or the number).',
-    ' "scene": the background photo: a generic, cinematic, dark, high-contrast scene that fits the story; NO faces, NO people in focus, NO text, signs, flags, logos or banknote close-ups; not a specific real event (e.g. "an empty trading floor at night with dead monitors").',
-    'Also one "prop": a single physical object that tells the story (e.g. "a cracked piggy bank", "a rusty padlock on a chain"), no text on it.',
+    ' "scene": the background photo: a cinematic, moody, high-contrast but well-exposed scene that fits the story; NO faces, NO people in focus, NO text, signs, flags, logos or banknote close-ups; not a specific real event (e.g. "an empty trading floor at night with dead monitors").',
+    'Also one "prop": a single compact physical object alone (no surface, nothing under it) that tells the story (e.g. "a cracked piggy bank", "a rusty padlock on a chain"), no text on it.',
     'Return JSON {"concepts": [{"headline", "power", "subtitle", "scene"} x3], "prop": string}.',
   ].join("\n");
 }
@@ -76,17 +147,24 @@ function validSubtitle(s, stat) {
   if (!t || n > 5 || t.length > 30) return null;
   const digits = t.replace(/[^0-9]/g, "");
   if (digits && (!stat || !String(stat.text).replace(/[^0-9]/g, "").includes(digits))) return null;
+  if (/\b(TONIGHT|TODAY|TOMORROW|THIS (WEEK|MONTH|YEAR)|NOW|BREAKING|LIVE)\b/.test(t)) return null; // invented urgency
   return t;
 }
 
 /** 3 validated concepts (deterministic fallbacks fill the gaps) + a prop */
-async function makeConcepts(o, stat, person) {
+/** one compact object, nothing under or around it (a cut-out of "X resting on Y" swallows the frame) */
+function propText(p) {
+  const t = clean(p).replace(/\s*,.*$/, "").replace(/\s+(resting|lying|sitting|placed|standing|hanging|set|on top of|on a|on an|on the|against|over|under|beside|next to|in front of)\b.*$/i, "");
+  return t.length >= 4 ? t : "a cracked empty piggy bank";
+}
+
+async function makeConcepts(o, stat, person, place = null) {
   const fb = TH.fallbackTitle(o);
   const fbSub = stat ? validSubtitle(`${stat.text}${stat.label ? " " + stat.label : ""}`, stat) : null;
   let raw = null;
   if (o.ask) {
     try {
-      raw = await o.ask(conceptPrompt({ ...o, stat, person }));
+      raw = await o.ask(conceptPrompt({ ...o, stat, person, place }));
     } catch (err) {
       (o.log || (() => {}))(`thumbnail: concepts unavailable (${String(err.message).slice(0, 120)})`);
     }
@@ -106,13 +184,13 @@ async function makeConcepts(o, stat, person) {
       source: text ? "gemini" : "deterministic",
     });
   }
-  const prop = clean(raw && raw.prop) || "a cracked empty piggy bank";
+  const prop = propText(raw && raw.prop);
   return { concepts: out, prop };
 }
 
 // ------------------------------------------------------------------------------ assets
 
-const BG_FRAMING = "no people, wide cinematic 16:9 frame, main subject on the right half, darker left third with calm negative space, low-key dramatic lighting, deep shadows, high contrast, teal and amber colour grade";
+const BG_FRAMING = "no people, wide cinematic 16:9 frame, main subject on the right half, slightly darker left third with calm negative space, dramatic dusk or golden-hour light, rich contrast but well exposed (not pitch dark), teal and amber colour grade";
 
 async function background(scene, id, ctx) {
   const run = (s) => fal.generateVetted({ prompt: s, mood: "dramatic", framing: BG_FRAMING, slotId: `thumb-bg-${id}`, outDir: ctx.workDir, task: "longform.thumbnail.bg" }, { gemini: ctx.gemini, retries: 1, log: ctx.log, tolerate: ["off-intent", "low confidence", "subject incidental"], keepLast: true });
@@ -122,9 +200,10 @@ async function background(scene, id, ctx) {
   } catch (err) {
     ctx.log(`thumbnail ${id}: background "${scene.slice(0, 60)}" failed (${String(err.message).slice(0, 100)})`);
   }
-  if (!r) r = await run(FALLBACK_SCENES["abc".indexOf(id)] || FALLBACK_SCENES[0]);
+  if (!r) r = await run(ctx.place ? `the skyline of the capital of ${ctx.place.name} at dusk, seen from across the water` : FALLBACK_SCENES["abc".indexOf(id)] || FALLBACK_SCENES[0]);
   if (!r) throw new Error(`no usable background for variant ${id}`);
-  ctx.cost += r.totalCost || r.cost || 0;
+  if (ctx.add) ctx.add(r.totalCost || r.cost || 0);
+  else ctx.cost += r.totalCost || r.cost || 0;
   return r;
 }
 
@@ -199,9 +278,9 @@ function placeFace(face, { fh, cx, top }) {
 }
 
 /** prop cut-out placement: opaque box height `h` px, centred at (cx, cy) */
-function placeProp(prop, { h, cx, cy }) {
+function placeProp(prop, { h, cx, cy, maxW = 520 }) {
   const [bx, by, bw, bh] = prop.box;
-  const s = h / bh;
+  const s = Math.min(h / bh, maxW / bw); // wide objects are limited by width so they never swallow the frame
   const r = (n) => Math.round(n);
   const left = cx - (bx + bw / 2) * s;
   const top = cy - (by + bh / 2) * s;
@@ -233,9 +312,25 @@ function buildVariant(spec) {
   const parts = [];
   let faceBox = null;
   let heroLeft = W;
-  parts.push(`<img class="bg" src="${spec.bgUri}" style="filter:brightness(.6) contrast(1.25) saturate(1.1)">`);
-  parts.push(`<div class="shade" style="background:linear-gradient(90deg,rgba(3,5,8,.9) 0%,rgba(3,5,8,.72) 34%,rgba(3,5,8,.18) 62%,rgba(3,5,8,0) 78%)"></div>`);
-  parts.push(`<div class="shade" style="background:radial-gradient(ellipse 75% 85% at 62% 45%,rgba(0,0,0,0) 55%,rgba(0,0,0,.6) 100%)"></div>`);
+  // exposure lifted so the thumbnail still reads on the dark YouTube feed; the left side stays darker for the headline
+  parts.push(`<img class="bg" src="${spec.bgUri}" style="filter:brightness(.8) contrast(1.16) saturate(1.14)">`);
+  parts.push(`<div class="shade" style="background:linear-gradient(90deg,rgba(3,5,8,.84) 0%,rgba(3,5,8,.6) 34%,rgba(3,5,8,.1) 62%,rgba(3,5,8,0) 78%)"></div>`);
+  parts.push(`<div class="shade" style="background:radial-gradient(ellipse 80% 90% at 62% 45%,rgba(0,0,0,0) 60%,rgba(0,0,0,.42) 100%)"></div>`);
+  if (spec.place) {
+    // place cue 1: a soft light in the flag colours from the top right
+    const [c1, c2, c3] = spec.place.colors;
+    const a = (hex, al) => `rgba(${parseInt(hex.slice(1, 3), 16)},${parseInt(hex.slice(3, 5), 16)},${parseInt(hex.slice(5, 7), 16)},${al})`;
+    parts.push(`<div class="shade" style="background:radial-gradient(ellipse 55% 60% at 88% 8%,${a(c1 === "#ffffff" ? c2 : c1, 0.3)},rgba(0,0,0,0) 100%),radial-gradient(ellipse 45% 50% at 96% 96%,${a(c3 === "#ffffff" ? c2 : c3, 0.2)},rgba(0,0,0,0) 100%);mix-blend-mode:screen"></div>`);
+  }
+  let outlineBox = null;
+  if (spec.place && spec.outlineAt) {
+    // place cue 2: the glowing country outline (behind the hero, or as the hero)
+    const o = outlineSvg(spec.place, spec.outlineAt);
+    if (o) {
+      parts.push(o.svg);
+      outlineBox = o.box;
+    }
+  }
   if (spec.hero === "face" && spec.face) {
     const p = placeFace(spec.face, spec.faceAt);
     faceBox = p.face;
@@ -246,6 +341,7 @@ function buildVariant(spec) {
     parts.push(`<div class="shade" style="background:radial-gradient(circle ${Math.round(gr)}px at ${Math.round(gx)}px ${Math.round(gy)}px,${spec.warm ? "rgba(255,140,50,.42)" : "rgba(70,150,255,.38)"},rgba(0,0,0,0) 100%)"></div>`);
     parts.push(`<img class="cut" src="${spec.faceUri}" style="left:${p.img.left}px;top:${p.img.top}px;width:${p.img.width}px;height:${p.img.height}px;filter:${RIM(spec.warm)};-webkit-mask-image:linear-gradient(180deg,#000 80%,rgba(0,0,0,0) 99%)">`);
   }
+  if (spec.hero === "outline" && outlineBox) heroLeft = outlineBox.x;
   if (spec.prop && (spec.hero === "prop" || spec.smallProp)) {
     const at = spec.hero === "prop" ? spec.propAt : spec.smallProp;
     const p = placeProp(spec.prop, at);
@@ -402,16 +498,19 @@ async function makeThumbnailsV2(o) {
 
   const stat = TH.pickStat(o);
   const person = mainPerson(o);
+  const place = placeOf(o);
   // concepts are cached per input so a re-render reuses them (and so hits the fal image cache)
-  const conceptKey = require("crypto").createHash("sha256").update(JSON.stringify([VERSION, o.outline && o.outline.title, o.dossier && o.dossier.angle, o.topic, stat && stat.text, person])).digest("hex").slice(0, 16);
+  const conceptKey = require("crypto").createHash("sha256").update(JSON.stringify([VERSION, o.outline && o.outline.title, o.dossier && o.dossier.angle, o.topic, stat && stat.text, person, place && place.iso])).digest("hex").slice(0, 16);
   const conceptFile = path.join(o.workDir, "concepts.json");
   let cached = null;
   try {
     cached = JSON.parse(fs.readFileSync(conceptFile, "utf-8"));
   } catch (_) {}
-  const { concepts, prop: propText } = cached && cached.key === conceptKey && !process.env.THUMB_NEW_CONCEPTS ? cached : await makeConcepts(o, stat, person);
-  fs.writeFileSync(conceptFile, JSON.stringify({ key: conceptKey, concepts, prop: propText }, null, 1));
-  log(`thumbnail v2: person ${person || "none"}; headlines ${concepts.map((c) => `"${c.text}"`).join(", ")}; prop "${propText}"`);
+  const { concepts, prop: rawProp } = cached && cached.key === conceptKey && !process.env.THUMB_NEW_CONCEPTS ? cached : await makeConcepts(o, stat, person, place);
+  const propName = propText(rawProp);
+  for (const c of concepts) if (c.subtitle && !validSubtitle(c.subtitle, stat)) c.subtitle = validSubtitle(stat ? `${stat.text}${stat.label ? " " + stat.label : ""}` : "", stat);
+  fs.writeFileSync(conceptFile, JSON.stringify({ key: conceptKey, concepts, prop: propName }, null, 1));
+  log(`thumbnail v2: person ${person || "none"}; place ${place ? place.name : "none"}; headlines ${concepts.map((c) => `"${c.text}"`).join(", ")}; prop "${propName}"`);
 
   let face = null;
   if (person) {
@@ -423,30 +522,37 @@ async function makeThumbnailsV2(o) {
     }
   }
   const bgs = [];
-  for (const [k, id] of ["a", "b", "c"].entries()) bgs.push(await background(concepts[k].scene, id, ctx));
+  for (const [k, id] of ["a", "b", "c"].entries()) bgs.push(await background(concepts[k].scene, id, { ...ctx, place, add: (c) => (ctx.cost += c) }));
   let prop = null;
   try {
-    prop = await propCutout(propText, ctx);
+    prop = await propCutout(propName, ctx);
   } catch (err) {
     log(`thumbnail v2: prop failed (${String(err.message).slice(0, 120)})`);
   }
-  if (!face && !prop) throw new Error("neither a licensed face nor a prop cut-out is available");
+  if (!face && !prop && !place) throw new Error("no hero: neither a licensed face, a prop cut-out nor a country outline");
 
   const uri = (f) => TH.dataUri(f);
   const faceUri = face ? uri(face.file) : null;
   const propUri = prop ? uri(prop.file) : null;
+  // hero per variant: the face when a good licensed one exists; otherwise the prop (a, c) and the glowing
+  // country outline (b). Every variant carries a place cue when the story has a country: the outline
+  // (halo behind the hero, the hero itself, or a corner badge), the flag-colour light and the landmark background.
+  const heroA = face ? "face" : prop ? "prop" : "outline";
+  const heroB = face ? "face" : place ? "outline" : "prop";
+  const heroC = prop ? "prop" : face ? "face" : "outline";
   const specs = {
-    a: { concept: concepts[0], hero: face ? "face" : "prop", faceAt: { fh: 320, cx: W * 0.75, top: 92 }, propAt: { h: 470, cx: W * 0.75, cy: H * 0.52, rot: -6 }, headStyle: "yellow", strip: "red", warm: true },
-    b: { concept: concepts[1], hero: face ? "face" : "prop", faceAt: { fh: 380, cx: W * 0.72, top: 70 }, propAt: { h: 540, cx: W * 0.7, cy: H * 0.55, rot: 8 }, smallProp: face ? { h: 200, cx: W * 0.9, cy: H * 0.8, rot: -12 } : null, headStyle: "chip", strip: "ink", warm: false },
-    c: { concept: concepts[2], hero: prop ? "prop" : "face", faceAt: { fh: 300, cx: W * 0.76, top: 110 }, propAt: { h: 500, cx: W * 0.76, cy: H * 0.52, rot: -4 }, headStyle: "yellow", strip: "yellow", warm: true },
+    a: { concept: concepts[0], hero: heroA, faceAt: { fh: 320, cx: W * 0.75, top: 92 }, propAt: { h: 450, cx: W * 0.75, cy: H * 0.54, rot: -6 }, outlineAt: { h: 640, cx: W * 0.75, cy: H * 0.5, mode: heroA === "outline" ? "hero" : "halo" }, headStyle: "yellow", strip: "red", warm: true },
+    b: { concept: concepts[1], hero: heroB, faceAt: { fh: 380, cx: W * 0.72, top: 70 }, propAt: { h: 540, cx: W * 0.7, cy: H * 0.55, rot: 8 }, outlineAt: heroB === "outline" ? { h: 660, cx: W * 0.74, cy: H * 0.5, mode: "hero" } : { h: 300, cx: W * 0.9, cy: H * 0.26, mode: "badge" }, smallProp: prop && heroB !== "prop" ? { h: 230, maxW: 330, cx: W * 0.86, cy: H * 0.8, rot: -12 } : null, headStyle: "chip", strip: "ink", warm: false },
+    c: { concept: concepts[2], hero: heroC, faceAt: { fh: 300, cx: W * 0.76, top: 110 }, propAt: { h: 470, cx: W * 0.74, cy: H * 0.56, rot: -4 }, outlineAt: { h: 250, cx: W * 0.93, cy: H * 0.22, mode: "badge" }, headStyle: "yellow", strip: "yellow", warm: true },
   };
+  if (!place) for (const sp of Object.values(specs)) delete sp.outlineAt;
   const ownBrowser = !o.browser;
   const browser = o.browser || (await TH.launchBrowser());
   const variants = [];
   try {
     const page = await browser.newPage();
     for (const [k, id] of ["a", "b", "c"].entries()) {
-      const sp = { ...specs[id], face, prop, faceUri, propUri, bgUri: uri(bgs[k].file) };
+      const sp = { ...specs[id], face, prop, place, faceUri, propUri, bgUri: uri(bgs[k].file) };
       const { html, faceBox } = buildVariant(sp);
       const file = path.join(o.finalDir, `thumbnail-${id}.png`);
       const r = await renderVariant(page, { html, workDir: o.workDir, id, file });
@@ -497,7 +603,7 @@ async function makeThumbnailsV2(o) {
     concepts,
     person: person || null,
     face: face ? { credit: face.credit, licence: face.licence, pageUrl: face.pageUrl, facePx: face.facePx } : null,
-    prop: prop ? { text: propText, model: prop.model } : null,
+    prop: prop ? { text: propName, model: prop.model } : null,
     recommended: best.file,
     ok: variants.every((v) => v.ok),
     variants: variants.map(({ abs, small, ...v }) => v),
@@ -509,4 +615,4 @@ async function makeThumbnailsV2(o) {
   };
 }
 
-module.exports = { makeThumbnailsV2, makeConcepts, validSubtitle, mainPerson, placeFace, placeProp, headlineHtml, buildVariant, checksFor, textContrast, alphaBox, conceptPrompt, VERSION };
+module.exports = { makeThumbnailsV2, placeOf, outlineSvg, FLAG, makeConcepts, validSubtitle, mainPerson, placeFace, placeProp, headlineHtml, buildVariant, checksFor, textContrast, alphaBox, conceptPrompt, VERSION };

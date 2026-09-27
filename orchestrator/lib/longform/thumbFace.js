@@ -23,6 +23,9 @@ const { DEFAULT_CACHE_DIR } = require("../media/cache");
 const OK_LICENCES = new Set(["pd", "cc0", "cc-by", "godl-india"]);
 const MAX_VET = 8;
 const MIN_FACE_PX = 90;
+// quality gate (coordinator review): a source under ~600 px tall looks soft at thumbnail size, and a
+// head-and-shoulders crop that runs into the photo edge gives the cut-out a straight edge -> prop hero
+const MIN_SOURCE_H = 600;
 
 function licenceOk(l) {
   return !!(l && l.allowed && !l.sa && OK_LICENCES.has(l.id));
@@ -49,7 +52,7 @@ function screenCandidates(cands, name = "") {
     seen.add(c.id);
     if (!licenceOk(c.licence)) continue;
     if (/\.(svg|gif|tiff?|pdf)$/i.test(c.id) || /signature|firma|coat of arms|logo|map|ballot|boleta|stamp/i.test(c.id)) continue;
-    if (Math.min(c.origWidth || c.width || 0, c.origHeight || c.height || 0) < 300) continue;
+    if ((c.origHeight || c.height || 0) < MIN_SOURCE_H || (c.origWidth || c.width || 0) < 400) continue;
     const named = surname && fold(c.id).includes(surname);
     const trusted = /^(wikidata|commons:category)/.test(c.via || "");
     if (surname && !named && !trusted) continue;
@@ -98,18 +101,20 @@ function ffmpeg(args) {
   if (r.status !== 0) throw new Error(`ffmpeg: ${String(r.stderr).slice(0, 200)}`);
 }
 
-/** head-and-shoulders crop box (px) around a face box, clamped to the image */
+/** head-and-shoulders crop box (px) around a face box, clamped to the image; `edge`: the wanted box ran
+ * past the left, right or top of the photo (the bottom may end at the frame: the cut-out fades out there) */
 function cropBox([fx, fy, fw, fh], W, H) {
   const cx = fx + fw / 2;
   let w = fw * 3.4;
   let top = fy - fh * 0.65;
   let bottom = fy + fh * 3.6;
+  const edge = top < 0 || cx - w / 2 < 0 || cx + w / 2 > W;
   top = Math.max(0, top);
   bottom = Math.min(H, bottom);
   let left = Math.max(0, cx - w / 2);
   let right = Math.min(W, cx + w / 2);
   const even = (n) => Math.max(2, Math.floor(n / 2) * 2);
-  return { x: Math.floor(left), y: Math.floor(top), w: even(right - left), h: even(bottom - top) };
+  return { x: Math.floor(left), y: Math.floor(top), w: even(right - left), h: even(bottom - top), edge };
 }
 
 /**
@@ -166,11 +171,18 @@ async function findFace(o) {
     })
     .filter((x) => x.s > 0)
     .sort((a, b) => b.s - a.s);
-  if (!ranked.length) {
-    log(`thumbnail face: no candidate clearly shows ${o.name}`);
+  const clear = ranked.filter((x) => {
+    const W0 = x.c.width || x.c.origWidth;
+    const H0 = x.c.height || x.c.origHeight;
+    const [bx, by, bw, bh] = x.v.faceBox.map(Number);
+    return !cropBox([bx * W0, by * H0, bw * W0, bh * H0], W0, H0).edge;
+  });
+  if (ranked.length && !clear.length) log(`thumbnail face: every photo of ${o.name} crops into the frame edge`);
+  if (!clear.length) {
+    log(`thumbnail face: no sharp, uncropped photo clearly shows ${o.name}; prop hero instead`);
     return null;
   }
-  const best = ranked[0];
+  const best = clear[0];
   const c = best.c;
   const full = await http.getBuffer(c.fileUrl, { maxBytes: 40 * 1024 * 1024 });
   const info = sniffImage(full);

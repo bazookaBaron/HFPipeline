@@ -159,3 +159,24 @@ test("face finder: licence filter (no share-alike), surname match, single-face r
   const b = TF.cropBox([400, 200, 100, 120], 1000, 800);
   assert.ok(b.x >= 0 && b.y >= 0 && b.x + b.w <= 1000 && b.y + b.h <= 800 && b.w % 2 === 0);
 });
+
+test("v2 review fixes: face gate, place cue, prop fit, no invented urgency", () => {
+  // a crop that runs past the left/top of the photo is flagged; ending at the bottom is fine
+  assert.equal(TF.cropBox([10, 200, 100, 120], 1000, 800).edge, true);
+  assert.equal(TF.cropBox([450, 200, 100, 120], 1000, 500).edge, false);
+  // sources under 600 px tall are not candidates
+  const L = { id: "cc-by", allowed: true, sa: false, label: "CC BY" };
+  assert.equal(TF.screenCandidates([{ id: "File:Domingo Cavallo 02(cropped).jpg", licence: L, mediaType: "image", origWidth: 350, origHeight: 425, via: "commons:search" }], "Domingo Cavallo").length, 0);
+  // the story's country, its flag colours and a glowing outline from the geo assets
+  const p = V2.placeOf({ outline: { title: "Why Argentina Keeps Going Broke" }, dossier: {}, topic: "x" });
+  assert.equal(p.iso, "ARG");
+  assert.deepEqual(p.colors, V2.FLAG.ARG);
+  const o = V2.outlineSvg(p, { h: 600, cx: 900, cy: 360, mode: "hero" });
+  assert.equal(o.box.h, 600);
+  assert.match(o.svg, /<path d="M/);
+  assert.equal(V2.placeOf({ outline: { title: "How Kingfisher collapsed" }, dossier: { entities: [] }, topic: "Kingfisher" }), null);
+  // a wide prop is limited by width
+  const wide = V2.placeProp({ width: 2000, height: 500, box: [0, 0, 2000, 500] }, { h: 450, cx: 900, cy: 360, maxW: 520 });
+  assert.equal(wide.box.w, 520);
+  assert.equal(V2.validSubtitle("$539M DUE TONIGHT", { text: "$539M" }), null);
+});

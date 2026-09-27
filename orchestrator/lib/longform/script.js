@@ -1,41 +1,71 @@
 "use strict";
 
 /**
- * script.js (plan §4.3): outline + dossier -> script.json
- *   sections: cold open, chapters, recap; each {id, title, sentences: [{id, text, factIds, calc?}]}.
- * All sections are drafted in parallel (concurrency 3), then checked together (jargon first use
- * depends on script order); sections with problems are repaired and the whole script re-checked,
- * at most 3 repair rounds.
+ * script.js (plan §4.3, LF v2 §1): outline + dossier -> script.json
+ * All sections are drafted in parallel (concurrency 3, pro tier), then deterministically fixed (style.js:
+ * long-sentence splitter, tag defaults) and checked together (jargon first use depends on script order);
+ * only sections with problems are re-sent for repair (standard tier), at most 3 rounds.
+ *
+ * script.json schema (version "lf-script.v2"); tags come from the SAME pro call as the text:
+ *   {version, topic, title, runningJoke,
+ *    hook:        outline.hook skeleton {chorus, anchorQuote:{quoteId}, myth, stakesTour[3], ironyPivot,
+ *                 statDefinitionMetaphor, caseStudy, questionStack[3-4]},
+ *    montageLines: [{text, factIds}]  5-7 punchy hook lines, each <= 10 words        -> montage stage (WS-E)
+ *    anchorLine:   {text, quoteId|null} the line the montage ends on (verbatim if it quotes)
+ *    sections: [{id: "cold"|"chN"|"recap", title, question, words,
+ *                mood: tension|investigative|dread|hopeful|playful|calm|triumphant  -> music plan (WS-D)
+ *                energy: 1-5                                                         -> music / sfx (WS-D)
+ *                sentences: [{id, text, factIds, calc?,
+ *                             visual: geo|number|trend|compare|quote|person|event|concept|joke  -> variety planner (WS-C)
+ *                             devices: [chorus|quote|myth|reveal|stakes|irony|stat|definition|metaphor|case|
+ *                                       question|pivot|cliffhanger|joke|callback],  (style gates)
+ *                             quoteId?: "Q1" (dossier.quotes, verbatim + non-UGC source)}],
+ *                stats: {words, fk, sentences, medianWords}, problems: [], autoFix: {splits, tagNotes}}],
+ *    stats: {words, estMinutes, wpm, fkMax, problems, repairHistory}}
+ * Missing/invalid mood, energy or visual are filled deterministically (style.fillTags), never repaired.
  */
 
 const { pool } = require("./gemini");
 const { sectionProblems, fkGrade, words } = require("./checks");
 const { factDigest } = require("./outline");
+const { checkSentenceNumbers } = require("./numbers");
+const { MOODS, DEVICES, splitLongSentences, mergeDanglingLeads, fillTags, styleProblems, montageProblems, lengthStats } = require("./style");
 
-const STYLE = `VOICE AND STYLE (this is spoken narration, read by a relaxed, warm narrator):
-- Talk like a smart friend explaining over coffee: "So here's the thing.", "Now, you might think...", "Okay, pause.".
-  Relaxed, not hyped. Contractions are good. Vary sentence length, but keep EVERY sentence at 22 words or fewer, most 8-15.
-- Very simple words. Grade 6-7 reading level. Prefer "money it owed" to "liabilities", "cheap" to "cost-effective".
-  When a finance term is needed, say it and explain it in plain words in the SAME or the NEXT sentence
-  ("That's called working capital. Basically, the cash a business needs to run day to day.").
-- Example-led: after any abstract idea, make it concrete within two sentences with "imagine", "think of", "for example",
-  using everyday life any viewer worldwide knows (a coffee stand, a family budget, a phone on instalments, a credit-card
-  bill, a corner shop's tab, a holiday sale). The audience is global: explain any local term or institution in plain words.
-  Carry the chapter's worked example through the explanation instead of piling up new ones.
-- Comedy that actually lands: dry understatement ("Which, in hindsight, was a bold plan."), a deadpan narrator aside,
-  rule of three with a twist, a punchline that is a short sentence on its own, and absurd-but-true comparisons whose
-  numbers are COMPUTED from two fact values and declared in "calc" ("The interest bill was about nine times what the
-  business earned."). About one light beat every 8-12 sentences, and at least two per chapter. Punch up at decisions
-  and institutions; never mock private individuals, tragedy, job losses, ethnicity or religion.
-- The running joke appears at most once per chapter and each callback must twist it a new way; never re-explain it,
-  never stack two analogies in a row, and don't lean on it instead of explaining.
-- Open each chapter differently (a question, a scene, a date, a blunt statement). Do not start with "So,". Do not repeat
-  the chapter title as a question word for word.
-- No superlatives ("biggest", "first ever", "record") unless a fact says so. Attribute allegations ("investigators
-  alleged", "by one estimate"); do not state them as proven.
-- Neutral and fair on countries, governments and people: describe decisions, incentives and trade-offs; include the other
-  side when a point is contested; say "by one estimate" for low-confidence facts. No loaded labels.
-- No investment advice (no buy/sell/should-invest). No "subscribe/like/follow/share" and no "in this video" or "welcome back".
+const SCRIPT_VERSION = "lf-script.v2";
+
+const STYLE = `VOICE (spoken narration for a relaxed, warm narrator; a smart friend explaining the world over coffee):
+- SHORT sentences. Most are 6-12 words; fragments are welcome for punch ("Lost decades." "Zero growth."). One idea per
+  sentence. NEVER more than 20 words in a sentence. Contractions are good. Relaxed, not hyped.
+- Short, but never telegraphic: keep articles and little linking words ("so", "and", "because", "which is why") so it
+  flows like someone talking. Never a bare noun phrase a viewer can't picture ("Indirect bank borrowing drove funding."
+  is wrong; "Companies didn't sell shares. They borrowed from their bank." is right).
+- Talk TO the viewer, at least once every five or six sentences: "you", "look at this", "imagine", "here's the thing",
+  "think about that", "so the question is", "people," / "guys," (sparingly). Conversation, not a lecture.
+- Pivots drive the story. A turn every 30-40 seconds (every six or seven sentences): "But...", "And while most people
+  think X, what they don't realise is...", "The irony is...", "Here's the catch.", "So the question is...".
+- Every claim is carried by a number, a place and a time ("by twenty fifty", "in the summer of twenty twenty-two", "since
+  two thousand"). No vague adjectives where a figure exists.
+- Every hard concept gets three steps: (1) a one-line plain definition; (2) a physical, everyday metaphor, then extend it
+  once ("like a nail in frozen wood. Now the wood turns to mud."); (3) a real, named example that proves it.
+- Rhythm: once per section you may use a short rhythmic list with a repeated word ("every shop, every salary, every
+  savings account") and land it with a short punch line.
+- Very simple words. Grade 5-7 reading level. Prefer "money it owed" to "liabilities", "cheap" to "cost-effective".
+  When a finance term is needed, say it and explain it in plain words in the SAME or the NEXT sentence.
+- Example-led, global: after any abstract idea, make it concrete within two sentences with something any viewer anywhere
+  knows (a coffee, a phone on instalments, rent, a salary, a supermarket bill, a credit-card statement). Explain any local
+  term or institution in plain words. Carry one example through instead of piling up new ones.
+- Comedy, a little and dry: deadpan asides, understatement ("Which, in hindsight, was a bold plan."), rule of three with a
+  twist, a punchline as its own short sentence, absurd-but-true comparisons whose numbers are COMPUTED from fact values and
+  declared in "calc". At least two light beats per chapter. Punch up at decisions and institutions; never mock private
+  individuals, tragedy, job losses, ethnicity or religion.
+- The running joke appears at most once per chapter and each callback twists it a new way; never re-explain it.
+- Quotes: ONLY the verbatim QUOTES listed below, word for word inside double quotes, introduced by who said it and when
+  ("In twenty nineteen, the IMF's chief put it bluntly: "..."). Never invent, polish or paraphrase inside quotation marks.
+- Do not start with "So,". No superlatives ("biggest", "first ever", "record") unless a fact says so. Attribute allegations
+  ("by one estimate", "critics say"); do not state them as proven.
+- Neutral and fair on countries, governments and people: describe decisions, incentives and trade-offs; give the other
+  side when a point is contested (use the counter-view facts). No loaded labels.
+- No investment advice. No "subscribe/like/follow/share", no "in this video", no "welcome back".
 
 NUMBERS (checked by a machine against the facts):
 - Spell every number as words for the voice: "ninety billion rupees", "forty-two percent", "twenty twelve" or
@@ -59,81 +89,183 @@ NUMBERS (checked by a machine against the facts):
   Use calc also for unit conversions (F5 * F9 for dollars to rupees only if both are facts).
 - Put the fact ids a sentence relies on in its "factIds".`;
 
-function sectionBrief(outline, sec) {
+const TAGS = `TAGS (return them with the text; they drive music, visuals and the montage):
+- section "mood": one of ${MOODS.join(" | ")}; section "energy": 1 (quiet) to 5 (peak).
+- every sentence "visual": geo (a place or map matters) | number (one big figure) | trend (change over time) |
+  compare (two things side by side) | quote (a quoted line) | person (a named person) | event (a dated scene or event) |
+  concept (an idea or mechanism) | joke (a punchline or aside).
+- every sentence "devices": the craft moves it performs, from ${DEVICES.join(", ")} (often empty; a sentence can have two).
+  Tag honestly: "metaphor" = an everyday physical picture; "case" = a real, named example with a place/number;
+  "question" = an open question; "pivot" = a "but / the irony / so the question is" turn.
+- a sentence that reads a quote also has "quoteId" (e.g. "Q1").`;
+
+function quoteList(dossier) {
+  const q = dossier.quotes || [];
+  return q.length ? q.map((x) => `${x.id}: "${x.text}" - ${x.speaker}${x.role ? `, ${x.role}` : ""}${x.year ? ` (${x.year})` : ""}`).join("\n") : "(none: do not quote anyone)";
+}
+
+function hookBrief(outline, dossier) {
+  const h = outline.hook || {};
+  // per-step word allowance so the whole skeleton fits the cold-open budget
+  const alloc = (share) => Math.max(6, Math.round((outline.coldOpen.words || 180) * share));
+  const q = ((dossier.quotes || []).find((x) => x.id === (h.anchorQuote || {}).quoteId)) || null;
+  const st = (h.stakesTour || []).map((s, i) => `   ${i + 1}. ${s.place} [${s.factId}]: ${s.line || ""}`).join("\n");
+  return `HOOK SKELETON, in this order (tag each sentence's device):
+ 1. chorus [chorus]: open cold on the buzzword / common belief as a fragment: "${h.chorus || ""}". Then one line on how
+    everyone repeats it, talking to the viewer ("You've heard it everywhere." headlines, politicians, your uncle at
+    dinner). 2-3 very short sentences, ~${alloc(0.08)} words.
+ 2. anchor quote [quote]: ${q ? `${q.speaker}${q.role ? ` (${q.role})` : ""}${q.year ? `, ${q.year}` : ""}: "${q.text}" - read it word for word in double quotes, quoteId "${q.id}".` : "(no verified quote: skip this step)"}
+ 3. myth, then reveal [myth], [reveal]: "And while most people think ${(h.myth || {}).belief || "..."}, what they don't realise is ${(h.myth || {}).reveal || "..."}" [${((h.myth || {}).factIds || []).join(", ")}]
+ 4. stakes tour [stakes], ~${alloc(0.24)} words: open with "look at this" or similar, then one place + one number + a year
+    per stop, escalating, one or two short sentences each; make clear why each stop matters to THIS story:
+${st}
+ 5. irony pivot [irony, pivot]: "But the irony is..." ${(h.ironyPivot || {}).thesis || ""} [${((h.ironyPivot || {}).factIds || []).join(", ")}]
+    It MUST start within the first ~140 words (about 50 seconds). Keep steps 1-4 tight (steps 2 and 3: ~${alloc(0.12)} words each).
+ 6. stat, definition, metaphor [stat], [definition], [metaphor]: [${(h.statDefinitionMetaphor || {}).factId || ""}] ${(h.statDefinitionMetaphor || {}).definition || ""} / metaphor: ${(h.statDefinitionMetaphor || {}).metaphor || ""} (extend the metaphor once).
+    ~${alloc(0.14)} words. The definition is a real plain-words definition ("Deflation just means prices keep falling."), not a label.
+ 7. case study [case], ~${alloc(0.1)} words, then one dry joke line [joke]: ${(h.caseStudy || {}).name || ""}${(h.caseStudy || {}).place ? `, ${h.caseStudy.place}` : ""} [${((h.caseStudy || {}).factIds || []).join(", ")}]
+ 8. question stack [question], ~${alloc(0.12)} words: the first sentence is "So the question is, <first question>?" (never a
+    bare "So the question is."), then the others, one short question per sentence, the last about the viewer:
+${(h.questionStack || []).map((x) => `    - ${x}`).join("\n")}
+Then stop: chapter one starts right after.
+
+ALSO return for the cold open:
+ "montageLines": 5-7 punchy hook lines for a fast cold-open montage (each <= 10 words, no digits, numbers spelled as words
+   and only from facts; the chorus and the stakes numbers work well), as [{"text": "...", "factIds": ["F.."]}];
+ "anchorLine": {"text": "<the one line the montage ends on: the anchor quote verbatim (then quoteId) or the irony line>", "quoteId": "<Q id or null>"}`;
+}
+
+function sectionBrief(outline, sec, dossier = {}) {
   if (sec.id === "cold") {
-    return `SECTION: COLD OPEN (about ${sec.words} words, ~${Math.round((sec.words / 160) * 60)} seconds). Start mid-story with the hook; no greeting.
-Hook: ${sec.hook}
-Beats: ${(sec.beats || []).join(" / ")}
-Promise: ${sec.promise}
-Set up the running joke: ${outline.runningJoke}
+    return `SECTION: COLD OPEN (about ${sec.words} words, ~${Math.round((sec.words / 160) * 60)} seconds). No greeting, no title, start on the chorus.
+${hookBrief(outline, dossier)}
+Promise (say it through the question stack, not as "in this video"): ${sec.promise || ""}
+Set up the running joke lightly (one line): ${outline.runningJoke}
 Fact ids to use: ${(sec.factIds || []).join(", ")}`;
   }
   if (sec.id === "recap") {
-    return `SECTION: RECAP (about ${sec.words} words). Walk back through the takeaways in plain words, land the final callback to the cold open and the running joke, end on the closing line. No subscribe/follow call (a fixed ending is added later).
+    return `SECTION: RECAP (about ${sec.words} words). Walk back through the takeaways in plain words, answer the viewer question from the cold open's question stack, land the final callback to the cold open and the running joke, end on the closing line. No subscribe/follow call (a fixed ending is added later).
 Takeaways: ${(sec.takeaways || []).join(" / ")}
 Closing line idea: ${sec.closingLine}`;
   }
+  const next = (outline.chapters || [])[sec.index];
   return `SECTION: CHAPTER ${sec.index} "${sec.title}" (about ${sec.words} words, write between ${Math.round(sec.words * 0.9)} and ${Math.round(sec.words * 1.1)}).
-Open with a one-line hand-off that frames the chapter question in plain words (the chapter card shows the title).
-Question: ${sec.question}
-Beats (in order, causal: what happened, why, what it led to): ${(sec.beats || []).join(" / ")}
-Worked example to carry through: ${sec.example}
+Shape: open question -> story/example -> numbers + metaphor -> "but" turn -> cliffhanger question.
+1. Open with the chapter's question as a real question, in plain words, in the first or second sentence [question]: ${sec.question}
+2. Story / example (causal beats, in order): ${(sec.beats || []).join(" / ")}
+   Worked example to carry through: ${sec.example}
+3. Numbers + metaphor [metaphor]: ${sec.metaphor || "(pick one everyday physical picture)"}; concrete case [case]: ${sec.caseStudy || "(one real named example)"}
+4. The "but" turn [pivot]: ${sec.butTurn || "(what complicates the obvious reading)"}
+5. ${next ? `End on a cliffhanger question [cliffhanger, question] in the last or second-last sentence, which chapter ${next.index} answers ("${next.question}"): ${sec.cliffhanger || ""}` : `End on a short line that hands over to the recap: ${sec.cliffhanger || ""}`}
 Comedic beat: ${sec.comedicBeat}
 Running joke callback: ${sec.callback || "(none needed)"}
 Fact ids to use (you may use others): ${(sec.factIds || []).join(", ")}`;
 }
 
+const SCHEMA = (cold) => `{"mood": "<mood>", "energy": <1-5>, "sentences": [{"text": "...", "factIds": ["F3"], "calc": [], "visual": "<visual>", "devices": [], "quoteId": null}]${cold ? `, "montageLines": [{"text": "...", "factIds": []}], "anchorLine": {"text": "...", "quoteId": null}` : ""}}`;
+
 function scriptPrompt(dossier, outline, sec) {
-  const map = [`Cold open: ${outline.coldOpen.hook}`, ...outline.chapters.map((c) => `Chapter ${c.index} "${c.title}": ${c.question}`), "Recap"].join("\n");
+  const map = [`Cold open: ${(outline.hook && outline.hook.ironyPivot && outline.hook.ironyPivot.thesis) || outline.coldOpen.hook}`, ...outline.chapters.map((c) => `Chapter ${c.index} "${c.title}": ${c.question}`), "Recap"].join("\n");
   return `You write one section of the narration for a YouTube deep-dive: "${outline.title}" (topic: ${dossier.topic}).
 Angle: ${dossier.angle}
 Running joke: ${outline.runningJoke}
+Audience: curious people worldwide, 18-35, no finance background. "What's in it for you" means anyone, anywhere.
 
 WHOLE VIDEO MAP (for continuity; write ONLY your section):
 ${map}
 
 FACTS (the only source of numbers and claims):
 ${factDigest(dossier)}
+${(dossier.hook && dossier.hook.counterView && dossier.hook.counterView.length) ? `COUNTER-VIEW FACTS (use where a conclusion needs balance): ${dossier.hook.counterView.join(", ")}\n` : ""}
+QUOTES (verbatim, sourced; the ONLY quotes allowed):
+${quoteList(dossier)}
 
 GLOSSARY (explain any of these in plain words, same or next sentence, the first time you use it):
 ${dossier.glossary.map((g) => `${g.term}: ${g.plain}`).join("\n")}
 
 ${STYLE}
 
-${sectionBrief(outline, sec)}
+${TAGS}
 
-Return JSON: {"sentences": [{"text": "...", "factIds": ["F3"], "calc": []}]}`;
+${sectionBrief(outline, sec, dossier)}
+
+Return JSON: ${SCHEMA(sec.id === "cold")}`;
 }
 
 function repairPrompt(dossier, outline, sec, current, problems) {
+  const draft = {
+    mood: current.mood, energy: current.energy,
+    sentences: current.sentences.map(({ id, text, factIds, calc, visual, devices, quoteId }) => ({ id, text, factIds, calc, visual, devices, ...(quoteId ? { quoteId } : {}) })),
+    ...(sec.id === "cold" ? { montageLines: current.montageLines, anchorLine: current.anchorLine } : {}),
+  };
   return `${scriptPrompt(dossier, outline, sec)}
 
 YOUR CURRENT DRAFT OF THIS SECTION:
-${JSON.stringify({ sentences: current.sentences.map(({ id, text, factIds, calc }) => ({ id, text, factIds, calc })) })}
+${JSON.stringify(draft)}
 
-A checker found these problems. Rewrite the section so that none remain, keeping the tone, jokes and flow.
+A checker found these problems. Rewrite the section so that none remain, keeping the tone, jokes, tags and flow.
+Change only what the problems need; keep the sentences that are fine.
 If a number cannot be matched to a fact, drop it or say it qualitatively ("a huge chunk", "most of it").
 To lower the reading grade: split long sentences, swap long words for short everyday ones.
 - ${problems.join("\n- ")}
 
-Return the full corrected JSON: {"sentences": [{"text": "...", "factIds": [], "calc": []}]}`;
+Return the full corrected JSON: ${SCHEMA(sec.id === "cold")}`;
+}
+
+/** The sentence list wherever the model put it ({sentences}, {section: {sentences}}, {chapter: [...]}, a bare array...). */
+function findSentences(raw) {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return raw.some((x) => x && x.text) ? raw : [];
+  if (Array.isArray(raw.sentences)) return raw.sentences;
+  for (const [k, v] of Object.entries(raw)) {
+    if (k === "montageLines") continue;
+    if (Array.isArray(v) && v.some((x) => x && typeof x === "object" && x.text)) return v;
+    if (v && typeof v === "object" && !Array.isArray(v) && Array.isArray(v.sentences)) return v.sentences;
+  }
+  return [];
 }
 
 function normalizeSection(sec, raw) {
-  const sentences = ((raw && raw.sentences) || []).filter((s) => s && String(s.text || "").trim()).map((s, i) => ({
+  const sentences = findSentences(raw).filter((s) => s && String(s.text || "").trim()).map((s, i) => ({
     id: `${sec.id}-s${String(i + 1).padStart(2, "0")}`,
     text: String(s.text).replace(/\s+/g, " ").trim(),
     factIds: Array.isArray(s.factIds) ? s.factIds.map(String) : [],
     ...(Array.isArray(s.calc) && s.calc.length ? { calc: s.calc.filter((c) => c && c.expr) } : {}),
+    visual: s.visual ? String(s.visual).toLowerCase() : undefined,
+    devices: Array.isArray(s.devices) ? s.devices.map(String) : [],
+    ...(s.quoteId ? { quoteId: String(s.quoteId) } : {}),
   }));
-  return { id: sec.id, title: sec.id === "cold" ? "Cold open" : sec.id === "recap" ? "Recap" : sec.title, question: sec.question, words: sec.words, sentences };
+  const out = { id: sec.id, title: sec.id === "cold" ? "Cold open" : sec.id === "recap" ? "Recap" : sec.title, question: sec.question, words: sec.words, mood: raw && raw.mood, energy: raw && raw.energy, sentences };
+  if (sec.id === "cold") {
+    out.montageLines = ((raw && raw.montageLines) || []).map((l) => (typeof l === "string" ? { text: l, factIds: [] } : l)).filter((l) => l && l.text)
+      .map((l) => ({ text: String(l.text).replace(/\s+/g, " ").trim(), factIds: Array.isArray(l.factIds) ? l.factIds.map(String) : [] }));
+    const a = raw && raw.anchorLine;
+    out.anchorLine = a && (a.text || typeof a === "string") ? { text: String(a.text || a).trim(), quoteId: a.quoteId || null } : null;
+  }
+  return out;
 }
 
-function checkAll(sections, dossier) {
+/** Deterministic fixes before any check / LLM repair: split long sentences, fill tags. */
+function autoFix(section) {
+  const merges = mergeDanglingLeads(section);
+  const splits = splitLongSentences(section);
+  const notes = fillTags(section);
+  section.autoFix = { splits, merges, tagNotes: notes };
+  return section;
+}
+
+function checkAll(sections, dossier, opts = {}) {
   const all = sections.flatMap((s) => s.sentences);
-  return sections.map((s, i) => sectionProblems(s, {
-    dossier, glossary: dossier.glossary, allSentences: all, wordBudget: s.words, isFirst: i === 0,
-  }));
+  const lastCh = sections.map((s) => s.id).filter((id) => /^ch\d+$/.test(id)).pop();
+  return sections.map((s, i) => {
+    const p = sectionProblems(s, { dossier, glossary: dossier.glossary, allSentences: all, wordBudget: s.words, isFirst: i === 0 });
+    styleProblems(s, { dossier, wpm: opts.wpm, isLastChapter: s.id === lastCh }).forEach((x) => p.push(x));
+    if (s.id === "cold") {
+      montageProblems(s.montageLines, s.anchorLine, dossier).forEach((x) => p.push(x));
+      (s.montageLines || []).forEach((l, k) => checkSentenceNumbers({ text: l.text, factIds: l.factIds }, dossier).problems.forEach((x) => p.push(`montageLines[${k}]: ${x}`)));
+    }
+    return p;
+  });
 }
 
 /**
@@ -144,44 +276,63 @@ function checkAll(sections, dossier) {
 async function writeScript(dossier, outline, opts = {}) {
   const log = opts.log || (() => {});
   const g = opts.gemini;
+  const wpm = (outline.budget && outline.budget.wpm) || 160;
   const secs = [outline.coldOpen, ...outline.chapters, outline.recap];
   let sections = await pool(secs, opts.concurrency || 3, async (sec) => {
     log(`script: drafting ${sec.id}`);
-    return normalizeSection(sec, await g.json(scriptPrompt(dossier, outline, sec), { temperature: 0.9, task: "longform.script" }));
+    return autoFix(normalizeSection(sec, await g.json(scriptPrompt(dossier, outline, sec), { temperature: 0.9, task: "longform.script" })));
   });
-  let problems = checkAll(sections, dossier);
+  sections.forEach((s) => { if (s.autoFix.splits) log(`script: ${s.id}: splitter made ${s.autoFix.splits} split(s) before any repair`); });
+  let problems = checkAll(sections, dossier, { wpm });
   const history = [problems.map((p) => p.length)];
   // a repair can fix one thing and break two others: keep each section's best draft so far
-  const best = sections.map((s, i) => ({ section: s, n: problems[i].length }));
+  // (an empty section is always the worst draft, whatever its problem count says)
+  const score = (s, p) => (s.sentences.length ? p.length : Infinity);
+  const best = sections.map((s, i) => ({ section: s, n: score(s, problems[i]) }));
   for (let round = 1; round <= (opts.maxRepairs ?? 3) && problems.some((p) => p.length); round++) {
+    // only failing sections are re-sent (cost)
     const todo = sections.map((s, i) => i).filter((i) => problems[i].length);
     log(`script: repair round ${round}: ${todo.map((i) => `${sections[i].id}(${problems[i].length})`).join(" ")}`);
-    const fixed = await pool(todo, opts.concurrency || 3, async (i) => normalizeSection(secs[i], await g.json(repairPrompt(dossier, outline, secs[i], sections[i], problems[i]), { temperature: 0.6, task: "script.repair" })));
-    todo.forEach((i, k) => { if (fixed[k].sentences.length) sections[i] = fixed[k]; });
-    problems = checkAll(sections, dossier);
+    todo.forEach((i) => problems[i].forEach((x) => log(`  ${sections[i].id}: ${x}`)));
+    const fixed = await pool(todo, opts.concurrency || 3, async (i) => autoFix(normalizeSection(secs[i], await g.json(repairPrompt(dossier, outline, secs[i], sections[i], problems[i]), { temperature: 0.6, task: "script.repair" }))));
+    todo.forEach((i, k) => {
+      const f = fixed[k];
+      if (!f.sentences.length) return;
+      if (f.id === "cold") {
+        if (!(f.montageLines || []).length) f.montageLines = sections[i].montageLines;
+        if (!f.anchorLine) f.anchorLine = sections[i].anchorLine;
+      }
+      sections[i] = f;
+    });
+    problems = checkAll(sections, dossier, { wpm });
     history.push(problems.map((p) => p.length));
-    sections.forEach((s, i) => { if (problems[i].length < best[i].n) best[i] = { section: s, n: problems[i].length }; });
+    sections.forEach((s, i) => { if (score(s, problems[i]) < best[i].n) best[i] = { section: s, n: score(s, problems[i]) }; });
   }
   if (sections.some((s, i) => best[i].section !== s)) {
     sections = best.map((b) => b.section);
-    problems = checkAll(sections, dossier);
+    problems = checkAll(sections, dossier, { wpm });
     history.push(problems.map((p) => p.length));
   }
   sections.forEach((s, i) => {
-    s.stats = { words: s.sentences.reduce((a, x) => a + words(x.text).length, 0), fk: Number(fkGrade(s.sentences).toFixed(2)), sentences: s.sentences.length };
+    const st = lengthStats(s.sentences);
+    s.stats = { words: s.sentences.reduce((a, x) => a + words(x.text).length, 0), fk: Number(fkGrade(s.sentences).toFixed(2)), sentences: s.sentences.length, medianWords: st.median };
     s.problems = problems[i];
   });
+  const cold = sections.find((s) => s.id === "cold") || {};
   const totalWords = sections.reduce((a, s) => a + s.stats.words, 0);
   return {
-    version: "lf-script.v1",
+    version: SCRIPT_VERSION,
     topic: dossier.topic,
     title: outline.title,
     runningJoke: outline.runningJoke,
-    sections,
+    hook: outline.hook || null,
+    montageLines: cold.montageLines || [],
+    anchorLine: cold.anchorLine || null,
+    sections: sections.map(({ montageLines, anchorLine, ...s }) => s),
     stats: {
       words: totalWords,
-      estMinutes: Number((totalWords / outline.budget.wpm).toFixed(2)),
-      wpm: outline.budget.wpm,
+      estMinutes: Number((totalWords / wpm).toFixed(2)),
+      wpm,
       fkMax: Math.max(...sections.map((s) => s.stats.fk)),
       problems: problems.reduce((a, p) => a + p.length, 0),
       repairHistory: history,
@@ -193,10 +344,11 @@ async function writeScript(dossier, outline, opts = {}) {
 function scriptMarkdown(script, dossier) {
   const factById = Object.fromEntries(dossier.facts.map((f) => [f.id, f]));
   const L = [`# ${script.title}`, "", `Topic: ${script.topic}  `, `Words: ${script.stats.words} (~${script.stats.estMinutes} min at ${script.stats.wpm} wpm) · max FK grade ${script.stats.fkMax} · open problems ${script.stats.problems}  `, `Running joke: ${script.runningJoke}`, ""];
+  if ((script.montageLines || []).length) L.push("## Montage lines", "", ...script.montageLines.map((l) => `- ${l.text}`), "", `Anchor: ${script.anchorLine ? script.anchorLine.text : "-"}`, "");
   script.sections.forEach((s) => {
     L.push(`## ${s.id === "cold" || s.id === "recap" ? s.title : `${s.id.replace("ch", "Chapter ")}: ${s.title}`}`);
-    L.push(`*${s.stats.words} words · FK ${s.stats.fk}${s.question ? ` · ${s.question}` : ""}*`, "");
-    s.sentences.forEach((x) => L.push(`${x.text}${x.factIds.length ? ` <sub>[${x.factIds.join(", ")}]</sub>` : ""}`));
+    L.push(`*${s.stats.words} words · FK ${s.stats.fk} · median ${s.stats.medianWords ?? "?"} words${s.mood ? ` · mood ${s.mood}/${s.energy}` : ""}${s.question ? ` · ${s.question}` : ""}*`, "");
+    s.sentences.forEach((x) => L.push(`${x.text}${x.factIds.length ? ` <sub>[${x.factIds.join(", ")}]</sub>` : ""}${x.visual ? ` <sub>{${x.visual}${(x.devices || []).length ? `; ${x.devices.join(", ")}` : ""}}</sub>` : ""}`));
     if (s.problems.length) L.push("", ...s.problems.map((p) => `> CHECK: ${p}`));
     L.push("");
   });
@@ -206,4 +358,4 @@ function scriptMarkdown(script, dossier) {
   return L.join("\n") + "\n";
 }
 
-module.exports = { writeScript, scriptMarkdown, scriptPrompt, normalizeSection, checkAll, STYLE };
+module.exports = { writeScript, scriptMarkdown, scriptPrompt, repairPrompt, normalizeSection, autoFix, checkAll, STYLE, TAGS, SCRIPT_VERSION };

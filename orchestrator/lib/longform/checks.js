@@ -11,6 +11,7 @@
 const { syllables } = require("../video/v3/pace");
 const { narrativeProblems } = require("../video/v3/narrativeGuide");
 const { checkSentenceNumbers, isExempt } = require("./numbers");
+const { stripVerifiedQuotes } = require("./style");
 
 const FK_MAX = 8;
 const MAX_WORDS = 22;
@@ -112,7 +113,9 @@ function sectionProblems(section, opts = {}) {
     ids.add(s.id);
     const n = words(s.text).length;
     if (n > MAX_WORDS) problems.push(`${s.id} has ${n} words (max ${MAX_WORDS}); split it: "${s.text.slice(0, 70)}..."`);
-    const r = checkSentenceNumbers(s, opts.dossier);
+    // verified verbatim quotes (style.js) are the speaker's words: their numbers are not ours to gate
+    const quotes = (opts.dossier && opts.dossier.quotes) || [];
+    const r = checkSentenceNumbers(quotes.length ? { ...s, text: stripVerifiedQuotes(s.text, quotes) } : s, opts.dossier);
     r.problems.forEach((p) => problems.push(`${s.id}: ${p}`));
     s.factIds = relevantFactIds(s, r.factIds.filter((id) => factIdSet.has(id)), opts.dossier);
     const figures = r.numbers.filter((x) => !isExempt(x) && !x.year);

@@ -143,6 +143,18 @@ test("fact ids are pruned to the ones a sentence uses", () => {
   assert.deepStrictEqual(relevantFactIds(s, ["F1"], d).sort(), ["F1", "F4"]);
 });
 
+// a valid hook skeleton over facts F1..F14 with numeric values (no dossier quotes -> anchorQuote null)
+const HOOK = {
+  chorus: "Lost decades.",
+  anchorQuote: { quoteId: null },
+  myth: { belief: "Japan is poor now", reveal: "it is still rich", factIds: ["F1"] },
+  stakesTour: [{ place: "Tokyo", factId: "F2", line: "l" }, { place: "Osaka", factId: "F3", line: "l" }, { place: "Germany", factId: "F4", line: "l" }],
+  ironyPivot: { thesis: "But the irony is...", factIds: ["F5"] },
+  statDefinitionMetaphor: { factId: "F6", definition: "d", metaphor: "m" },
+  caseStudy: { name: "Yubari", place: "Hokkaido", factIds: ["F7"] },
+  questionStack: ["How?", "Why?", "What does it mean for your savings?"],
+};
+
 test("outline word budget", () => {
   for (const m of [8, 10, 12]) {
     const b = wordBudget(m);
@@ -153,7 +165,7 @@ test("outline word budget", () => {
   }
   const b10 = wordBudget(10);
   assert.strictEqual(b10.total, 1600); // 160 wpm gross (pace.js PACE.LF)
-  assert.ok(b10.coldOpen >= 75 && b10.coldOpen <= 120); // 30-45 s
+  assert.ok(b10.coldOpen >= 150 && b10.coldOpen <= 250); // hook skeleton: ~56-94 s
   assert.ok(wordBudget(8).total >= 1200 && wordBudget(12).total <= 1920);
 });
 
@@ -162,7 +174,7 @@ test("outline word budget: short runs scale down (3 min = cold open + 3 short ch
   assert.strictEqual(b3.total, 480);
   assert.strictEqual(b3.chapters.length, 3); // YouTube needs >= 3 chapters
   assert.strictEqual(b3.coldOpen + b3.recap + b3.chapters.reduce((a, x) => a + x, 0), 480);
-  assert.ok(b3.coldOpen >= 45 && b3.coldOpen <= 60, `cold ${b3.coldOpen}`);
+  assert.strictEqual(b3.coldOpen, 180, `cold ${b3.coldOpen}`); // the hook skeleton needs ~68 s even on short runs
   assert.ok(b3.recap >= 45 && b3.recap <= 60);
   // every chapter far above YouTube's 10 s minimum at 160 wpm
   assert.ok(Math.min(...b3.chapters) / 160 * 60 >= 30);
@@ -176,17 +188,17 @@ test("outline word budget: short runs scale down (3 min = cold open + 3 short ch
   assert.match(p, /SHORT video/);
   assert.match(p, /2-3 causal story beats/);
   // short outlines: 2 beats and 2 callbacks are enough
-  const facts = Array.from({ length: 14 }, (_, i) => ({ id: `F${i + 1}` }));
-  const ch = (i) => ({ title: "t", question: "q", example: "e", comedicBeat: "c", callback: i < 2 ? "cb" : "", beats: ["a", "b"], factIds: [`F${3 * i + 1}`, `F${3 * i + 2}`, `F${3 * i + 3}`], visuals: [{ type: "photo", entity: "X" }, { type: "number", factId: "F1" }] });
-  const o = { title: "T", runningJoke: "j", coldOpen: { hook: "h", beats: ["b"] }, chapters: [0, 1, 2].map(ch), recap: { takeaways: ["a", "b", "c"] } };
+  const facts = Array.from({ length: 14 }, (_, i) => ({ id: `F${i + 1}`, value: i + 1 }));
+  const ch = (i) => ({ title: "t", question: "q", example: "e", comedicBeat: "c", metaphor: "m", caseStudy: "cs", butTurn: "b", cliffhanger: "next?", callback: i < 2 ? "cb" : "", beats: ["a", "b"], factIds: [`F${3 * i + 1}`, `F${3 * i + 2}`, `F${3 * i + 3}`], visuals: [{ type: "photo", entity: "X" }, { type: "number", factId: "F1" }] });
+  const o = { title: "T", runningJoke: "j", hook: HOOK, coldOpen: { hook: "h", beats: ["b"] }, chapters: [0, 1, 2].map(ch), recap: { takeaways: ["a", "b", "c"] } };
   assert.deepStrictEqual(outlineProblems(o, { facts }, b3), []);
 });
 
 test("outline problems catch structural gaps", () => {
   const b = wordBudget(8);
-  const facts = Array.from({ length: 14 }, (_, i) => ({ id: `F${i + 1}` }));
-  const ch = (i) => ({ title: "t", question: "q", example: "e", comedicBeat: "c", callback: "cb", beats: ["a", "b", "c"], factIds: [`F${2 * i + 1}`, `F${2 * i + 2}`], visuals: [{ type: "photo", entity: "X" }, { type: "chart", metric: "m" }] });
-  const good = { title: "T", runningJoke: "j", coldOpen: { hook: "h", beats: ["b"] }, chapters: Array.from({ length: 6 }, (_, i) => ch(i)), recap: { takeaways: ["a", "b", "c"] } };
+  const facts = Array.from({ length: 14 }, (_, i) => ({ id: `F${i + 1}`, value: i + 1 }));
+  const ch = (i) => ({ title: "t", question: "q", example: "e", comedicBeat: "c", metaphor: "m", caseStudy: "cs", butTurn: "b", cliffhanger: "next?", callback: "cb", beats: ["a", "b", "c"], factIds: [`F${2 * i + 1}`, `F${2 * i + 2}`], visuals: [{ type: "photo", entity: "X" }, { type: "chart", metric: "m" }] });
+  const good = { title: "T", runningJoke: "j", hook: HOOK, coldOpen: { hook: "h", beats: ["b"] }, chapters: Array.from({ length: 6 }, (_, i) => ch(i)), recap: { takeaways: ["a", "b", "c"] } };
   assert.deepStrictEqual(outlineProblems(good, { facts }, b), []);
   const bad = { ...good, chapters: good.chapters.slice(0, 5).map((c) => ({ ...c, visuals: [{ type: "gif" }] })) };
   const p = outlineProblems(bad, { facts }, b);

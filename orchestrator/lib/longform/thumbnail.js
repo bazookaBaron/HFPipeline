@@ -30,7 +30,7 @@ const H = 720;
 const MAX_BYTES = 2 * 1024 * 1024;
 const MIN_FONT = 56; // 7 px at 160x90
 const MIN_CONTRAST = 3;
-const VERSION = "lf-thumb.1";
+const VERSION = "lf-thumb.2"; // cache key for the thumbnail stage (v2 composer; v1 layouts as fallback)
 const REPO = path.resolve(__dirname, "..", "..", "..");
 const VIDEO_ENGINE = path.join(REPO, "video-engine");
 const PUPPETEER_FROM = path.join(REPO, "carousel-engine");
@@ -511,11 +511,32 @@ async function renderVariant(page, { html, workDir, id, file }) {
 }
 
 /**
- * Build the three thumbnails.
- * @param {{finalDir, workDir, manifest, intents?, report?, outline, dossier, topic, ask?, log?, browser?}} o
+ * Build the three thumbnails. v2 (lib/longform/thumbnailV2.js: fal photoreal background, licensed face
+ * cut-out, condensed headline, vision scorer) when fal.ai is configured and a model is available (`ask`);
+ * the v1 layouts from the media manifest otherwise (offline, no FAL_KEY, THUMB_V1=1, or a v2 failure).
+ * @param {{finalDir, workDir, manifest, intents?, report?, outline, dossier, topic, ask?, gemini?, log?, browser?}} o
  * @returns {Promise<object>} the thumbnails.json content
  */
 async function makeThumbnails(o) {
+  const log = o.log || (() => {});
+  if (o.ask && process.env.THUMB_V1 !== "1") {
+    let fal = null;
+    try {
+      fal = require("../media/fal");
+    } catch (_) {}
+    if (fal && fal.available()) {
+      try {
+        return await require("./thumbnailV2").makeThumbnailsV2(o);
+      } catch (err) {
+        log(`thumbnail v2 failed (${String(err.message).slice(0, 200)}); using the v1 layouts`);
+      }
+    }
+  }
+  return makeThumbnailsV1(o);
+}
+
+/** v1: three layouts from the run's own media manifest (no generation). */
+async function makeThumbnailsV1(o) {
   const log = o.log || (() => {});
   const ranked = rankHeroes(o);
   if (!ranked.length) throw new Error("no usable image in the media manifest for a thumbnail");
@@ -582,7 +603,31 @@ function metadataField(j) {
   return { files: j.variants.map((v) => v.file), recommended: j.recommended, title: j.title.text, ok: j.ok, assets: [...new Set(j.variants.map((v) => v.asset.slot))], details: "thumbnails.json" };
 }
 
-module.exports = { makeThumbnails, metadataField, rankHeroes, pickScene, pickStat, formatStat, fallbackTitle, validTitle, makeTitle, place, VERSION, W, H, MIN_FONT, MAX_BYTES };
+module.exports = {
+  makeThumbnails,
+  makeThumbnailsV1,
+  metadataField,
+  rankHeroes,
+  pickScene,
+  pickStat,
+  formatStat,
+  fallbackTitle,
+  validTitle,
+  makeTitle,
+  place,
+  mainEntities,
+  launchBrowser,
+  shrinkPng,
+  rgbLum,
+  ratio,
+  overlap,
+  dataUri,
+  VERSION,
+  W,
+  H,
+  MIN_FONT,
+  MAX_BYTES,
+};
 
 // CLI: node orchestrator/lib/longform/thumbnail.js --out <run dir> [--offline]
 if (require.main === module) {

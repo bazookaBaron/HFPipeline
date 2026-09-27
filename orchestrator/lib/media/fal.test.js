@@ -150,3 +150,29 @@ test("generated images: credit line, alteredContent flag, generator routing", as
     else process.env.MEDIA_GENERATOR = prev;
   }
 });
+
+test("generateVetted retries with a new seed on a rejected image; tolerate/keepLast for mood-only images", async () => {
+  const dir = tmp();
+  let n = 0;
+  const gemini = { json: async () => ({ results: [{ i: 1, matches: n++ > 0, confidence: 0.9, heavyText: false, depicts: "x" }] }) };
+  const base = { prompt: "a quiet harbour", model: "fal-ai/flux/schnell", cacheDir: path.join(dir, "c"), key: "k", pollMs: 0, record: () => {} };
+  const seeds = [];
+  const f = fakeFetch();
+  const wrapped = async (url, init) => {
+    if (init && init.method === "POST") seeds.push(JSON.parse(init.body).seed);
+    const res = await f(url, init);
+    // each generation downloads different bytes (the vision verdict cache is keyed by content)
+    if (String(url).startsWith("https://v3.fal.media/")) return { ...res, arrayBuffer: async () => Buffer.concat([PNG, Buffer.from([seeds.length])]) };
+    return res;
+  };
+  const r = await fal.generateVetted({ ...base, fetch: wrapped }, { gemini, retries: 2 });
+  assert.strictEqual(r.attempts, 2);
+  assert.strictEqual(new Set(seeds).size, 2);
+  // always off-intent: rejected without tolerate, accepted with it
+  const off = { json: async () => ({ results: [{ i: 1, matches: false, confidence: 0.9, depicts: "y" }] }) };
+  assert.strictEqual(await fal.generateVetted({ ...base, prompt: "a field", fetch: fakeFetch() }, { gemini: off, retries: 0 }), null);
+  const ok = await fal.generateVetted({ ...base, prompt: "a field", fetch: fakeFetch() }, { gemini: off, retries: 0, tolerate: ["off-intent"] });
+  assert.ok(ok && !ok.rejected);
+  const kept = await fal.generateVetted({ ...base, prompt: "a lake", fetch: fakeFetch() }, { gemini: off, retries: 0, keepLast: true });
+  assert.strictEqual(kept.rejected, true);
+});

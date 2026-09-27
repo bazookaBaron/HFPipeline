@@ -84,3 +84,78 @@ test("place: cover fit keeps the subject at the target and never leaves a gap", 
   const cx = p.subject.x + p.subject.w / 2;
   assert.ok(Math.abs(cx - 280) < 1, `subject centred (${cx})`);
 });
+
+// ------------------------------------------------------------------ v2 (thumbnailV2.js, thumbFace.js)
+const V2 = require("./thumbnailV2");
+const TF = require("./thumbFace");
+
+test("v2: main person = a person named in the title, else the dossier's first person", () => {
+  assert.equal(V2.mainPerson({ dossier, outline, topic: "Why Kingfisher went bankrupt" }), "Vijay Mallya");
+  const d2 = { entities: [{ name: "Argentina", kind: "place" }, { name: "IMF", kind: "org" }, { name: "Domingo Cavallo", kind: "person" }] };
+  assert.equal(V2.mainPerson({ dossier: d2, outline: { title: "Why Argentina Keeps Going Broke" }, topic: "Argentina" }), "Domingo Cavallo");
+  assert.equal(V2.mainPerson({ dossier: { entities: [{ name: "IMF", kind: "org" }] }, outline, topic: "x" }), null);
+});
+
+test("v2: concepts are validated (2-4 word headline, power word inside it, subtitle numbers only from the stat)", async () => {
+  const stat = { text: "$539M", label: "DEBT" };
+  const ask = async () => ({
+    concepts: [
+      { headline: "Endless Trap", power: "trap", subtitle: "The $539M mistake", scene: "an empty bank hall" },
+      { headline: "this headline is much too long to use", power: "x", subtitle: "Lost 900 billion", scene: "" },
+      { headline: "Broken Promise", power: "nope", subtitle: "Default after default", scene: "a dark vault" },
+    ],
+    prop: "a rusty anchor",
+  });
+  const { concepts, prop } = await V2.makeConcepts({ outline, dossier, topic: "Why Kingfisher went bankrupt", ask }, stat, null);
+  assert.deepEqual([concepts[0].text, concepts[0].highlight, concepts[0].subtitle], ["ENDLESS TRAP", "TRAP", "THE $539M MISTAKE"]);
+  assert.equal(concepts[1].source, "deterministic"); // headline too long -> fallback
+  assert.equal(concepts[1].subtitle, "$539M DEBT"); // "900" is not the stat -> fallback subtitle
+  assert.ok(concepts[1].scene.length > 10);
+  assert.equal(concepts[2].highlight, "PROMISE"); // unknown power word -> last word
+  assert.equal(prop, "a rusty anchor");
+  assert.equal(V2.validSubtitle("six words is one word too many", null), null);
+});
+
+test("v2: face placement puts the face box where asked; headline marks the power word", () => {
+  const face = { width: 600, height: 700, faceBox: [200, 100, 180, 220] };
+  const p = V2.placeFace(face, { fh: 330, cx: 960, top: 90 });
+  assert.equal(p.face.h, 330);
+  assert.equal(p.face.y, 90);
+  assert.ok(Math.abs(p.face.x + p.face.w / 2 - 960) <= 1);
+  assert.match(V2.headlineHtml({ text: "ENDLESS TRAP", highlight: "TRAP" }, "yellow"), /ENDLESS<br><span class="y">TRAP<\/span>/);
+  assert.match(V2.headlineHtml({ text: "STOLEN WEALTH", highlight: "STOLEN" }, "chip"), /class="chip">STOLEN/);
+  const { html, faceBox } = V2.buildVariant({ bgUri: "data:,", concept: { text: "A B", highlight: "B", subtitle: "S" }, hero: "face", face, faceUri: "data:,", faceAt: { fh: 330, cx: 960, top: 90 }, headStyle: "yellow", strip: "red", warm: true });
+  assert.ok(faceBox && /data-subject/.test(html) && /data-secondary/.test(html));
+});
+
+test("v2: contrast counts a thick outline or a chip background, not just the pixels behind", () => {
+  const dark = [{ p10: 0.01, p50: 0.02, p90: 0.05 }];
+  const bright = [{ p10: 0.6, p50: 0.8, p90: 0.95 }];
+  const white = { color: "rgb(255, 255, 255)", stroke: 9, strokeColor: "rgb(11, 13, 16)", bg: "rgba(0, 0, 0, 0)", spans: [] };
+  assert.ok(V2.textContrast(white, dark) > 10);
+  assert.ok(V2.textContrast(white, bright) > 10, "outline carries it on a bright background");
+  const noStroke = { ...white, stroke: 0 };
+  assert.ok(V2.textContrast(noStroke, bright) < 2);
+  const chip = { ...noStroke, spans: [{ color: "rgb(255, 255, 255)", stroke: 0, strokeColor: "", bg: "rgb(224, 32, 46)" }] };
+  assert.ok(V2.textContrast({ ...white, spans: chip.spans }, bright) >= 4.5);
+});
+
+test("face finder: licence filter (no share-alike), surname match, single-face rule", () => {
+  const L = (id, sa = false) => ({ id, allowed: true, sa, label: id });
+  const c = (id, licence, extra = {}) => ({ id, licence, mediaType: "image", origWidth: 800, origHeight: 1000, width: 800, height: 1000, via: "commons:search", ...extra });
+  const out = TF.screenCandidates([
+    c("File:Domingo Cavallo (cropped).jpg", L("cc-by-sa", true)),
+    c("File:Domingo Cavallo 02(cropped).jpg", L("cc-by")),
+    c("File:Mingo Park.jpg", L("cc0")),
+    c("File:FirmaCavallo.png", L("pd")),
+    c("File:Domingo Cavallo 1991.jpg", L("pd")),
+    c("File:Portrait.jpg", L("pd"), { via: "wikidata:P18" }),
+  ], "Domingo Cavallo");
+  assert.deepEqual(out.map((x) => x.id), ["File:Portrait.jpg", "File:Domingo Cavallo 02(cropped).jpg", "File:Domingo Cavallo 1991.jpg"]);
+  const cand = { width: 1000, height: 1000 };
+  assert.equal(TF.score({ isPerson: true, confidence: 0.9, faces: 2, faceBox: [0.1, 0.1, 0.3, 0.3] }, cand), -1);
+  assert.ok(TF.score({ isPerson: true, confidence: 0.9, faces: 1, faceBox: [0.1, 0.1, 0.3, 0.3], frontal: true }, cand) > 0);
+  assert.equal(TF.score({ isPerson: true, confidence: 0.9, faces: 1, faceBox: [0.1, 0.1, 0.05, 0.05] }, cand), -1); // too small
+  const b = TF.cropBox([400, 200, 100, 120], 1000, 800);
+  assert.ok(b.x >= 0 && b.y >= 0 && b.x + b.w <= 1000 && b.y + b.h <= 800 && b.w % 2 === 0);
+});

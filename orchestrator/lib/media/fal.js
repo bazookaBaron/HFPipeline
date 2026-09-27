@@ -84,8 +84,9 @@ const PHOTO_STYLE =
   "natural realistic colour, fine film grain, true-to-life textures, shallow depth of field, 16:9 landscape, one clear main subject.";
 
 const PHOTO_RULES = [
-  "Any people are anonymous: seen from behind, at a distance, in silhouette or out of focus; no recognisable face, no likeness of any real or famous person.",
+  "Show people only if the scene mentions them; any people are anonymous: seen from behind, at a distance, in silhouette or out of focus; no recognisable face, no likeness of any real or famous person.",
   "No text of any kind: no letters, words, numbers, signage, captions, labels, logos, brand names, flags with emblems, watermarks or user-interface elements; signs and screens are blank or out of focus.",
+  "Printed objects (banknotes, coins, documents, bills, measuring tapes, price tags) are shot at a steep angle, cropped or in soft focus so no printing, digit or face on them is readable.",
   "Not an illustration, not a cartoon, not a painting, not a 3D render, not CGI; natural anatomy, correct hands.",
   "A generic, representative scene, not a record of a specific real news event.",
 ].join(" ");
@@ -338,12 +339,13 @@ async function removeBackground(o = {}) {
  * with new seeds. Without a Gemini client the first image is returned unvetted.
  * @returns {Promise<{file, model, cost, prompt, seed, verdict, attempts, totalCost}|null>}
  */
-async function generateVetted(o = {}, { gemini = null, cacheDir, retries = 2, log = () => {} } = {}) {
+async function generateVetted(o = {}, { gemini = null, cacheDir, retries = 2, log = () => {}, tolerate = [], keepLast = false } = {}) {
   const { vet, verdictProblems } = require("./vision");
   const { thumbJpeg } = require("./image");
   const base = Number.isInteger(o.seed) ? o.seed : seedFrom(`${o.slotId || ""}|${o.prompt}`);
   let totalCost = 0;
   const rejects = [];
+  let last = null;
   for (let attempt = 0; attempt <= retries; attempt++) {
     const r = await generateImage({ ...o, seed: base + attempt * 7919, cacheDir: o.cacheDir || cacheDir });
     totalCost += r.cost;
@@ -358,12 +360,15 @@ async function generateVetted(o = {}, { gemini = null, cacheDir, retries = 2, lo
       rejects.push([`vision: ${err.message.slice(0, 80)}`]);
       continue;
     }
-    const p = verdictProblems(verdict, "illustration");
+    // `tolerate`: problem prefixes a caller accepts (a thumbnail background only sets the mood: "off-intent")
+    const p = verdictProblems(verdict, "illustration").filter((x) => !tolerate.some((t) => x.startsWith(t)));
+    last = { ...r, verdict, attempts: attempt + 1, rejects };
     if (!p.length) return { ...r, verdict, attempts: attempt + 1, totalCost, rejects };
     rejects.push(p);
     log(`  [${o.slotId || "fal"}] generated image rejected: ${p.join(", ")}`);
   }
-  return null;
+  // keepLast: the caller would rather use a flagged image than nothing (it records `rejected: true`)
+  return keepLast && last ? { ...last, totalCost, rejected: true } : null;
 }
 
 module.exports = {

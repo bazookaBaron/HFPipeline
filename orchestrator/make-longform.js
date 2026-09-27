@@ -667,6 +667,12 @@ async function main() {
     metadata.thumbnails = TH.metadataField(thumbs);
     metadata.files.thumbnails = thumbs.variants.map((v) => v.file);
     writeJson(path.join(P.finalDir, "metadata.json"), metadata);
+    // thumbnails v2: the licensed face photo needs its credit line too (credits.txt + description.md)
+    for (const f of ["credits.txt", "description.md"]) {
+      const fp = path.join(P.finalDir, f);
+      const add = (thumbs.credits || []).filter((l) => exists(fp) && !fs.readFileSync(fp, "utf-8").includes(l));
+      if (add.length) fs.appendFileSync(fp, `\n${add.map((l) => (f.endsWith(".md") ? `- ${l}` : l)).join("\n")}\n`);
+    }
   } catch (err) {
     emit("thumbnail", "fail", { detail: String(err.message).slice(0, 300) });
     log(`thumbnail: failed (${String(err.message).slice(0, 300)}); the video package is unaffected`);

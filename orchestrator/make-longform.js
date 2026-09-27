@@ -610,6 +610,7 @@ async function main() {
     titles: titles.slice(0, 3),
     titleSource,
     tags: PK.tagsFor(dossier, topic),
+    ...PK.alteredContent(usedManifest), // YouTube synthetic-content disclosure (AI-generated images on screen)
     durationSeconds: Number(fin.duration.toFixed(3)),
     frame: `${fin.video.w}x${fin.video.h}@${fin.video.fps}`,
     chapters: ytChapters.map((c) => ({ ...c, timestamp: PK.ytTime(c.start) })),

@@ -128,3 +128,25 @@ test("photo prompt: documentary language, no text/logos/cartoons, anonymous peop
   assert.throws(() => fal.buildPhotoPrompt({ scene: "" }), /needs a scene/);
   assert.ok(/uncanny/.test(fal.photoRubric("a harbour")));
 });
+
+test("generated images: credit line, alteredContent flag, generator routing", async () => {
+  const { shortCredit, fullCredit } = require("./credits");
+  assert.strictEqual(shortCredit({ source: "generated", licence: { label: "AI-generated" } }), "AI-generated image");
+  assert.match(fullCredit({ source: "generated", model: "fal-ai/flux/dev", slot: "s1" }), /^\[s1\] AI-generated image \(fal\.ai fal-ai\/flux\/dev\).*not a photograph/);
+  const PK = require("../longform/package");
+  assert.deepStrictEqual(PK.alteredContent({ a: { status: "generated" }, b: { status: "ok", licence: "CC BY 4.0" } }), { alteredContent: true, generatedSlots: ["a"] });
+  assert.strictEqual(PK.alteredContent({ b: { status: "ok", licence: "Public domain" } }).alteredContent, false);
+  const ill = require("./providers/illustrate");
+  const prev = process.env.MEDIA_GENERATOR;
+  process.env.MEDIA_GENERATOR = "gemini";
+  try {
+    assert.strictEqual(ill.generator(), "gemini");
+    const fake = { imageModel: "g-img", image: async () => ({ mime: "image/png", data: PNG }) };
+    const r = await ill.illustrate(fake, { slot: "x", intent: "a coin" });
+    assert.strictEqual(r.provider, "gemini");
+    assert.match(r.prompt, /flat editorial vector/);
+  } finally {
+    if (prev === undefined) delete process.env.MEDIA_GENERATOR;
+    else process.env.MEDIA_GENERATOR = prev;
+  }
+});

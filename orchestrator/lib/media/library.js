@@ -60,7 +60,7 @@ function sizeFits(intent, rec) {
 /** manifest entry (lib/media/resolve.js finalize() shape) from a sidecar */
 function entryFromSidecar(rec) {
   return {
-    status: rec.source === "illustration" ? "illustration" : "ok",
+    status: rec.source === "illustration" ? (/^fal:/.test(rec.via || "") ? "generated" : "illustration") : "ok",
     kind: rec.kind || "image",
     source: rec.source,
     sha: rec.sha256,

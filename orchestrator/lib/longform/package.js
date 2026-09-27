@@ -178,7 +178,7 @@ function descriptionMd(o) {
     credits.forEach((l) => lines.push(`- ${l.replace(/^\[[^\]]+\]\s*/, "")}`));
     lines.push("");
   }
-  lines.push("---", "", "Not financial advice. This video is for education and entertainment only; figures are rounded and come from the public sources listed above. Illustrations marked \"AI-generated\" are not photographs.", "");
+  lines.push("---", "", "Not financial advice. This video is for education and entertainment only; figures are rounded and come from the public sources listed above. Images and illustrations marked \"AI-generated\" are generic generated scenes, not photographs of real people or events.", "");
   return lines.join("\n");
 }
 
@@ -202,4 +202,16 @@ function tagsFor(dossier, topic) {
   return [...tags].slice(0, 20);
 }
 
-module.exports = { srtTime, ytTime, buildCues, srt, cueProblems, chapterRules, descriptionMd, titleOptions, tagsFor, wrap2, CAPTION };
+/**
+ * YouTube "altered or synthetic content" flag: true when the video uses any AI-generated image
+ * (fal photoreal scenes, status "generated"; Gemini illustrations; anything licensed "AI-generated").
+ * @param {{[slot: string]: object}} usedManifest  manifest entries actually on screen
+ */
+function alteredContent(usedManifest) {
+  const slots = Object.entries(usedManifest || {})
+    .filter(([, e]) => e && (e.status === "generated" || e.status === "illustration" || e.source === "illustration" || e.source === "generated" || /ai-generated/i.test(e.licence || "")))
+    .map(([k]) => k);
+  return { alteredContent: slots.length > 0, generatedSlots: slots };
+}
+
+module.exports = { srtTime, ytTime, buildCues, srt, cueProblems, chapterRules, descriptionMd, titleOptions, tagsFor, wrap2, alteredContent, CAPTION };

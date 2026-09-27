@@ -59,6 +59,7 @@ const SOURCE_LABEL = {
   openverse: "Openverse",
   nasa: "NASA",
   illustration: "AI-generated",
+  generated: "AI-generated",
 };
 
 const KIND_LABEL = { photo: "Photo", portrait: "Photo", logo: "Logo", video: "Video", map: "Map", illustration: "Illustration" };
@@ -70,6 +71,7 @@ const KIND_LABEL = { photo: "Photo", portrait: "Photo", logo: "Logo", video: "Vi
 function shortCredit(rec) {
   const kindLabel = KIND_LABEL[rec.kind] || "Photo";
   if (rec.source === "illustration") return "Illustration: AI-generated";
+  if (rec.source === "generated") return "AI-generated image";
   let src = SOURCE_LABEL[rec.source] || rec.source;
   if (rec.source === "openverse" && rec.provider) src = providerLabel(rec.provider);
   const lic = rec.licence && rec.licence.label ? rec.licence.label : "";
@@ -99,6 +101,9 @@ function providerLabel(p) {
 
 /** One line for credits.txt / the description (TASL + changes). */
 function fullCredit(rec) {
+  if (rec.source === "generated") {
+    return `${rec.slot ? `[${rec.slot}] ` : ""}AI-generated image (fal.ai ${rec.model || "image model"}) of a generic scene, made for this video; not a photograph of a real event.`;
+  }
   if (rec.source === "illustration") {
     return `${rec.slot ? `[${rec.slot}] ` : ""}Illustration: AI-generated (Gemini ${rec.model || "image model"}) for this video; not a photograph.`;
   }

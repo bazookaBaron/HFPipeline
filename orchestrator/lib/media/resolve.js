@@ -472,13 +472,15 @@ async function illustrationCandidate(intent, plan, ctx, trace) {
   // first try + up to 2 retries when vision finds text or a mismatch
   for (let attempt = 0; attempt < 3; attempt++) {
     entry.attempts++;
-    const img = await ctx.providers.illustrate.illustrate(ctx.gemini, intent);
+    const img = await ctx.providers.illustrate.illustrate(ctx.gemini, intent, { attempt, cacheDir: ctx.cacheDir, log: ctx.log });
     const info = sniffImage(img.data);
     if (!info) continue;
     const hash = await dhash(img.data);
+    const photoreal = img.provider === "fal"; // fal photoreal scene (status "generated"), else a Gemini illustration
     const cand = {
       source: "illustration",
-      via: "gemini:image",
+      via: photoreal ? `fal:${img.model}` : "gemini:image",
+      ...(photoreal ? { credit: "AI-generated image" } : {}),
       id: `ai:${intent.slot}`,
       title: intent.intent,
       width: info.width,
@@ -495,7 +497,8 @@ async function illustrationCandidate(intent, plan, ctx, trace) {
     if (ctx.useVision) {
       const thumb = await thumbJpeg(img.data, 768);
       try {
-        [verdict] = await vet([{ hash, thumb }], { ...intent, kind: "illustration" }, `A flat editorial illustration of: ${intent.intent}. It must contain no letters, words, numbers or text of any kind, and no real person's likeness.`, {
+        const rubric = photoreal ? require("./fal").photoRubric(intent.intent) : `A flat editorial illustration of: ${intent.intent}. It must contain no letters, words, numbers or text of any kind, and no real person's likeness.`;
+        [verdict] = await vet([{ hash, thumb }], { ...intent, kind: "illustration" }, rubric, {
         gemini: ctx.gemini,
           cacheDir: ctx.cacheDir,
         });
@@ -628,7 +631,7 @@ async function finalize(pick, intent, ctx) {
   };
   const credit = shortCredit(rec);
   const creditFull = fullCredit(rec);
-  const status = c.source === "illustration" ? "illustration" : "ok";
+  const status = c.source === "illustration" ? (/^fal:/.test(c.via || "") ? "generated" : "illustration") : "ok";
   const sidecar = {
     kind: "image",
     source: c.source,

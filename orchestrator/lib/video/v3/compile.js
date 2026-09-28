@@ -81,6 +81,7 @@ function resolveSlots(v, slots, used) {
       out.missing = true;
       out.mediaStatus = "namecard";
       out.namecard = { ...e.namecard };
+      out.standIn = { rung: "namecard" };
       delete out.src;
     } else if (!e || e.status === "fallback" || !e.file) {
       // no usable media: the module would draw its grey placeholder. Mark it (props.placeholder ->
@@ -104,6 +105,8 @@ function resolveSlots(v, slots, used) {
         if (e.lastFrame && !v.lastFrame) out.lastFrame = e.lastFrame;
       }
       if (e.fallbackFrom) out.fallbackFrom = e.fallbackFrom;
+      // ladder rungs b/c: the picture is a stand-in (related place / generic scene), not the subject
+      if (e.ladder === "related" || e.ladder === "scene") out.standIn = { rung: e.ladder, shows: e.related || e.depicts || "" };
     }
   }
   return out;
@@ -289,6 +292,8 @@ function compileStoryboard(sb, timeline, opts = {}) {
     return { t, op: ev.op, target: ev.target, value, word: w.text, wordIndex: w.i };
   });
   resolveMaps(scaffolds, events); // no-op without map modules
+  if (isLF) require("./standIn").applyStandIns(scaffolds, events); // stand-in media: re-tag, drop subject annotations
+  if (isLF) require("./standIn").fixNumberDisplay(scaffolds, events); // shown figures keep the fact's digits (<= 2 %)
   require("./lf2").resolveLF2(scaffolds, events); // LF set-2 modules: barRace frames, word-driven auto flags
 
   events.push(...chromeEvents);

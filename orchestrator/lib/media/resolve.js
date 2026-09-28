@@ -262,7 +262,10 @@ async function relatedCandidates(intent, lp, ctx, { exclude, skipUrls, trace }) 
       const ranked = await screenAndVet(stage, cands, rIntent, rPlan, ctx, { exclude, skipUrls, trace, label: `ladder:related:${stage}` });
       if (ranked.length) {
         ctx.log(`[${intent.slot}] ladder: related photo of ${rel.label}`);
-        return ranked.map((r) => ({ ...r, ladder: "related", related: rel.label, ...(intent.kind === "video" ? { fallbackFrom: "video" } : {}) }));
+        // what the picture really shows (the stand-in's Wikidata entity, else the suggested place): the
+        // renderer re-tags the slot with it instead of the person's name
+        const shows = (cands.entity && cands.entity.label) || rel.wikidata || rel.label;
+        return ranked.map((r) => ({ ...r, ladder: "related", related: shows, ...(intent.kind === "video" ? { fallbackFrom: "video" } : {}) }));
       }
     }
   }

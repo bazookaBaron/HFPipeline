@@ -426,11 +426,32 @@ def lf_gates(video, spec, total, gate):
     # ---- no empty frames (plan §3): no placeholder media on screen, no flat media rect ----
     ph = placeholders(spec)
     gate("no_placeholders", not ph, ph[:6] or "no placeholder media", "no module draws the grey no-image placeholder (media gate must rewrite the scene)", repair="storyboard")
+    nums = number_display(spec)
+    gate("number_display", not nums, nums[:6] or "every bigNumber shows its fact within 2 %", "displayed figure within 2 % of the fact value (1.33 -> 1.33, never 1)", repair="storyboard")
     blank = blank_media(video, spec)
     gate("blank_media", not blank, blank[:6] or "every media rect has content", f"media rect <= {int(BLANK_FLAT * 100)}% one flat colour at each scene's mid-time", repair="storyboard")
 
 
 BLANK_FLAT = 0.85
+
+
+def number_display(spec):
+    """bigNumber: the figure shown (value rounded to props.decimals) must be within 2 % of the value"""
+    out = []
+    for s in spec["scaffolds"]:
+        for m in s["modules"]:
+            p = m.get("props") or {}
+            if m["type"] != "bigNumber" or p.get("value") is None:
+                continue
+            try:
+                v = float(p["value"])
+            except (TypeError, ValueError):
+                continue
+            d = int(p.get("decimals") or 0)
+            shown = round(v, d) if d else float(int(abs(v) + 0.5)) * (1 if v >= 0 else -1)
+            if v != 0 and abs(shown - v) > 0.02 * abs(v):
+                out.append(f"{s['id']}/{m['id']}: shows {shown:g} for {v:g}")
+    return out
 
 
 def has_placeholder(v):

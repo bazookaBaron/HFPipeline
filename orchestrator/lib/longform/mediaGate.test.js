@@ -46,6 +46,12 @@ test("compile: a fallback slot is marked placeholder; a name card is designed co
   assert.strictEqual(hero.props.mediaStatus, "namecard");
   assert.strictEqual(hero.props.namecard.initials, "UC");
   assert.ok(!hero.props.src && !hero.props.credit, "a name card has no file and no credit");
+  assert.ok(!("tag" in hero.props), "the card already names its subject: no tag chip over it");
+  // a related-place stand-in is re-tagged with what the photo shows
+  const rel = manifestFor(sb);
+  rel.slots.ubCity = { ...rel.slots.ubCity, ladder: "related", related: "Bengaluru skyline" };
+  const hr = compileWith(sb, rel).scaffolds.find((s) => s.id === "stake").modules.find((m) => m.id === "ubpic");
+  assert.strictEqual(hr.props.tag, "Bengaluru skyline");
 });
 
 test("media gate: only the scene with the unusable slot changes (rules variant), and no placeholder survives compile", { skip: !have }, async () => {

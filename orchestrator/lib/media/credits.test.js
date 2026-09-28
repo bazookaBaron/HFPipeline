@@ -68,3 +68,11 @@ test("GODL-India credit", () => {
     "Photo: Press Information Bureau / Wikimedia Commons · GODL-India"
   );
 });
+
+test("raw Flickr ids / handle-like authors read as 'Flickr user' on frame; the full credit keeps the id", () => {
+  const rec = { kind: "photo", source: "commons", author: '<a href="https://www.flickr.com/people/83136374@N05">83136374@N05</a>', licence: normalizeLicense("CC BY 4.0"), title: "Moynihan Courthouse", pageUrl: "https://commons.wikimedia.org/wiki/File:X.jpg" };
+  assert.strictEqual(shortCredit(rec), "Photo: Flickr user / Wikimedia Commons · CC BY 4.0");
+  assert.match(fullCredit(rec), /by 83136374@N05/);
+  assert.strictEqual(shortCredit({ ...rec, author: "img_20190413_123456" }), "Photo: Commons user / Wikimedia Commons · CC BY 4.0");
+  assert.strictEqual(shortCredit({ ...rec, author: "Jim Henderson" }), "Photo: Jim Henderson / Wikimedia Commons · CC BY 4.0");
+});

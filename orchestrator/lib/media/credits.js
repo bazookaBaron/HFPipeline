@@ -83,11 +83,24 @@ function shortCredit(rec) {
     const fixed = `${kindLabel}: NASA /  · ${lic}`;
     return `${kindLabel}: NASA / ${truncateAuthor(author, MAX_SHORT - fixed.length)} · ${lic}`;
   }
+  author = displayAuthor(author);
   if (!author) return clip(`${kindLabel}: ${src} · ${lic}`);
   const fixed = `${kindLabel}:  / ${src} · ${lic}`;
   const a = truncateAuthor(author, MAX_SHORT - fixed.length);
   if (!a) return clip(`${kindLabel}: ${src} · ${lic}`);
   return `${kindLabel}: ${a} / ${src} · ${lic}`;
+}
+
+/**
+ * On-frame author: a raw Flickr account id ("83136374@N05") reads as noise, so it becomes "Flickr user";
+ * other handle-like ids (no space, a run of 5+ digits, e.g. "img_20190413_1234") become "Commons user".
+ * The full credit (credits.txt / description) keeps the exact id for attribution.
+ */
+function displayAuthor(author) {
+  const a = String(author || "").trim();
+  if (/^(flickr user\s+)?\d{5,}@N\d{2}$/i.test(a)) return "Flickr user";
+  if (!/\s/.test(a) && /\d{5,}/.test(a)) return "Commons user";
+  return a;
 }
 
 function clip(s) {
@@ -120,4 +133,4 @@ function fullCredit(rec) {
   return `${rec.slot ? `[${rec.slot}] ` : ""}${parts.join(" · ")}`;
 }
 
-module.exports = { htmlToText, cleanAuthor, shortCredit, fullCredit, truncateAuthor, MAX_SHORT };
+module.exports = { htmlToText, cleanAuthor, displayAuthor, shortCredit, fullCredit, truncateAuthor, MAX_SHORT };

@@ -215,7 +215,7 @@
       zoom.appendChild(img);
     } else if (p.namecard && opts.fallback !== false) {
       // on the frame, not the zoom layer: zoomTo / push-in never scale the typeset card past its edges
-      nameCard(frame, p.namecard, W(parent), H(parent), opts);
+      var ncCard = nameCard(frame, p.namecard, W(parent), H(parent), opts);
     } else if (opts.fallback !== false) {
       var fb = div(opts.fbClass || "ph-fb", zoom);
       // compile marks media without a usable file (props.placeholder); v3_gates fails a chapter that shows one
@@ -233,7 +233,7 @@
     var nc = missing && !!p.namecard && opts.fallback !== false;
     // picture annotations (highlight boxes, arrows) mean nothing on a name card: they stay hidden
     if (nc) ovl.style.display = "none";
-    return { frame: frame, push: push, zoom: zoom, ovl: ovl, missing: missing && !nc, namecard: nc };
+    return { frame: frame, push: push, zoom: zoom, ovl: ovl, missing: missing && !nc, namecard: nc, ncDisc: nc && ncCard ? ncCard.querySelector(".nc-disc") : null };
   }
 
   /**
@@ -380,13 +380,25 @@
           // box drawn on the picture (4 px hot yellow, dark hairline for contrast) + optional label
           highlight: function (e) {
             var v = e.value || {};
+            // a name card has no picture to box: the beat lands as a monogram pulse (compile turns
+            // subject highlights on a name card into {pulse: true})
+            if (b.namecard) {
+              if (b.ncDisc) c.tl.fromTo(b.ncDisc, { scale: 1 }, { scale: 1.08, duration: 0.18, ease: "power2.out", yoyo: true, repeat: 1, immediateRender: false }, e.t);
+              return;
+            }
             var bx = v.box || [30, 30, 30, 30];
             var hl = div("ph-hl", b.ovl);
             Object.assign(hl.style, { left: bx[0] + "%", top: bx[1] + "%", width: bx[2] + "%", height: bx[3] + "%" });
             if (v.tone) hl.style.borderColor = L.tone(v.tone, T.hot);
             if (v.label) {
               var lb = div("lb", hl, v.label);
-              if (bx[1] < 12) {
+              // above the box needs ~62 px of picture; with a tag chip (top-left, ~50 px) above-left
+              // would collide with it: then the label sits inside the box's top-left corner
+              var above = (bx[1] / 100) * h;
+              var tagClash = !!p.tag && above < 110 && (bx[0] / 100) * w < 420;
+              if (tagClash) {
+                Object.assign(lb.style, { bottom: "auto", top: "10px", left: "10px" });
+              } else if (bx[1] < 12 || above < 62) {
                 lb.style.bottom = "auto";
                 lb.style.top = "calc(100% + 10px)";
               }
@@ -609,7 +621,13 @@
         host.style.textAlign = "center";
       }
       var w = W(host);
-      var dec = p.decimals || 0;
+      // decimals: compile sets them (standIn.js fixNumberDisplay); uncompiled props keep the value's own
+      // digits (<= 2) so 1.33 never renders as "1"
+      var ownDec = function (x) {
+        var m = String(Number(x)).match(/\.(\d+)$/);
+        return m ? Math.min(2, m[1].length) : 0;
+      };
+      var dec = p.decimals !== undefined ? p.decimals : ownDec(p.value);
       var fmt = function (x) {
         return (p.prefix || "") + L.fmtNum(x, dec, p.grouping || "intl") + (p.suffix || "");
       };

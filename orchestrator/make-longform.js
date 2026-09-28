@@ -562,7 +562,17 @@ async function main() {
           liteGemini = null;
         }
       }
-      montage = await MT.buildMontage({ out, script, dossier, chapters: chs, manifest: readJson(manifestPath), usedSlots: new Set(timelines.flatMap((t) => t.spec.mediaSlots || [])), index: MP.loadIndex(), MP, gemini: liteGemini, lockDir: path.join(out, ".voice.lock"), force: redo("montage"), log, videoId: slug(topic) });
+      // fal draft-tier hero shots (<= 3, generic no-people scenes) only when the video has < 6 licensed photos
+      const falHeroes = async ({ prompts, dir }) => {
+        const { generateImage } = require("./lib/media/fal");
+        const outShots = [];
+        for (let k = 0; k < prompts.length; k++) {
+          const r = await generateImage({ prompt: prompts[k], slotId: `montage-hero-${k}`, outDir: dir, tier: "draft", mood: "tension", task: "longform.montage.hero", log });
+          outShots.push({ file: r.file, cost: r.cost || 0, prompt: prompts[k] });
+        }
+        return outShots;
+      };
+      montage = await MT.buildMontage({ out, script, dossier, chapters: chs, manifest: readJson(manifestPath), usedSlots: new Set(timelines.flatMap((t) => t.spec.mediaSlots || [])), index: MP.loadIndex(), MP, gemini: liteGemini, fal: a.offline ? null : falHeroes, lockDir: path.join(out, ".voice.lock"), force: redo("montage"), log, videoId: slug(topic) });
       if (montage.reused) stageSkip("montage", `reusing montage.mp4 (${montage.duration.toFixed(2)} s)`);
       else stageDone("montage", `${montage.duration.toFixed(2)} s, ${montage.plan.cuts} cuts, lines ${montage.linesSource}, music ${montage.music.source}${montage.problems.length ? `; problems: ${montage.problems.join("; ")}` : ""}`);
     } catch (err) {

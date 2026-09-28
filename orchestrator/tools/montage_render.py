@@ -29,7 +29,7 @@ import subprocess
 import sys
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 W, H = 1920, 1080
 PAPER = (247, 246, 241)
@@ -150,7 +150,7 @@ class TextBlock:
     """positions of each word of a line of text, centred (or left-aligned) in a box"""
 
     def __init__(self, text, fpath, max_w, max_lines, sizes, centre, align="center", leading=1.08, upper=False):
-        raw = text.split()
+        raw = list(text) if isinstance(text, (list, tuple)) else text.split()
         self.ws = [w.upper() for w in raw] if upper else raw
         self.size, self.f, self.lines, self.widths = fit_text(self.ws, fpath, max_w, max_lines, sizes)
         sp = self.size * 0.28
@@ -175,20 +175,24 @@ class TextBlock:
 _word_cache = {}
 
 
-def word_img(text, fpath, size, color):
-    k = (text, fpath, size, color)
+def word_img(text, fpath, size, color, blur=0):
+    k = (text, fpath, size, color, blur)
     if k not in _word_cache:
-        f = font(fpath, size)
-        l, t, r, b = f.getbbox(text)
-        pad = int(size * 0.3)
-        im = Image.new("RGBA", (int(r) + 2 * pad, int(b) + 2 * pad), (0, 0, 0, 0))
-        ImageDraw.Draw(im).text((pad, pad), text, font=f, fill=color + (255,))
-        _word_cache[k] = (im, pad)
+        if blur:
+            base, pad = word_img(text, fpath, size, color, 0)
+            _word_cache[k] = (base.filter(ImageFilter.GaussianBlur(blur)), pad)
+        else:
+            f = font(fpath, size)
+            l, t, r, b = f.getbbox(text)
+            pad = int(size * 0.3)
+            im = Image.new("RGBA", (int(r) + 2 * pad, int(b) + 2 * pad), (0, 0, 0, 0))
+            ImageDraw.Draw(im).text((pad, pad), text, font=f, fill=color + (255,))
+            _word_cache[k] = (im, pad)
     return _word_cache[k]
 
 
-def paste_word(canvas, text, fpath, size, color, xy, scale=1.0, alpha=1.0, dy=0.0):
-    im, pad = word_img(text, fpath, size, color)
+def paste_word(canvas, text, fpath, size, color, xy, scale=1.0, alpha=1.0, dy=0.0, blur=0):
+    im, pad = word_img(text, fpath, size, color, blur)
     if alpha <= 0.01:
         return
     if abs(scale - 1) > 0.005:
@@ -233,27 +237,37 @@ class Shot:
                 self.box = [c[0] * sx, c[1] * sy, c[2] * sx, c[3] * sy]
             else:
                 self.box = cover_box(self.im.width, self.im.height, s.get("focal"))
-        if self.kind in ("slam", "photoText", "anchor"):
-            text = s["text"]
-            if self.kind == "slam":
-                self.tb = TextBlock(text, F_BLACK, 1680, 4, [200, 184, 168, 156, 144, 132, 120, 110, 100], (W / 2, H / 2), upper=True, leading=0.98)
-                self.fp = F_BLACK
-            elif self.kind == "photoText":
-                self.tb = TextBlock(text, F_BLACK, 1700, 3, [136, 124, 112, 104, 96, 88, 80], (W / 2, H - 270), upper=True, leading=0.98)
-                self.fp = F_BLACK
-            else:
-                self.tb = TextBlock(text, F_BLACK, 1640, 4, [132, 124, 116, 108, 100, 92, 84, 76], (W / 2, H / 2), align="left", leading=1.1)
-                self.fp = F_BLACK
-            self.words = s.get("words") or []
-            self.accent = s.get("accent", -1)
-            # word appear times (plan words come from the voice timing; fall back to an even spread)
-            n = len(self.tb.ws)
-            ts = [w["t"] for w in self.words][:n]
-            while len(ts) < n:
-                ts.append(self.t0 + 0.1 + (len(ts) / max(1, n)) * self.dur * 0.6)
-            self.wt = [min(t, self.t1 - 0.25) for t in ts]
-            if self.kind != "anchor":
-                self.wt = [t - 0.04 for t in self.wt]
+        self.fp = F_BLACK
+        self.blocks = []  # [(t_start, TextBlock, times, accent set, marker set)]
+        if self.kind == "slam":
+            # one beat of 1-4 tokens, BIG and centred; each token slams in on its spoken word
+            toks = s.get("tokens") or [{"text": w.upper(), "t": self.t0} for w in s["text"].split()]
+            tb = TextBlock([x["text"] for x in toks], F_BLACK, 1720, 2, [220, 208, 196, 184, 172, 160, 150, 140, 128], (W / 2, H / 2 + 10), leading=0.96)
+            times = [max(self.t0, x["t"] - 0.04) for x in toks]
+            acc = {i for i, x in enumerate(toks) if x.get("accent")}
+            self.blocks.append((self.t0, tb, times, acc, acc))
+        elif self.kind == "photoText":
+            # the line's beats swap over the photo (lower third, white, accent in the LF "hot" yellow)
+            for k, b in enumerate(s.get("beats") or [[{"text": w.upper(), "t": self.t0} for w in s["text"].split()]]):
+                tb = TextBlock([x["text"] for x in b], F_BLACK, 1720, 2, [176, 164, 152, 140, 128, 116, 104], (W / 2, H - 250), leading=0.96)
+                start = self.t0 if k == 0 else b[0]["t"] - 0.04
+                times = [max(start, x["t"] - 0.04) for x in b]
+                self.blocks.append((start, tb, times, {i for i, x in enumerate(b) if x.get("accent")}, set()))
+        elif self.kind == "anchor":
+            # centred quote-style card: 2-3 phrase chunks appear on their first spoken word, marker on the key phrase
+            words = s.get("words") or [{"text": w, "t": self.t0 + 0.3} for w in s["text"].split()]
+            tb = TextBlock([w["text"] for w in words], F_BLACK, 1500, 4, [100, 96, 92, 88, 84, 80], (W / 2, H / 2 - 10), leading=1.16)
+            times = [w["t"] for w in words]
+            for c in s.get("chunks") or []:
+                for i in range(c["from"], c["to"] + 1):
+                    times[i] = c["t"]
+            k0, k1 = s.get("keySpan") or [-1, -1]
+            span = set(range(k0, k1 + 1)) if k0 >= 0 else set()
+            self.blocks.append((self.t0, tb, [min(x, self.t1 - 0.3) for x in times], span, span))
+            self.key_t = words[k0]["t"] + 0.15 if k0 >= 0 else None
+        if self.blocks:
+            self.tb = self.blocks[0][1]
+            self.wt = self.blocks[-1][2]
 
     # ---- per kind
     def render(self, t, f_in_shot):
@@ -283,62 +297,81 @@ class Shot:
             sc = 1.02 + 0.08 * u
             out = view(self.im, self.box, sc).convert("RGBA")
             out.alpha_composite(GRADIENT)
-            self.draw_words(out, t, color=(255, 255, 255), accent_color=HOT, marker=False)
+            layer = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+            shake = self.draw_block(layer, t, self.current(t), color=(255, 255, 255), accent_color=HOT, marker=False)
+            out.alpha_composite(layer, (int(shake[0]), int(shake[1])))
             credit_chip(out, self.s.get("credit"))
             return out
         if self.kind == "slam":
             layer = Image.new("RGBA", (W, H), PAPER + (255,))
-            self.draw_words(layer, t, color=INK, accent_color=RED, marker=True)
-            sc = 1.0 + 0.035 * u
-            return layer if sc < 1.002 else layer.transform((W, H), Image.AFFINE, (1 / sc, 0, W / 2 - W / (2 * sc), 0, 1 / sc, H / 2 - H / (2 * sc)), resample=Image.BILINEAR)
+            dx, dy = self.draw_block(layer, t, self.blocks[0], color=INK, accent_color=RED, marker=True)
+            sc = 1.0 + 0.03 * u
+            return layer.transform((W, H), Image.AFFINE, (1 / sc, 0, W / 2 - W / (2 * sc) - dx, 0, 1 / sc, H / 2 - H / (2 * sc) - dy), resample=Image.BILINEAR, fillcolor=PAPER + (255,))
         if self.kind == "anchor":
             layer = Image.new("RGBA", (W, H), PAPER + (255,))
             d = ImageDraw.Draw(layer)
             bx, by, bw, bh = self.tb.box
-            # red rule + quote mark / source
+            # centred red rule above; the quote source (if a quote) centred below
             ru = ease_out((t - self.t0) / 0.5)
-            d.rectangle((bx, by - 70, bx + 140 * ru, by - 62), fill=RED + (255,))
+            d.rectangle((W / 2 - 70 * ru, by - 64, W / 2 + 70 * ru, by - 56), fill=RED + (255,))
             q = self.s.get("quote") or None
-            self.draw_words(layer, t, color=INK, accent_color=RED, marker=True, rise=True)
+            self.draw_block(layer, t, self.blocks[0], color=INK, accent_color=INK, marker=True, rise=True)
             if q and (q.get("speaker") or q.get("source")):
-                src = " \u2014 " + ", ".join(x for x in [q.get("speaker"), q.get("source")] if x)
-                a = ease_out((t - (self.wt[-1] + 0.3)) / 0.4)
+                src = "\u2014 " + ", ".join(x for x in [q.get("speaker"), q.get("source")] if x)
+                a = ease_out((t - (max(self.blocks[0][2]) + 0.5)) / 0.4)
                 if a > 0:
-                    f = font(F_SEMI, 34)
-                    img = Image.new("RGBA", (W, 60), (0, 0, 0, 0))
-                    ImageDraw.Draw(img).text((0, 0), src.strip(), font=f, fill=MUTED + (int(255 * a),))
-                    layer.alpha_composite(img, (int(bx), int(by + bh + 40)))
-            sc = 1.0 + 0.05 * ease_out(u)
+                    f = font(F_SEMI, 36)
+                    tw = f.getlength(src)
+                    img = Image.new("RGBA", (int(tw) + 10, 60), (0, 0, 0, 0))
+                    ImageDraw.Draw(img).text((0, 0), src, font=f, fill=MUTED + (int(255 * a),))
+                    layer.alpha_composite(img, (int(W / 2 - tw / 2), int(by + bh + 44)))
+            sc = 1.0 + 0.04 * ease_out(u)
             return layer.transform((W, H), Image.AFFINE, (1 / sc, 0, W / 2 - W / (2 * sc), 0, 1 / sc, H / 2 - H / (2 * sc)), resample=Image.BILINEAR)
         raise ValueError(self.kind)
 
-    def draw_words(self, canvas, t, color, accent_color, marker, rise=False):
-        tb = self.tb
+    def current(self, t):
+        cur = self.blocks[0]
+        for b in self.blocks:
+            if t >= b[0]:
+                cur = b
+        return cur
+
+    def draw_block(self, canvas, t, block, color, accent_color, marker, rise=False):
+        """draw one text block at time t; returns the camera shake (dx, dy) of the latest impact"""
+        _, tb, times, acc, mark = block
         size = tb.size
-        # marker sweep behind the accent word (drawn first)
-        if marker and 0 <= self.accent < len(tb.ws):
-            ta = self.wt[self.accent]
-            m = ease_out((t - ta) / 0.22)
+        d = ImageDraw.Draw(canvas)
+        # marker sweep behind the marked units (drawn first), per line
+        if marker and mark:
+            t_m = self.key_t if (self.kind == "anchor" and getattr(self, "key_t", None)) else min(times[i] for i in mark)
+            m = ease_out((t - t_m) / 0.3)
             if m > 0:
-                x, y = tb.pos[self.accent]
-                w = tb.widths[self.accent]
-                d = ImageDraw.Draw(canvas)
-                top = y + tb.asc * 0.30
-                bot = y + tb.asc * 1.08
-                d.rectangle((x - 10, top, x - 10 + (w + 20) * m, bot), fill=MARKER + (255,))
+                for ln in tb.lines:
+                    idx = [i for i in ln if i in mark]
+                    if not idx:
+                        continue
+                    x0 = tb.pos[idx[0]][0]
+                    x1 = tb.pos[idx[-1]][0] + tb.widths[idx[-1]]
+                    y = tb.pos[idx[0]][1]
+                    d.rectangle((x0 - 12, y + tb.asc * 0.28, x0 - 12 + (x1 - x0 + 24) * m, y + tb.asc * 1.1), fill=MARKER + (255,))
+        shake = (0.0, 0.0)
         for i, w in enumerate(tb.ws):
-            ti = self.wt[i]
-            if t < ti:
+            ti = times[i]
+            if t < ti - 1e-6:
                 continue
-            k = (t - ti) * 30.0  # frames since appear
-            col = accent_color if i == self.accent else color
+            k = (t - ti) * 30.0  # frames since the word landed
+            col = accent_color if i in acc else color
             if rise:
-                a = ease_out(k / 6.0)
-                paste_word(canvas, w, self.fp, size, col, tb.pos[i], 1.0, a, dy=10 * (1 - a))
+                a = ease_out(k / 7.0)
+                paste_word(canvas, w, self.fp, size, col, tb.pos[i], 1.0, a, dy=14 * (1 - a))
             else:
-                sc = 1.22 - 0.22 * ease_back(k / 4.0) if k < 4 else 1.0
-                a = min(1.0, (k + 1) / 2.0)
-                paste_word(canvas, w, self.fp, size, col, tb.pos[i], sc, a)
+                sc = 1.15 - 0.15 * ease_out(k / 3.0) if k < 3 else 1.0
+                blur = int(round(5 * (1 - k / 3.0))) if k < 3 else 0
+                paste_word(canvas, w, self.fp, size, col, tb.pos[i], sc, min(1.0, (k + 1) / 1.5), blur=blur)
+                if k < 5:
+                    amp = 9 * (1 - k / 5.0)
+                    shake = (amp * math.sin(2.3 * k + i), amp * 0.7 * math.cos(1.9 * k + 2 * i))
+        return shake
 
 
 def make_gradient():

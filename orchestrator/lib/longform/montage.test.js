@@ -53,8 +53,8 @@ test("planShots: 20+ cuts in 25-35 s, run cuts on the beat, anchor 5-8 s, voice 
   assert.equal(plan.voice.length, 6);
   // every chorus voice line lies inside its own shot
   plan.voice.filter((v) => v.line.startsWith("chorus")).forEach((v, i) => {
-    const s = plan.shots.filter((x) => x.section === "chorus")[i];
-    assert.ok(v.at >= s.t0 && v.at + v.duration <= s.t1 + 1e-6);
+    const ss = plan.shots.filter((x) => x.section === "chorus" && x.line === i);
+    assert.ok(v.at >= ss[0].t0 && v.at + v.duration <= ss[ss.length - 1].t1 + 1e-6);
   });
   // whoosh on every run cut, impact on the anchor
   plan.shots.filter((s) => s.section === "run").forEach((s) => assert.ok(plan.sfx.some((x) => Math.abs(x.t - s.t0) < 1e-6)));
@@ -160,4 +160,56 @@ test("captions + YouTube chapters shift by the montage; Intro stays at 0:00", ()
   assert.deepEqual(yt.map((c) => c.start), [0, 52.7, 98]);
   assert.deepEqual(PK.chapterRules(yt, 200), []);
   assert.equal(PK.ytTime(yt[1].start), "0:52");
+});
+
+test("displayTokens: numerals, currency, percent, years on screen", () => {
+  const d = (t) => M.displayTokens(t.split(" ")).map((x) => x.text).join(" ");
+  assert.equal(d("One hundred thirty-two billion lost."), "132 BILLION LOST");
+  assert.equal(d("Forty-eight million pounds defaulted."), "£48 MILLION DEFAULTED");
+  assert.equal(d("Inflation explodes past two hundred percent."), "INFLATION EXPLODES PAST 200%");
+  assert.equal(d("By nineteen eighty-three, debt hit forty-six billion dollars."), "BY 1983 DEBT HIT $46 BILLION");
+  assert.equal(d("Pay one point three billion dollars"), "PAY $1.3 BILLION");
+  assert.equal(d("In two thousand one, the economy broke."), "IN 2001 THE ECONOMY BROKE");
+  assert.equal(d("The one country that pays"), "THE ONE COUNTRY THAT PAYS");
+});
+
+test("slamBeats: 1-4 tokens per beat, number phrase kept whole, no orphan tail", () => {
+  const b = (t) => {
+    const w = t.split(" ");
+    return M.slamBeats(M.displayTokens(w), w).map((x) => x.map((y) => y.text).join(" "));
+  };
+  assert.deepEqual(b("One hundred thirty-two billion lost."), ["132 BILLION LOST"]);
+  assert.deepEqual(b("By nineteen eighty-three, foreign debt reached about forty-six billion dollars."), ["BY 1983", "FOREIGN DEBT REACHED", "ABOUT $46 BILLION"]);
+  assert.deepEqual(b("Fiscal deficit builds up."), ["FISCAL DEFICIT BUILDS UP"]);
+  b("A judge ordered Argentina to pay one point three billion dollars today.").forEach((x) => assert.ok(x.split(" ").length <= 4, x));
+});
+
+test("phraseChunks: 2-3 chunks, breaking at commas / conjunctions", () => {
+  const c = (t) => {
+    const w = t.split(" ");
+    return M.phraseChunks(w).map((x) => x.map((i) => w[i]).join(" "));
+  };
+  assert.deepEqual(c("When dollars run out, money crashes and defaults follow."), ["When dollars run out,", "money crashes and defaults follow."]);
+  const q = c("Why does a country this rich keep going broke?");
+  assert.equal(q.length, 2);
+  assert.equal(q.join(" "), "Why does a country this rich keep going broke?");
+});
+
+test("loaded / blame wording is rejected from montage lines", () => {
+  const script = { sections: [{ id: "ch1", sentences: [{ text: "Debt kept rising for decades." }] }] };
+  const v = M.validateLlmLines({ chorus: ["Reckless borrowing again.", "Debt keeps rising.", "Greedy lenders circle."], anchor: "A rich nation falls into debt because of relentless overspending." }, script);
+  assert.deepEqual(v.chorus, ["Debt keeps rising."]);
+  assert.equal(v.anchor, null);
+  assert.ok(M.validateLlmLines({ chorus: [], anchor: "Why does a country this rich keep going broke?" }, script).anchor);
+});
+
+test("anchor shot: centred chunks timed to the voice, key phrase marked", () => {
+  const { frames, photos } = fixture();
+  const lines = fixture().lines;
+  lines.anchor = { text: "Why does a country this rich keep going broke?", duration: 3.2, words: "Why does a country this rich keep going broke?".split(" ").map((w, k) => ({ text: w, start: k * 0.33, end: k * 0.33 + 0.3 })) };
+  const plan = M.bestPlan({ lines, grid: grid112, frames, photos, seed: "t" });
+  const an = plan.shots[plan.shots.length - 1];
+  assert.equal(an.chunks.length, 2);
+  assert.ok(an.chunks[1].t > an.chunks[0].t);
+  assert.deepEqual(an.keySpan, [7, 8]);
 });

@@ -41,6 +41,7 @@ const TASKS = {
   "longform.thumbnail": "lite",
   "longform.beats": "lite", // visual beat sheet: hints for sentences the rules cannot place (<= 1 call / video)
   "longform.sceneRewrite": "lite", // media gate: graphics-only rewrite of the scenes whose slot has no usable media
+  "longform.montage": "lite", // cold-open montage lines for scripts without montageLines (<= 1 call / video)
   // standard
   storyboard: "standard",
   carousel: "standard",

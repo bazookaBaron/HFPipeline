@@ -89,10 +89,21 @@ async function concatSegments({ segments, output, log }) {
  * Lay one continuous bed over the stitched audio and master the whole.
  * @returns {{stats, bed}} master stats (integratedLufs, loudnessRangeLu, truePeakDbtp, ...)
  */
-async function musicAndMaster({ stitched, workDir, output, music = "ambient", plan = null, swell = [], duration, log = () => {}, python = process.env.SFX_PYTHON || "python" }) {
+async function musicAndMaster({ stitched, workDir, output, music = "ambient", plan = null, swell = [], duration, head = 0, log = () => {}, python = process.env.SFX_PYTHON || "python" }) {
   fs.mkdirSync(workDir, { recursive: true });
-  const voiceWav = path.join(workDir, "stitched-audio.wav");
-  await ff(["-y", "-v", "error", "-i", stitched, "-vn", "-ac", "2", "-ar", "48000", "-c:a", "pcm_s16le", voiceWav], log);
+  const fullWav = path.join(workDir, "stitched-audio.wav");
+  await ff(["-y", "-v", "error", "-i", stitched, "-vn", "-ac", "2", "-ar", "48000", "-c:a", "pcm_s16le", fullWav], log);
+  // head > 0: the first `head` s (the cold-open montage, lib/longform/montage.js) carry their own premixed
+  // trailer bed; the section music is laid on the rest only (plan / swell times are relative to `head`)
+  let voiceWav = fullWav;
+  let headWav = null;
+  if (head > 0) {
+    headWav = path.join(workDir, "head-audio.wav");
+    voiceWav = path.join(workDir, "body-audio.wav");
+    await ff(["-y", "-v", "error", "-i", fullWav, "-af", `atrim=end=${head.toFixed(4)},asetpts=PTS-STARTPTS`, "-c:a", "pcm_s16le", headWav], log);
+    await ff(["-y", "-v", "error", "-i", fullWav, "-af", `atrim=start=${head.toFixed(4)},asetpts=PTS-STARTPTS`, "-c:a", "pcm_s16le", voiceWav], log);
+    duration -= head;
+  }
   let mixWav = voiceWav;
   let bed = null;
   if (music || plan) {
@@ -111,6 +122,12 @@ async function musicAndMaster({ stitched, workDir, output, music = "ambient", pl
     bed = JSON.parse(String(r.stdout).trim().split(/\r?\n/).pop());
     if (plan) log(`music: ${plan.segments.length} bed(s) (${plan.segments.filter((x) => x.source === "library").length} library), switches at ${plan.transitions.map((t) => t.toFixed(1)).join(", ") || "-"} s, ${swell.length} chapter swell(s)`);
     else log(`music: "${music}" bed ${bed.bedDb} dB under the voice, ducked ${bed.duckDb} dB, ${swell.length} chapter swell(s)`);
+  }
+  if (headWav) {
+    const joined = path.join(workDir, "stitched-mix-full.wav");
+    await ff(["-y", "-v", "error", "-i", headWav, "-i", mixWav, "-filter_complex", "[0:a][1:a]concat=n=2:v=0:a=1[a]", "-map", "[a]", "-c:a", "pcm_s16le", joined], log);
+    mixWav = joined;
+    duration += head;
   }
   const premaster = path.join(workDir, "premaster.mp4");
   await ff(["-y", "-v", "error", "-i", stitched, "-i", mixWav, "-map", "0:v:0", "-map", "1:a:0", "-c:v", "copy", "-c:a", "aac", "-b:a", "256k", "-ar", "48000", "-t", String(duration), "-movflags", "+faststart", premaster], log);

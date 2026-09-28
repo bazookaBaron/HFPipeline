@@ -5,9 +5,9 @@
  * make-longform.js -- one-click 16:9 long-form video (plan §7, P6).
  *
  *   node make-longform.js --topic "Why Kingfisher went bankrupt" [--minutes 10] [--out dir]
- *     [--from research|data|outline|script|storyboards|media|render|stitch|master|gates|package|thumbnail]
+ *     [--from research|data|outline|script|storyboards|media|render|montage|stitch|master|gates|package|thumbnail]
  *     [--chapters "cold,1,3,recap"] [--no-render] [--offline] [--replay <dir>] [--music auto|ambient|lofi|pulse|off]
- *     [--quality looks] [--keep-going]
+ *     [--quality looks] [--keep-going] [--montage on|off]
  *
  * Stages (each writes its artefact under --out and is skipped on a re-run when the artefact exists and
  * its content key still matches; --from <stage> redoes that stage and everything after it):
@@ -30,6 +30,11 @@
  *                                                 the end screen only on the recap; key = hash(storyboard + its
  *                                                 manifest entries + options); v3_gates.py per chapter; a chapter
  *                                                 failing storyboard gates is regenerated alone (<= 2 times, live only)
+ *   montage      montage/montage.mp4, montage/montage.json (lib/longform/montage.js, --montage on by default):
+ *                25-35 s trailer cold open BEFORE the cold-open chapter: chorus lines on text slams / photos,
+ *                a beat run of chapter-moment punch-ins cut on the trailer bed's beat grid (whoosh per cut),
+ *                an anchor line held 5-8 s, bass drop into the cold open; its own premixed audio (music -4 dB
+ *                under the voice); key = hash(lines, bed, candidate moments, tools)
  *   stitch       stitch/seg-<section>.mp4, stitch/stitched.mp4, stitch/stitch.json
  *                                                 uniform re-encode + last-frame/silence pad (~0.9 s voice gap at
  *                                                 every chapter join), concat demuxer (stream copy), durations verified
@@ -65,12 +70,12 @@ const MP = require("./lib/longform/musicPlan");
 const { pool } = require("./lib/longform/gemini");
 const { matchLibrary } = require("./lib/media/library");
 
-const STAGES = ["research", "data", "outline", "script", "storyboards", "media", "render", "stitch", "master", "gates", "package", "thumbnail"];
+const STAGES = ["research", "data", "outline", "script", "storyboards", "media", "render", "montage", "stitch", "master", "gates", "package", "thumbnail"];
 const RENDER_VERSION = "lf-render.1";
 
 // ------------------------------------------------------------------------------------ helpers
 function parseArgs(argv) {
-  const a = { minutes: 10, music: "auto", quality: "looks", sbParallel: 3, renderParallel: 2 };
+  const a = { minutes: 10, music: "auto", quality: "looks", sbParallel: 3, renderParallel: 2, montage: true };
   for (let i = 2; i < argv.length; i++) {
     const k = argv[i];
     const v = () => {
@@ -89,6 +94,7 @@ function parseArgs(argv) {
     else if (k === "--music") a.music = v();
     else if (k === "--quality") a.quality = v();
     else if (k === "--keep-going") a.keepGoing = true;
+    else if (k === "--montage") a.montage = !/^(off|false|no|0)$/i.test(v());
     else if (k === "--render-parallel") a.renderParallel = Number(v());
     else if (k === "--storyboard-parallel") a.sbParallel = Number(v());
     else if (k === "-h" || k === "--help") a.help = true;
@@ -163,7 +169,7 @@ async function main() {
   // --from X redoes X and every later stage. Content-keyed stages (media, render, stitch, master)
   // already rebuild when their inputs change, so they are only FORCED when --from names one of them
   // (or an earlier keyed stage): "--from storyboards" re-renders only chapters whose storyboard changed.
-  const KEYED = ["media", "render", "stitch", "master", "thumbnail"];
+  const KEYED = ["media", "render", "montage", "stitch", "master", "thumbnail"];
   const redo = (stage) => {
     if (!a.from || STAGES.indexOf(stage) < STAGES.indexOf(a.from)) return false;
     return KEYED.indexOf(stage) < 0 || KEYED.indexOf(a.from) >= 0 || STAGES.indexOf(a.from) > STAGES.indexOf("master");
@@ -535,13 +541,44 @@ async function main() {
   }
   stageDone("render", `${sections.length} chapter(s)`, { chapters: sections.map((id) => ({ id, seconds: renders[id].seconds, gatesOk: renders[id].gatesOk })) });
 
+  const timelines = sections.map((id) => readJson(path.join(P.chDir, id, "chapter.mp4.timeline.json")));
+
+  // ---------------------------------------------------------------- montage (cold-open trailer, plan section 2)
+  // only in front of the cold open; a failure is reported (hard gate) but never stops the video
+  let montage = null;
+  let montageError = null;
+  emit("montage", "start");
+  if (!a.montage) stageSkip("montage", "--montage off");
+  else if (sections[0] !== "cold") stageSkip("montage", "no cold open in this run (--chapters)");
+  else {
+    try {
+      const MT = require("./lib/longform/montage");
+      const chs = sections.map((id, i) => ({ id, mp4: path.join(P.chDir, id, "chapter.mp4"), timeline: timelines[i] }));
+      let liteGemini = null;
+      if (!a.offline) {
+        try {
+          liteGemini = gemini();
+        } catch (_) {
+          liteGemini = null;
+        }
+      }
+      montage = await MT.buildMontage({ out, script, dossier, chapters: chs, manifest: readJson(manifestPath), usedSlots: new Set(timelines.flatMap((t) => t.spec.mediaSlots || [])), index: MP.loadIndex(), MP, gemini: liteGemini, lockDir: path.join(out, ".voice.lock"), force: redo("montage"), log, videoId: slug(topic) });
+      if (montage.reused) stageSkip("montage", `reusing montage.mp4 (${montage.duration.toFixed(2)} s)`);
+      else stageDone("montage", `${montage.duration.toFixed(2)} s, ${montage.plan.cuts} cuts, lines ${montage.linesSource}, music ${montage.music.source}${montage.problems.length ? `; problems: ${montage.problems.join("; ")}` : ""}`);
+    } catch (err) {
+      montageError = String(err.message).slice(0, 400);
+      emit("montage", "fail", { detail: montageError });
+      log(`montage: failed (${montageError}); the video continues without it`);
+      montage = null;
+    }
+  }
+
   // ---------------------------------------------------------------- stitch
   emit("stitch", "start");
-  const timelines = sections.map((id) => readJson(path.join(P.chDir, id, "chapter.mp4.timeline.json")));
   const pads = ST.joinPads(timelines.map((t) => t.timeline), 0.9);
   const stitchJson = path.join(P.stitchDir, "stitch.json");
   const stitched = path.join(P.stitchDir, "stitched.mp4");
-  const stitchKey = hash({ keys: sections.map((id) => renders[id].key), pads, v: 1 });
+  const stitchKey = hash({ keys: sections.map((id) => renders[id].key), pads, montage: montage ? montage.key : null, v: 1 });
   let stitchInfo;
   if (!redo("stitch") && exists(stitched) && exists(stitchJson) && readJson(stitchJson).key === stitchKey) {
     stitchInfo = readJson(stitchJson);
@@ -549,9 +586,11 @@ async function main() {
   } else {
     fs.mkdirSync(P.stitchDir, { recursive: true });
     const segs = await pool(sections, 2, (id, i) => ST.makeSegment({ input: path.join(P.chDir, id, "chapter.mp4"), output: path.join(P.stitchDir, `seg-${id}.mp4`), pad: pads[i] }));
-    const pr = await ST.concatSegments({ segments: segs.map((s) => s.output), output: stitched });
-    const sum = segs.reduce((x, s) => x + s.duration, 0);
-    let t = 0;
+    // the montage segment (if any) goes first; chapter starts shift by its length
+    const mseg = montage ? await ST.makeSegment({ input: montage.file, output: path.join(P.stitchDir, "seg-montage.mp4"), pad: 0 }) : null;
+    const pr = await ST.concatSegments({ segments: [...(mseg ? [mseg.output] : []), ...segs.map((s) => s.output)], output: stitched });
+    const sum = segs.reduce((x, s) => x + s.duration, 0) + (mseg ? mseg.duration : 0);
+    let t = mseg ? mseg.duration : 0;
     const chapters = sections.map((id, i) => {
       const meta = SL.chapterMeta(script, outline, id);
       const c = { id, title: id === "cold" ? "Intro" : meta.kind === "recap" ? "Recap" : meta.title, index: meta.index, start: Number(t.toFixed(3)), duration: segs[i].duration, pad: segs[i].pad, chapterSeconds: renders[id].seconds };
@@ -559,7 +598,7 @@ async function main() {
       return c;
     });
     const drift = Math.abs(pr.duration - sum);
-    stitchInfo = { key: stitchKey, duration: pr.duration, sumSegments: Number(sum.toFixed(3)), drift: Number(drift.toFixed(3)), video: pr.video, audio: pr.audio, chapters };
+    stitchInfo = { key: stitchKey, duration: pr.duration, sumSegments: Number(sum.toFixed(3)), drift: Number(drift.toFixed(3)), video: pr.video, audio: pr.audio, montage: mseg ? { duration: mseg.duration, key: montage.key } : null, chapters };
     writeJson(stitchJson, stitchInfo);
     if (drift > 0.1) throw new Error(`stitch duration ${pr.duration.toFixed(3)} s differs from the segments' sum ${sum.toFixed(3)} s by ${drift.toFixed(3)} s`);
     stageDone("stitch", `${chapters.length} chapter(s), ${pr.duration.toFixed(2)} s (segments sum ${sum.toFixed(2)} s, pads ${pads.map((p) => p.toFixed(2)).join("/")})`);
@@ -571,8 +610,10 @@ async function main() {
   const video = path.join(P.finalDir, "video.mp4");
   const masterJson = path.join(P.finalDir, "master.json");
   const swell = [];
+  // montage head: section music + swells are planned on the chapters only (times relative to the head)
+  const mHead = stitchInfo.montage ? stitchInfo.montage.duration : 0;
   sections.forEach((id, i) => {
-    const st = stitchInfo.chapters[i].start;
+    const st = stitchInfo.chapters[i].start - mHead;
     (timelines[i].spec.scaffolds || []).filter((s) => s.template === "lfChapter").forEach((s) => swell.push([Number((st + s.t0).toFixed(3)), Number((st + s.t1).toFixed(3))]));
   });
   // music plan (v2 plan section 5): one free-library bed per section, procedural fallback per mood
@@ -587,20 +628,21 @@ async function main() {
     const prev = exists(planJson) ? readJson(planJson) : null;
     if (prev && prev.key === planKey && prev.segments.every((x) => x.source !== "library" || exists(x.track.path))) musicPlan = prev;
     else {
-      musicPlan = { key: planKey, ...MP.planMusic({ index, chapters: MP.chaptersFromStitch(stitchInfo.chapters, timelines), tags, history: MP.readHistory(), videoId: slug(topic) }) };
+      musicPlan = { key: planKey, ...MP.planMusic({ index, chapters: MP.chaptersFromStitch(stitchInfo.chapters.map((c) => ({ ...c, start: Number((c.start - mHead).toFixed(3)) })), timelines), tags, history: MP.readHistory(), videoId: slug(topic) }) };
       writeJson(planJson, musicPlan);
     }
     log(`music plan (${index.tracks.length} library track(s)${index.problems.length ? `; ${index.problems.length} skipped: ${index.problems.slice(0, 3).join("; ")}` : ""}):\n${MP.timelineText(musicPlan)}`);
-    MP.planProblems(musicPlan, stitchInfo.duration).forEach((p) => log(`music plan problem: ${p}`));
+    MP.planProblems(musicPlan, stitchInfo.duration - mHead).forEach((p) => log(`music plan problem: ${p}`));
   }
-  const masterKey = hash({ stitchKey, music: a.music, swell, plan: musicPlan && musicPlan.key });
+  const masterKey = hash({ stitchKey, music: a.music, swell, plan: musicPlan && musicPlan.key, head: mHead });
   let master;
   if (!redo("master") && exists(video) && exists(masterJson) && readJson(masterJson).key === masterKey) {
     master = readJson(masterJson);
     stageSkip("master", "reusing final/video.mp4");
   } else {
-    const r = await ST.musicAndMaster({ stitched, workDir: path.join(P.stitchDir, "audio"), output: video, music: musicPlan ? null : a.music, plan: musicPlan, swell, duration: stitchInfo.duration, log });
-    master = { key: masterKey, music: a.music, swell, bed: r.bed, stats: r.stats, musicCredits: musicPlan ? musicPlan.credits : [] };
+    const r = await ST.musicAndMaster({ stitched, workDir: path.join(P.stitchDir, "audio"), output: video, music: musicPlan ? null : a.music, plan: musicPlan, swell, duration: stitchInfo.duration, head: mHead, log });
+    const mCredits = montage && stitchInfo.montage ? montage.musicCredits || [] : [];
+    master = { key: masterKey, music: a.music, swell, head: mHead, bed: r.bed, stats: r.stats, musicCredits: [...new Set([...mCredits, ...(musicPlan ? musicPlan.credits : [])])] };
     if (musicPlan) MP.recordUsage(musicPlan, slug(topic));
     writeJson(masterJson, master);
     stageDone("master", `I ${r.stats.integratedLufs} LUFS, LRA ${r.stats.loudnessRangeLu} LU, TP ${r.stats.truePeakDbtp} dBTP`);
@@ -609,8 +651,12 @@ async function main() {
   // ---------------------------------------------------------------- gates (whole video)
   emit("gates", "start");
   const fin = ST.probe(video);
-  const cues = PK.buildCues(sections.map((id, i) => ({ start: stitchInfo.chapters[i].start, words: timelines[i].timeline.words })));
-  const ytChapters = stitchInfo.chapters.map((c) => ({ id: c.id, title: c.title, start: c.start }));
+  // captions: the montage's narrated lines first (montage time = video time), then every chapter at its
+  // (montage-shifted) start; YouTube chapters: "Intro" stays at 0:00 and covers the montage too
+  const cueChapters = sections.map((id, i) => ({ start: stitchInfo.chapters[i].start, words: timelines[i].timeline.words }));
+  if (stitchInfo.montage && montage) cueChapters.unshift(montage.captionChapter);
+  const cues = PK.buildCues(cueChapters);
+  const ytChapters = stitchInfo.chapters.map((c, i) => ({ id: c.id, title: c.title, start: i === 0 ? 0 : c.start }));
   const gates = [];
   const gate = (name, ok, value, band, hard = true) => gates.push({ name, ok: !!ok, value, band, hard });
   const s = master.stats || {};
@@ -629,6 +675,22 @@ async function main() {
     const gj = readJson(path.join(P.chDir, id, "gates.json"));
     return { id, ok: gj.ok, fails: (gj.gates || []).filter((g) => g.hard && !g.ok).map((g) => g.name), values: Object.fromEntries((gj.gates || []).map((g) => [g.name, g.value])) };
   });
+  if (a.montage && sections[0] === "cold") {
+    const MT = require("./lib/longform/montage");
+    if (!montage || !stitchInfo.montage) gate("montage", false, montageError || "montage missing from the stitch", "built and stitched (--montage off to skip)");
+    else {
+      const md = stitchInfo.montage.duration;
+      gate("montage_duration_s", md >= MT.BAND.minSeconds && md <= MT.BAND.maxSeconds, md, `${MT.BAND.minSeconds}-${MT.BAND.maxSeconds}`);
+      gate("montage_cuts", montage.plan.cuts >= MT.BAND.minCuts, montage.plan.cuts, `>= ${MT.BAND.minCuts}`);
+      gate("montage_plan", !montage.problems.length, montage.problems.length ? montage.problems : "ok", "beat-run shot lengths, anchor hold, no blank / sourceless shots");
+      // loudness: the montage region vs the rest of the MASTERED video (music under the voice sits a little hotter)
+      const lm = MT.integratedLufs(video, { ss: 0, t: md });
+      const lr = MT.integratedLufs(video, { ss: md });
+      const delta = lm.I !== null && lr.I !== null ? Number((lm.I - lr.I).toFixed(2)) : null;
+      gate("montage_loudness_delta_lu", delta !== null && delta >= -1.5 && delta <= 2.5, { montage: lm.I, rest: lr.I, delta }, "-1.5..+2.5 LU vs the rest");
+      gate("montage_captions", cues.some((c) => c.start < md), `${cues.filter((c) => c.start < md).length} cue(s) in the montage`, ">= 1 cue for the narrated lines");
+    }
+  }
   gate("chapter_gates", chGates.every((c) => c.ok), chGates.map((c) => `${c.id}: ${c.ok ? "pass" : "FAIL " + c.fails.join(",")}`), "every chapter passes v3_gates.py (LF band)");
   const gatesOut = { ok: gates.every((g) => !g.hard || g.ok), partial, gates, chapters: chGates };
   writeJson(path.join(P.finalDir, "gates.json"), gatesOut);

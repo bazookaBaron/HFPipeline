@@ -266,8 +266,17 @@ class Shot:
             return out.convert("RGBA")
         if self.kind == "photo":
             snap = 0.06 * max(0.0, 1 - f_in_shot / 5.0) ** 2
-            sc = 1.0 + 0.09 * ease_out(u) + snap
-            out = view(self.im, self.box, sc).convert("RGBA")
+            p0 = (self.s.get("punch") or [1.0])[0]
+            box = self.box
+            off = self.s.get("offset")
+            if off:  # "second angle" of a photo already shown: a tighter crop, panned off-centre
+                x, y, bw, bh = box
+                vw, vh = bw / p0, bh / p0
+                cx = min(max(x + bw / 2 + off[0] * bw * 0.5, x + vw / 2), x + bw - vw / 2)
+                cy = min(max(y + bh / 2 + off[1] * bh * 0.5, y + vh / 2), y + bh - vh / 2)
+                box = [cx - bw / 2, cy - bh / 2, bw, bh]
+            sc = p0 + 0.09 * ease_out(u) + snap
+            out = view(self.im, box, sc).convert("RGBA")
             credit_chip(out, self.s.get("credit"))
             return out
         if self.kind == "photoText":

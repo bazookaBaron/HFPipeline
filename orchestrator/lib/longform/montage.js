@@ -373,12 +373,31 @@ function planShots({ lines, grid, downbeats = [], frames = [], photos = [], hero
     return p || null;
   };
   const heroQ = heroes.slice();
+  const MAX_AI = 2;
+  let angles = 0;
   const visual = (k, preferPhoto) => {
     // alternate chapter frames and REAL photos; then whatever is left (our AI illustrations last), then fal heroes
     const a = preferPhoto ? nextPhoto(true, true) : nextFrame();
     if (a) return a;
     const b = preferPhoto ? nextFrame() : nextPhoto(true, true);
     if (b) return b;
+    // then at most MAX_AI of our AI illustrations, alternating with "second angles" (tight, panned crops)
+    // of real photos already shown -- trailers re-cut the same picture; a cartoon run reads cheap
+    const aiUsed = [...usedPhotos].filter((id) => (photoQ.find((x) => x.id === id) || {}).ai).length;
+    const reals = photoQ.filter((x) => !x.ai && usedPhotos.has(x.id));
+    const angle = () => {
+      if (!reals.length) return null;
+      const n = (angles = angles + 1);
+      const p = reals[(n - 1) % reals.length];
+      const offs = [[0.35, -0.2], [-0.35, 0.15], [0.2, 0.3], [-0.25, -0.3]];
+      return { ...p, id: `${p.id}~${n}`, angle: { punch: 1.45 + 0.1 * (n % 2), offset: offs[(n - 1) % offs.length] } };
+    };
+    if (aiUsed < MAX_AI && (angles >= aiUsed || !reals.length)) {
+      const c = nextPhoto(true);
+      if (c) return c;
+    }
+    const g = angle();
+    if (g) return g;
     const c = nextPhoto(true);
     if (c) return c;
     const h = heroQ.shift();
@@ -488,6 +507,7 @@ function shotOf(v, t0, t1) {
     const zoomOut = v.reuse ? 1.12 : 1.0;
     return { kind: "frame", t0, t1, src: v.mp4, at: v.t, crop: v.crop, module: v.module, ref: v.id, punch: [1.08 * zoomOut, 1.0 * zoomOut] };
   }
+  if (v.angle) return { kind: "photo", t0, t1, src: v.file, focal: v.focal, credit: v.credit, ai: !!v.ai, slot: v.slot || null, ref: v.id, punch: [v.angle.punch, v.angle.punch + 0.1], offset: v.angle.offset };
   return { kind: "photo", t0, t1, src: v.file, focal: v.focal, credit: v.credit, ai: !!v.ai, slot: v.slot || null, ref: v.id, punch: [1.0, 1.1] };
 }
 

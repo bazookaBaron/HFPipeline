@@ -705,7 +705,7 @@ async function validateChapter(sb, ctx, opts = {}) {
   if (sb.scaffolds.some((s, i) => i > 0 && s.template === "lfChapter")) P.push("only the first scaffold may be an lfChapter card");
   P.push(...compositionProblems(sb));
   P.push(...varietyProblems(sb, ctx.plan));
-  // set-2 module props (quoteCard, timeline, flowDiagram, ..., routeMap): authoring schema
+  // set-2 module props (quoteCard, lfYearTimeline, flowDiagram, ..., routeMap): authoring schema
   {
     const { lf2Problems, docStampProblems, dossierText } = require("../video/v3/lf2");
     const dtext = dossierText(dossier);

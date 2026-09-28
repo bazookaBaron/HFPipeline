@@ -29,7 +29,7 @@ const GAP = 0.35;
 const SCENE = { target: 6.5, max: 10, maxSentences: 3 };
 const MIX = { media: [0.3, 0.4], graphic: [0.3, 0.4], map: [0.1, 0.2], card: [0.06, 0.12] };
 const RULES = { mapGapS: 60, graphicGapS: 75, graphicHardS: 90, flashGapS: 120, maxShare: 0.15 };
-const VERSION = "beats.v1";
+const VERSION = "beats.v2"; // v2: the year-timeline kind is lfYearTimeline
 
 /** kind -> template / hero type / category / a one-line fill instruction for the storyboard prompt */
 const KINDS = {
@@ -44,7 +44,7 @@ const KINDS = {
   barChart: { template: "lfChart", hero: "barChart", category: "graphic", doc: "lfChart with a barChart (fact values only, source line)" },
   compareCols: { template: "lfCompare", hero: "compareCols", category: "graphic", doc: "lfCompare: two columns with stats and a VS chip" },
   barRace: { template: "lfFeature", hero: "barRace", category: "graphic", doc: 'lfFeature hero {"type": "barRace", "props": {"series": "S#" (a map series) | ["S1","S2",...], "highlight": "<ISO3>", "title"}}' },
-  timeline: { template: "lfFeature", hero: "timeline", category: "graphic", doc: 'lfFeature hero {"type": "timeline", "props": {"items": [3-7 {"year", "label"}]}} with a "go" event {i} on each year word' },
+  lfYearTimeline: { template: "lfFeature", hero: "lfYearTimeline", category: "graphic", doc: 'lfFeature hero {"type": "lfYearTimeline", "props": {"items": [3-7 {"year", "label"}]}} with a "go" event {i} on each year word' },
   eraTimeline: { template: "lfTimeline", hero: "eraTimeline", category: "graphic", doc: "lfTimeline: eraTimeline band ticked on the words" },
   flowDiagram: { template: "lfFeature", hero: "flowDiagram", category: "graphic", doc: 'lfFeature hero {"type": "flowDiagram", "props": {"nodes": [2-4 {"id", "label", "icon"}], "flows": [{"from", "to", "label"}]}} with "flow" events {i} on the verbs' },
   pictogramGrid: { template: "lfFeature", hero: "pictogramGrid", category: "graphic", doc: 'lfFeature hero {"type": "pictogramGrid", "props": {"total", "filled", "icon", "label", "unit"}} (a share: 1 in 4, 38 of 100)' },
@@ -253,7 +253,7 @@ function baseCandidates(hint, sc, caps) {
     case "number":
       return ["bigNumber", "pictogramGrid", "photoStack", "barChart", "compareCols"];
     case "trend":
-      return [caps.timeSeries ? "lineChart" : null, caps.race ? "barRace" : null, "barChart", caps.years >= 3 ? "timeline" : null, "bigNumber"].filter(Boolean);
+      return [caps.timeSeries ? "lineChart" : null, caps.race ? "barRace" : null, "barChart", caps.years >= 3 ? "lfYearTimeline" : null, "bigNumber"].filter(Boolean);
     case "compare":
       return ["compareCols", "splitScreen", "barChart", caps.race ? "barRace" : null].filter(Boolean);
     case "quote":
@@ -261,7 +261,7 @@ function baseCandidates(hint, sc, caps) {
     case "person":
       return ["photo", "photoStack", "fullBleed"];
     case "event":
-      return ["headlineCard", "documentStamp", "fullBleed", caps.years >= 3 ? "timeline" : null, "photo", "flashBurst"].filter(Boolean);
+      return ["headlineCard", "documentStamp", "fullBleed", caps.years >= 3 ? "lfYearTimeline" : null, "photo", "flashBurst"].filter(Boolean);
     case "joke":
       return ["joke", "photo"];
     default:

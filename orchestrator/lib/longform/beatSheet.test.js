@@ -55,7 +55,7 @@ test("hints: WS-F tags win; heuristics place the rest deterministically", () => 
 
 test("beat sheet: structure first, hard rules hold video-wide, mix targets roughly met", async () => {
   const b = await BS.buildBeatSheet(script(8), { data: DATA });
-  assert.strictEqual(b.version, "beats.v1");
+  assert.strictEqual(b.version, "beats.v2");
   assert.deepStrictEqual(BS.planProblems(b), []);
   assert.strictEqual(b.sections.cold.scenes[0].kind, "cold");
   assert.strictEqual(b.sections.ch1.scenes[0].kind, "chapter");
@@ -96,15 +96,15 @@ const photo = (slot) => ({ hero: { type: "photo", props: { slot } } });
 test("variety gate: plan compliance, no back-to-back repeats, map spacing, precise messages", () => {
   const plan = [
     { n: 1, from: "s1", sentences: ["s1"], kind: "chapter" },
-    { n: 2, from: "s2", sentences: ["s2", "s3"], kind: "timeline" },
+    { n: 2, from: "s2", sentences: ["s2", "s3"], kind: "lfYearTimeline" },
     { n: 3, from: "s4", sentences: ["s4", "s5"], kind: "countryMap" },
     { n: 4, from: "s6", sentences: ["s6", "s7", "s8"], kind: "photo" },
   ];
-  const good = { sentences, scaffolds: [sc("a", "s1", "lfChapter", {}), sc("b", "s2", "lfFeature", { hero: { type: "timeline" } }), sc("c", "s4", "lfMap", { map: { type: "countryMap" } }), sc("d", "s6", "lfStage", photo("x"))] };
+  const good = { sentences, scaffolds: [sc("a", "s1", "lfChapter", {}), sc("b", "s2", "lfFeature", { hero: { type: "lfYearTimeline" } }), sc("c", "s4", "lfMap", { map: { type: "countryMap" } }), sc("d", "s6", "lfStage", photo("x"))] };
   assert.deepStrictEqual(SL.varietyProblems(good, plan), []);
   const bad = { sentences, scaffolds: [sc("a", "s1", "lfChapter", {}), sc("b", "s2", "lfStage", photo("x")), sc("c", "s4", "lfStage", photo("y")), sc("d", "s7", "lfMap", { map: { type: "worldMap" } })] };
   const P = SL.varietyProblems(bad, plan).join("\n");
-  assert.match(P, /scaffold b: the scene plan assigns timeline to the scene from s2/);
+  assert.match(P, /scaffold b: the scene plan assigns lfYearTimeline to the scene from s2/);
   assert.match(P, /scaffold c: the scene plan assigns countryMap/);
   assert.match(P, /scene plan: scene 4 \(photo\) must be a scaffold starting at sentence s6/);
   assert.match(P, /scaffolds b and c are both photo/);
@@ -142,7 +142,7 @@ test("set-2 module schemas catch bad props", () => {
   assert.match(lf2Problems("pictogramGrid", { total: 200, filled: 3, label: "x" }, "p").join("|"), /total must be 4-100/);
   assert.match(lf2Problems("documentStamp", { stamp: "A VERY LONG STAMP WORD", title: "T" }, "d").join("|"), /2-12 characters/);
   assert.match(lf2Problems("splitScreen", { left: { slot: "a" } }, "s").join("|"), /needs left and right/);
-  assert.match(lf2Problems("timeline", { items: [{ year: "x", label: "" }] }, "t").join("|"), /2-8 items[\s\S]*numeric year/);
+  assert.match(lf2Problems("lfYearTimeline", { items: [{ year: "x", label: "" }] }, "t").join("|"), /2-8 items[\s\S]*numeric year/);
   assert.deepStrictEqual(lf2Problems("flashBurst", { items: [{ slot: "a" }, { slot: "b" }, { slot: "c" }], kicker: "Too many words here" }, "b").length, 1);
 });
 
@@ -160,7 +160,7 @@ test("compile: set-2 templates lay out, word-driven modules switch auto off, rou
   const sb = {
     version: "storyboard.v3", profile: "LF", frame: { w: 1920, h: 1080 }, topic: "t", sentences,
     scaffolds: [
-      sc("a", "s1", "lfFeature", { title: { props: { title: "Two centuries" } }, hero: { id: "tl", type: "timeline", props: { items: [{ year: 1824, label: "Loan" }, { year: 2001, label: "Default" }] } } }),
+      sc("a", "s1", "lfFeature", { title: { props: { title: "Two centuries" } }, hero: { id: "tl", type: "lfYearTimeline", props: { items: [{ year: 1824, label: "Loan" }, { year: 2001, label: "Default" }] } } }),
       sc("b", "s3", "lfQuote", { quote: { id: "q", props: { quote: "Money moved quickly between the two banks today.", source: "Someone" } } }),
       sc("c", "s5", "lfMap", { map: { id: "r", type: "routeMap", props: { stops: [{ city: "london" }, { city: "buenos aires" }, { city: "new york" }], legs: [{ from: 1, to: 2, label: "Loan" }, { from: 2, to: 3 }] } } }),
       sc("d", "s7", "lfDuo", { split: { id: "sp", props: { left: { slot: "a", label: "A" }, right: { slot: "b", label: "B" } } } }),

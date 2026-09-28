@@ -7,7 +7,7 @@
  * templates-lf.js (LF_TEMPLATES), which hands its layout helpers in (no circular require).
  *
  *   lfQuote    centred quoteCard (typeset quote, marker swipes, source) + rails
- *   lfFeature  a graphic hero: timeline | flowDiagram | pictogramGrid | barRace | documentStamp | photoStack,
+ *   lfFeature  a graphic hero: lfYearTimeline | flowDiagram | pictogramGrid | barRace | documentStamp | photoStack,
  *              optional top-centre title, rails
  *   lfDuo      splitScreen, full bleed (two media halves, slanted divider, labels, VS)
  *   lfFlash    flashBurst, full bleed (6-10 quick frames, a kicker word on the last)
@@ -15,7 +15,7 @@
  */
 
 const FEATURE = {
-  timeline: { w: 1728, h: 720 },
+  lfYearTimeline: { w: 1728, h: 720 },
   flowDiagram: { w: 1728, h: 640 },
   pictogramGrid: { w: 1520, h: 600 },
   barRace: { w: 1440, h: 660 },
@@ -51,7 +51,9 @@ module.exports = function lf2Templates(h) {
 
   function lfFeature(sc) {
     const s = sc.slots || {};
-    const hero = s.hero;
+    let hero = s.hero;
+    // storyboards written before the rename (the LF year timeline was `timeline`, which shadowed the shorts one)
+    if (hero && hero.type === "timeline" && hero.props && Array.isArray(hero.props.items)) hero = { ...hero, type: "lfYearTimeline" };
     if (!hero || !FEATURE[hero.type]) throw new Error(`scaffold ${sc.id}: lfFeature needs slots.hero {type: ${FEATURE_TYPES.join("|")}, props}`);
     const railed = (s.left || []).length + (s.right || []).length > 0;
     const { tb, rect } = heroBox(sc, FEATURE[hero.type], railed, s);

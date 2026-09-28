@@ -5,7 +5,7 @@
  *
  *   quoteCard      typeset quote (words rise in), marker swipe on the key phrases, source line
  *                  ops highlight {i? (1-based phrase) | phrase?}
- *   timeline       proportional year axis, event pins with stems and cards, a playhead with a year counter
+ *   lfYearTimeline proportional year axis, event pins with stems and cards, a playhead with a year counter
  *                  ops go {i} (1-based: the playhead travels to event i, its pin and card land)
  *   flowDiagram    labelled boxes (icon + label) and money-flow arrows with marching dots
  *                  ops flow {i} (1-based), node {id}
@@ -55,7 +55,7 @@
     P + ".l2-quote .by .nm{font-size:26px;font-weight:800;letter-spacing:-.01em;color:" + T.ink + ";}",
     P + ".l2-quote .by .rl{font-family:" + MONO + ";font-size:16px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:" + T.muted + ";}",
     P + ".l2-quote .pt{position:absolute;border-radius:50%;overflow:hidden;border:4px solid " + T.card + ";box-shadow:0 10px 24px rgba(30,28,20,.18);}",
-    // ---- timeline ----
+    // ---- lfYearTimeline ----
     P + ".l2-tl .ax{position:absolute;height:4px;border-radius:2px;background:#d8d5cb;transform-origin:0 50%;}",
     P + ".l2-tl .axp{position:absolute;height:4px;border-radius:2px;background:" + T.ink + ";transform-origin:0 50%;}",
     P + ".l2-tl .tk{position:absolute;width:2px;height:12px;background:#c9c5b9;}",
@@ -387,9 +387,10 @@
     },
   };
 
-  // =============================================================== timeline
+  // ======================================================== lfYearTimeline
+  // (not `timeline`: that name is the shorts tick timeline in modules-dh4.js)
   // props {items: [{year, label, tone?}] (3-7), start?, end?, auto?: true, tone?}
-  M.timeline = {
+  M.lfYearTimeline = {
     enter: "fade",
     build: function (el, p, c) {
       el.classList.add("l2-tl");
@@ -398,7 +399,7 @@
       var items = (p.items || []).slice(0, 8).map(function (x, i) {
         return { year: Number(x.year), label: String(x.label || ""), tone: x.tone, i: i };
       });
-      if (items.length < 2) throw new Error("timeline: needs 2-8 items");
+      if (items.length < 2) throw new Error("lfYearTimeline: needs 2-8 items");
       var ys = items.map(function (x) {
         return x.year;
       });
@@ -487,7 +488,7 @@
       var active = null;
       function go(i, t) {
         var n = nodes[i - 1];
-        if (!n) throw new Error("timeline: no item " + i);
+        if (!n) throw new Error("lfYearTimeline: no item " + i);
         if (shown[i]) return;
         shown[i] = true;
         var dur = Math.min(0.9, 0.35 + Math.abs(n.x - at.x) / 1400);

@@ -6,7 +6,7 @@
  *   - barRace: a resolved map series ({values: {ISO3: v}, year}) becomes one frame of the top N countries by
  *     name (+ the highlighted country even when it ranks lower); resolved time series ({series: [{name,
  *     points}]}) become one frame per year. `highlight` may be an ISO3 code.
- *   - word-driven modules: when events drive a module (timeline go, flowDiagram flow, pictogramGrid fill,
+ *   - word-driven modules: when events drive a module (lfYearTimeline go, flowDiagram flow, pictogramGrid fill,
  *     barRace step, documentStamp stamp, flashBurst burst, photoStack show, quoteCard highlight), its
  *     automatic entrance sequence is switched off (props.auto = false) so the beats land on the words.
  */
@@ -14,7 +14,7 @@
 const { load } = require("./geo");
 
 const DRIVERS = {
-  timeline: ["go"],
+  lfYearTimeline: ["go"],
   flowDiagram: ["flow"],
   pictogramGrid: ["fill"],
   barRace: ["step"],
@@ -104,7 +104,7 @@ function lf2Problems(type, p, where) {
       need(!!String(p.source || "").trim(), "needs source (who said it)");
       [].concat(p.highlight || []).forEach((h) => need(norm(p.quote).includes(norm(h)), `highlight "${h}" is not in the quote (copy it verbatim)`));
       break;
-    case "timeline": {
+    case "lfYearTimeline": {
       const it = p.items || [];
       need(Array.isArray(it) && it.length >= 2 && it.length <= 8, "needs 2-8 items");
       it.forEach((x, i) => {

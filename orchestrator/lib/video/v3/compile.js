@@ -347,6 +347,8 @@ const PRESENTERS = {
       armPivot: m.armPivot,
       aspect: m.aspect,
       face: { eyes: m.eyes, mouth: m.mouth },
+      // slim full-body art: the stage uses each profile's `tall` rect (core.js MASCOT_PROFILE)
+      fit: "tall",
     };
   })(),
 };

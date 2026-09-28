@@ -117,16 +117,20 @@
   // per-profile mascot (SPEC 4.5): DH slides + hides on full width; LC never hides, blinks 200 ms
   // every ~4.6-5.0 s and sways (R4: 3.6 s period, ~1.7 px at the head, pivot at the feet)
   var MASCOT_PROFILE = {
-    DH: { rect: [20, 903, 290, 417], blinkDur: 0.133, hideOnFull: true, sway: 0 },
-    LC: { rect: [36, 969, 260, 374], blinkDur: 0.2, hideOnFull: false, sway: 0.35, swayPeriod: 3.6 },
+    DH: { rect: [20, 903, 290, 417], blinkDur: 0.133, hideOnFull: true, sway: 0, tall: { rect: [12, 588, 306, 732], alignX: 0 } },
+    LC: { rect: [36, 969, 260, 374], blinkDur: 0.2, hideOnFull: false, sway: 0.35, swayPeriod: 3.6, tall: { rect: [16, 645, 292, 698], alignX: 0 } },
     // R5: 447x594 flush left at (0,783); blink 100-133 ms on a ~3.2 s loop; hidden on photo cards
-    DC: { rect: [0, 783, 447, 594], blinkDur: 0.12, hideOnFull: true, sway: 0, blinkGaps: [3.2, 3.1, 3.3, 3.2, 3.0, 3.4], alignX: 0.25, maxH: 525 }, // presenter clears the stage frame (bottom 840)
+    DC: { rect: [0, 783, 447, 594], blinkDur: 0.12, hideOnFull: true, sway: 0, blinkGaps: [3.2, 3.1, 3.3, 3.2, 3.0, 3.4], alignX: 0.25, maxH: 525, tall: { rect: [0, 848, 447, 578], alignX: 0.25, maxH: 0 } }, // presenter clears the stage frame (bottom 840)
     // BP (R6 §2): presenter feet on y 1363.5, laptop side cut by the left frame edge, right edge
     // stays left of the content column (301.5); never hidden; blink 133 ms every ~2.9 s
-    BP: { rect: [-50, 800, 325, 563.5], blinkDur: 0.133, hideOnFull: false, sway: 0, blinkGaps: [2.9, 2.6, 3.2, 2.8, 3.1, 2.7, 3.0] },
+    BP: { rect: [-50, 800, 325, 563.5], blinkDur: 0.133, hideOnFull: false, sway: 0, blinkGaps: [2.9, 2.6, 3.2, 2.8, 3.1, 2.7, 3.0], tall: { rect: [-4, 660.5, 294, 703], alignX: 0 } },
     // BR (R7 #9): full-body presenter at the left, feet on y 1363.5, right edge left of the content
     // column (319.5); hidden for full-width scaffolds; every entry slides in (367 ms ease-out)
-    BR: { rect: [0, 700, 300, 663.5], blinkDur: 0.133, hideOnFull: true, sway: 0, alignX: 0.3, slideReenter: true },
+    // `tall` (presenter cfg.fit "tall": the slim full-body guy, aspect 0.42, raised forearm on the
+    // canvas right edge): as tall as the gap to the content column allows, feet on the same floor --
+    // DH 732 (38 % H) / LC 698 (36 %) / BR 732 (38 %) / BP 703 (37 %); DC stays under the stage frame
+    // (top 848) and drops its feet to 1426 (caption chip 1444.5) -> 578 (30 %). The robot keeps `rect`.
+    BR: { rect: [0, 700, 300, 663.5], blinkDur: 0.133, hideOnFull: true, sway: 0, alignX: 0.3, slideReenter: true, tall: { rect: [0, 632, 306, 731.5], alignX: 0 } },
   };
 
   var MASCOT = {
@@ -423,6 +427,20 @@
     return [Math.round(x), Math.round(rect[1] + rect[3] - h), Math.round(w), Math.round(h)]; // feet on the rect bottom
   }
 
+  /** profile placement for the presenter: cfg.fit names an override block on the profile (e.g. `tall`) */
+  function mascotFit(mp, cfg) {
+    var o = cfg && cfg.fit && mp[cfg.fit];
+    if (!o) return mp;
+    var out = {};
+    Object.keys(mp).forEach(function (k) {
+      out[k] = mp[k];
+    });
+    Object.keys(o).forEach(function (k) {
+      out[k] = o[k];
+    });
+    return out;
+  }
+
   function faceClip(r) {
     // inset(top right bottom left) from a fractional [x, y, w, h] region
     var pc = function (v) {
@@ -512,6 +530,7 @@
   function buildMascot(ctx, layer, cfg, scaffolds, mp) {
     if (!cfg || !cfg.open) return;
     var tl = ctx.tl;
+    mp = mascotFit(mp, cfg);
     var box = fitMascotBox(cfg.rect || mp.rect, cfg.aspect, mp.alignX, mp.maxH);
     var face = cfg.face || null;
     var wrap = mk("div", "st-mascot", layer);

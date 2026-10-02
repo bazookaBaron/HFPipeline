@@ -95,7 +95,7 @@
   V.ring = (host, t, x, y, o = {}) => {
     const r = document.createElement("div");
     r.className = "fx-ring";
-    Object.assign(r.style, { left: x - 40 + "px", top: y - 40 + "px", borderColor: o.color || "#EA4B2A" });
+    Object.assign(r.style, { left: x - 40 + "px", top: y - 40 + "px", borderColor: o.color || "#EA4B2A", visibility: "hidden", opacity: 0 }); // hidden until t: never a stray dot before its moment
     q(host).appendChild(r);
     V.tl.fromTo(r, { scale: 0.2, autoAlpha: 1 }, { scale: o.s || 2.4, autoAlpha: 0, duration: 0.4, ease: "power2.out", immediateRender: false }, t);
   };
@@ -112,7 +112,7 @@
       const p = document.createElement("div");
       p.className = "fx-bit";
       const s = 10 + V.rand() * 18;
-      Object.assign(p.style, { left: x + "px", top: y + "px", width: s + "px", height: s * (0.4 + V.rand()) + "px", background: cols[i % cols.length] });
+      Object.assign(p.style, { left: x + "px", top: y + "px", width: s + "px", height: s * (0.4 + V.rand()) + "px", background: cols[i % cols.length], visibility: "hidden", opacity: 0 }); // hidden until t
       q(host).appendChild(p);
       const a = V.rand() * Math.PI * 2, r = 160 + V.rand() * (o.r || 420);
       V.tl.fromTo(p, { x: 0, y: 0, rotation: 0, autoAlpha: 1 }, { x: Math.cos(a) * r, y: Math.sin(a) * r + 220, rotation: (V.rand() - 0.5) * 720, autoAlpha: 0, duration: 0.7 + V.rand() * 0.3, ease: "power2.out", immediateRender: false }, t + V.rand() * 0.05);

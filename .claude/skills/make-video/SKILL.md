@@ -61,6 +61,8 @@ Layer 3–6 things per moment (main visual + sticker/doodle + character reaction
    - Size: content zone y 330–1180 (puppet box lower-right and caption band excluded). Main visual 860–960 px wide; numbers 90–160 px; body text ≥ 34 px. Component defaults are catalogue-sized — always pass big w/h.
    - Never empty: something in the content zone from t=0.15 s and on every line, including the last one.
    - Pre-render motion check: render a low-res draft (or snapshots every 0.5 s) and run `measure.py`. Need moving ≥ 78%, content ≥ 68%, no still > 1.0 s. Fix the listed still gaps with real sub-beats (3–4 per line, keyed to words), then render.
+   - Stray gate: `node runtime/strays.js <compDir>` must print "no strays" (it finds small parked dots/blocks visible before their entrance, e.g. burst bits). Never create an element visible and animate it later — create hidden, reveal at its time. Intentional tiny decorations get `data-deco`.
+   - No idle wobble/bobbing or tickers just to pass the motion gate: fill gaps with real story beats.
    - Look at your own final contact sheet before reporting.
 6. **Review** (Opus): one contact sheet + metrics. Fix once if needed.
 7. Deliver: mp4 path, description with music credit from `credits.txt` (CC BY), hashtags.

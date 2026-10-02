@@ -66,7 +66,7 @@ Puppet.hop(tl, 6, { n: 2 });                           // celebratory hops with 
 Puppet.sit(tl, 8); Puppet.stand(tl, 10);               // sit on an implied box/stool (draw your own prop); stand-up leans forward first
 Puppet.lean(tl, 3, { dir: "r" });                      // lean on an invisible wall
 Puppet.tap(tl, 3, { hold: 1.2, foot: "r" });           // nervous toe tap
-Puppet.turn(tl, 7, "toggle" | "mirror" | "front");     // turn in place (card-spin through edge-on)
+Puppet.turn(tl, 7, "toggle" | "left" | "right" | "front");  // turn in place as a 3/4 turn (no mirroring)
 Puppet.pointScreen(tl, 3, "l");                        // whole-arm point at a big screen + body twist
 Puppet.idle(tl, 0, DUR, { amt: 1 });                   // idle micro-sway + breathing, a pure function of time
 Puppet.breathe(tl, 0, DUR);                            // optional torso scaleY breathing (origin at the hips in full mode)
@@ -81,5 +81,5 @@ Puppet.breathe(tl, 0, DUR);                            // optional torso scaleY 
   planted foot does not move while the hips sway. The walk keeps stance feet fixed in WORLD space (`rig offset = world - body x`).
 - **Seek-safety:** the driver is a single `ease:"none"` tween with `onUpdate`; there is no Math.random, Date or rAF. Seeking any order gives the same pose.
 - **Demo:** `out/puppet-demo-full/index.html` (1920x1080, 15 s). `out/puppet-demo-full/tour/` has a pose tour. Contact sheet: `full-body.jpg`.
-- **Limits:** the walk is a front-view sideways shuffle (feet swing along x; shoes flip to face the travel direction). `turn` mirrors the whole figure, so the
-  cobalt shade side flips too. Sitting uses foreshortened thighs, and the stool/box is your own prop. Keep `walk` strides at about 100 units or less (reach is clamped).
+- **Limits:** the walk is a front-view sideways shuffle (feet swing along x; shoes flip to face the travel direction). `turn` is a 3/4 turn (twist + a small step, no mirroring), so the
+  cobalt shade stays on the same side. Squash is capped at 6%. Sitting uses foreshortened thighs, and the stool/box is your own prop. Keep `walk` strides at about 100 units or less (reach is clamped).

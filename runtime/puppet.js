@@ -144,7 +144,7 @@
   }
 
   // ---------- legs (full-body mode) ----------
-  const FB = { HIP: { A: [225, 900], B: [375, 900] }, ANK: { A: [210, 1120], B: [390, 1120] }, LT: 112, LS: 112, RT: 54, RS: 46, FLOOR: 1161, SOLE: 38, TOE: 84, VB: "0 70 600 1098" };
+  const FB = { HIP: { A: [222, 900], B: [378, 900] }, ANK: { A: [224, 1194], B: [376, 1194] }, LT: 148, LS: 148, RT: 46, RS: 40, FLOOR: 1235, SOLE: 38, TOE: 84, VB: "0 70 600 1175" };
   const SHOE = "M-42 -24L16 -24C26 -10 50 -6 68 2C90 12 92 38 62 38L-34 38C-54 38 -56 14 -42 -24Z";
   function legArt(C, p, s) {
     const { RT, RS, LT, LS } = FB;
@@ -160,7 +160,7 @@
     <clipPath id="${p}-sc${s}"><rect ${sh}/></clipPath>
     <rect ${sh} fill="${C.pants}"/>
     <g clip-path="url(#${p}-sc${s})"><rect x="11" y="-60" width="70" height="${LS + 120}" fill="${C.shadow}"/></g>
-    ${ln(C, `M-30 ${LS - 22}Q0 ${LS - 14} 30 ${LS - 22}`, LI)}${ln(C, `M-20 26Q-26 50-19 66`, LI)}
+    ${ln(C, `M-26 ${LS - 22}Q0 ${LS - 14} 26 ${LS - 22}`, LI)}${ln(C, `M-14 30Q-19 56-13 76`, LI)}
     <rect ${sh} fill="none" stroke="${C.line}" stroke-width="${LW}"/></g>
     <g id="${p}-foot${s}" transform="translate(0 ${LS})"><g id="${p}-toe${s}">
       <clipPath id="${p}-fc${s}"><path d="${SHOE}"/></clipPath>
@@ -176,11 +176,11 @@
   function pelvisArt(C, p) {
     return `<rect x="104" y="850" width="392" height="40" rx="8" fill="${C.belt}" stroke="${C.line}" stroke-width="${LW}"/>
   <rect x="274" y="857" width="52" height="26" rx="6" fill="${C.eye}" stroke="${C.line}" stroke-width="${LI + 1}"/>${ln(C, "M300 862L300 878", LI - 1)}
-  <clipPath id="${p}-pc"><path d="M114 884L486 884C492 912 470 940 438 952L162 952C130 940 108 912 114 884Z"/></clipPath>
-  <path d="M114 884L486 884C492 912 470 940 438 952L162 952C130 940 108 912 114 884Z" fill="${C.pants}"/>
+  <clipPath id="${p}-pc"><path d="M116 884L484 884C482 912 450 938 424 950L176 950C150 938 118 912 116 884Z"/></clipPath>
+  <path d="M116 884L484 884C482 912 450 938 424 950L176 950C150 938 118 912 116 884Z" fill="${C.pants}"/>
   <g clip-path="url(#${p}-pc)"><rect x="400" y="860" width="120" height="110" fill="${C.shadow}"/></g>
-  ${ln(C, "M114 888C108 912 130 940 162 952M486 888C492 912 470 940 438 952", LW)}
-  <path d="M272 946Q300 976 328 946Z" fill="${C.pants}"/>${ln(C, "M274 950Q300 974 326 950", LW)}`;
+  ${ln(C, "M117 888C119 912 150 938 176 950M483 888C481 912 450 938 424 950", LW)}
+  <path d="M262 944Q300 978 338 944Z" fill="${C.pants}"/>${ln(C, "M264 948Q300 976 336 948", LW)}`;
   }
 
   // ---------- face ----------
@@ -249,9 +249,9 @@
       return `M${f1(s[0])} ${f1(s[1])}L${f1(e[0])} ${f1(e[1])}`;
     }).join("");
     const full = opts.mode === "full";
-    const BODY = full ? "M40 720C40 620 70 572 150 544C196 528 228 514 248 506L352 506C372 514 404 528 450 544C530 572 560 620 560 720C560 780 534 828 500 856L100 856C66 828 40 780 40 720Z"
+    const BODY = full ? "M150 544C196 528 228 514 248 506L352 506C372 514 404 528 450 544C482 562 498 592 502 640L492 856L108 856L98 640C102 592 118 562 150 544Z"
       : "M40 720C40 620 70 572 150 544C196 528 228 514 248 506L352 506C372 514 404 528 450 544C530 572 560 620 560 720Z";
-    const SIDES = full ? "M100 856C66 828 40 780 40 720C40 620 70 572 150 544C196 528 228 514 248 506M352 506C372 514 404 528 450 544C530 572 560 620 560 720C560 780 534 828 500 856"
+    const SIDES = full ? "M108 856L98 640C102 592 118 562 150 544C196 528 228 514 248 506M352 506C372 514 404 528 450 544C482 562 498 592 502 640L492 856"
       : "M40 720C40 620 70 572 150 544C196 528 228 514 248 506M352 506C372 514 404 528 450 544C530 572 560 620 560 720";
     const hem = full ? `<g clip-path="url(#${p}-tc)"><rect x="30" y="824" width="540" height="40" fill="${C.shirt}"/><rect x="448" y="824" width="140" height="40" fill="${C.shadow}"/>
     ${ln(C, Array.from({ length: 33 }, (_, i) => { const x = f1(60 + i * 14.5); return `M${x} 832L${x} 852`; }).join(""), LI * 0.8)}${ln(C, "M30 824Q300 836 570 824", LW)}</g>` : "";
@@ -260,7 +260,7 @@
   <clipPath id="${p}-tc"><path d="${BODY}"/></clipPath>
   <path d="${BODY}" fill="${C.shirt}"/>
   <g clip-path="url(#${p}-tc)">
-    <path d="M404 524C466 552 496 620 494 720${full ? "C494 770 480 810 462 860" : ""}L600 ${full ? 860 : 720}L600 480Z" fill="${C.shadow}"/>
+    <path d="M404 524${full ? "C456 548 490 590 498 650L494 860" : "C466 552 496 620 494 720"}L600 ${full ? 860 : 720}L600 480Z" fill="${C.shadow}"/>
     <path d="M300 602Q350 598 396 508L420 520Q380 610 300 622Z" fill="${C.shadow}"/>
   </g>
   ${hem}
@@ -279,7 +279,7 @@
   ${neck}
   ${armArt(C, p, "A")}${armArt(C, p, "B")}
 </g>`;
-    const rigSvg = full ? `<g id="${p}-gsh"><ellipse cx="300" cy="${FB.FLOOR}" rx="205" ry="24" fill="${C.shadow}"/></g>
+    const rigSvg = full ? `<g id="${p}-gsh"><ellipse cx="300" cy="${FB.FLOOR}" rx="190" ry="22" fill="${C.shadow}"/></g>
 <g id="${p}-mrig"><g id="${p}-rig">${legArt(C, p, "A")}${legArt(C, p, "B")}
   <g id="${p}-hips"><g id="${p}-pelvis">${pelvisArt(C, p)}</g><g id="${p}-tw">${upper}</g></g>
 </g></g>` : `<g id="${p}-rig">${upper}</g>`;
@@ -372,7 +372,7 @@ ${rigSvg}
   };
   const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
   const sgn = (v) => (v < 0 ? -1 : 1);
-  const PEL = { drop: 70, spread: 16, fwd: 20 }; // sit: hips drop, feet spread and come toward the camera
+  const PEL = { drop: 110, spread: 16, fwd: 20 }; // sit: hips drop, feet spread and come toward the camera
 
   function newRig() {
     const tr = {}; Object.keys(CH).forEach((c) => (tr[c] = []));
@@ -443,10 +443,11 @@ ${rigSvg}
       R.go(t, t + d, { twist: m, lean: m * 6 }, "back");
       R.step(t, side, { d, len: 36 });
     };
-    R.turn = (t, to, d = 0.42) => { // turn in place: card-spin through edge-on, hips dip
-      const tgt = to === "front" ? 1 : to === "mirror" ? -1 : -sgn(R.val("flip", t));
+    R.turn = (t, to, d = 0.42) => { // turn in place as a 3/4 turn (no mirroring): face features + torso narrow toward the new side, feet shuffle
+      const tw = R.val("twist", t), tgt = to === "front" ? 0 : to === "left" ? -1 : to === "right" ? 1 : (tw >= 0 ? -1 : 1);
       const hy0 = R.val("hy", t);
-      R.go(t, t + d, { flip: tgt }, "io"); R.hold("hy", t); R.key("hy", t + d * 0.5, hy0 + 10, "out"); R.key("hy", t + d, hy0, "in");
+      R.go(t, t + d, { twist: tgt }, "back"); R.hold("hy", t); R.key("hy", t + d * 0.5, hy0 + 8, "out"); R.key("hy", t + d, hy0, "in");
+      if (tgt) R.step(t + 0.05, tgt < 0 ? "l" : "r", { d: d * 0.8, len: 14 });
     };
     R.sit = (t, d = 0.55) => {
       R.go(t, t + 0.2, { lean: 8 }, "out"); R.go(t + 0.2, t + d + 0.3, { lean: 0 }, "io");
@@ -565,7 +566,7 @@ ${rigSvg}
     el.insertAdjacentHTML("beforeend", build(p, C, opts));
     const svg = el.lastElementChild;
     const full = opts.mode === "full";
-    const W = full && opts.height ? (opts.height * 600) / 1098 : opts.width || 560;
+    const W = full && opts.height ? (opts.height * 600) / 1175 : opts.width || 560;
     svg.style.width = W + "px";
     svg.style.height = "auto";
     svg.style.display = "block";
@@ -626,7 +627,7 @@ ${rigSvg}
   const F2 = (n) => Math.round(n * 100) / 100;
   function applyFull(P, t) {
     const R = P.R, v = R.vals(t), o = solveFull(v), E = P.el, { FLOOR } = FB;
-    const sx = (Math.abs(v.flip) < 0.03 ? 0.03 * sgn(v.flip) : v.flip) * (1 + 0.55 * v.sq), sy = 1 - v.sq;
+    const q = clamp(v.sq, -0.06, 0.06), sx = (Math.abs(v.flip) < 0.03 ? 0.03 * sgn(v.flip) : v.flip) * (1 + 0.5 * q), sy = 1 - q;
     E.mrig.setAttribute("transform", `translate(${F2(v.x)} ${F2(v.y)}) translate(300 ${FLOOR}) scale(${F2(sx * 1000) / 1000} ${F2(sy * 1000) / 1000}) translate(-300 -${FLOOR})`);
     E.hips.setAttribute("transform", `translate(${F2(o.hdx)} ${F2(o.hdy)})`);
     E.pelvis.setAttribute("transform", `rotate(${F2(v.tilt)} 300 900)`);

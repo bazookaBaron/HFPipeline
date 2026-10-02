@@ -78,12 +78,12 @@ Rules: NO opening montage, NO captions, FULL-BODY puppet animated throughout (wa
 Images: photoreal ONLY via `runtime/images.js` (licensed real photo first; fal photoreal generic scenes as fallback; grain filter when `grain:true`; never illustrations; never AI-generate real people, logos or real events). Credit every licensed photo in the description. Maps via `runtime/maps.js` — make them the hero shots.
 
 1. Research (Opus): 15–20 searches → `facts.json` (claim, number, source URL). Cached; never redo.
-2. Script (Opus): ~1,150 words, 5–6 chapters, conversational. `script.txt` one line per beat; mark chapters with `# Chapter title` lines (strip before voice).
-3. Voice: `voice.py --speed 1.0 --gap 0.35`. No endcard.
+2. Script (Opus): **~1,290 words for 8:00** (narrator = 2.68 w/s at speed 0.9 / gap 0.65 — measured; get the length right first time, re-voicing wastes a window), 5–7 chapters, conversational, an example in every point. `script.txt` one line per beat; mark chapters with `# Chapter title` lines (strip before voice).
+3. Voice: `voice.py --speed 0.9 --gap 0.65`, run detached (Start-Process) — it exceeds the Bash time limit. No reel endcard.
 4. Brief per chapter: beat table + image slots (`slots.json`) + map moves + puppet blocking (where he walks/stands relative to the visual).
 5. `node runtime/images.js <dir> slots.json` once for all chapters.
-6. Sonnet chapter builders, 2–3 in parallel, one `chNN.html` each, render each chapter once.
-7. Stitch chapters (ffmpeg concat), `mix.py --music auto --mood <...>` (music changes per chapter), master −14 LUFS.
+6. Sonnet chapter builders, **2** in parallel (each re-reads the docs, so fewer agents = fewer tokens). Reuse `runtime/lf/` (lf-kit.js, build.js template — edit its CH map, gate.py, stitch.py, sfxmerge.py); never rebuild the kit. Gates: strays.js + measure on a draft render (not 0.5 s snapshots). Render each chapter once.
+7. `python runtime/lf/sfxmerge.py` → `mix.py --music auto --sfx-rate 0.8 --music-db -21 --mood <...>` → `python runtime/lf/stitch.py` → append the outro: `node runtime/lf_outro.js <theme> outro.mp4` + concat (like/subscribe, no end-screen cards yet).
 8. Thumbnail via the `thumbnail` skill (3 variants, no AI, pick by mobile squint test) and description (chapters with timestamps, sources, image + music credits).
 
 ## 7. Never

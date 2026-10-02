@@ -20,7 +20,7 @@ Theme: `:root{...}` vars from `Theme.css(T)` (see theme.js). Copy runtime/{theme
 - `C.leave(el|id, tl, t, {to:'left|up|down|shrink', d})` - exit.
 - Performers: `el.p.fn(tl,t,...)` or `C.<alias>.fn(tl,t,...)` (targets the LAST mounted of that kind; pass `{on:'id'}` as the last arg to pick another). They return their end time. Every component also has `pulse(tl,t)`.
 - Markup in text props: `*word*` gets a marker highlight (quote, caption, timeline events); `C.sweep(tl,t,rootEl)` sweeps all marks. `C.rich(str)` returns the html.
-- `C.icon(name)` returns an svg string; `C.ICONS` lists: book code globe gpu database user dollar lock search check cross star clock rocket chart play bolt.
+- `C.iconSvg(name)` returns an svg string (`C.icon` is the iconTile performer proxy); `C.ICONS` lists: book code globe gpu database user dollar lock search check cross star clock rocket chart play bolt.
 - All DOM is created at authoring time; every tween is on the paused timeline. Add enough room: components do not auto-scroll (chat <= ~5 bubbles per 560 px, code <= ~11 lines).
 - Layout lint: the zone keeps content out of captions/character. Mark intentional overlap with `data-layout-allow-overlap` (stack does it already).
 - Sizes in 9x16: keep stacked things inside y600-1250; put 2 small components side by side by giving explicit x/w.

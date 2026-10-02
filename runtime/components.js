@@ -46,7 +46,7 @@
     bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
   };
   const icon = (n, extra = "") => `<svg viewBox="0 0 24 24" ${extra}>${IC[n] || IC.star}</svg>`;
-  C.icon = icon; C.ICONS = Object.keys(IC);
+  C.iconSvg = icon; C.ICONS = Object.keys(IC);
 
   // ================= components =================
   const K = {};

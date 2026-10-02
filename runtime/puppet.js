@@ -173,14 +173,12 @@
     </g></g>
   </g></g>`;
   }
-  function pelvisArt(C, p) {
-    return `<rect x="104" y="850" width="392" height="40" rx="8" fill="${C.belt}" stroke="${C.line}" stroke-width="${LW}"/>
-  <rect x="274" y="857" width="52" height="26" rx="6" fill="${C.eye}" stroke="${C.line}" stroke-width="${LI + 1}"/>${ln(C, "M300 862L300 878", LI - 1)}
-  <clipPath id="${p}-pc"><path d="M116 884L484 884C482 912 450 938 424 950L176 950C150 938 118 912 116 884Z"/></clipPath>
-  <path d="M116 884L484 884C482 912 450 938 424 950L176 950C150 938 118 912 116 884Z" fill="${C.pants}"/>
-  <g clip-path="url(#${p}-pc)"><rect x="400" y="860" width="120" height="110" fill="${C.shadow}"/></g>
-  ${ln(C, "M117 888C119 912 150 938 176 950M483 888C481 912 450 938 424 950", LW)}
-  <path d="M262 944Q300 978 338 944Z" fill="${C.pants}"/>${ln(C, "M264 948Q300 976 336 948", LW)}`;
+  function pelvisArt(C, p) { // trouser waist + hips: no wider than the outer thigh edges (x 176..424)
+    return `<rect x="178" y="858" width="244" height="94" fill="${C.pants}"/>
+  ${ln(C, "M176 862L176 948M424 862L424 948", LW)}
+  <rect x="174" y="852" width="252" height="24" rx="5" fill="${C.belt}" stroke="${C.line}" stroke-width="${LW}"/>
+  <rect x="278" y="855" width="44" height="18" rx="4" fill="${C.eye}" stroke="${C.line}" stroke-width="${LI}"/>
+  <path d="M268 944Q300 972 332 944Z" fill="${C.pants}"/>${ln(C, "M270 947Q300 970 330 947", LW)}`;
   }
 
   // ---------- face ----------
@@ -450,11 +448,11 @@ ${rigSvg}
       if (tgt) R.step(t + 0.05, tgt < 0 ? "l" : "r", { d: d * 0.8, len: 14 });
     };
     R.sit = (t, d = 0.55) => {
-      R.go(t, t + 0.2, { lean: 8 }, "out"); R.go(t + 0.2, t + d + 0.3, { lean: 0 }, "io");
+      R.go(t, t + 0.2, { lean: 5 }, "out"); R.go(t + 0.2, t + d + 0.3, { lean: 0 }, "io");
       R.go(t + 0.05, t + 0.05 + d, { sit: 1, hx: 0, tilt: 0 }, "back");
     };
     R.standUp = (t, d = 0.55) => {
-      R.go(t, t + 0.22, { lean: 13 }, "out");
+      R.go(t, t + 0.22, { lean: 7 }, "out");
       R.go(t + 0.1, t + 0.1 + d, { sit: 0, hx: 0, tilt: 0, twist: 0 }, "out");
       R.go(t + 0.3, t + 0.1 + d + 0.15, { lean: 0 }, "io");
     };

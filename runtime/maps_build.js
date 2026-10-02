@@ -4,7 +4,7 @@
  * relative integer SVG paths (Douglas-Peucker 1.2 units). Keys = ISO3. Fields: n name, d path, c label pt, b main bbox, B full bbox. */
 const fs = require("fs"), path = require("path");
 const SRC = process.argv[2] || path.join(__dirname, "..", "orchestrator", "output", ".cache", "geo", "ne_10m_admin_0_countries_ind.geojson");
-const S = 5000, TOL = 1.2, MIN_AREA = 20;
+const S = 5000, TOL = 1.2, MIN_AREA = 20, SH_MIN = 3000; // shadow skips polygons under SH_MIN units^2
 function ne1(lon, lat) {
   const lam = lon * Math.PI / 180, phi = lat * Math.PI / 180, p2 = phi * phi, p4 = p2 * p2;
   const x = lam * (0.8707 - 0.131979 * p2 - 0.013791 * p4 + 0.003971 * p2 * p4 * p4 - 0.001529 * p4 * p4 * p4);
@@ -57,7 +57,8 @@ for (const k of Object.keys(rows).sort()) {
   const bi = ar.indexOf(big), bb = bbox([r.polys[bi][0]]), mx = (bb[2] - bb[0]) * .25, my = (bb[3] - bb[1]) * .25;
   const main = r.polys.filter((p) => { const b = bbox([p[0]]), cx = (b[0] + b[2]) / 2, cy = (b[1] + b[3]) / 2; return cx > bb[0] - mx && cx < bb[2] + mx && cy > bb[1] - my && cy < bb[3] + my; });
   const B = bbox(keepP.map((p) => p[0]));
-  out.countries[k] = { n: r.n, d: keepP.map((p) => p.map(enc).join("")).join(""), c: r.label || [(B[0] + B[2]) / 2, (B[1] + B[3]) / 2].map(Math.round), b: bbox(main.map((p) => p[0])), B };
+  const big_ = keepP.filter((p) => area(p[0]) >= SH_MIN), dd = keepP.map((p) => p.map(enc).join("")).join(""), ds = big_.map((p) => p.map(enc).join("")).join("");
+  out.countries[k] = { n: r.n, d: dd, ...(ds !== dd ? { s: ds || "M0 0" } : {}), c: r.label || [(B[0] + B[2]) / 2, (B[1] + B[3]) / 2].map(Math.round), b: bbox(main.map((p) => p[0])), B };
 }
 const dir = path.join(__dirname, "geo"); fs.mkdirSync(dir, { recursive: true });
 const js = JSON.stringify(out);

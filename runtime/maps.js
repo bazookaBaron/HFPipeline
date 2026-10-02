@@ -47,7 +47,7 @@
     host.style.cssText += `;position:absolute;left:${X}px;top:${Y}px;width:${W}px;height:${H}px;overflow:hidden;background-color:${water};background-image:radial-gradient(circle at center,${T.dot} 0 1.8px,transparent 2.4px);background-size:36px 36px;${o.frame ? `border:6px solid ${T.ink};box-sizing:border-box;box-shadow:10px 10px 0 ${T.shadow};border-radius:22px;` : ""}`;
     const svg = mk("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, style: "position:absolute;left:0;top:0;overflow:hidden" }, host);
     const defs = mk("defs", {}, svg), isos = Object.keys(G.countries);
-    isos.forEach((k) => mk("path", { id: ids + k, d: G.countries[k].d, pathLength: 1, "fill-rule": "evenodd" }, defs));
+    isos.forEach((k) => { mk("path", { id: ids + k, d: G.countries[k].d, pathLength: 1, "fill-rule": "evenodd" }, defs); if (G.countries[k].s) mk("path", { id: ids + k + "_s", d: G.countries[k].s, "fill-rule": "evenodd" }, defs); });
     const grat = mk("path", { fill: "none", stroke: T.ink, "stroke-opacity": 0.15, "stroke-linecap": "butt" }, svg);
     { const parts = []; for (let lo = -180; lo <= 180; lo += 15) { const p = []; for (let la = -75; la <= 85; la += 5) p.push(project(lo, la)); parts.push("M" + p.map((q) => q[0].toFixed(0) + " " + q[1].toFixed(0)).join("L")); }
       for (let la = -75; la <= 75; la += 15) { const p = []; for (let lo = -180; lo <= 180; lo += 5) p.push(project(lo, la)); parts.push("M" + p.map((q) => q[0].toFixed(0) + " " + q[1].toFixed(0)).join("L")); }
@@ -57,7 +57,7 @@
     const fillsG = layer({ fill: land, stroke: "none" }), linesG = layer({ fill: "none", stroke: T.ink, "stroke-linejoin": "round", "stroke-linecap": "round" }), topG = layer({});
     const use = (par, k, at) => mk("use", Object.assign({ href: "#" + ids + k }, at || {}), par);
     const fillUse = {};
-    isos.forEach((k) => { use(shadowG, k); use(coastG, k); fillUse[k] = use(fillsG, k); use(linesG, k); });
+    isos.forEach((k) => { use(shadowG, G.countries[k].s ? k + "_s" : k); use(coastG, k); fillUse[k] = use(fillsG, k); use(linesG, k); });
     const ov = mk("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, style: "position:absolute;left:0;top:0;overflow:hidden;pointer-events:none" }, host);
     gsap.set(linesG, { attr: { "stroke-dasharray": 1, "stroke-dashoffset": o.drawBorders ? 1 : 0 } });
 
@@ -76,7 +76,7 @@
     };
     const fit = (spec, pad) => {
       if (spec && spec.cx != null) return { cx: spec.cx, cy: spec.cy, w: spec.w };
-      const b = bboxOf(spec), p = pad == null ? (spec === "world" ? 0.01 : 0.12) : pad, bw = (b[2] - b[0]) * (1 + 2 * p), bh = (b[3] - b[1]) * (1 + 2 * p);
+      const b = bboxOf(spec), p = pad == null ? (spec === "world" ? 0.01 : 0.08) : pad, bw = (b[2] - b[0]) * (1 + 2 * p), bh = (b[3] - b[1]) * (1 + 2 * p);
       return { cx: (b[0] + b[2]) / 2, cy: (b[1] + b[3]) / 2, w: Math.max(bw, bh * asp) };
     };
     M.fit = fit;
@@ -145,7 +145,7 @@
     M.zoom = (view, t, d, z) => {
       z = z || {}; d = d || 1.6; const a = M._next || fit(v0, o.pad), b = fit(view, z.pad), ia = 1 / a.w, ib = 1 / b.w, same = Math.abs(ia - ib) < 1e-12; M._next = b;
       run(t, d, z.ease || "power2.inOut", (p) => {
-        const w = Math.exp(Math.log(a.w) + (Math.log(b.w) - Math.log(a.w)) * p), u = same ? p : 0.5 * (p + (1 / w - ia) / (ib - ia));
+        const w = Math.exp(Math.log(a.w) + (Math.log(b.w) - Math.log(a.w)) * p), u = same ? p : 1 - (1 - p) * (1 - p);
         M.cam = { cx: a.cx + (b.cx - a.cx) * u, cy: a.cy + (b.cy - a.cy) * u, w };
       });
       return M;
@@ -210,22 +210,27 @@
       if (r.labels !== false) M.label(tg, at + 0.9, { text: typeof tg === "string" ? title(tg) : "", dy: -48, size: 26 }); }); rings(hub, t, 0); return M; };
     M.choropleth = (data, t, c) => {
       c = c || {}; const keys = Object.keys(data).sort((a, b) => data[a] - data[b]), vals = keys.map((k) => data[k]), lo = Math.min(...vals), hi = Math.max(...vals);
-      const warm = T.marker.toUpperCase() !== "#FFFFFF", ramp = c.ramp || (warm ? [mix(T.marker, T.paper, 0.55), T.marker, mix(T.marker, T.alert, 0.5), T.alert, mix(T.alert, T.ink, 0.28)] : [T.pale, mix(T.pale, T.deep, 0.4), mix(T.pale, T.deep, 0.75), T.deep, mix(T.deep, T.ink, 0.5)]);
+      const ramp = c.ramp || [T.pale, mix(T.pale, T.marker, 0.5), T.marker, mix(T.marker, T.deep, 0.5), T.deep];
       const cls = (v) => clamp(Math.floor(((v - lo) / (hi - lo || 1)) * 5), 0, 4), gap = c.stagger || 0.3, unit = c.unit || "";
       keys.forEach((k, i) => { const at = t + i * gap, e = fillUse[k.toUpperCase()]; tl.fromTo(e, { fill: land }, { fill: ramp[cls(data[k])], duration: 0.3, ease: "power2.out", immediateRender: false }, at);
         if (c.values !== false) { const ce = G.countries[k.toUpperCase()].c, a = anchor(ce[0], ce[1]), w = mk("g", { transform: `translate(${(c.off && c.off[k]) ? c.off[k][0] : 0} ${(c.off && c.off[k]) ? c.off[k][1] : 0})` }, a.g), inn = O0(hide(mk("g", {}, w)));
           chip(inn, (c.fmt ? c.fmt(data[k]) : data[k]) + unit, { size: 30 }); pop(inn, at + 0.1, 0.25); } });
-      const lx = c.legendX == null ? 48 : c.legendX, ly = c.legendY == null ? H - 120 : c.legendY, lgw = mk("g", { transform: `translate(${lx} ${ly - 40}) scale(1.4)` }, ov), lg = O0(hide(mk("g", {}, lgw))), lw = 5 * 46 + 34;
-      mk("rect", { x: 4, y: 4, width: lw + 120, height: 92, rx: 12, fill: T.shadow }, lg); mk("rect", { width: lw + 120, height: 92, rx: 12, fill: T.paper, stroke: T.ink, "stroke-width": 4 }, lg);
+      const lx = c.legendX == null ? 48 : c.legendX, ly = c.legendY == null ? H - 120 : c.legendY, lgw = mk("g", { transform: `translate(${lx} ${ly - 40}) scale(1.4)` }, ov), lg = O0(hide(mk("g", {}, lgw))), lw = Math.max(5 * 46 + 34, (c.title || '').length * 15 + 36);
+      mk("rect", { x: 4, y: 4, width: lw, height: 92, rx: 12, fill: T.shadow }, lg); mk("rect", { width: lw, height: 92, rx: 12, fill: T.paper, stroke: T.ink, "stroke-width": 4 }, lg);
       const tt = mk("text", { x: 18, y: 30, "font-family": "Anton,Impact,sans-serif", "font-size": 24, "letter-spacing": 0.8, fill: T.ink }, lg); tt.textContent = (c.title || "").toUpperCase();
       ramp.forEach((col, i) => mk("rect", { x: 18 + i * 46, y: 42, width: 44, height: 24, fill: col, stroke: T.ink, "stroke-width": 3 }, lg));
-      [["LOW", 18, "start"], ["HIGH", 18 + 5 * 46 - 2, "end"]].forEach((q) => { const e = mk("text", { x: q[1], y: 86, "text-anchor": q[2], "font-family": "Anton,Impact,sans-serif", "font-size": 17, fill: T.ink }, lg); e.textContent = q[0]; });
-      const rg = mk("text", { x: lw + 4, y: 62, "font-family": "Anton,Impact,sans-serif", "font-size": 24, fill: T.ink }, lg); rg.textContent = `${lo}-${hi}${unit}`; tl.set(lg, { opacity: 1 }, t); tl.fromTo(lg, { scale: 0.6, y: 20 }, { scale: 1, y: 0, duration: 0.3, ease: "back.out(2)", immediateRender: false }, t); return M;
+      [["LOW " + lo + unit, 18, "start"], ["HIGH " + hi + unit, 18 + 5 * 46 - 2, "end"]].forEach((q) => { const e = mk("text", { x: q[1], y: 86, "text-anchor": q[2], "font-family": "Anton,Impact,sans-serif", "font-size": 20, fill: T.ink }, lg); e.textContent = q[0]; }); tl.set(lg, { opacity: 1 }, t); tl.fromTo(lg, { scale: 0.6, y: 20 }, { scale: 1, y: 0, duration: 0.3, ease: "back.out(2)", immediateRender: false }, t); return M;
     };
     M.count = (where, n, t, c) => {
-      c = c || {}; const xy = pt(where), a = anchor(xy[0], xy[1]), w = mk("g", { transform: `translate(${c.dx == null ? 70 : c.dx} ${c.dy == null ? -90 : c.dy})` }, a.g), inn = O0(hide(mk("g", {}, w))), fmt = (v) => (c.prefix || "") + Math.round(v).toLocaleString("en-US") + (c.suffix || "");
-      const wd = Math.max(200, fmt(n).length * 40 + 44), hh = c.label ? 148 : 84; mk("line", { x1: 0, y1: 0, x2: -(c.dx == null ? 70 : c.dx), y2: -(c.dy == null ? -90 : c.dy), stroke: T.ink, "stroke-width": 4, "stroke-linecap": "round" }, inn);
-      mk("circle", { cx: -(c.dx == null ? 70 : c.dx), cy: -(c.dy == null ? -90 : c.dy), r: 8, fill: T.ink }, inn);
+      c = c || {}; const xy = pt(where), a = anchor(xy[0], xy[1]);
+      let DX = c.dx, DY = c.dy == null ? -60 : c.dy, EX = 0; const wd0 = Math.max(200, ((c.prefix || "") + Math.round(n).toLocaleString("en-US") + (c.suffix || "")).length * 40 + 44), cc = typeof where === "string" && G.countries[where.toUpperCase()];
+      if (cc && DX == null) { // auto-place on the side with free room; stem ends inside the outline, away from the label
+        const cam = M._next || fit(v0, o.pad), sc = cam.w / W, b = cc.b, sx = (xy[0] - (cam.cx - cam.w / 2)) / sc, rx = (b[2] - xy[0]) / sc, lx = (xy[0] - b[0]) / sc, side = W - (sx + rx) >= sx - lx ? 1 : -1, e = side > 0 ? rx : lx;
+        DX = side * (e + 34 + wd0 / 2); DX = clamp(DX, -(sx - wd0 / 2 - 24), W - sx - wd0 / 2 - 24); EX = side * Math.max(e * 0.6, 90);
+      } else if (DX == null) { DX = 70; DY = c.dy == null ? -90 : c.dy; }
+      const w = mk("g", { transform: `translate(${DX} ${DY})` }, a.g), inn = O0(hide(mk("g", {}, w))), fmt = (v) => (c.prefix || "") + Math.round(v).toLocaleString("en-US") + (c.suffix || "");
+      const wd = Math.max(200, fmt(n).length * 40 + 44), hh = c.label ? 148 : 84; mk("line", { x1: 0, y1: 0, x2: EX - DX, y2: -DY, stroke: T.ink, "stroke-width": 4, "stroke-linecap": "round" }, inn);
+      mk("circle", { cx: EX - DX, cy: -DY, r: 8, fill: T.ink }, inn);
       const st = mk("g", { transform: `rotate(${c.tilt == null ? -4 : c.tilt})` }, inn);
       mk("rect", { x: -wd / 2 + 6, y: -hh / 2 + 6, width: wd, height: hh, rx: 14, fill: T.shadow }, st); mk("rect", { x: -wd / 2, y: -hh / 2, width: wd, height: hh, rx: 14, fill: T.marker, stroke: T.ink, "stroke-width": 5 }, st);
       const num = mk("text", { x: 0, y: c.label ? -28 : 2, "text-anchor": "middle", "dominant-baseline": "central", "font-family": "Anton,Impact,sans-serif", "font-size": 58, fill: T.ink }, st); num.textContent = fmt(0);

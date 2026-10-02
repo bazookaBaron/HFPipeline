@@ -104,6 +104,7 @@ b{font-weight:900}
 function visual(v) {
   if (!v) return "";
   switch (v.type) {
+    case "html": return v.html;
     case "stat":
       return `<div class="card stat"><div class="num">${esc(v.value)}</div><div class="lbl">${rich(v.label)}${v.small ? `<small>${esc(v.small)}</small>` : ""}</div></div>`;
     case "bars": {

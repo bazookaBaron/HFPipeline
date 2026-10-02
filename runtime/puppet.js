@@ -20,6 +20,10 @@
     eye: "#FFFFFF",
     tongue: "#F3829A",
     dots: "#1E1D1C",   // optional halftone
+    pants: "#1F2B4D",  // full-body: flat ink-blue trousers (cobalt `shadow` is the shade side)
+    belt: "#111111",
+    shoe: "#FFFFFF",   // sneakers: white, black outline
+    sole: "#E94F37",   // sneaker sole stripe (defaults to the shirt red)
   };
   const LW = 6.5;  // body outline weight (viewBox units; ~6px at 560px wide)
   const LI = 4;    // interior line weight (ribbing, creases)
@@ -117,7 +121,7 @@
     const up = `x="-${RU}" y="-${RU}" width="${2 * RU}" height="${L1 + 2 * RU}" rx="${RU}"`;
     const fo = `x="-${RF}" y="-${RF}" width="${2 * RF}" height="${CY + 10 + RF}" rx="${RF}"`;
     const ribs = Array.from({ length: 11 }, (_, i) => { const x = f1(-30 + i * 6); return `M${x} ${CY + 7}L${x} ${CY + CH - 7}`; }).join("");
-    return `<g transform="translate(${SH[side][0]} ${SH[side][1]})"><g id="${p}-arm${side}">
+    return `<g transform="translate(${SH[side][0]} ${SH[side][1]})"><g id="${p}-sw${side}"><g id="${p}-arm${side}">
   <g${mir}><clipPath id="${p}-cu${side}"><rect ${up}/></clipPath>
     <rect ${up} fill="${C.shirt}"/>
     <g clip-path="url(#${p}-cu${side})"><rect x="16" y="-50" width="40" height="${L1 + 100}" fill="${C.shadow}"/>
@@ -136,7 +140,47 @@
       ${ln(C, ribs, LI * 0.8)}
       <rect x="-${CW}" y="${CY}" width="${2 * CW}" height="${CH}" rx="10" fill="none" stroke="${C.line}" stroke-width="${LW}"/></g>
   </g></g>
-</g></g>`;
+</g></g></g>`;
+  }
+
+  // ---------- legs (full-body mode) ----------
+  const FB = { HIP: { A: [225, 900], B: [375, 900] }, ANK: { A: [210, 1120], B: [390, 1120] }, LT: 112, LS: 112, RT: 54, RS: 46, FLOOR: 1161, SOLE: 38, TOE: 84, VB: "0 70 600 1098" };
+  const SHOE = "M-42 -24L16 -24C26 -10 50 -6 68 2C90 12 92 38 62 38L-34 38C-54 38 -56 14 -42 -24Z";
+  function legArt(C, p, s) {
+    const { RT, RS, LT, LS } = FB;
+    const mir = s === "B" ? ` transform="scale(-1 1)"` : "";
+    const th = (extra) => `class="${p}-th${s}" x="-${RT}" y="-${RT}" width="${2 * RT}" height="${LT + 2 * RT}" rx="${RT}"${extra || ""}`;
+    const sh = `x="-${RS}" y="-${RS}" width="${2 * RS}" height="${LS + RS + 12}" rx="${RS}"`;
+    return `<g id="${p}-leg${s}"><g${mir}>
+    <clipPath id="${p}-tc${s}"><rect ${th()}/></clipPath>
+    <rect ${th(` fill="${C.pants}"`)}/>
+    <g clip-path="url(#${p}-tc${s})"><rect class="${p}-ths${s}" x="12" y="-70" width="70" height="${LT + 140}" fill="${C.shadow}"/></g>
+    <rect ${th(` fill="none" stroke="${C.line}" stroke-width="${LW}"`)}/></g>
+  <g id="${p}-shin${s}" transform="translate(0 ${LT})"><g${mir}>
+    <clipPath id="${p}-sc${s}"><rect ${sh}/></clipPath>
+    <rect ${sh} fill="${C.pants}"/>
+    <g clip-path="url(#${p}-sc${s})"><rect x="11" y="-60" width="70" height="${LS + 120}" fill="${C.shadow}"/></g>
+    ${ln(C, `M-30 ${LS - 22}Q0 ${LS - 14} 30 ${LS - 22}`, LI)}${ln(C, `M-20 26Q-26 50-19 66`, LI)}
+    <rect ${sh} fill="none" stroke="${C.line}" stroke-width="${LW}"/></g>
+    <g id="${p}-foot${s}" transform="translate(0 ${LS})"><g id="${p}-toe${s}">
+      <clipPath id="${p}-fc${s}"><path d="${SHOE}"/></clipPath>
+      <path d="${SHOE}" fill="${C.shoe}"/>
+      <g clip-path="url(#${p}-fc${s})">
+        <path d="M-70 -30L-18 -30C-26 0-26 26-22 44L-70 44Z" fill="${C.shadow}"/>
+        <rect x="-70" y="23" width="170" height="30" fill="${C.sole}"/>${ln(C, "M-70 23L100 23", LI)}</g>
+      ${ln(C, "M40 -3C48 8 48 20 44 23", LI)}${ln(C, "M-4 -22L2 -9M12 -21L19 -8", LI)}
+      <path d="${SHOE}" fill="none" stroke="${C.line}" stroke-width="${LW}" stroke-linejoin="round"/>
+    </g></g>
+  </g></g>`;
+  }
+  function pelvisArt(C, p) {
+    return `<rect x="104" y="850" width="392" height="40" rx="8" fill="${C.belt}" stroke="${C.line}" stroke-width="${LW}"/>
+  <rect x="274" y="857" width="52" height="26" rx="6" fill="${C.eye}" stroke="${C.line}" stroke-width="${LI + 1}"/>${ln(C, "M300 862L300 878", LI - 1)}
+  <clipPath id="${p}-pc"><path d="M114 884L486 884C492 912 470 940 438 952L162 952C130 940 108 912 114 884Z"/></clipPath>
+  <path d="M114 884L486 884C492 912 470 940 438 952L162 952C130 940 108 912 114 884Z" fill="${C.pants}"/>
+  <g clip-path="url(#${p}-pc)"><rect x="400" y="860" width="120" height="110" fill="${C.shadow}"/></g>
+  ${ln(C, "M114 888C108 912 130 940 162 952M486 888C492 912 470 940 438 952", LW)}
+  <path d="M272 946Q300 976 328 946Z" fill="${C.pants}"/>${ln(C, "M274 950Q300 974 326 950", LW)}`;
   }
 
   // ---------- face ----------
@@ -186,13 +230,13 @@
     <g transform="translate(4 13)">${hairCircles(C.shadow)}</g>
   </g>
   <path d="${FACE}" fill="none" stroke="${C.line}" stroke-width="${LW}"/>
-  <g fill="${C.line}">${STUBBLE.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.2"/>`).join("")}</g>
+  <g id="${p}-feat"><g fill="${C.line}">${STUBBLE.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="2.2"/>`).join("")}</g>
   <g id="${p}-nose"><path d="M302 284L272 370Q276 384 304 386Z" fill="${C.nose}"/><path d="M302 284L332 368Q330 384 304 386Z" fill="${C.shadow}"/>
     <path d="M302 284L272 370Q276 384 304 386Q330 384 332 368Z" fill="none" stroke="${C.line}" stroke-width="6" stroke-linejoin="round"/></g>
   ${eyeArt(C, p, "L")}${eyeArt(C, p, "R")}
   <g id="${p}-browL">${ln(C, "M232 246L292 238", 11)}</g>
   <g id="${p}-browR">${ln(C, "M308 238L368 246", 11)}</g>
-  <g id="${p}-mouth">${Object.keys(M).map((k) => `<g id="${p}-m-${k}"${k === "closed" ? "" : HID}><g transform="${k === "closed" ? "translate(0 8)" : "translate(306 424) scale(1.32) translate(-306 -416)"}">${M[k]}</g></g>`).join("")}</g>
+  <g id="${p}-mouth">${Object.keys(M).map((k) => `<g id="${p}-m-${k}"${k === "closed" ? "" : HID}><g transform="${k === "closed" ? "translate(0 8)" : "translate(306 424) scale(1.32) translate(-306 -416)"}">${M[k]}</g></g>`).join("")}</g></g>
   <g>${hairCircles(C.line, ` stroke="${C.line}" stroke-width="${2 * LW}"`)}${hairCircles(C.hair)}</g>
   <path d="M228 156A26 26 0 0 1 264 136M282 112A26 26 0 0 1 320 110M338 140A26 26 0 0 1 374 136M222 196A20 20 0 0 1 248 180M290 190A20 20 0 0 1 318 182M360 192A20 20 0 0 1 386 188" fill="none" stroke="${C.shadow}" stroke-width="4" stroke-linecap="round"/>
 </g>`;
@@ -204,17 +248,24 @@
       const s = [a[0] + (b[0] - a[0]) * 0.14, a[1] + (b[1] - a[1]) * 0.14], e = [a[0] + (b[0] - a[0]) * 0.86, a[1] + (b[1] - a[1]) * 0.86];
       return `M${f1(s[0])} ${f1(s[1])}L${f1(e[0])} ${f1(e[1])}`;
     }).join("");
-    const BODY = "M40 720C40 620 70 572 150 544C196 528 228 514 248 506L352 506C372 514 404 528 450 544C530 572 560 620 560 720Z";
+    const full = opts.mode === "full";
+    const BODY = full ? "M40 720C40 620 70 572 150 544C196 528 228 514 248 506L352 506C372 514 404 528 450 544C530 572 560 620 560 720C560 780 534 828 500 856L100 856C66 828 40 780 40 720Z"
+      : "M40 720C40 620 70 572 150 544C196 528 228 514 248 506L352 506C372 514 404 528 450 544C530 572 560 620 560 720Z";
+    const SIDES = full ? "M100 856C66 828 40 780 40 720C40 620 70 572 150 544C196 528 228 514 248 506M352 506C372 514 404 528 450 544C530 572 560 620 560 720C560 780 534 828 500 856"
+      : "M40 720C40 620 70 572 150 544C196 528 228 514 248 506M352 506C372 514 404 528 450 544C530 572 560 620 560 720";
+    const hem = full ? `<g clip-path="url(#${p}-tc)"><rect x="30" y="824" width="540" height="40" fill="${C.shirt}"/><rect x="448" y="824" width="140" height="40" fill="${C.shadow}"/>
+    ${ln(C, Array.from({ length: 33 }, (_, i) => { const x = f1(60 + i * 14.5); return `M${x} 832L${x} 852`; }).join(""), LI * 0.8)}${ln(C, "M30 824Q300 836 570 824", LW)}</g>` : "";
     const COLLAR = `M${IA}Q${IC} ${IB}L${OB}Q${OC} ${OA}Z`;
     const torso = `
   <clipPath id="${p}-tc"><path d="${BODY}"/></clipPath>
   <path d="${BODY}" fill="${C.shirt}"/>
   <g clip-path="url(#${p}-tc)">
-    <path d="M404 524C466 552 496 620 494 720L600 720L600 480Z" fill="${C.shadow}"/>
+    <path d="M404 524C466 552 496 620 494 720${full ? "C494 770 480 810 462 860" : ""}L600 ${full ? 860 : 720}L600 480Z" fill="${C.shadow}"/>
     <path d="M300 602Q350 598 396 508L420 520Q380 610 300 622Z" fill="${C.shadow}"/>
   </g>
-  ${ln(C, "M40 720C40 620 70 572 150 544C196 528 228 514 248 506M352 506C372 514 404 528 450 544C530 572 560 620 560 720", LW)}
-  ${ln(C, "M236 630Q250 664 243 716M376 612Q364 652 372 704", LI + 1)}
+  ${hem}
+  ${ln(C, SIDES, LW)}${full ? ln(C, "M100 856L500 856", LW) : ""}
+  ${ln(C, "M236 630Q250 664 243 716M376 612Q364 652 372 704", LI + 1)}${full ? ln(C, "M158 770Q184 792 178 818M424 760Q410 790 418 812", LI + 1) : ""}
   <path d="M250 400L350 400L350 532L250 532Z" fill="${C.skin}"/>
   <path d="M250 400L350 400L350 532L316 532C314 514 310 502 298 498C282 494 266 496 250 500Z" fill="${C.shadow}"/>
   ${ln(C, "M250 430L250 526M350 430L350 526", LW)}
@@ -223,17 +274,23 @@
   ${ln(C, ribs, LI * 0.8)}
   <path d="${COLLAR}" fill="none" stroke="${C.line}" stroke-width="${LW}" stroke-linejoin="round"/>`;
     const ht = !!opts.halftone;
-    return `<svg class="pz-svg" viewBox="0 0 600 680" overflow="visible" xmlns="http://www.w3.org/2000/svg">
+    const neck = `<g id="${p}-hb"><g id="${p}-neck"><g id="${p}-hd">${head}</g></g></g>`;
+    const upper = `<g id="${p}-torso">${torso}
+  ${neck}
+  ${armArt(C, p, "A")}${armArt(C, p, "B")}
+</g>`;
+    const rigSvg = full ? `<g id="${p}-gsh"><ellipse cx="300" cy="${FB.FLOOR}" rx="205" ry="24" fill="${C.shadow}"/></g>
+<g id="${p}-mrig"><g id="${p}-rig">${legArt(C, p, "A")}${legArt(C, p, "B")}
+  <g id="${p}-hips"><g id="${p}-pelvis">${pelvisArt(C, p)}</g><g id="${p}-tw">${upper}</g></g>
+</g></g>` : `<g id="${p}-rig">${upper}</g>`;
+    return `<svg class="pz-svg" viewBox="${full ? FB.VB : "0 0 600 680"}" overflow="visible" xmlns="http://www.w3.org/2000/svg">
 ${ht ? `<defs>
   <pattern id="${p}-dots" width="11" height="11" patternUnits="userSpaceOnUse"><circle cx="5.5" cy="5.5" r="2.7" fill="${C.dots}"/></pattern>
   <filter id="${p}-white" filterUnits="userSpaceOnUse" x="-600" y="-600" width="1800" height="1900"><feColorMatrix type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/></filter>
   <mask id="${p}-sm" maskUnits="userSpaceOnUse" x="-600" y="-600" width="1800" height="1900"><use href="#${p}-rig" filter="url(#${p}-white)"/></mask>
 </defs>
 <g id="${p}-shadow" transform="translate(24 -16)" opacity=".8"><rect x="-600" y="-600" width="1800" height="1900" fill="url(#${p}-dots)" mask="url(#${p}-sm)"/></g>` : `<g id="${p}-shadow" style="display:none"></g>`}
-<g id="${p}-rig"><g id="${p}-torso">${torso}
-  <g id="${p}-neck">${head}</g>
-  ${armArt(C, p, "A")}${armArt(C, p, "B")}
-</g></g>
+${rigSvg}
 </svg>`;
   }
 
@@ -279,6 +336,19 @@ ${ht ? `<defs>
     count_1: { A: IDLE_A, B: { ik: [476, 380], ha: -176, h: "point" }, head: 4, brows: "raised", look: "center" },
     count_2: { A: IDLE_A, B: { ik: [476, 380], ha: -176, h: "two" }, head: 4, brows: "raised", look: "center" },
     count_3: { A: IDLE_A, B: { ik: [476, 380], ha: -176, h: "three" }, head: 4, brows: "raised", look: "center" },
+    // ---- body states (full mode; in bust mode only the arm/face part applies) ----
+    stand: { A: IDLE_A, B: IDLE_B, head: 0, brows: "neutral", look: "center", body: "stand" },
+    step_l: { A: IDLE_A, B: IDLE_B, head: -3, brows: "neutral", look: "left", body: "step_l" },
+    step_r: { A: IDLE_A, B: IDLE_B, head: 3, brows: "neutral", look: "right", body: "step_r" },
+    lean: { A: IDLE_A, B: { ik: [466, 706], ha: -150, h: "fist", bend: -1 }, head: 4, brows: "one", look: "upright", body: "lean" },
+    sit: { A: { ang: [12, -24, 8], h: "open" }, B: { ang: [-12, 24, -8], h: "open" }, head: 0, brows: "neutral", look: "center", body: "sit" },
+    jump: { A: { ik: [96, 420], ha: 160, h: "open" }, B: { ik: [504, 420], ha: -160, h: "open" }, head: 0, brows: "raised", eyes: "wide", look: "up", mouth: "o", body: "jump" },
+    hop: { A: { ik: [118, 410], ha: 176, h: "fist" }, B: { ik: [482, 410], ha: -176, h: "fist" }, head: 0, brows: "raised", look: "up", mouth: "smile", body: "hop" },
+    present_left: { A: { ik: [34, 534], ha: 104, h: "palmup" }, B: IDLE_B, head: -6, brows: "raised", look: "left", body: "present_left" },
+    present_right: { A: IDLE_A, B: { ik: [566, 534], ha: -104, h: "palmup" }, head: 6, brows: "raised", look: "right", body: "present_right" },
+    point_screen_l: { A: { ik: [-30, 430], ha: 124, h: "point" }, B: IDLE_B, head: -7, brows: "raised", look: "upleft", body: "point_screen_l" },
+    point_screen_r: { A: IDLE_A, B: { ik: [630, 430], ha: -124, h: "point" }, head: 7, brows: "raised", look: "upright", body: "point_screen_r" },
+    tap: { A: IDLE_A, B: IDLE_B, head: 2, brows: "one", look: "down", body: "tap" },
   };
   const BROWS = {
     neutral: { L: { y: 0, rotation: 0 }, R: { y: 0, rotation: 0 } },
@@ -288,6 +358,205 @@ ${ht ? `<defs>
   };
   const LOOK = { center: [0, 0], left: [-12, 0], right: [12, 0], up: [0, -9], down: [0, 9], upleft: [-9, -8], upright: [9, -8] };
 
+  // ---------- full-body rig: channels (keyframe tracks) -> pure solve -> DOM ----------
+  // Every body motion writes keyframes into per-channel tracks (viewBox units, degrees, 0..1 factors). One driver tween
+  // (ease none) on your timeline calls apply(time), which evaluates the tracks as a pure function of time and solves
+  // the leg IK. Feet are IK targets in the figure frame, so planted feet never slide while the hips move. Seek-safe.
+  const CH = { x: 0, y: 0, flip: 1, sq: 0, hx: 0, hy: 0, tilt: 0, lean: 0, twist: 0, sit: 0, fAx: 0, fAy: 0, fAr: 0, fBx: 0, fBy: 0, fBr: 0, toeA: -1, toeB: 1, swA: 0, swB: 0, hbY: 0, hbR: 0 };
+  const STEPPED = { toeA: 1, toeB: 1 };
+  const EASE = {
+    none: (u) => u, in: (u) => u * u, out: (u) => 1 - (1 - u) * (1 - u), io: (u) => (u < 0.5 ? 2 * u * u : 1 - 2 * (1 - u) * (1 - u)),
+    sio: (u) => 0.5 - 0.5 * Math.cos(Math.PI * u), in3: (u) => u * u * u, out3: (u) => 1 - Math.pow(1 - u, 3),
+    back: (u) => 1 + 2.70158 * Math.pow(u - 1, 3) + 1.70158 * Math.pow(u - 1, 2),
+    spring: (u) => (u >= 1 ? 1 : 1 - Math.exp(-7 * u) * Math.cos(15 * u)),
+  };
+  const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+  const sgn = (v) => (v < 0 ? -1 : 1);
+  const PEL = { drop: 70, spread: 16, fwd: 20 }; // sit: hips drop, feet spread and come toward the camera
+
+  function newRig() {
+    const tr = {}; Object.keys(CH).forEach((c) => (tr[c] = []));
+    const R = { tr, idle: [], end: 0, k: 1 };
+    R.val = (c, t) => {
+      const a = tr[c]; if (!a.length || t < a[0].t) return CH[c];
+      let lo = 0, hi = a.length - 1;
+      if (t >= a[hi].t) return a[hi].v;
+      while (hi - lo > 1) { const m = (lo + hi) >> 1; if (a[m].t <= t) lo = m; else hi = m; }
+      const A = a[lo], B = a[hi];
+      if (STEPPED[c]) return A.v;
+      return A.v + (B.v - A.v) * (EASE[B.e] || EASE.none)((t - A.t) / (B.t - A.t));
+    };
+    R.key = (c, t, v, e) => {
+      const a = tr[c]; R.end = Math.max(R.end, t);
+      let i = a.length;
+      while (i > 0 && a[i - 1].t > t + 1e-9) i--;
+      if (i > 0 && Math.abs(a[i - 1].t - t) < 1e-9) { a[i - 1].v = v; a[i - 1].e = e || "none"; return; }
+      a.splice(i, 0, { t, v, e: e || "none" });
+    };
+    R.hold = (c, t) => { const a = tr[c]; if (!a.some((k) => Math.abs(k.t - t) < 1e-9)) R.key(c, t, R.val(c, t), "none"); };
+    R.go = (t0, t1, o, e) => { for (const c in o) { R.hold(c, t0); R.key(c, t1, o[c], e || "io"); } };
+    R.vals = (t) => {
+      const v = {}; for (const c in CH) v[c] = R.val(c, t);
+      R.idle.forEach((L) => {
+        const w = clamp((t - L.a) / 0.5, 0, 1) * clamp((L.b - t) / 0.5, 0, 1); if (!w) return;
+        const s = L.amt * w * w * (3 - 2 * w), W = 6.2832 * t;
+        v.hx += s * 3.4 * Math.sin(W / 4.3); v.hy += s * 1.8 * Math.sin(W / 3.1 + 0.6);
+        v.lean += s * 0.9 * Math.sin(W / 5.2 + 1); v.hbR += s * 0.9 * Math.sin(W / 3.7); v.tilt += s * 0.5 * Math.sin(W / 4.9 + 2);
+        v.swA += s * 1.4 * Math.sin(W / 3.4); v.swB -= s * 1.4 * Math.sin(W / 3.4 + 0.5);
+      });
+      return v;
+    };
+    // ---- motions (pure keyframe writers; author in time order) ----
+    R.shift = (t, dir, o = {}) => { // hips over one foot, the other hip drops so that knee relaxes; feet stay planted
+      const d = o.d || 0.5, m = dir === "l" ? -1 : dir === "r" ? 1 : 0, a = o.amt ?? 1;
+      R.go(t, t + d, { hx: m * 28 * a, tilt: -m * 7 * a, lean: m * 5 * a, hy: m ? 8 * a : 0 }, o.ease || "io");
+    };
+    R.step = (t, side, o = {}) => { // lift one foot, place it wider, hips follow
+      const f = side === "l" ? "A" : "B", sg = side === "l" ? -1 : 1, d = o.d || 0.42, len = o.len ?? 46;
+      R.go(t, t + d, { ["f" + f + "x"]: R.val("f" + f + "x", t) + sg * len }, "io");
+      R.hold("f" + f + "y", t); R.key("f" + f + "y", t + d * 0.45, -34, "out"); R.key("f" + f + "y", t + d, 0, "in");
+      R.hold("f" + f + "r", t); R.key("f" + f + "r", t + d * 0.45, f === "A" ? 12 : -12, "out"); R.key("f" + f + "r", t + d, 0, "in");
+      R.go(t, t + d, { hx: R.val("hx", t) + sg * len * 0.45, hy: 6 }, "io");
+    };
+    R.home = (t, d = 0.5) => { // neutral stance: feet step in with a small arc, hips and torso centre
+      if (R.val("sit", t) > 0.3) return R.standUp(t, d);
+      ["A", "B"].forEach((f) => {
+        if (Math.abs(R.val("f" + f + "x", t)) > 1) {
+          R.hold("f" + f + "y", t); R.key("f" + f + "y", t + d * 0.45, -26, "out"); R.key("f" + f + "y", t + d, 0, "in");
+          R.go(t, t + d, { ["f" + f + "x"]: 0 }, "io");
+        }
+      });
+      R.go(t, t + d, { hx: 0, hy: 0, tilt: 0, lean: 0, twist: 0 }, "io");
+    };
+    R.leanWall = (t, dir, d = 0.55) => { // straight diagonal body, ankles crossed
+      const m = dir === "l" ? -1 : 1;
+      R.go(t, t + d, { lean: m * 10, hx: m * 34, tilt: -m * 2, twist: m * 0.3, hy: 6 }, "out");
+      R.go(t, t + d, { ["f" + (m > 0 ? "A" : "B") + "x"]: m * 62 }, "io");
+    };
+    R.presenting = (t, side, d = 0.5) => { // body turned a quarter toward the content, near foot steps out
+      const m = side === "l" ? -1 : 1;
+      R.go(t, t + d, { twist: m, lean: m * 3 }, "back");
+      R.step(t, side, { d, len: 30 });
+    };
+    R.pointScreen = (t, side, d = 0.5) => {
+      const m = side === "l" ? -1 : 1;
+      R.go(t, t + d, { twist: m, lean: m * 6 }, "back");
+      R.step(t, side, { d, len: 36 });
+    };
+    R.turn = (t, to, d = 0.42) => { // turn in place: card-spin through edge-on, hips dip
+      const tgt = to === "front" ? 1 : to === "mirror" ? -1 : -sgn(R.val("flip", t));
+      const hy0 = R.val("hy", t);
+      R.go(t, t + d, { flip: tgt }, "io"); R.hold("hy", t); R.key("hy", t + d * 0.5, hy0 + 10, "out"); R.key("hy", t + d, hy0, "in");
+    };
+    R.sit = (t, d = 0.55) => {
+      R.go(t, t + 0.2, { lean: 8 }, "out"); R.go(t + 0.2, t + d + 0.3, { lean: 0 }, "io");
+      R.go(t + 0.05, t + 0.05 + d, { sit: 1, hx: 0, tilt: 0 }, "back");
+    };
+    R.standUp = (t, d = 0.55) => {
+      R.go(t, t + 0.22, { lean: 13 }, "out");
+      R.go(t + 0.1, t + 0.1 + d, { sit: 0, hx: 0, tilt: 0, twist: 0 }, "out");
+      R.go(t + 0.3, t + 0.1 + d + 0.15, { lean: 0 }, "io");
+    };
+    R.jump = (t, o = {}) => { // crouch, stretch on take-off, tuck at the apex, squash on landing, spring settle
+      const h = o.h ?? 150, a = o.crouch ?? 0.2, up = o.up ?? 0.27, dn = o.down ?? 0.25;
+      const t0 = t + a, ta = t0 + up, tt = ta + dn, k = clamp(h / 150, 0.4, 1.4);
+      R.go(t, t0, { hy: 36 * k, sq: 0.13 * k }, "out");
+      R.go(t0, t0 + 0.09, { hy: -4, sq: -0.11 * k }, "out");
+      R.hold("y", t0); R.key("y", ta, -h, "out"); R.key("y", tt, 0, "in");
+      R.key("sq", ta, -0.04 * k, "io"); R.key("hy", ta, 0, "io");
+      R.key("sq", tt, 0.16 * k, "in"); R.key("hy", tt, 30 * k, "in");
+      R.key("sq", tt + 0.32, 0, "spring"); R.key("hy", tt + 0.32, 0, "spring");
+      ["fAy", "fBy"].forEach((c) => { R.hold(c, t0); R.key(c, t0 + 0.06, -4, "out"); R.key(c, ta, -h * 0.17, "out"); R.key(c, tt - 0.05, -6, "in"); R.key(c, tt, 0, "none"); });
+      return { launch: t0, apex: ta, land: tt, end: tt + 0.32 };
+    };
+    R.hop = (t, o = {}) => {
+      const n = o.n ?? 2; let tt = t, last;
+      for (let i = 0; i < n; i++) { last = R.jump(tt, { h: o.h ?? 62, crouch: 0.11, up: 0.17, down: 0.15 }); tt = last.land + 0.12; }
+      return { launch: t + 0.11, land: last.land, end: tt };
+    };
+    R.tap = (t, o = {}) => { // nervous toe tap: the free foot pivots about its toe
+      const f = o.foot === "l" ? "A" : "B", hold = o.hold ?? 1, n = Math.max(1, Math.round(hold / 0.22)), per = hold / n, te = t + hold;
+      const sg = R.val("toe" + f, t), env = (ts) => clamp((ts - t) / 0.06, 0, 1) * clamp((te - ts) / 0.06, 0, 1);
+      R.hold("f" + f + "x", t); R.hold("f" + f + "y", t); R.hold("f" + f + "r", t);
+      const bx = R.val("f" + f + "x", t), by = R.val("f" + f + "y", t);
+      for (let ts = t; ts <= te + 1e-6; ts += 1 / 60) {
+        const th = 24 * Math.pow(Math.sin(Math.PI * (((ts - t) / per) % 1)), 1.3) * env(ts);
+        const c = Math.cos(th * D2R), s = Math.sin(th * D2R), x0 = -FB.TOE, y0 = -FB.SOLE;
+        R.key("f" + f + "x", ts, bx + sg * ((x0 * c - y0 * s) + FB.TOE), "none");
+        R.key("f" + f + "y", ts, by + ((x0 * s + y0 * c) + FB.SOLE), "none");
+        R.key("f" + f + "r", ts, sg * th, "none");
+      }
+      R.key("f" + f + "x", te + 1e-4, bx, "none"); R.key("f" + f + "y", te + 1e-4, by, "none"); R.key("f" + f + "r", te + 1e-4, 0, "none");
+    };
+    // walk: stance feet are planted in WORLD space (rig offset = world - body x); swing feet arc over; hips bob; arms swing.
+    R.walk = (t0, t1, o = {}) => {
+      const xs = o.from ?? R.val("x", t0), xe = o.to, D = xe - xs;
+      if (Math.abs(D) < 1) return;
+      const dir = sgn(D), T = t1 - t0, cl = Math.min(0.2, T * 0.18), TS = T - cl, stride = o.stride ?? 96;
+      const n = Math.max(1, o.steps ?? Math.ceil(Math.abs(D) / stride)), tau = TS / n;
+      const bx = (ts) => xs + D * EASE.sio(clamp((ts - t0) / T, 0, 1));
+      const first = dir > 0 ? "A" : "B", other = (f) => (f === "A" ? "B" : "A");
+      const w0 = { A: xs + R.val("fAx", t0), B: xs + R.val("fBx", t0) }, cur = { A: w0.A, B: w0.B }, steps = [];
+      for (let i = 0; i <= n; i++) {
+        const f = i === n ? other(steps[n - 1].f) : (i % 2 ? other(first) : first);
+        const tb = t0 + (i === n ? TS : i * tau), dur = i === n ? cl : tau;
+        const to = i < n - 1 ? (bx(t0 + (i + 1) * tau) + bx(t0 + (i + 2) * tau)) / 2 : xe;
+        steps.push({ f, from: cur[f], to, tb, dur }); cur[f] = to;
+      }
+      const B0 = {}; ["hx", "tilt", "lean", "swA", "swB", "hbY", "hbR", "fAy", "fBy", "fAr", "fBr", "hy"].forEach((c) => (B0[c] = R.val(c, t0)));
+      R.key("toeA", t0, dir, "none"); R.key("toeB", t0, dir, "none");
+      const N = Math.ceil(T * 60);
+      for (let q = 0; q <= N; q++) {
+        const ts = t0 + (q / N) * T, x = bx(ts);
+        const env = clamp((ts - t0) / 0.25, 0, 1) * clamp((t1 - ts) / 0.25, 0, 1), e = env * env * (3 - 2 * env);
+        const si = ts >= t0 + TS ? n : Math.min(n - 1, Math.floor((ts - t0) / tau)), S = steps[si], u = clamp((ts - S.tb) / S.dur, 0, 1);
+        const w = {}, lift = { A: 0, B: 0 }, rot = { A: 0, B: 0 };
+        ["A", "B"].forEach((f) => {
+          let pos = w0[f];
+          for (let j = 0; j <= si; j++) if (steps[j].f === f && (j < si || u >= 1)) pos = steps[j].to;
+          if (S.f === f && u < 1) {
+            pos = S.from + (S.to - S.from) * EASE.sio(u);
+            lift[f] = -(16 + 0.12 * Math.abs(S.to - S.from)) * Math.sin(Math.PI * u); rot[f] = -dir * 13 * Math.sin(Math.PI * u);
+          }
+          w[f] = pos;
+        });
+        const phi = (ts - t0) / (2 * tau), sgA = -Math.sin(6.2832 * phi) * (first === "A" ? 1 : -1), sph = Math.sin(Math.PI * u);
+        const relA = w.A - x, relB = w.B - x, mix = (c, val) => B0[c] * (1 - e) + val * e;
+        R.key("x", ts, x, "none");
+        R.key("fAx", ts, relA, "none"); R.key("fBx", ts, relB, "none");
+        R.key("fAy", ts, B0.fAy + lift.A * e, "none"); R.key("fBy", ts, B0.fBy + lift.B * e, "none");
+        R.key("fAr", ts, B0.fAr + rot.A * e, "none"); R.key("fBr", ts, B0.fBr + rot.B * e, "none");
+        R.key("hy", ts, mix("hy", B0.hy + 16 - 9 * sph), "none");
+        R.key("hx", ts, mix("hx", -6 * sgA), "none"); R.key("tilt", ts, mix("tilt", 3.5 * sgA), "none");
+        R.key("lean", ts, mix("lean", 2.6 * dir - 1.2 * sgA), "none");
+        R.key("swA", ts, mix("swA", 13 * clamp(relA * dir / 55, -1, 1)), "none"); R.key("swB", ts, mix("swB", 13 * clamp(relB * dir / 55, -1, 1)), "none");
+        R.key("hbY", ts, mix("hbY", -3 * sph), "none"); R.key("hbR", ts, mix("hbR", -2.5 * sgA), "none");
+      }
+      ["fAx", "fBx", "fAy", "fBy", "fAr", "fBr", "hx", "tilt", "lean", "swA", "swB", "hbY", "hbR"].forEach((c) => R.key(c, t1 + 1e-4, 0, "none"));
+      R.key("hy", t1 + 1e-4, B0.hy, "none"); R.key("x", t1 + 1e-4, xe, "none");
+    };
+    return R;
+  }
+
+  // pure kinematics: channel values -> joint transforms (also returns ankle positions so tests can check planting)
+  function solveFull(v) {
+    const { HIP, ANK, LT, LS } = FB, o = { v };
+    const Le = LT * (1 - 0.5 * v.sit), tl = v.tilt * D2R, ct = Math.cos(tl), st = Math.sin(tl);
+    o.hdx = v.hx; o.hdy = v.hy + PEL.drop * v.sit;
+    ["A", "B"].forEach((s) => {
+      const rx = HIP[s][0] - 300, hx = 300 + rx * ct + o.hdx, hy = 900 + rx * st + o.hdy;
+      const tx = ANK[s][0] + v["f" + s + "x"] + (s === "A" ? -1 : 1) * PEL.spread * v.sit, ty = ANK[s][1] + v["f" + s + "y"] + PEL.fwd * v.sit;
+      const dx = tx - hx, dy = ty - hy, d = Math.hypot(dx, dy), dc = clamp(d, Math.abs(Le - LS) + 0.5, (Le + LS) * 0.9995);
+      const phi = Math.atan2(dy, dx), a = Math.acos(clamp((Le * Le + dc * dc - LS * LS) / (2 * Le * dc), -1, 1));
+      const k1 = [hx + Le * Math.cos(phi + a), hy + Le * Math.sin(phi + a)], k2 = [hx + Le * Math.cos(phi - a), hy + Le * Math.sin(phi - a)];
+      const knee = s === "A" ? (k1[0] < k2[0] ? k1 : k2) : (k1[0] > k2[0] ? k1 : k2);
+      const ank = [hx + dc * Math.cos(phi), hy + dc * Math.sin(phi)];
+      const thr = dirToRot(knee[0] - hx, knee[1] - hy), shAbs = dirToRot(ank[0] - knee[0], ank[1] - knee[1]);
+      o[s] = { hx, hy, thr: norm(thr), shr: norm(shAbs - thr), fr: norm(-shAbs + v["f" + s + "r"]), Le, ank, target: [tx, ty], reach: dc - d };
+    });
+    return o;
+  }
+
   // ---------- instance ----------
   function mount(container, opts = {}) {
     const el = typeof container === "string" ? document.querySelector(container) : container;
@@ -295,7 +564,9 @@ ${ht ? `<defs>
     const C = Object.assign({}, THEME, opts.theme || {});
     el.insertAdjacentHTML("beforeend", build(p, C, opts));
     const svg = el.lastElementChild;
-    svg.style.width = (opts.width || 560) + "px";
+    const full = opts.mode === "full";
+    const W = full && opts.height ? (opts.height * 600) / 1098 : opts.width || 560;
+    svg.style.width = W + "px";
     svg.style.height = "auto";
     svg.style.display = "block";
     const $ = (id) => svg.querySelector("#" + p + "-" + id);
@@ -307,12 +578,13 @@ ${ht ? `<defs>
       eye: { L: $("eyeL"), R: $("eyeR") }, blink: { L: $("blinkL"), R: $("blinkR") },
       brow: { L: $("browL"), R: $("browR") },
       pupils: Array.from(svg.querySelectorAll("." + p + "-pupil")),
-      mouths: {}, state: { pose: "idle" },
+      mouths: {}, state: { pose: "idle" }, full, k: W / 600,
+      sw: { A: $("swA"), B: $("swB") }, feat: $("feat"), hb: $("hb"), hd: $("hd"),
     };
     HANDS.forEach((h) => { P.hands.A[h] = $("hA-" + h); P.hands.B[h] = $("hB-" + h); });
     MOUTH_KEYS.forEach((k) => (P.mouths[k] = $("m-" + k)));
     // static pivots (set once; tweens only touch rotation/x/y/scale)
-    gsap.set([P.rig, P.torso], { svgOrigin: "300 700" });
+    gsap.set([P.rig, P.torso], { svgOrigin: full ? "300 856" : "300 700" });
     gsap.set(P.neck, { svgOrigin: "300 500" });
     ["A", "B"].forEach((s) => gsap.set([P.arm[s], P.fore[s], P.hand[s]], { svgOrigin: "0 0" }));
     gsap.set([P.eye.L, P.blink.L], { svgOrigin: EYE.L.join(" ") });
@@ -326,6 +598,7 @@ ${ht ? `<defs>
       HANDS.forEach((h) => gsap.set(P.hands[s][h], { autoAlpha: h === a.hand ? 1 : 0 }));
     });
     MOUTH_KEYS.forEach((k) => gsap.set(P.mouths[k], { autoAlpha: k === "closed" ? 1 : 0 }));
+    if (full) initFull(P, $);
     P.pose = (tl, t, name, o) => pose(P, tl, t, name, o);
     P.talk = (tl, words, o) => talk(P, tl, words, o);
     P.blinks = (tl, end, o) => blinks(P, tl, end, o);
@@ -334,9 +607,102 @@ ${ht ? `<defs>
     P.mouth = (tl, t, v) => mouth(P, tl, t, v);
     P.breathe = (tl, from, to, o) => breathe(P, tl, from, to, o);
     P.enter = (tl, t, o) => enter(P, tl, t, o);
+    ["walk", "moveTo", "place", "idle", "turn", "shift", "step", "jump", "hop", "tap", "sit", "stand", "lean", "present", "pointScreen"].forEach((m) => (P[m] = (tl, ...a) => FULL_API[m](P, tl, ...a)));
     Puppet.current = P;
     return P;
   }
+
+  function initFull(P, $) {
+    const R = (P.R = newRig()); R.k = P.k;
+    P.el = { mrig: $("mrig"), hips: $("hips"), pelvis: $("pelvis"), tw: $("tw"), gsh: $("gsh"), legs: {}, shins: {}, feet: {}, toes: {}, th: {} };
+    ["A", "B"].forEach((s) => {
+      P.el.legs[s] = $("leg" + s); P.el.shins[s] = $("shin" + s); P.el.feet[s] = $("foot" + s); P.el.toes[s] = $("toe" + s);
+      P.el.th[s] = Array.from(P.svg.querySelectorAll("." + P.p + "-th" + s + ", ." + P.p + "-ths" + s));
+    });
+    P.apply = (t) => applyFull(P, t);
+    P.drv = new Map();
+    applyFull(P, 0);
+  }
+  const F2 = (n) => Math.round(n * 100) / 100;
+  function applyFull(P, t) {
+    const R = P.R, v = R.vals(t), o = solveFull(v), E = P.el, { FLOOR } = FB;
+    const sx = (Math.abs(v.flip) < 0.03 ? 0.03 * sgn(v.flip) : v.flip) * (1 + 0.55 * v.sq), sy = 1 - v.sq;
+    E.mrig.setAttribute("transform", `translate(${F2(v.x)} ${F2(v.y)}) translate(300 ${FLOOR}) scale(${F2(sx * 1000) / 1000} ${F2(sy * 1000) / 1000}) translate(-300 -${FLOOR})`);
+    E.hips.setAttribute("transform", `translate(${F2(o.hdx)} ${F2(o.hdy)})`);
+    E.pelvis.setAttribute("transform", `rotate(${F2(v.tilt)} 300 900)`);
+    E.tw.setAttribute("transform", `translate(${F2(v.twist * 7)} 0) translate(300 856) rotate(${F2(v.lean)}) scale(${F2(1 - 0.2 * Math.abs(v.twist))} 1) translate(-300 -856)`);
+    P.feat.setAttribute("transform", `translate(${F2(v.twist * 20)} 0)`);
+    P.hb.setAttribute("transform", `translate(0 ${F2(v.hbY)}) rotate(${F2(v.hbR)} 300 500)`);
+    P.sw.A.setAttribute("transform", `rotate(${F2(v.swA)})`); P.sw.B.setAttribute("transform", `rotate(${F2(v.swB)})`);
+    ["A", "B"].forEach((s) => {
+      const L = o[s];
+      E.legs[s].setAttribute("transform", `translate(${F2(L.hx)} ${F2(L.hy)}) rotate(${F2(L.thr)})`);
+      E.shins[s].setAttribute("transform", `translate(0 ${F2(L.Le)}) rotate(${F2(L.shr)})`);
+      E.feet[s].setAttribute("transform", `translate(0 ${FB.LS}) rotate(${F2(L.fr)})`);
+      E.toes[s].setAttribute("transform", `scale(${v["toe" + s] > 0 ? 1 : -1} 1)`);
+      E.th[s].forEach((r) => r.setAttribute("height", r.getAttribute("class").indexOf("ths") > -1 ? F2(L.Le + 140) : F2(L.Le + 2 * FB.RT)));
+    });
+    E.gsh.setAttribute("transform", `translate(${F2(v.x)} 0) translate(300 ${FLOOR}) scale(${F2(clamp(1 - Math.abs(v.y) / 700, 0.5, 1))} 1) translate(-300 -${FLOOR})`);
+  }
+  function drive(P, tl, tEnd) {
+    let d = P.drv.get(tl);
+    if (!d) {
+      d = gsap.to({ p: 0 }, { p: 1, duration: Math.max(tEnd, 0.05), ease: "none", onUpdate: () => P.apply(d.time()) });
+      tl.add(d, 0);
+      P.drv.set(tl, d);
+    } else if (d.duration() < tEnd) d.duration(tEnd);
+  }
+  function bodyPose(P, tl, t, name, o = {}) {
+    const R = P.R, d = o.d || 0.45;
+    if (name && typeof name === "object") R.go(t, t + d, name, "io");
+    else switch (name) {
+      case "stand": R.home(t, d); break;
+      case "step_l": R.step(t, "l", { d: Math.max(d, 0.35) }); break;
+      case "step_r": R.step(t, "r", { d: Math.max(d, 0.35) }); break;
+      case "lean": R.leanWall(t, o.dir || "r", d + 0.1); break;
+      case "sit": R.sit(t, d + 0.1); break;
+      case "present_left": R.presenting(t, "l", d); break;
+      case "present_right": R.presenting(t, "r", d); break;
+      case "point_screen_l": R.pointScreen(t, "l", d); break;
+      case "point_screen_r": R.pointScreen(t, "r", d); break;
+      case "tap": R.tap(t, { hold: o.hold ?? 1, foot: o.foot }); break;
+      case "jump": { const j = R.jump(t, { h: o.h ? o.h / P.k : undefined }); jumpArms(P, tl, j, o); break; }
+      case "hop": { const j = R.hop(t, { n: o.n ?? 2, h: o.h ? o.h / P.k : undefined }); jumpArms(P, tl, j, Object.assign({ name: "hop" }, o)); break; }
+    }
+    drive(P, tl, R.end + 0.05);
+  }
+  function jumpArms(P, tl, j, o) {
+    if (o.arms === false) return;
+    const up = POSES[o.name === "hop" ? "hop" : "jump"];
+    pose(P, tl, j.launch - 0.02, { A: up.A, B: up.B, head: up.head, brows: "raised", eyes: "wide", look: "up" }, { d: 0.16, mouth: false });
+    pose(P, tl, j.land + 0.05, "idle", { d: 0.25, mouth: false });
+  }
+  // ---- full-body public API (x positions in px, offsets relative to where the puppet was mounted) ----
+  const FULL_API = {
+    place: (P, tl, t, x) => { P.R.key("x", t, x / P.k, "none"); drive(P, tl, t + 0.05); },
+    walk: (P, tl, t0, t1, o = {}) => {
+      P.R.walk(t0, t1, { from: o.from == null ? undefined : o.from / P.k, to: o.to / P.k, stride: o.stride, steps: o.steps });
+      drive(P, tl, P.R.end + 0.05);
+    },
+    moveTo: (P, tl, t, x, o = {}) => {
+      const x0 = P.R.val("x", t) * P.k, dist = Math.abs(x - x0);
+      if (dist < 1) return;
+      P.R.walk(t, t + (o.d || Math.max(0.5, dist / 430)), { to: x / P.k, stride: dist < 90 ? dist / P.k : 96 });
+      drive(P, tl, P.R.end + 0.05);
+    },
+    idle: (P, tl, from, to, o = {}) => { P.R.idle.push({ a: from, b: to, amt: o.amt ?? 1 }); drive(P, tl, to); },
+    turn: (P, tl, t, to, o = {}) => { P.R.turn(t, to || "toggle", o.d); drive(P, tl, P.R.end + 0.05); },
+    shift: (P, tl, t, dir, o) => { P.R.shift(t, dir, o); drive(P, tl, P.R.end + 0.05); },
+    step: (P, tl, t, side, o) => { P.R.step(t, side, o); drive(P, tl, P.R.end + 0.05); },
+    jump: (P, tl, t, o = {}) => pose(P, tl, t, "jump", o),
+    hop: (P, tl, t, o = {}) => pose(P, tl, t, "hop", o),
+    tap: (P, tl, t, o = {}) => pose(P, tl, t, "tap", o),
+    sit: (P, tl, t, o = {}) => pose(P, tl, t, "sit", o),
+    stand: (P, tl, t, o = {}) => pose(P, tl, t, "stand", o),
+    lean: (P, tl, t, o = {}) => pose(P, tl, t, "lean", o),
+    present: (P, tl, t, side, o = {}) => pose(P, tl, t, side === "r" || side === "right" ? "present_right" : "present_left", o),
+    pointScreen: (P, tl, t, side, o = {}) => pose(P, tl, t, side === "r" || side === "right" ? "point_screen_r" : "point_screen_l", o),
+  };
 
   function mouth(P, tl, t, v) {
     if (!P.mouths[v]) return;
@@ -400,7 +766,12 @@ ${ht ? `<defs>
       }
     });
     tl.to(P.neck, { rotation: def.head || 0, duration: d * 1.2, ease: "back.out(1.4)" }, t);
-    tl.to(P.rig, { y: def.rig || 0, duration: d, ease }, t);
+    if (P.full) {
+      if (def.rig || P.state.lastRig) { P.R.go(t, t + d, { y: def.rig || 0 }, "out"); drive(P, tl, P.R.end + 0.05); }
+      P.state.lastRig = !!def.rig;
+      tl.to(P.hd, { y: (def.shoulders || 0) * -0.45, duration: d, ease }, t); // shrug: shoulders up, head sinks
+    } else tl.to(P.rig, { y: def.rig || 0, duration: d, ease }, t);
+    if (def.body && P.full) bodyPose(P, tl, t, def.body, Object.assign({ name: typeof name === "string" ? name : "" }, o));
     face(P, tl, t, { brows: def.brows || "neutral", eyes: def.eyes || "open", look: def.look || "center", mouth: o.mouth === false ? null : def.mouth }, { d });
     if (!def.mouth && o.mouth !== false && P.state.lastMouthPose) mouth(P, tl, t + d * 0.3, "closed");
     P.state.lastMouthPose = !!def.mouth;
@@ -447,7 +818,22 @@ ${ht ? `<defs>
 
   const cur = (o) => (o && o.puppet) || Puppet.current;
   const Puppet = {
-    mount, POSES, HANDS, LOOK, BROWS, ik, solveArm, current: null,
+    mount, POSES, HANDS, LOOK, BROWS, ik, solveArm, current: null, newRig, solveFull, FB,
+    walk: (tl, t0, t1, o) => FULL_API.walk(cur(o), tl, t0, t1, o || {}),
+    moveTo: (tl, t, x, o) => FULL_API.moveTo(cur(o), tl, t, x, o || {}),
+    place: (tl, t, x, o) => FULL_API.place(cur(o), tl, t, x),
+    idle: (tl, a, b, o) => FULL_API.idle(cur(o), tl, a, b, o || {}),
+    turn: (tl, t, to, o) => FULL_API.turn(cur(o), tl, t, to, o || {}),
+    shift: (tl, t, dir, o) => FULL_API.shift(cur(o), tl, t, dir, o),
+    step: (tl, t, side, o) => FULL_API.step(cur(o), tl, t, side, o),
+    jump: (tl, t, o) => FULL_API.jump(cur(o), tl, t, o || {}),
+    hop: (tl, t, o) => FULL_API.hop(cur(o), tl, t, o || {}),
+    tap: (tl, t, o) => FULL_API.tap(cur(o), tl, t, o || {}),
+    sit: (tl, t, o) => FULL_API.sit(cur(o), tl, t, o || {}),
+    stand: (tl, t, o) => FULL_API.stand(cur(o), tl, t, o || {}),
+    lean: (tl, t, o) => FULL_API.lean(cur(o), tl, t, o || {}),
+    present: (tl, t, side, o) => FULL_API.present(cur(o), tl, t, side, o || {}),
+    pointScreen: (tl, t, side, o) => FULL_API.pointScreen(cur(o), tl, t, side, o || {}),
     pose: (tl, t, name, o) => pose(cur(o), tl, t, name, o),
     talk: (tl, words, o) => talk(cur(o), tl, words, o),
     blinks: (tl, end, o) => blinks(cur(o), tl, end, o),

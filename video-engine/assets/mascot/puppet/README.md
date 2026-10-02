@@ -46,3 +46,40 @@ Puppet.enter(tl, 0, { d: 0.32 });                // rise from the bottom
 - **Determinism:** there is no `Math.random`, `Date` or CSS transform on any tweened element. All pivots are set once in `mount`.
 - **Check:** seeking out of order (forward, back, random) gives identical DOM transforms.
 - **Elbows:** they are overlapping round-capped sleeve capsules, so there are no gaps at any angle.
+
+## Full-body mode (long-form, 16:9)
+
+`mode: "full"` adds trousers (flat ink-blue, cobalt shade side), a belt, white sneakers with a coloured sole stripe, and legs with 2-bone IK
+(hip, knee, ankle). The torso runs to the hips with a ribbed hem. `mode: "bust"` (the default) is unchanged and is what reels use.
+
+```js
+const P = Puppet.mount("#pz", { mode: "full", height: 620, id: "pz" });   // height = hair-top to sole in px (or pass width)
+const tl = gsap.timeline({ paused: true });
+Puppet.place(tl, 0, 640);                              // instant x offset in px (relative to the mount spot), e.g. start off-screen
+Puppet.walk(tl, 0.1, 2.5, { from: 640, to: 0 });       // translate + walk cycle: planted stance feet, arcing swing feet, hip bob, arm swing, head bob
+Puppet.moveTo(tl, 5, -300, { d: 1.2 });               // walks (short distances become a step or two); d optional
+Puppet.pose(tl, 3, "present_left");                    // body states are poses too (see list); arm/hand poses and visemes work as before
+Puppet.shift(tl, 4, "l" | "r" | "c");                  // weight shift: hips over one foot, the other knee relaxes, feet stay planted
+Puppet.step(tl, 4, "l" | "r", { len: 46 });            // one planted-foot step to the side
+Puppet.jump(tl, 6, { h: 150 });                        // h in px; squash, stretch, tuck, landing squash. arms go up (arms:false to skip)
+Puppet.hop(tl, 6, { n: 2 });                           // celebratory hops with fist pumps
+Puppet.sit(tl, 8); Puppet.stand(tl, 10);               // sit on an implied box/stool (draw your own prop); stand-up leans forward first
+Puppet.lean(tl, 3, { dir: "r" });                      // lean on an invisible wall
+Puppet.tap(tl, 3, { hold: 1.2, foot: "r" });           // nervous toe tap
+Puppet.turn(tl, 7, "toggle" | "mirror" | "front");     // turn in place (card-spin through edge-on)
+Puppet.pointScreen(tl, 3, "l");                        // whole-arm point at a big screen + body twist
+Puppet.idle(tl, 0, DUR, { amt: 1 });                   // idle micro-sway + breathing, a pure function of time
+Puppet.breathe(tl, 0, DUR);                            // optional torso scaleY breathing (origin at the hips in full mode)
+```
+
+- **Body poses** for `Puppet.pose(tl, t, name)`: `stand`, `step_l`, `step_r`, `lean` (`{dir}`), `sit`, `jump` (`{h}`), `hop` (`{n}`), `present_left`, `present_right`,
+  `point_screen_l`, `point_screen_r`, `tap` (`{hold, foot}`). `shrug` also raises the shoulders and sinks the head in full mode. A pose can carry
+  `body: { hx, hy, tilt, lean, twist, ... }` (channel targets) in a custom pose object.
+- **Units:** all x positions and `h` are in screen px. Offsets are relative to where the puppet is mounted. Author body motions in time order.
+- **How it works:** body motions write keyframes into per-channel tracks (x, y, hip offset/tilt, lean, twist, sit, squash, foot offsets, arm swing, head bob).
+  One driver tween on your timeline evaluates the tracks as a pure function of time, then solves the leg IK. Feet are IK targets in the figure frame, so a
+  planted foot does not move while the hips sway. The walk keeps stance feet fixed in WORLD space (`rig offset = world - body x`).
+- **Seek-safety:** the driver is a single `ease:"none"` tween with `onUpdate`; there is no Math.random, Date or rAF. Seeking any order gives the same pose.
+- **Demo:** `out/puppet-demo-full/index.html` (1920x1080, 15 s). `out/puppet-demo-full/tour/` has a pose tour. Contact sheet: `full-body.jpg`.
+- **Limits:** the walk is a front-view sideways shuffle (feet swing along x; shoes flip to face the travel direction). `turn` mirrors the whole figure, so the
+  cobalt shade side flips too. Sitting uses foreshortened thighs, and the stool/box is your own prop. Keep `walk` strides at about 100 units or less (reach is clamped).

@@ -65,7 +65,7 @@ Layer 3–6 things per moment (main visual + sticker/doodle + character reaction
    - No idle wobble/bobbing or tickers just to pass the motion gate: fill gaps with real story beats.
    - Look at your own final contact sheet before reporting.
 6. **Review** (Opus): one contact sheet + metrics. Fix once if needed.
-7. Deliver: mp4 path, description with music credit from `credits.txt` (CC BY), hashtags.
+7. Cover: run the `thumbnail` skill (1080x1920 cover, no AI). Deliver: mp4 path, cover, description with music credit from `credits.txt` (CC BY), hashtags.
 
 ## 5. CAROUSEL (6–7 slides, same topic as the reel, posted the day before) — ≤ 0.3 window
 
@@ -84,7 +84,7 @@ Images: photoreal ONLY via `runtime/images.js` (licensed real photo first; fal p
 5. `node runtime/images.js <dir> slots.json` once for all chapters.
 6. Sonnet chapter builders, 2–3 in parallel, one `chNN.html` each, render each chapter once.
 7. Stitch chapters (ffmpeg concat), `mix.py --music auto --mood <...>` (music changes per chapter), master −14 LUFS.
-8. Thumbnail (poster style, character + one bold claim + one photo) and description (chapters with timestamps, sources, image + music credits).
+8. Thumbnail via the `thumbnail` skill (3 variants, no AI, pick by mobile squint test) and description (chapters with timestamps, sources, image + music credits).
 
 ## 7. Never
 

@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=1920, height=1080"/>
+<script src="gsap.min.js"></script><script src="theme.js"></script><script src="inject.js"></script><script src="verbs.js"></script><script src="puppet.js"></script><script src="lf-kit.js"></script>
+<style>
+@font-face{font-family:"Anton";src:url(fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:500;src:url(fonts/inter-latin-500-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:800;src:url(fonts/inter-latin-800-normal.woff2)}
+@font-face{font-family:"Mono";font-weight:700;src:url(fonts/JetBrainsMono-Bold.woff2)}
+html,body{margin:0;background:#222}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:Inter,sans-serif;background:var(--bg)}
+.sh{position:absolute;inset:0;transform:translate(12px,12px);background:var(--shadow);border-radius:34px}
+.stack{position:absolute;inset:0}
+.face{position:absolute;inset:0;box-sizing:border-box;border:6px solid var(--ink);border-radius:34px;display:flex;align-items:flex-start;justify-content:center;gap:22px;color:var(--ink);font:400 128px/1 Anton,sans-serif;letter-spacing:.03em;padding-top:20px}
+.cnt{position:absolute;left:0;right:0;bottom:22px;text-align:center;font:700 40px/1 Mono,monospace;letter-spacing:.04em;height:44px;overflow:hidden}
+.cnt span{position:absolute;left:0;right:0;top:0}
+.wm{display:flex;align-items:center;justify-content:center;gap:0;background:var(--paper);border:6px solid var(--ink);border-radius:26px;box-shadow:12px 12px 0 var(--shadow);font:400 104px/1 Anton,sans-serif;letter-spacing:.05em;color:var(--ink);padding:18px 0 10px;white-space:nowrap}
+.wm i{position:relative;font-style:normal;padding:0 14px}.wm i b{position:absolute;left:0;right:0;top:12%;bottom:0;background:var(--marker);transform-origin:left center;z-index:0}.wm i u{position:relative;z-index:1;text-decoration:none}
+.sticker{background:var(--marker);border:6px solid var(--ink);border-radius:20px;box-shadow:10px 10px 0 var(--shadow);font:400 62px/1.05 Anton,sans-serif;letter-spacing:.05em;color:var(--ink);padding:18px 30px 12px;text-align:center;white-space:nowrap}
+.bellc{background:var(--paper);border:6px solid var(--ink);border-radius:50%;box-shadow:10px 10px 0 var(--shadow);display:flex;align-items:center;justify-content:center}
+.notif{background:var(--ink);color:var(--paper);border:6px solid var(--ink);border-radius:20px;box-shadow:10px 10px 0 var(--shadow);font:400 54px/1 Anton,sans-serif;letter-spacing:.06em;padding:16px 28px 10px;white-space:nowrap}
+</style></head><body>
+<div id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="11.44"></div>
+<script>
+window.__timelines = window.__timelines || {};
+Theme.apply(THEME);
+const tl = gsap.timeline({ paused: true });
+LF.init(tl);
+const root = document.getElementById("root");
+const A = (line, w, n) => LF.at(WORDS, line, w, n);
+const mk = LF.mk;
+// ---- background + camera + fx ----
+const bg = mk("lf-bg", "", { visibility: "visible", opacity: 1, zIndex: 0 }, root); bg.style.background = "var(--bg)";
+const cam = mk("lfh", "", { inset: 0, visibility: "visible", opacity: 1, zIndex: 2 }, root); cam.id = "cam"; LF.cam = cam;
+const fx = mk("lfh", "", { inset: 0, visibility: "visible", opacity: 1, pointerEvents: "none", zIndex: 40 }, cam); fx.id = "fx";
+const ICON = {
+  thumb: '<svg viewBox="0 0 24 24" width="118" height="118" style="overflow:visible"><path d="M2 21h4V9H2v12zM23 10c0-1.1-.9-2-2-2h-6.3l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z" fill="var(--paper)" stroke="var(--ink)" stroke-width="1.5" stroke-linejoin="round"/></svg>',
+  bell: '<svg viewBox="0 0 24 24" width="120" height="120" style="overflow:visible"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" fill="var(--marker)" stroke="var(--ink)" stroke-width="1.4" stroke-linejoin="round"/></svg>',
+  check: '<svg viewBox="0 0 40 40" width="64" height="64" style="overflow:visible"><path d="M6 21 L16 31 L34 9" fill="none" stroke="var(--ink)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+// ---- wordmark ----
+const wm = mk("wm", '<i><u>ZIGGY</u></i><i><b id="wmk"></b><u>EXPLAINS</u></i>', { left: "680px", top: "64px", width: "1180px", zIndex: 20 }, cam);
+// ---- LIKE button ----
+const likeW = mk("", '<div class="sh"></div><div class="stack" id="likeS"><div class="face" id="likeF" style="background:var(--paper)"><span id="likeI" style="display:block;transform-origin:30% 80%">' + ICON.thumb + '</span><span style="">LIKE</span><div class="cnt"><span id="c0" data-layout-allow-overlap>8,431</span><span id="c1" data-layout-allow-overlap>8,432</span></div></div></div>', { left: "680px", top: "300px", width: "520px", height: "280px", zIndex: 20 }, cam);
+// ---- SUBSCRIBE button ----
+const subW = mk("", '<div class="sh"></div><div class="stack" id="subS"><div class="face" id="subA" style="align-items:center;background:var(--ink);color:var(--paper);font-size:112px">SUBSCRIBE</div><div class="face" id="subB" style="align-items:center;background:#C9C9C9;font-size:84px;visibility:hidden;gap:16px">SUBSCRIBED ' + ICON.check + '</div></div>', { left: "1240px", top: "300px", width: "620px", height: "280px", zIndex: 20 }, cam);
+// ---- bell + chip + sticker ----
+const bellC = mk("bellc", '<div id="bellI" style="transform-origin:50% 8%;margin-top:6px">' + ICON.bell + '</div>', { left: "1180px", top: "690px", width: "200px", height: "200px", zIndex: 20 }, cam);
+const notif = mk("notif", "ALL NOTIFICATIONS", { left: "1420px", top: "740px", zIndex: 20 }, cam);
+const sticker = mk("sticker", "NEW DEEP DIVE<br>EVERY WEEK", { left: "70px", top: "90px", zIndex: 20 }, cam);
+// ---- cursor ----
+const cur = mk("", '<svg viewBox="0 0 40 52" width="64" height="83" style="overflow:visible"><path d="M3 3 L3 40 L13 31 L20 47 L28 43 L21 28 L35 28 Z" fill="var(--paper)" stroke="var(--ink)" stroke-width="4" stroke-linejoin="round"/></svg>', { left: "0px", top: "0px", zIndex: 60, visibility: "hidden", opacity: 0 }, cam); cur.id = "cursor";
+gsap.set(cur, { x: 760, y: 860 });
+const press = (S, t, o) => tl.to(S, { keyframes: [{ x: 9, y: 9, scaleX: (o && o.sx) || 1, scaleY: (o && o.sy) || 1, duration: 0.07, ease: "power2.out" }, { x: 0, y: 0, scaleX: 1, scaleY: 1, duration: 0.2, ease: "back.out(3)" }] }, t);
+gsap.set("#likeS,#subS", { transformOrigin: "50% 100%" });
+gsap.set("#bellI", { rotation: 0 });
+gsap.set("#c1", { y: 46, autoAlpha: 0 });
+gsap.set("#subB", { scaleY: 0 });
+gsap.set("#wmk", { scaleX: 0 });
+
+// ---- timeline of events ----
+const tLike = A(0, "like", 0), tSub = A(0, "subscribe", 0), tWeek = A(0, "week", 0), tDeep = A(0, "deep", 0), tBell = A(1, "bell", 0), tNext = A(1, "next", 0), tOne = A(1, "one", 0);
+LF.enter(wm, 0.08, "drop", { y0: -400, rot0: -5 });
+V.hl("#wmk", 0.55, { d: 0.3 });
+// puppet
+const pz = LF.puppet(tl, { words: WORDS, dur: DUR, cx: 400, x0: -260, h: 640, floor: 1020 });
+pz.walk(0.12, 1.5, 400);
+pz.pose(1.75, "wave", { hold: 1.2 });
+pz.pose(tLike - 0.75, "present_right", { hold: 1.3 });
+pz.pose(tLike + 0.05, "thumbs_up", { hold: 0.55 });
+pz.pose(tSub + 0.3, "point_screen_r", { hold: 1.2 });
+pz.step(tWeek - 0.5, "r");
+pz.pose(tWeek, "present_right", { hold: 1.0 });
+pz.pose(tBell - 0.25, "count_1", { hold: 1.0 });
+pz.shift(tBell + 1.0, "l");
+pz.jump(tNext - 0.1, { h: 160 });
+pz.pose(tOne + 0.55, "wave", { hold: 2.2 });
+pz.run();
+// buttons appear before their words
+LF.enter(likeW, tLike - 0.85, "whip", { from: "right" });
+LF.enter(subW, tLike - 0.45, "whip", { from: "right" });
+// cursor clicks LIKE
+const lx = 680 + 250, ly = 300 + 100, sx = 1240 + 300, sy = 300 + 100, bx = 1180 + 100, by = 690 + 100;
+V.click("#cursor", tLike + 0.08, lx, ly, { move: 0.3, color: THEME.ink });
+press("#likeS", tLike + 0.08, { sx: 1.04, sy: 0.9 });
+tl.to("#likeF", { backgroundColor: THEME.marker, duration: 0.08 }, tLike + 0.13);
+tl.to("#likeI", { keyframes: [{ rotation: -24, y: -10, duration: 0.1 }, { rotation: 0, y: 0, duration: 0.22, ease: "back.out(3)" }] }, tLike + 0.16);
+tl.to("#c0", { y: -46, autoAlpha: 0, duration: 0.16, ease: "power2.in" }, tLike + 0.2);
+tl.to("#c1", { y: 0, autoAlpha: 1, duration: 0.2, ease: "back.out(2)" }, tLike + 0.26);
+V.burst("#fx", tLike + 0.12, 20, lx, ly, { colors: [THEME.marker, THEME.ink, THEME.deep, THEME.paper], r: 300 });
+// cursor clicks SUBSCRIBE
+V.click("#cursor", tSub + 0.1, sx, sy, { move: 0.26, color: THEME.ink });
+press("#subS", tSub + 0.1, { sx: 1.1, sy: 0.82 });
+tl.to("#subA", { scaleY: 0, duration: 0.08, ease: "power2.in" }, tSub + 0.32);
+tl.set("#subB", { visibility: "visible" }, tSub + 0.4);
+tl.to("#subB", { scaleY: 1, duration: 0.2, ease: "back.out(2.5)", immediateRender: false }, tSub + 0.4);
+V.burst("#fx", tSub + 0.42, 14, sx, sy, { colors: [THEME.marker, THEME.ink, THEME.paper], r: 260 });
+V.shake("#cam", tSub + 0.12, { a: 6 });
+tl.to("#cursor", { x: 1760, y: 700, autoAlpha: 0, duration: 0.3, ease: "power2.in" }, tSub + 0.95);
+// wordmark pulse on "deep dive", sticker on "week"
+V.pulse(wm, tDeep, { s: 1.04 });
+LF.enter(sticker, tDeep - 0.05, "slam", { rot: -4, shake: false });
+tl.to(sticker, { keyframes: [{ rotation: -7, duration: 0.12 }, { rotation: -3, duration: 0.16 }, { rotation: -4, duration: 0.12 }] }, tWeek + 0.15);
+// bell
+LF.enter(bellC, tBell - 0.45, "pop");
+V.click("#cursor", tBell + 0.12, bx, by, { move: 0.3, color: THEME.ink });
+tl.to("#bellI", { keyframes: [{ rotation: -22, duration: 0.09 }, { rotation: 20, duration: 0.12 }, { rotation: -16, duration: 0.12 }, { rotation: 13, duration: 0.12 }, { rotation: -8, duration: 0.1 }, { rotation: 4, duration: 0.1 }, { rotation: 0, duration: 0.1 }], ease: "sine.inOut" }, tBell + 0.14);
+LF.enter(notif, tBell + 0.5, "pop", { rot: 2 });
+tl.to("#cursor", { x: 1700, y: 900, autoAlpha: 0, duration: 0.3, ease: "power2.in" }, tBell + 0.75);
+// finale: jump + wave + hold
+V.burst("#fx", tNext + 0.42, 22, 420, 900, { colors: [THEME.marker, THEME.ink, THEME.deep, THEME.paper], r: 380 });
+V.shake("#cam", tNext + 0.42, { a: 7 });
+V.pulse(wm, tOne + 0.6, { s: 1.05 });
+tl.to(sticker, { keyframes: [{ rotation: -6, duration: 0.14 }, { rotation: -3, duration: 0.18 }, { rotation: -4, duration: 0.14 }] }, tOne + 0.9);
+tl.to("#bellI", { keyframes: [{ rotation: -14, duration: 0.1 }, { rotation: 12, duration: 0.12 }, { rotation: -8, duration: 0.12 }, { rotation: 0, duration: 0.12 }], ease: "sine.inOut" }, tOne + 1.5);
+tl.to("#likeI", { keyframes: [{ rotation: -12, y: -6, duration: 0.1 }, { rotation: 0, y: 0, duration: 0.2, ease: "back.out(3)" }] }, tOne + 1.8);
+V.ring("#fx", tOne + 1.2, 960, 130, { color: THEME.ink });
+tl.to({}, { duration: DUR }, 0);
+window.__timelines["main"] = tl;
+</script></body></html>

@@ -57,6 +57,11 @@ Layer 3–6 things per moment (main visual + sticker/doodle + character reaction
 3. **Voice**: `python runtime/voice.py out/reels/<slug> --speed 1.12 --gap 0.10`, then `python runtime/append_endcard.py out/reels/<slug>` (ALWAYS for reels).
 4. **Brief** (Opus, ~1 page, `BRIEF.md`): theme id, beat table (line → time range → main visual → secondary → character pose → sfx), which real-site captures are needed (public pages: headless Chrome capture; logged-in apps: rebuild in HTML).
 5. **Build** (Sonnet subagent, give it this file's §0–§3 + BRIEF.md path + `out/reels/llm-built/` as example): reel.html using components/puppet(bust)/verbs/captions + `Endcard.build`; grammar: 2.5–3.5 events/s, entrances 4–8 frames, exits 2–4 frames, content holds ≤ 1.0 s, captions word-synced. No fake "floater" motion to game metrics. check → snapshot → ONE render → `measure.py` (honest numbers) → sfxdump → `mix.py --music auto` → mux → contact sheet.
+   **Hard gates (builder must pass BEFORE the full render, not just report):**
+   - Size: content zone y 330–1180 (puppet box lower-right and caption band excluded). Main visual 860–960 px wide; numbers 90–160 px; body text ≥ 34 px. Component defaults are catalogue-sized — always pass big w/h.
+   - Never empty: something in the content zone from t=0.15 s and on every line, including the last one.
+   - Pre-render motion check: render a low-res draft (or snapshots every 0.5 s) and run `measure.py`. Need moving ≥ 78%, content ≥ 68%, no still > 1.0 s. Fix the listed still gaps with real sub-beats (3–4 per line, keyed to words), then render.
+   - Look at your own final contact sheet before reporting.
 6. **Review** (Opus): one contact sheet + metrics. Fix once if needed.
 7. Deliver: mp4 path, description with music credit from `credits.txt` (CC BY), hashtags.
 

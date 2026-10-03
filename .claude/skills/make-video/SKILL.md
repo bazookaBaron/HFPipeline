@@ -19,6 +19,12 @@ Project root: `C:\Repos\HFPipleine`. Work dir per item: `out/reels/<slug>/` or `
 - Use library components/maps/puppet instead of hand-writing their markup. Bespoke per-topic visuals are still expected (see §3).
 - Long renders/voice runs: `run_in_background: true`.
 
+
+### Orchestration (measured: LF ≈ 11–12% of the week, reel+carousel ≈ 3–4%)
+- Main chat = thin orchestrator (≈5–8 turns per video, short replies, no polling). Prefer a fresh session per video.
+- Long-form: ONE Opus **producer** agent (research → script ~1,290 words → facts/slots/images → detached voice → STORYBOARD with 2-builder split → thumbnail → description) → **2** Sonnet builders (own build-x.js, never touch each other's files, wait on `words.ready`) → `bash runtime/lf/finish.sh out/longform/<slug> <theme>` (zero-LLM: sfx, mix, stitch, outro, pad to ≥ 8:00, 720p).
+- Brief agents with paths, not pasted content; reports ≤ 8 lines. One contact-sheet look per item. Small fixes inline (sed); only changed voice lines re-synthesise.
+
 ## 1. Kit (read the doc, not the source)
 
 | What | File | Doc |

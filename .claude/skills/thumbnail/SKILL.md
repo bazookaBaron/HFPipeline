@@ -23,7 +23,7 @@ Same theme hue as the video (`Theme.get(id)`). Use only real licensed photos fro
 ## High-CTR upgrades (long-form; a flat poster loses, the thumbnail is the whole CTR)
 
 - **Paradox / contrast hook:** two facts that fight ("NO WATER. RICHER THAN USA?", "THIS STORM MADE THEM RICH"). Never state the title.
-- **Hero = one real dramatic photo, full-bleed** (`subject.bg`, e.g. the NASA hurricane satellite photo), with the poster frame, text and character on top. No flat/empty backgrounds, no small photos.
+- **Variant mix (user rule):** of the 3 variants, **2 are fully illustrated in our poster theme** (no photo backgrounds: bold poster map/shape, drawn props/doodles, big number, stickers, Ziggy — animated-poster look, dense and busy, never flat/empty) and **1 uses a real dramatic photo** full-bleed (`subject.bg`) with the poster frame, text and character on top. No small photos.
 - **One giant number** where possible (`subject.number`, `$139K / PERSON`, or `subject.bars` duel). Photo insets as a red-ringed circle (`photos[].shape:"circle"`) on the tiny subject.
 - **Big emotional character at 60–70% of the height**, extreme pose.
 - **Text >= 160 px, 2–4 words per line, max 2 lines**, black ink on a marker/paper block with a thick outline.

@@ -20,6 +20,16 @@ Same theme hue as the video (`Theme.get(id)`). Use only real licensed photos fro
 7. **Composition.** Text on one third, character on the opposite third, subject in between or behind. Slight tilts (−4° to 4°) on cards and stickers give energy.
 8. **Numbers and stakes.** Prefer a concrete number or a conflict ("55%", "50% TARIFF", "3 RIVALS · 1 WINNER") over generic words.
 
+## High-CTR upgrades (long-form; a flat poster loses, the thumbnail is the whole CTR)
+
+- **Paradox / contrast hook:** two facts that fight ("NO WATER. RICHER THAN USA?", "THIS STORM MADE THEM RICH"). Never state the title.
+- **Hero = one real dramatic photo, full-bleed** (`subject.bg`, e.g. the NASA hurricane satellite photo), with the poster frame, text and character on top. No flat/empty backgrounds, no small photos.
+- **One giant number** where possible (`subject.number`, `$139K / PERSON`, or `subject.bars` duel). Photo insets as a red-ringed circle (`photos[].shape:"circle"`) on the tiny subject.
+- **Big emotional character at 60–70% of the height**, extreme pose.
+- **Text >= 160 px, 2–4 words per line, max 2 lines**, black ink on a marker/paper block with a thick outline.
+- **A red arrow or circle (`cue`) on the tiny subject.** Must be readable at 336 px wide (check `-mobile.png`).
+- **Avoid:** flat empty backgrounds, small photos, more than 3 visual groups, restating the title.
+
 ## Workflow (≤ 0.15 window)
 
 1. Write 3 hook variants, each with a different angle: conflict, number, curiosity. Put them in one spec.

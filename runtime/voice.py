@@ -1,4 +1,7 @@
 """voice.py <dir> [--speed 1.12] [--gap 0.10] [--lead 0.12]
+         [--pause-before "6,14,25"] [--pause 1.6] [--chapters chapters.json]
+Chapter breathing pause: --pause seconds (real time) of extra silence BEFORE each listed line (--pause-before = line indices,
+--chapters = chapters.json with first_line values, line 0 skipped). Assembly only: the per-line cache stays valid; words.json shifts accordingly.
 Synthesise <dir>/script.txt (one line per scene) with the narrator clone, assemble at atempo=speed,
 write <dir>/vo/voice.wav (48k) + <dir>/words.json [{w,s,e,line}]. Per-line cache (vo/cache/<sha1>.*)
 keyed by text, so only changed lines are re-synthesised. Reels: --speed 1.12 --gap 0.10; long-form: --speed 1.0 --gap 0.35."""
@@ -8,8 +11,14 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ap = argparse.ArgumentParser(); ap.add_argument("dir")
 ap.add_argument("--speed", type=float, default=1.12); ap.add_argument("--gap", type=float, default=0.10)
 ap.add_argument("--lead", type=float, default=0.12); ap.add_argument("--tail", type=float, default=0.5)
+ap.add_argument("--pause-before", default=""); ap.add_argument("--pause", type=float, default=1.6); ap.add_argument("--chapters", default="")
 a = ap.parse_args(); D = os.path.abspath(a.dir); SPEED = a.speed
 lines = [l.strip() for l in open(f"{D}/script.txt", encoding="utf8").read().split("\n") if l.strip()]
+PB = {int(x) for x in a.pause_before.replace(" ", "").split(",") if x}
+if a.chapters:
+    ch = json.load(open(a.chapters if os.path.exists(a.chapters) else f"{D}/{a.chapters}", encoding="utf8"))
+    PB |= {int(c["first_line"]) for c in (ch.get("chapters", ch) if isinstance(ch, dict) else ch)}
+PB.discard(0)
 cd = f"{D}/vo/cache"; os.makedirs(cd, exist_ok=True)
 H = [hashlib.sha1(l.encode()).hexdigest()[:16] for l in lines]
 jobs = [{"text": l, "wav": f"{cd}/{h}.wav", "json": f"{cd}/{h}.json"} for l, h in zip(lines, H)
@@ -24,7 +33,7 @@ for i, h in enumerate(H):
     x, sr = sf.read(f"{cd}/{h}.wav"); x = x if x.ndim == 1 else x.mean(1)
     w = json.load(open(f"{cd}/{h}.json"))
     s0 = max(0, w[0]["start"] - 0.04); e0 = min(len(x) / sr, w[-1]["end"] + 0.08)
-    out.append(np.zeros(int((a.gap if i else a.lead) * SPEED * sr)))
+    out.append(np.zeros(int(((a.gap if i else a.lead) + (a.pause if i in PB else 0)) * SPEED * sr)))
     base = sum(len(z) for z in out) / sr
     for t in w: words.append({"w": t["word"], "s": (base + t["start"] - s0) / SPEED, "e": (base + t["end"] - s0) / SPEED, "line": i})
     out.append(x[int(s0 * sr):int(e0 * sr)])

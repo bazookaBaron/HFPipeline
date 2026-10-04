@@ -1,4 +1,7 @@
-// node runtime/strays.js <compDir> [--step 0.25] [--max 48]
+// node runtime/strays.js <compDir> [--step 0.25] [--max 48] [--no-occlusion]
+// Occlusion gate (default on): at each sample, every visible <img> > 120x120 px (photo cards) is probed at 9 points (3x3 grid inset 10%) with
+// document.elementsFromPoint; if >= 3 points (--occ-points N) have a topmost element that is not the image / its ancestors / its descendants (overlays that cover the whole frame, #fx and
+// the puppet #pz are ignored) it prints `OCCLUDED t=.. #id` and exits 1. Photos must never sit under another board: occlusion is a build failure.
 // Stray-element gate: seeks the paused timeline every --step seconds in headless Chrome and lists small visible
 // parked "orphan" elements (unchanged for 3 consecutive samples) (bbox <= --max px on both sides) that are not inside a larger visible card/puppet/map.
 // These are the stray dots/blocks (burst bits, rings, dots created visible before their entrance).
@@ -15,7 +18,7 @@ function findPuppeteer() {
 const chrome = ["C:/Program Files/Google/Chrome/Application/chrome.exe", "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"].find(fs.existsSync);
 const args = process.argv.slice(2), comp = path.resolve(args.find((a) => !a.startsWith("--")) || ".");
 const opt = (k, d) => { const i = args.indexOf("--" + k); return i >= 0 ? +args[i + 1] : d; };
-const STEP = opt("step", 0.25), MAX = opt("max", 48);
+const STEP = opt("step", 0.25), MAX = opt("max", 48), OCC = !args.includes("--no-occlusion"), MINBAD = opt("occ-points", 3);
 (async () => {
   const b = await findPuppeteer().launch({ executablePath: chrome, headless: "new", args: ["--allow-file-access-from-files"] });
   const p = await b.newPage();
@@ -23,14 +26,28 @@ const STEP = opt("step", 0.25), MAX = opt("max", 48);
   const W = +(html.match(/data-width="(\d+)"/) || [0, 1920])[1], H = +(html.match(/data-height="(\d+)"/) || [0, 1080])[1];
   await p.setViewport({ width: W, height: H });
   await p.goto("file:///" + comp.split(path.sep).join("/") + "/index.html", { waitUntil: "networkidle0" });
-  const res = await p.evaluate(async (STEP, MAX) => {
+  const res = await p.evaluate(async (STEP, MAX, OCC, MINBAD) => {
     const tl = Object.values(window.__timelines || {})[0]; if (!tl) return { err: "no timeline" };
-    const dur = tl.duration(), hits = [], seen = new Set();
+    const dur = tl.duration(), hits = [], seen = new Set(), occ = [], occSeen = new Set();
+    const effOp = (e) => { let o = 1; for (let n = e; n && n !== document.body; n = n.parentElement) o *= +getComputedStyle(n).opacity; return o; };
     const vis = (e) => { const cs = getComputedStyle(e); return cs.visibility !== "hidden" && cs.display !== "none" && +cs.opacity > 0.05; };
     const shown = (e) => { for (let n = e; n && n !== document.body; n = n.parentElement) if (!vis(n)) return false; return true; };
     let prev = {}, run = {};
     for (let t = 0; t <= dur; t += STEP) {
       tl.seek(t, false); prev = run; run = {};
+      if (OCC) for (const im of document.body.querySelectorAll("img")) {
+        if (!shown(im) || effOp(im) < 0.9) continue;
+        const r = im.getBoundingClientRect(); if (r.width <= 120 || r.height <= 120) continue;
+        const key = im.id || (im.getAttribute("src") || "") + "@" + Math.round(r.left / 40) + "," + Math.round(r.top / 40); if (occSeen.has(key)) continue;
+        const card = im.closest(".lf-photo,.lf-badge") || im.parentElement; let bad = 0, n = 0, by = "";
+        const topAt = (x, y) => document.elementsFromPoint(x, y).find((q) => { if (q.closest("#fx,#pz") || !shown(q) || effOp(q) < 0.05) return false; const b = q.getBoundingClientRect(); return !(b.width >= innerWidth * 0.95 && b.height >= innerHeight * 0.95 && !q.contains(im) && !im.contains(q)); });
+        for (const fx of [0.1, 0.5, 0.9]) for (const fy of [0.1, 0.5, 0.9]) {
+          const x = r.left + r.width * fx, y = r.top + r.height * fy; if (x < 0 || y < 0 || x >= innerWidth || y >= innerHeight) continue; n++;
+          const top = topAt(x, y);
+          if (top && !(top === im || top.contains(im) || im.contains(top) || card.contains(top))) { bad++; by = by || (top.id || (typeof top.className === "string" ? top.className.slice(0, 30) : "") || top.tagName); }
+        }
+        if (n >= 5 && bad >= MINBAD) { occSeen.add(key); occ.push({ t: +t.toFixed(2), id: im.id || (im.getAttribute("src") || "").split("/").pop(), by }); }
+      }
       for (const e of document.body.querySelectorAll("div,span,i,b,em")) {
         if (e.closest("svg,[data-deco]") || !shown(e)) continue;
         const r = e.getBoundingClientRect();
@@ -50,11 +67,13 @@ const STEP = opt("step", 0.25), MAX = opt("max", 48);
         hits.push({ t: +t.toFixed(2), w: Math.round(r.width), h: Math.round(r.height), x: Math.round(r.left), y: Math.round(r.top), id: e.id, cls: String(e.className).slice(0, 40) });
       }
     }
-    return { dur, hits };
-  }, STEP, MAX);
+    return { dur, hits, occ };
+  }, STEP, MAX, OCC, MINBAD);
   await b.close();
   if (res.err) { console.error(res.err); process.exit(2); }
   for (const h of res.hits.slice(0, 40)) console.log(`STRAY t=${h.t}s ${h.w}x${h.h} at (${h.x},${h.y}) #${h.id || "-"} .${h.cls || "-"}`);
+  for (const o of res.occ) console.log(`OCCLUDED t=${o.t} #${o.id} (covered by ${o.by})`);
+  if (res.occ.length) console.log(`${res.occ.length} occluded photo(s): raise the photo's z above the board (LF.photo z>=50) or move it; occlusion is a build failure.`);
   console.log(res.hits.length ? `${res.hits.length} stray element(s) over ${res.dur.toFixed(1)} s: hide them until their entrance (visibility:hidden + tl.set at t), or remove.` : `no strays over ${res.dur.toFixed(1)} s`);
-  process.exit(res.hits.length ? 1 : 0);
+  process.exit(res.hits.length || res.occ.length ? 1 : 0);
 })().catch((e) => { console.error(e.message); process.exit(2); });

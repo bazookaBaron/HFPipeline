@@ -3,8 +3,10 @@
  * LF.init(tl)                      V.use(tl), inject css. Call first.
  * LF.stage(W,H,{ch,title})         dot-grid bgs (bg/deep/pale), #cam>#maps+#fx, header chip top-left, year chip top-right. Returns {cam,maps,fx}.
  * LF.bg(tl,"bg|deep|pale",t)       hard-cut background swap.   LF.year(tl,"1971",t) / LF.yearOff(tl,t)   running year chip (scramble).
- * LF.chapterCard(tl,n,title,t,after="pale")     1.2 s: number slams, title types, bg swaps deep->pale. (puppet sits above it)
- * LF.photo(tl,id,media,{x,y,w,h,t,dur,kb,rot,pos,cap,out})  paper frame, Ken Burns 1.04->1.10, grain if media[id].grain, credit strip.
+ * LF.chapterCard(tl,n,title,t,after="pale",{firstWord,lead=1.5,hold=1.8})  READABLE card, ~2.7 s: number slams (0.05), title types fast (0.3-0.75), then HOLDS >= 1.8 s with
+ *      micro-motion only (scale 1.0->1.03), then exits; bg swaps deep->pale. Pass t=null + {firstWord: chapter-local time of the chapter's first word} to start it
+ *      `lead` s before that word, i.e. inside the silent chapter pause made by `voice.py --chapters chapters.json --pause 1.6`. Returns the end time. (puppet sits above it)
+ * LF.photo(tl,id,media,{x,y,w,h,t,dur,kb,rot,pos,cap,out,z=50})  (z above stage boards; a photo under another board is a build failure, see strays.js occlusion) paper frame, Ken Burns 1.04->1.10, grain if media[id].grain, credit strip.
  * LF.badge(tl,id,media,name,role,{x,y,t,size})   circle person badge + name chip (+role chip).
  * LF.stamp(tl,text,{x,y,t,rot,size})  slams with shake+ring.   LF.counter(tl,label,from,to,{x,y,t,prefix,suffix,d,fmt,w})
  * LF.quote(tl,text,by,{x,y,w,t,hl:[t..],size})  *marked* words get a marker sweep at hl times (default t+0.6, +0.35 each).
@@ -81,20 +83,23 @@
     const e = LF.yearEl; LF.set(tl, e, { textContent: txt, visibility: "visible" }, t); V.slam(e, t, { s: 1.5, shake: false, sfx: "tick" }); return e;
   };
   LF.yearOff = (tl, t) => LF.set(tl, LF.yearEl, { autoAlpha: 0 }, t);
-  LF.chapterCard = (tl, n, title, t, after) => {
-    const r = rootEl(), z = 80;
+  LF.chapterCard = (tl, n, title, t, after, o) => {
+    o = o || {};
+    if (t == null) t = Math.max(0, (o.firstWord || 0) - (o.lead == null ? 1.5 : o.lead)); // default: start inside the silent pause, before the chapter's first word
+    const r = rootEl(), z = 80, hold = Math.max(1.8, o.hold || 1.8), tEnd = t + 0.75 + hold; // slam 0.05, title types 0.3-0.75, then HOLD >= 1.8 s readable
     const ov = mk("", "", { inset: 0, background: "var(--deep)", zIndex: z, visibility: "visible", opacity: 0 }, r); ov.appendChild(Object.assign(document.createElement("div"), { className: "lf-bg" }));
     const num = mk("", String(n).padStart(2, "0"), { left: "70px", top: "170px", font: "400 560px/1 Anton,sans-serif", color: "var(--marker)", webkitTextStroke: "10px var(--ink)", textShadow: "14px 14px 0 var(--ink)", zIndex: z + 1 }, r);
     const ttl = mk("", "", { left: "80px", top: "770px", font: "400 96px/1 Anton,sans-serif", color: "var(--paper)", textShadow: "6px 6px 0 var(--ink)", textTransform: "uppercase", whiteSpace: "nowrap", zIndex: z + 1 }, r);
-    LF.set(tl, ov, { opacity: 1 }, t); LF.bg(tl, "deep", t); V.slam(num, t + 0.05, { s: 1.6, shake: false }); V.type(ttl, t + 0.35, title.toUpperCase(), { d: 0.6 });
-    LF.set(tl, ttl, { visibility: "visible", opacity: 1 }, t + 0.35);
-    tl.to(ov, { opacity: 0, duration: 0.14 }, t + 1.06); tl.to([num, ttl], { x: -300, autoAlpha: 0, duration: 0.14 }, t + 1.06); LF.bg(tl, after || "pale", t + 1.2);
-    return t + 1.2;
+    LF.set(tl, ov, { opacity: 1 }, t); LF.bg(tl, "deep", t); V.slam(num, t + 0.05, { s: 1.6, shake: false }); V.type(ttl, t + 0.3, title.toUpperCase(), { d: 0.45 });
+    LF.set(tl, ttl, { visibility: "visible", opacity: 1 }, t + 0.3);
+    tl.fromTo([num, ttl], { scale: 1 }, { scale: 1.03, duration: tEnd - (t + 0.75), ease: "none", immediateRender: false, transformOrigin: "0% 50%" }, t + 0.75); // micro-motion only: calm stage
+    tl.to(ov, { opacity: 0, duration: 0.14 }, tEnd); tl.to([num, ttl], { x: -300, autoAlpha: 0, duration: 0.14 }, tEnd); LF.bg(tl, after || "pale", tEnd + 0.14);
+    return tEnd + 0.14;
   };
   const fixCredit = (s) => String(s || "").replace(/Â·/g, "·").replace(/â€¦/g, "").replace(/Ã©/g, "e").replace(/\s+/g, " ").trim();
   LF.photo = (tl, id, media, o) => {
     const m = media[id] || {}, w = o.w || 640, h = o.h || 440, t = o.t || 0, dur = o.dur || 6;
-    const e = mk("lf-photo", "", { left: px(o.x || 0), top: px(o.y || 0), width: px(w), height: px(h), zIndex: o.z || 10 });
+    const e = mk("lf-photo", "", { left: px(o.x || 0), top: px(o.y || 0), width: px(w), height: px(h), zIndex: o.z || 50 });
     const inn = mk("in", "", {}, e); inn.style.position = "relative";
     const img = document.createElement("img"); img.src = m.file || ("images/" + id + ".jpg"); img.style.objectPosition = o.pos || "50% 50%"; inn.appendChild(img);
     if (m.grain) { const g = mk("lf-grain", "", { visibility: "visible", opacity: 0.55 }, inn); tl.fromTo(g, { x: 0, y: 0 }, { x: -40, y: -30, duration: dur + 1, ease: "none" }, t); }
@@ -106,7 +111,7 @@
     return e;
   };
   LF.badge = (tl, id, media, name, role, o) => {
-    const m = media[id] || {}, s = o.size || 230, wrap = mk("", "", { left: px(o.x || 0), top: px(o.y || 0), width: px(s + 20), zIndex: o.z || 12, textAlign: "center" });
+    const m = media[id] || {}, s = o.size || 230, wrap = mk("", "", { left: px(o.x || 0), top: px(o.y || 0), width: px(s + 20), zIndex: o.z || 52, textAlign: "center" });
     const b = mk("lf-badge", "", { visibility: "visible", opacity: 1, margin: "0 auto", "--s": s + "px" }, wrap); b.style.setProperty("--s", s + "px");
     const img = document.createElement("img"); img.src = m.file || ("images/" + id + ".jpg"); b.appendChild(img);
     if (m.grain) mk("lf-grain", "", { visibility: "visible", opacity: 0.4 }, b);

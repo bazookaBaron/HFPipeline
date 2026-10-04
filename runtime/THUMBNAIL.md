@@ -19,3 +19,9 @@ Spec = array of entries (or `{variants:[...]}`); coordinates are canvas px, `at`
 - `map.center` puts the focus country's centroid at that pixel; `scale` zooms about it. Arrows start at a chip (`at`, or a place name in `from`) and end at the focus country.
 - `subject.photo` (single) works like `photos`. Photo files resolve relative to the spec file.
 - Keep: <= 4 visual groups, one marker word, `--alert` only for the cue.
+- `subject.map.points`: `{name:{at:"place"|[lon,lat], label:"BERMUDA", dx, dy, size}}` registers a named screen point (usable as a string in `cue.target` and `drawings`) and an optional chip. `subject.map.view` also accepts `[lonMin,latMin,lonMax,latMax]`.
+- `subject.bg {file,focus,dim}` full-bleed photo; `subject.bars [{label,value,max,at,w,h,fill}]` bar duel.
+- `drawings` (ink-outlined poster doodles, drawn above the map, under text/character; points = `[x,y]` or a `map.points` name):
+  `{type:"spiral",at,r,arms,turns,rot,fill,disc}` hurricane / swirl; `{type:"coins",from,to,n,r,bend,trail}` a fat trail of `$` coins flowing from to; `{type:"coin",at,r}`;
+  `{type:"arrow",from,to,color,w,head,bend}`; `{type:"lines",at,r1,r2,n,from,to}` motion/speed lines (angles in deg); `{type:"magnifier",at,r}`; `{type:"burst",at,r,n,fill}` starburst.
+- `map.anchor` (place or `[lon,lat]`, default the focus) + `center`/`scale` pins that place to a pixel when there is no focus country.

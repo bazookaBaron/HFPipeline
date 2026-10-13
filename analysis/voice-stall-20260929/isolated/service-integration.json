@@ -1,0 +1,72 @@
+[
+  {
+    "word": "Here",
+    "start": 0.06,
+    "end": 0.24
+  },
+  {
+    "word": "is",
+    "start": 0.28,
+    "end": 0.36
+  },
+  {
+    "word": "how",
+    "start": 0.38,
+    "end": 0.521
+  },
+  {
+    "word": "artificial",
+    "start": 0.581,
+    "end": 1.042
+  },
+  {
+    "word": "intelligence",
+    "start": 1.102,
+    "end": 1.643
+  },
+  {
+    "word": "turns",
+    "start": 1.704,
+    "end": 1.964
+  },
+  {
+    "word": "static",
+    "start": 2.064,
+    "end": 2.405
+  },
+  {
+    "word": "TV",
+    "start": 2.445,
+    "end": 2.766
+  },
+  {
+    "word": "noise",
+    "start": 2.826,
+    "end": 3.167
+  },
+  {
+    "word": "into",
+    "start": 3.227,
+    "end": 3.448
+  },
+  {
+    "word": "a",
+    "start": 3.488,
+    "end": 3.508
+  },
+  {
+    "word": "high",
+    "start": 3.568,
+    "end": 3.748
+  },
+  {
+    "word": "resolution",
+    "start": 3.788,
+    "end": 4.35
+  },
+  {
+    "word": "photograph.",
+    "start": 4.39,
+    "end": 4.891
+  }
+]

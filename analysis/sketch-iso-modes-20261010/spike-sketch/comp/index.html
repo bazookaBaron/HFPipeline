@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=1920, height=1080"/>
+<script src="gsap.min.js"></script><script src="theme.js"></script>
+<script>window.THEME = Theme.get("cobalt");</script>
+<script src="verbs.js"></script><script src="puppet.js"></script><script src="board/paths.js"></script><script src="sketch-kit.js"></script>
+<style>
+@font-face{font-family:"Anton";src:url(fonts/anton-latin-400-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:500;src:url(fonts/inter-latin-500-normal.woff2)}
+@font-face{font-family:"Inter";font-weight:800;src:url(fonts/inter-latin-800-normal.woff2)}
+html,body{margin:0;background:#222}
+#root{position:relative;width:1920px;height:1080px;overflow:hidden;font-family:Inter,sans-serif;background:var(--bg)}
+.bgdots{position:absolute;inset:0;background-image:radial-gradient(circle at center,var(--dot) 0 2px,transparent 2.6px);background-size:40px 40px}
+#cam{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+#card{position:absolute;left:60px;top:104px;width:1612px;height:872px;box-sizing:border-box;background:var(--paper);border:6px solid var(--ink);border-radius:26px;box-shadow:10px 10px 0 var(--shadow)}
+#board{position:absolute;left:0;top:0;width:1600px;height:860px;border-radius:20px;overflow:hidden}
+.chip{position:absolute;font:400 38px/1 Anton,sans-serif;letter-spacing:.04em;color:var(--ink);background:var(--paper);border:6px solid var(--ink);border-radius:16px;box-shadow:8px 8px 0 var(--shadow);padding:12px 22px 8px;white-space:nowrap;text-transform:uppercase;visibility:hidden}
+.chip.marker{background:var(--marker)}.chip.pale{background:var(--pale)}.chip.ink{background:var(--ink);color:var(--paper)}
+.chip i{display:block;font-style:normal}
+#pz{position:absolute;z-index:90}
+</style></head><body>
+<div id="root" data-composition-id="main" data-start="0" data-width="1920" data-height="1080" data-duration="45">
+  <div class="bgdots"></div>
+  <div id="cam"><div id="card"><div id="board"></div>
+    <div class="chip" data-layout-allow-overflow id="cA" style="left:316px;top:191px">More money</div>
+    <div class="chip marker" data-layout-allow-overflow id="cB" style="left:1036px;top:191px">More spending</div>
+    <div class="chip" data-layout-allow-overflow id="cC" style="left:1036px;top:671px">Higher prices</div>
+    <div class="chip pale" data-layout-allow-overflow id="cD" style="left:316px;top:671px">Wage demands</div>
+  </div></div>
+  <div id="pz"></div>
+</div>
+<script>
+window.__timelines = window.__timelines || {};
+Theme.apply(THEME);
+const DUR = 45, tl = gsap.timeline({ paused: true });
+V.use(tl);
+const S = SK.mount(tl, document.getElementById("board"), { dur: DUR });
+// ---- camera: focus(bx,by,s) puts board point (bx,by) at screen (cx,cy) ----
+const IN = [66, 110], cam = document.getElementById("cam");
+const camAt = (bx, by, s, cx = 820, cy = 560) => ({ scale: s, x: cx - s * (IN[0] + bx), y: cy - s * (IN[1] + by) });
+gsap.set(cam, camAt(360, 300, 1.3));
+const pan = (t, d, bx, by, s, cx, cy) => tl.to(cam, Object.assign({ duration: d, ease: "power2.inOut" }, camAt(bx, by, s, cx, cy)), t);
+// ---- chips ----
+const chip = (id, t) => { const e = document.getElementById(id); gsap.set(e, { autoAlpha: 0, scale: 0.5, xPercent: -50, yPercent: -50 }); tl.fromTo(e, { autoAlpha: 0, scale: 0.5, rotation: -6 }, { autoAlpha: 1, scale: 1, rotation: -2, duration: 0.26, ease: "back.out(2.6)", immediateRender: false }, t); };
+// card entrance
+tl.fromTo("#card", { autoAlpha: 0, y: 40 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: "back.out(1.8)", immediateRender: false }, 0.1);
+gsap.set("#card", { autoAlpha: 0 });
+// ---- beat 1: A + money (0.6 - 6.3) ----
+S.draw("boxA", 0.7, 1.4); chip("cA", 2.2);
+S.draw("coin1", 2.8, 0.7); S.draw("coin1i", 3.55, 0.35); S.draw("coin2", 4.0, 0.7); S.draw("coin2i", 4.75, 0.3);
+S.draw("ulA", 5.3, 0.6);
+// ---- beat 2: A -> B ----
+pan(6.0, 2.4, 960, 260, 1.3);
+S.draw("arrAB", 6.3, 1.7);
+S.wash("washB", 8.1, 1.3); S.draw("boxB", 8.4, 1.4); chip("cB", 9.9);
+// ---- beat 3: B -> C, price tag ----
+pan(10.8, 2.2, 1120, 470, 1.25);
+S.draw("arrBC", 11.0, 1.5); S.draw("tag", 12.7, 1.0); S.draw("tagHole", 13.75, 0.3); S.draw("upArr", 14.2, 0.7);
+pan(14.8, 1.8, 1060, 620, 1.32);
+S.draw("boxC", 15.1, 1.4); S.hatch("hatchC", 16.6, 2.2); chip("cC", 18.9);
+S.draw("ulC", 19.5, 0.7); S.draw("ringC", 20.4, 1.3);
+// ---- beat 4: person ----
+pan(21.6, 1.6, 1150, 620, 1.3);
+S.draw("pHead", 22.2, 0.6); S.draw("pBody", 22.85, 0.4); S.draw("pArms", 23.3, 0.6); S.draw("pLegs", 23.95, 0.6);
+// ---- beat 5: C -> D ----
+pan(24.8, 2.2, 470, 620, 1.3);
+S.draw("arrCD", 25.0, 1.6); S.wash("washD", 26.7, 1.2); S.draw("boxD", 27.0, 1.4); chip("cD", 28.5);
+pan(29.0, 1.8, 440, 420, 1.25);
+S.draw("arrDA", 29.2, 1.4);
+// ---- beat 6: the loop + savings crossed ----
+pan(30.8, 1.8, 640, 460, 1.18, 760);
+S.wash("washMid", 31.1, 1.2); S.draw("loop", 32.0, 1.9);
+S.draw("save", 34.2, 0.7); S.draw("savei", 34.95, 0.35); S.draw("xSave", 35.5, 0.8);
+// ---- pull-back: whole board, slow drift ----
+tl.to(cam, Object.assign({ duration: 2.6, ease: "power2.inOut" }, camAt(800, 430, 1.0, 66 + 800, 110 + 430)), 36.8);
+tl.to(cam, Object.assign({ duration: DUR - 39.4, ease: "none" }, camAt(760, 440, 1.03, 66 + 760, 110 + 440)), 39.4);
+S.finish();
+// ---- puppet: full-body, right of board; sparse gestures only ----
+const PH = 600, host = document.getElementById("pz"), pw = Math.round(PH * 600 / 1175);
+Object.assign(host.style, { left: (1762 - pw / 2) + "px", top: (1040 - PH + 12) + "px", width: pw + "px" });
+const P = Puppet.mount("#pz", { mode: "full", height: PH, id: "pzp", theme: { shadow: THEME.shadow } });
+const pose = (t, n, hold) => { P.pose(tl, t, n, { d: 0.3, hold }); P.pose(tl, t + hold, "stand", { d: 0.4 }); };
+P.pointScreen(tl, 1.0, "l"); P.pose(tl, 2.8, "stand", { d: 0.4 });
+pose(8.6, "present_left", 1.4);
+P.pointScreen(tl, 16.4, "l"); P.pose(tl, 18.4, "stand", { d: 0.4 });
+pose(23.0, "thinking", 1.6);
+P.pointScreen(tl, 29.3, "l"); P.pose(tl, 31.0, "stand", { d: 0.4 });
+pose(35.6, "both_open", 1.3);
+P.pointScreen(tl, 39.6, "l"); P.pose(tl, 42.2, "stand", { d: 0.4 });
+// synthetic narration words (spike has no VO) so the mouth moves in phrases
+const W = []; let line = 0;
+for (let t = 0.5; t < DUR - 1.2; ) { const n = 8 + ((line * 7) % 6); for (let i = 0; i < n && t < DUR - 1.2; i++) { W.push({ w: "w", s: +t.toFixed(3), e: +(t + 0.24).toFixed(3), line }); t += 0.31; } t += 0.7; line++; }
+P.talk(tl, W); P.blinks(tl, DUR, { seed: 7 }); P.idle(tl, 0, DUR);
+tl.to({}, { duration: DUR }, 0);
+window.__timelines["main"] = tl;
+</script></body></html>

@@ -1,0 +1,200 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Low-poly iso theme mock</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2A2236;--plum:#6B5B7B;--red:#E0452F;--teal:#3FA7A0;--glow:#FFE6A3;--cream:#FFF3E2;--sand:#E8CBA8;--sky:#E9B7A6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1920px;height:1080px;overflow:hidden;font-family:Poppins,'Segoe UI',Arial,sans-serif;background:#E9B7A6;position:relative;color:var(--ink)}
+#scene,#dim{position:absolute;inset:0;width:1920px;height:1080px}
+.slab{position:absolute;background:var(--cream);border-radius:12px;padding:20px 28px;
+ box-shadow:4px 4px 0 #CDB69B,8px 8px 0 #AE977F,12px 12px 0 #8C7864,26px 30px 34px rgba(40,20,60,.38);
+ transform:perspective(1100px) rotateY(-7deg) rotateX(2deg);transform-origin:left center}
+.slab.dark{background:var(--ink);color:var(--cream);box-shadow:4px 4px 0 #4a3e60,8px 8px 0 #3a3050,12px 12px 0 #1d1727,26px 30px 34px rgba(20,10,40,.45)}
+.slab.red{background:var(--red);color:#fff;box-shadow:4px 4px 0 #BF3624,8px 8px 0 #9C2A1A,12px 12px 0 #7A2014,26px 30px 34px rgba(60,10,10,.4)}
+.kick{font-weight:700;font-size:20px;letter-spacing:.14em;text-transform:uppercase;color:var(--plum)}
+.dark .kick,.red .kick{color:#F3D9C6}
+.big{font-weight:800;font-size:76px;line-height:1}
+.mid{font-weight:800;font-size:44px;line-height:1.05}
+.sub{font-weight:500;font-size:26px;margin-top:6px}
+.chip{position:absolute;padding:10px 22px;border-radius:999px;background:var(--ink);color:var(--glow);font-weight:700;font-size:22px;letter-spacing:.12em;box-shadow:0 5px 0 #14101c,0 14px 22px rgba(30,10,50,.35)}
+.tag{position:absolute;padding:10px 20px;border-radius:10px;background:var(--cream);font-weight:700;font-size:26px;box-shadow:3px 3px 0 #AE977F,6px 6px 0 #8C7864,14px 18px 22px rgba(40,20,60,.35)}
+.tag small{display:block;font-weight:500;font-size:18px;color:var(--plum)}
+.mapwrap{position:absolute}
+.sw{display:inline-block;width:120px;height:120px;border-radius:10px;margin-right:14px;box-shadow:4px 4px 0 rgba(0,0,0,.18)}
+.sw span{display:block;padding:92px 0 0 8px;font-size:15px;font-weight:700;color:#fff;text-shadow:0 1px 2px #0006}
+</style></head><body>
+<svg id="scene" viewBox="0 0 1920 1080"></svg>
+<div id="dim"></div>
+<div id="ui"></div>
+<script>
+const Q=new URLSearchParams(location.search),F=Q.get('f')||'A',W=1920,H=1080;
+function rnd(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const R=rnd(7);
+const hex=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16));
+const toHex=a=>'#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mix=(a,b,t)=>{const A=hex(a),B=hex(b);return toHex(A.map((v,i)=>v+(B[i]-v)*t))};
+const light=(c,t)=>mix(c,'#FFF1DC',t), dark=(c,t)=>mix(c,'#2A2236',t);
+const FOG='#F2CDB8';
+// camera
+let S=150, fx=13.5, fy=13.5, yoff=60;
+const PX=(F==='B')?{x:13,y:13}:{x:13,y:13};
+if(F==='B'){S=700;fx=13.15;fy=13.0;yoff=-40}
+function pr(x,y,z){const X=x-fx,Y=y-fy;return[W/2+(X-Y)*S/2,H/2+yoff+(X+Y)*S/4-z*S*.5]}
+const items=[],ground=[];
+const P=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+function fogT(y){return Math.max(0,Math.min(.38,(H*.62-y)/(H*.62)*.38))}
+function poly(pts,fill,extra=''){return`<polygon points="${P(pts)}" fill="${fill}" ${extra}/>`}
+function blockSVG(x,y,w,d,h,c,z0=0,win=0){
+ const A=pr(x,y,z0+h),B=pr(x+w,y,z0+h),C=pr(x+w,y+d,z0+h),D=pr(x,y+d,z0+h);
+ const Cb=pr(x+w,y+d,z0),Db=pr(x,y+d,z0),Bb=pr(x+w,y,z0);
+ const f=fogT((A[1]+Cb[1])/2);
+ const top=mix(light(c,.16),FOG,f),L=mix(c,FOG,f),Rr=mix(dark(c,.22),FOG,f);
+ let s=poly([D,C,Cb,Db],L,'stroke="'+L+'" stroke-width=".6"')+poly([B,C,Cb,Bb],Rr,'stroke="'+Rr+'" stroke-width=".6"')+poly([A,B,C,D],top,'stroke="'+top+'" stroke-width=".6"');
+ if(win&&h>.55){
+  const rows=Math.max(2,Math.floor(h*win)),cols=3;
+  const face=(p0,p1,p2,p3,base,seed)=>{let o='';const r=rnd(seed);
+   for(let a=0;a<rows;a++)for(let b=0;b<cols;b++){
+    const u0=(b+.2)/cols,u1=(b+.78)/cols,v0=(a+.22)/rows,v1=(a+.74)/rows;
+    const q=(u,v)=>[p0[0]+(p1[0]-p0[0])*u+(p3[0]-p0[0])*v,p0[1]+(p1[1]-p0[1])*u+(p3[1]-p0[1])*v];
+    const lit=r()<.5;const col=lit?mix(FOG==='x'?'#fff':'#FFE6A3',FOG,f*.7):mix(dark(base,.28),FOG,f);
+    o+=poly([q(u0,v0),q(u1,v0),q(u1,v1),q(u0,v1)],col,lit?'opacity=".95"':'opacity=".7"')}
+   return o};
+  s+=face(D,C,Cb,Db,L,(x*97+y*13)|0)+face(B,C,Cb,Bb,Rr,(x*31+y*71)|0);
+ }
+ return s}
+function addBlock(x,y,w,d,h,c,z0=0,win=0){items.push({k:x+w/2+y+d/2+z0*.01,s:()=>blockSVG(x,y,w,d,h,c,z0,win)})}
+function ellipse(x,y,r,fill,op=1,sw=0){const c=pr(x,y,0);return`<ellipse cx="${c[0]}" cy="${c[1]}" rx="${r*S*.7071}" ry="${r*S*.3536}" fill="${fill}" opacity="${op}" ${sw?`stroke="${fill}" stroke-width="${sw}" fill-opacity="0"`:''}/>`}
+// palette
+const PAL=['#B79BB5','#E3CBAA','#C97B62','#8F8BAA','#D8B08A','#9CB5A0','#D68E77'];
+const N=27,CX=13,CY=13;
+const ROAD='#8D89A3',WALK='#D9CBBB',PARK='#9DB38A';
+for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+ ground.push(poly([pr(i,j,0),pr(i+1,j,0),pr(i+1,j+1,0),pr(i,j+1,0)],ROAD,'stroke="'+ROAD+'" stroke-width=".8"'));
+ ground.push(poly([pr(i+.1,j+.1,0),pr(i+.9,j+.1,0),pr(i+.9,j+.9,0),pr(i+.1,j+.9,0)],WALK));
+}
+for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+ const dist=Math.hypot(i-CX,j-CY),near=(i>=11&&i<=14&&j>=11&&j<=14);
+ const c=PAL[Math.floor(R()*PAL.length)];
+ const park=R()<.1&&!near;
+ if(near&&!(i===13&&j===13)||false){ // plaza: low blocks + trees
+  if(R()<.55)addBlock(i+.18,j+.18,.64,.64,.12+R()*.1,c);
+  else tree(i+.5,j+.5,.5+R()*.2);
+  continue}
+ if(near){continue}
+ if(park){ground.push(poly([pr(i+.1,j+.1,0),pr(i+.9,j+.1,0),pr(i+.9,j+.9,0),pr(i+.1,j+.9,0)],PARK));for(let t=0;t<3;t++)tree(i+.25+R()*.5,j+.25+R()*.5,.5+R()*.35);continue}
+ const core=Math.max(0,1-dist/12);
+ let h=.3+R()*.5+core*R()*1.5;
+ if(R()<.025+core*.08)h+=1.4+R()*2.4;
+ const w=.72,off=.14;
+ if(h>2.4){addBlock(i+off,j+off,w,w,h*.62,c,0,3.4);addBlock(i+off+.12,j+off+.12,w-.24,w-.24,h*.42,mix(c,'#ffffff',.1),h*.62,3.4);addBlock(i+off+.26,j+off+.26,w-.52,w-.52,h*.2,dark(c,.1),h*1.04,0);}
+ else addBlock(i+off,j+off,w,w,h,c,0,2.6);
+}
+function tree(x,y,s){
+ addBlock(x-.025,y-.025,.05,.05,.1*s,'#7A4A38');
+ const g=['#7FA066','#8FB26E','#C9A24A'][Math.floor(R()*3)];
+ addBlock(x-.12*s,y-.12*s,.24*s,.24*s,.2*s,g,.08*s);
+ addBlock(x-.08*s,y-.08*s,.16*s,.16*s,.16*s,light(g,.1),.24*s)}
+function car(x,y,ax,col){
+ const l=.2,wd=.1;const w=ax==='x'?l:wd,d=ax==='x'?wd:l;
+ addBlock(x-w/2,y-d/2,w,d,.05,col);addBlock(x-w*.3,y-d*.3,w*.6,d*.6,.045,'#F4E9DD',.05)}
+// cars on roads
+for(let k=0;k<70;k++){const line=Math.floor(R()*N);const t=R()*N;const ax=R()<.5?'x':'y';const lane=(R()<.5?-1:1)*.06;
+ const col=['#E0452F','#F3D9C6','#3FA7A0','#E8B64A','#2A2236'][Math.floor(R()*5)];
+ if(ax==='x')car(t,line+lane,'x',col);else car(line+lane,t,'y',col)}
+// person
+function person(x,y,sc,coat,mirror=0){
+ const s=sc;
+ addBlock(x-.03*s,y-.012*s,.026*s,.026*s,.09*s,'#2A2236');addBlock(x+.004*s,y-.012*s,.026*s,.026*s,.09*s,'#2A2236');
+ addBlock(x-.04*s,y-.03*s,.08*s,.06*s,.11*s,coat,.09*s);
+ addBlock(x-.034*s,y-.034*s,.068*s,.068*s,.065*s,'#E9B98F',.2*s);
+ addBlock(x-.038*s,y-.038*s,.076*s,.076*s,.025*s,'#3A2A22',.255*s)}
+const pw=pr(13,13,0);
+items.push({k:13+13+.2,s:()=>''});
+person(13,13,1.5,'#E0452F');
+// extra pedestrians
+[[12.5,13.08,'#3FA7A0'],[13.12,12.4,'#E8B64A'],[12.9,13.7,'#6B5B7B'],[13.6,12.92,'#F3D9C6'],[12.2,12.88,'#8F8BAA']].forEach(a=>person(a[0],a[1],1.35,a[2]));
+// street lamp + crosswalk in close frame
+if(F==='B'){
+ for(let n=0;n<7;n++){const o=-.37+n*.12;ground.push(poly([pr(13+o,12.74,0),pr(13+o+.06,12.74,0),pr(13+o+.06,12.86,0),pr(13+o,12.86,0)],'#F3E9DD'))}
+ addBlock(13.34,12.8,.03,.03,.55,'#3a3050');addBlock(13.31,12.77,.09,.09,.04,'#FFE6A3',.55);
+}
+items.sort((a,b)=>a.k-b.k);
+const sc=document.getElementById('scene');
+const sky=`<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#E7B1A3"/><stop offset=".55" stop-color="#F6D3B9"/><stop offset="1" stop-color="#E9B7A6"/></linearGradient>
+<linearGradient id="hz" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F6D3B9" stop-opacity=".95"/><stop offset=".5" stop-color="#F6D3B9" stop-opacity="0"/></linearGradient></defs>
+<rect width="1920" height="1080" fill="url(#g)"/>`;
+sc.innerHTML=sky+ground.join('')+items.map(i=>i.s()).join('')+(F==='B'?'':'')+`<rect width="1920" height="620" fill="url(#hz)"/>`;
+// focus ring
+const pp=pr(13,13,0),ph=pr(13,13,.31*1.5);
+sc.insertAdjacentHTML('beforeend',ellipse(13,13,.5*(S>400?1:1.9),'#FFE6A3',1,F==='B'?8:4)+ellipse(13,13,.32*(S>400?1:1.9),'#FFE6A3',.28));
+// re-draw person on top of ring
+// spotlight dim
+const dm=document.getElementById('dim');
+dm.style.background=`radial-gradient(ellipse ${F==='B'?620:430}px ${F==='B'?420:300}px at ${pp[0]}px ${pp[1]-40}px, rgba(255,240,200,.12) 0%, rgba(42,34,54,0) 55%, rgba(42,34,54,.3) 100%)`;
+// ===== iso map =====
+function isoMap(w,route=true){
+ const mw=w,cx=w/2,cy=w*.28;const pj=(u,v)=>[cx+(u-v)*mw/2*.92,cy+(u+v)*mw/4*.92];
+ const poly2=(pts)=>pts.map(p=>pj(p[0],p[1]).map(n=>n.toFixed(1)).join(',')).join(' ');
+ const slab=[[0,0],[1,0],[1,1],[0,1]];
+ const land1=[[.1,.15],[.45,.08],[.6,.2],[.55,.45],[.3,.5],[.12,.38]],land2=[[.55,.58],[.85,.5],[.92,.78],[.7,.9],[.5,.8]],land3=[[.62,.1],[.88,.14],[.9,.32],[.7,.36]];
+ let s=`<svg width="${w}" height="${w*.8}" viewBox="0 0 ${w} ${w*.8}">`;
+ for(let k=16;k>0;k--)s+=`<polygon points="${poly2(slab)}" transform="translate(0 ${k})" fill="${k>8?'#1F6F73':'#2A8A8C'}"/>`;
+ s+=`<polygon points="${poly2(slab)}" fill="#49BDB4"/>`;
+ const ext=(pts,top,side,hh)=>{for(let k=hh;k>0;k--)s+=`<polygon points="${poly2(pts)}" transform="translate(0 ${-k+hh+0})" fill="${side}"/>`;s+=`<polygon points="${poly2(pts)}" transform="translate(0 ${-0})" fill="${top}"/>`};
+ ext(land1,'#C9D49A','#8E9A66',10);ext(land2,'#E3C98F','#B09660',10);ext(land3,'#A9BF86','#6F8660',10);
+ // mountains
+ [[.3,.28],[.38,.34],[.22,.3]].forEach((m,i)=>{const p=pj(m[0],m[1]);s+=`<polygon points="${p[0]-16},${p[1]-8} ${p[0]},${p[1]-44+i*6} ${p[0]+16},${p[1]-8}" fill="#8F8BAA"/><polygon points="${p[0]},${p[1]-44+i*6} ${p[0]+16},${p[1]-8} ${p[0]+4},${p[1]-8}" fill="#6E6A8A"/>`});
+ // mini city blocks
+ [[.72,.7,24],[.78,.66,34],[.66,.74,18],[.74,.76,28]].forEach(b=>{const p=pj(b[0],b[1]);const h=b[2];s+=`<polygon points="${p[0]-10},${p[1]-h} ${p[0]},${p[1]-h-5} ${p[0]+10},${p[1]-h} ${p[0]},${p[1]-h+5}" fill="#E3CBAA"/><polygon points="${p[0]-10},${p[1]-h} ${p[0]},${p[1]-h+5} ${p[0]},${p[1]+5} ${p[0]-10},${p[1]}" fill="#B79BB5"/><polygon points="${p[0]+10},${p[1]-h} ${p[0]},${p[1]-h+5} ${p[0]},${p[1]+5} ${p[0]+10},${p[1]}" fill="#8A6F94"/>`});
+ if(route){const a=pj(.28,.44),b=pj(.76,.7),m=[(a[0]+b[0])/2,Math.min(a[1],b[1])-90];
+  s+=`<path d="M${a[0]},${a[1]} Q${m[0]},${m[1]} ${b[0]},${b[1]}" stroke="#2A2236" stroke-width="5" fill="none" stroke-dasharray="2 12" stroke-linecap="round"/>`;
+  s+=`<circle cx="${a[0]}" cy="${a[1]}" r="9" fill="#FFE6A3" stroke="#2A2236" stroke-width="4"/>`;
+  s+=`<polygon points="${b[0]-13},${b[1]-30} ${b[0]+13},${b[1]-30} ${b[0]},${b[1]}" fill="#E0452F"/><circle cx="${b[0]}" cy="${b[1]-36}" r="14" fill="#E0452F"/><circle cx="${b[0]}" cy="${b[1]-36}" r="5" fill="#FFF3E2"/>`}
+ return s+'</svg>'}
+function isoBars(vals,wd=330,hh=170){let s=`<svg width="${wd}" height="${hh}">`;const bw=44,gap=18,mx=Math.max(...vals);
+ vals.forEach((v,i)=>{const x=20+i*(bw+gap),h=(v/mx)*(hh-50),y=hh-24-h,col=['#B79BB5','#D68E77','#E0452F','#3FA7A0'][i%4];
+  s+=`<polygon points="${x},${y} ${x+bw},${y} ${x+bw+12},${y-8} ${x+12},${y-8}" fill="${light(col,.25)}"/><rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${col}"/><polygon points="${x+bw},${y} ${x+bw+12},${y-8} ${x+bw+12},${y+h-8} ${x+bw},${y+h}" fill="${dark(col,.25)}"/>`});
+ return s+'</svg>'}
+// ===== UI =====
+const ui=document.getElementById('ui');
+const mapA=`<div class="mapwrap" style="right:60px;bottom:50px;transform:perspective(1100px) rotateY(-4deg)">${isoMap(430)}</div>`;
+if(F==='A'){
+ ui.innerHTML=`
+ <div class="chip" style="left:70px;top:56px">CH 03 · THE STREET</div>
+ <div class="slab dark" style="right:80px;top:70px;width:430px"><div class="kick">Population</div><div class="big">8.3M</div><div class="sub">people call it home</div></div>
+ <div class="slab" style="left:70px;bottom:70px;width:640px"><div class="kick">Manhattan · New York</div><div class="mid">The island that never sleeps</div></div>
+ ${mapA}
+ <div class="tag" style="left:${pp[0]+70}px;top:${pp[1]-170}px">Maya · commuter<small>walks 4.1 km every day</small></div>
+ <svg style="position:absolute;inset:0" width="1920" height="1080"><polyline points="${pp[0]+4},${pp[1]-30} ${pp[0]+50},${pp[1]-120} ${pp[0]+70},${pp[1]-120}" fill="none" stroke="#2A2236" stroke-width="4"/><circle cx="${pp[0]+4}" cy="${pp[1]-30}" r="7" fill="#FFE6A3" stroke="#2A2236" stroke-width="4"/></svg>`;
+}
+if(F==='B'){
+ ui.innerHTML=`
+ <div class="chip" style="left:70px;top:56px">CH 03 · THE STREET</div>
+ <div class="tag" style="left:${pp[0]+150}px;top:${pp[1]-420}px;font-size:34px">Maya · 34<small>Line cook, commutes 52 min</small></div>
+ <svg style="position:absolute;inset:0" width="1920" height="1080"><polyline points="${pp[0]+10},${pp[1]-300} ${pp[0]+90},${pp[1]-390} ${pp[0]+150},${pp[1]-390}" fill="none" stroke="#2A2236" stroke-width="5"/><circle cx="${pp[0]+10}" cy="${pp[1]-300}" r="9" fill="#FFE6A3" stroke="#2A2236" stroke-width="5"/></svg>
+ <div class="slab red" style="right:80px;top:70px;width:470px"><div class="kick">Fact</div><div class="mid">1 in 3 New Yorkers walk to work</div></div>
+ <div class="slab" style="left:70px;bottom:70px;width:560px"><div class="kick">Meet</div><div class="big" style="font-size:64px">Maya</div></div>
+ <div class="slab dark" style="right:80px;bottom:60px;width:430px;padding:16px 22px"><div class="kick">Commute time · min</div>${isoBars([28,34,41,52],330,150)}</div>`;
+}
+if(F==='S'){
+ document.getElementById('scene').style.display='none';document.getElementById('dim').style.display='none';
+ document.body.style.background='#F3DACB';
+ ui.innerHTML=`
+ <div style="position:absolute;left:70px;top:50px"><div class="kick" style="color:#6B5B7B">Theme · LOWPOLY ISO — style sheet</div><div class="big" style="font-size:54px;margin-top:6px">Everything is a chunky, flat-shaded block</div></div>
+ <div style="position:absolute;left:70px;top:210px">
+  ${[['#E9B7A6','sky'],['#F2CDB8','haze'],['#B79BB5','lilac'],['#E3CBAA','cream'],['#C97B62','terracotta'],['#8F8BAA','slate'],['#E0452F','accent'],['#3FA7A0','teal'],['#FFE6A3','glow'],['#2A2236','ink']].map(a=>`<div class="sw" style="background:${a[0]}"><span>${a[1]}<br>${a[0]}</span></div>`).join('')}
+ </div>
+ <div style="position:absolute;left:70px;top:380px;width:520px">
+  <div class="kick">Type</div><div style="font-weight:800;font-size:64px;line-height:1">Poppins ExtraBold</div><div style="font-weight:500;font-size:28px;margin-top:6px">Poppins Medium for captions · caps + wide tracking for kickers</div>
+  <div class="kick" style="margin-top:32px">Shading rule</div><div style="font-weight:500;font-size:26px;line-height:1.3">top face = lighter · left = base · right = darker · no gradients on objects · soft haze for depth</div>
+  <div class="kick" style="margin-top:32px">Motion rule</div><div style="font-weight:500;font-size:26px;line-height:1.3">cards pop up like blocks rising (scale+lift, hard shadow grows), chips slide, bars grow as extruded columns</div>
+ </div>
+ <div class="slab" style="left:660px;top:390px;width:520px"><div class="kick">Lower third</div><div class="mid">The island that never sleeps</div></div>
+ <div class="slab dark" style="left:660px;top:600px;width:520px"><div class="kick">Stat</div><div class="big">8.3M</div><div class="sub">people call it home</div></div>
+ <div class="slab red" style="left:660px;top:830px;width:520px"><div class="kick">Fact</div><div class="mid">1 in 3 walk to work</div></div>
+ <div class="tag" style="left:1260px;top:400px;font-size:30px">Maya · commuter<small>callout pinned to character</small></div>
+ <div class="chip" style="left:1260px;top:520px">CH 03 · THE STREET</div>
+ <div class="slab dark" style="left:1260px;top:610px;width:430px;padding:16px 22px"><div class="kick">Chart · iso bars</div>${isoBars([28,34,41,52],330,150)}</div>
+ <div class="mapwrap" style="left:1260px;top:760px">${isoMap(400)}</div>
+`;
+}
+</script></body></html>

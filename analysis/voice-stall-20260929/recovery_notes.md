@@ -1,0 +1,18 @@
+# Voice stall recovery notes
+
+## Original run
+
+- Run: `cs-0a9d0b20adb2b7a1`, AI image generators topic. It was the only active job when inspected.
+- Its voice stage began at 2026-09-29 18:37:52 local and remained without a first WAV or timing JSON for 14,096,087 ms before intervention. The real Python worker was PID 47316, started at that exact second and accumulated over 13,000 CPU seconds. The control-panel server was PID 89236.
+- User approved stopping the stalled run. Stopped **PID 47316 only** with `Stop-Process -Id 47316 -Force`; the venv launcher and orchestrator children then exited naturally. The control-panel server remained running and marked the run `failed` at 2026-09-29T17:02:48.535Z. No MP4 was produced.
+- Original evidence remains at `control-panel/data/renders/cs-0a9d0b20adb2b7a1.mp4.storyboard.json`, `.mp4.metrics.json`, and `.mp4.log`. The metrics now classify the failure as `voice/alignment` with worker exit code 4294967295.
+- The isolated reproduction reached F5 import. A 30-second Python stack dump first showed the optional `transformers.pipeline` import scanning model modules, then—after bypassing optional reference-ASR import—showed Numba attempting a cache tempfile under the shared read-only virtualenv. Windows `tempfile` retries denied paths repeatedly. Moving `NUMBA_CACHE_DIR` to `voice-pipeline/.cache/numba` made the exact saved first sentence synthesize and align in 91.4 s, including cold model load. This is strong causal evidence for the startup stall; the original worker could not be introspected after it was stopped.
+
+## Verification
+
+- Added first-request (180 s), later-request (90 s), and whole-voice-stage (8 min) bounds, plus a worker-side watchdog that exits the *real* Python process 5 s before the Node request deadline. A 70 s forced watchdog test exited code 124 and left no Python process. This matters because `taskkill /T` returned `Access denied` in this sandbox and could leave the venv launcher’s real Python child behind. The worker reports its exact PID so the parent can stop it if taskkill fails. Mock timeout, spawned-child cleanup, and normal-response Node tests: 5/5 pass. Python worker contract tests: 7/7 pass.
+- Real one-sentence F5/WhisperX integration test: pass, 91.4 s cold, WAV and word timing JSON written. Full saved-storyboard rerun: 12/12 sentences completed in 105.6 s, no Gemini storyboard call. Audio reuse worked on subsequent attempts (12 clips reused in 1.9 s).
+- A separate environment error then appeared: `sfx_mix.py` was invoked by system Python without NumPy. `orchestrator/lib/video/v3/sfx.js` now defaults to the repo `.venv` when present; the next rerun mixed 56 SFX cues successfully.
+- The pinned HyperFrames check was finally run with accessible npm cache. Lint 0 errors, runtime 0, motion 0, contrast 0 errors (3 warnings), but **layout 80 held `content_overlap` errors**. It correctly blocked rendering; no recovered MP4 exists. Timestamped snapshots in `snapshots/` show a visible `NaN / 50` KPI at 27 s, so the storyboard/component combination has a real visual defect even if some overlap reports are false positives. The layout pre-audit also threw `v.toFixed is not a function` and was skipped; it is not a passing gate.
+- Separate duration gap: the saved 183-word storyboard resolves to 54.168 s at 202.7 delivered WPM despite the 45 s request. Neither the visual failures nor this duration discrepancy was caused by the voice-cache stall, and neither is marked fixed here.
+- Original failed run artifacts remain untouched. Recovery output path `control-panel/data/renders/cs-0a9d0b20adb2b7a1-recovered.mp4` has metrics/log/timeline/composition diagnostics but no MP4. No platform publishing was attempted.

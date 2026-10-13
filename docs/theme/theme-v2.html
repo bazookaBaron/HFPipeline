@@ -1,0 +1,127 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Low-poly iso theme v2 (reference-driven)</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#2A2A46;--indigo:#37254F;--slate:#706C81;--teal:#26788F;--deep:#163C53;--white:#F3F5F9;--orange:#E8652B;--pink:#D94B73;--green:#3FA564;--yellow:#F0B93B;--red:#D93A2B;--water:#2F78D6}
+*{box-sizing:border-box;margin:0;padding:0}
+body{width:1920px;height:1080px;overflow:hidden;position:relative;font-family:Poppins,'Segoe UI',Arial,sans-serif;color:var(--white);background:#F2F4F9}
+.bg{position:absolute;inset:0;background-size:cover;background-position:center}
+#dim{position:absolute;inset:0}
+.slab{position:absolute;border-radius:8px;padding:20px 30px;background-size:100% 100%;
+ box-shadow:inset 2px 2px 0 rgba(255,255,255,.4),inset -2px -2px 0 rgba(0,0,0,.2),5px 5px 0 var(--e1),10px 10px 0 var(--e2),26px 30px 36px rgba(10,20,40,.42);
+ transform:perspective(1100px) rotateY(-6deg) rotateX(2deg);transform-origin:left center}
+.slab[data-f=dark]{--e1:#1B1B30;--e2:#111120}.slab[data-f=light]{--e1:#B7BECF;--e2:#8E96AC;color:var(--ink)}
+.slab[data-f=orange]{--e1:#B84D1E;--e2:#8F3A14}.slab[data-f=teal]{--e1:#134A5C;--e2:#0C3342}.slab[data-f=pink]{--e1:#A8355A;--e2:#7E2744}
+.kick{font-weight:700;font-size:20px;letter-spacing:.15em;text-transform:uppercase;opacity:.78}
+.big{font-weight:800;font-size:78px;line-height:1}.mid{font-weight:800;font-size:46px;line-height:1.05}.sub{font-weight:500;font-size:26px;margin-top:6px;opacity:.92}
+.chip{position:absolute;padding:10px 24px;border-radius:6px;background-size:100% 100%;font-weight:700;font-size:22px;letter-spacing:.13em;color:var(--white);box-shadow:inset 2px 2px 0 rgba(255,255,255,.35),4px 4px 0 #111120,9px 9px 0 rgba(0,0,0,.3),16px 20px 24px rgba(10,20,40,.4)}
+.tag{position:absolute;padding:12px 22px;border-radius:6px;background-size:100% 100%;font-weight:700;font-size:28px;color:var(--ink);box-shadow:inset 2px 2px 0 rgba(255,255,255,.7),4px 4px 0 #B7BECF,8px 8px 0 #8E96AC,18px 22px 28px rgba(10,20,40,.4)}
+.tag small{display:block;font-weight:500;font-size:19px;color:var(--slate)}
+.mapwrap{position:absolute}
+.sw{display:inline-block;width:132px;height:92px;margin:0 12px 12px 0;border-radius:6px;box-shadow:inset 2px 2px 0 rgba(255,255,255,.3),4px 4px 0 rgba(0,0,0,.16);vertical-align:top}
+.sw span{display:block;padding:44px 0 0 9px;font-size:14px;font-weight:700;text-shadow:0 1px 2px #0007}
+.ink{color:var(--ink)}
+</style></head><body>
+<div class="bg" id="bg"></div><div id="dim"></div><div id="ui"></div>
+<script>
+const Q=new URLSearchParams(location.search),F=Q.get('f')||'A';
+function rnd(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const hex=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16)),toHex=a=>'#'+a.map(v=>Math.max(0,Math.min(255,Math.round(v))).toString(16).padStart(2,'0')).join('');
+const mix=(a,b,t)=>{const A=hex(a),B=hex(b);return toHex(A.map((v,i)=>v+(B[i]-v)*t))};
+const lite=(c,t)=>mix(c,'#ffffff',t),dk=(c,t)=>mix(c,'#0b0b18',t);
+// ---- faceted (triangulated) panel texture ----
+const FP={dark:['#2A2A46','#46397A'],light:['#F7F8FC','#DCE2EF'],orange:['#E8652B','#F59A55'],teal:['#1B6A82','#2E9AB0'],pink:['#D94B73','#EE7C98']};
+function facet(w,h,k,seed){const [c1,c2]=FP[k],r=rnd(seed),nx=Math.max(3,Math.round(w/90)),ny=Math.max(2,Math.round(h/80));
+ const px=[];for(let j=0;j<=ny;j++){px[j]=[];for(let i=0;i<=nx;i++){const edge=i==0||j==0||i==nx||j==ny;px[j][i]=[i/nx*w+(edge&&(i==0||i==nx)?0:(r()-.5)*w/nx*.7),j/ny*h+(edge&&(j==0||j==ny)?0:(r()-.5)*h/ny*.7)];if(i==0)px[j][i][0]=0;if(i==nx)px[j][i][0]=w;if(j==0)px[j][i][1]=0;if(j==ny)px[j][i][1]=h}}
+ let s=`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">`;
+ const col=(x,y)=>{const t=Math.min(1,Math.max(0,(x/w)*.55+(1-y/h)*.45+(r()-.5)*.28));return mix(c1,c2,t)};
+ for(let j=0;j<ny;j++)for(let i=0;i<nx;i++){const a=px[j][i],b=px[j][i+1],c=px[j+1][i+1],d=px[j+1][i];
+  const f=(p,q,t)=>{const x=(p[0]+q[0]+t[0])/3,y=(p[1]+q[1]+t[1])/3;const cc=col(x,y);s+=`<polygon points="${p} ${q} ${t}" fill="${cc}" stroke="${cc}" stroke-width=".7"/>`};
+  if(r()<.5){f(a,b,c);f(a,c,d)}else{f(a,b,d);f(b,c,d)}}
+ return s+'</svg>'}
+function applyFacets(){document.querySelectorAll('[data-f]').forEach((el,n)=>{const w=el.offsetWidth,h=el.offsetHeight;el.style.backgroundImage=`url("data:image/svg+xml;utf8,${encodeURIComponent(facet(w,h,el.dataset.f,n*13+5))}")`})}
+// ---- low-poly iso terrain map ----
+function isoMap(w,route=true){
+ const N=13,tw=w/ (N)*1.02,pj=(i,j,z=0)=>[w/2+(i-j)*tw/2,w*.18+(i+j)*tw/4-z*tw*.26];
+ const R=rnd(11),noise=(i,j)=>Math.sin(i*1.3+j*.7)*.5+Math.sin(i*.6-j*1.5)*.5;
+ const H=w*.85;let s=`<svg width="${w}" height="${H}" viewBox="0 0 ${w} ${H}">`;
+ const P=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+ // slab body (front edges)
+ const c0=pj(0,0),c1=pj(N,0),c2=pj(N,N),c3=pj(0,N),dep=26;
+ s+=`<polygon points="${P([c3,c2,[c2[0],c2[1]+dep],[c3[0],c3[1]+dep]])}" fill="#14407E"/><polygon points="${P([c1,c2,[c2[0],c2[1]+dep],[c1[0],c1[1]+dep]])}" fill="#0E2F61"/>`;
+ const water=['#2F78D6','#2A6DC8','#3A86E3','#2C74D0'];
+ for(let i=0;i<N;i++)for(let j=0;j<N;j++){const a=pj(i,j),b=pj(i+1,j),c=pj(i+1,j+1),d=pj(i,j+1);
+  s+=`<polygon points="${P([a,b,c])}" fill="${water[Math.floor(R()*4)]}" stroke="#2F78D6" stroke-width=".5"/><polygon points="${P([a,c,d])}" fill="${water[Math.floor(R()*4)]}" stroke="#2F78D6" stroke-width=".5"/>`}
+ for(let k=0;k<14;k++){const p=pj(R()*N,R()*N);s+=`<polygon points="${P([[p[0],p[1]],[p[0]+14,p[1]],[p[0]+9,p[1]+4],[p[0]-5,p[1]+4]])}" fill="#fff" opacity=".35"/>`}
+ // land columns
+ const cells=[];
+ for(let i=0;i<N;i++)for(let j=0;j<N;j++){
+  const d1=Math.hypot(i-5,j-5.4),d2=Math.hypot(i-9.4,j-8.6)*1.25;
+  const m=Math.min(d1+noise(i,j)*1.3,d2+noise(i+3,j)*1.1);
+  if(m<4.4){let lv=Math.max(1,Math.round((4.4-m)*.95+noise(i*1.7,j*1.3)*.5));cells.push([i,j,lv,d2<d1+.0&&d2<3.2])}}
+ cells.sort((a,b)=>a[0]+a[1]-b[0]-b[1]);
+ const cT=['#E4CC9E','#62B35A','#3F9650','#8B8F9E','#F3F5F9'],cL=['#C2A878','#4B9246','#2E7A40','#6E7282','#C9D0DE'],cR=['#A38A5E','#3C7B3A','#25643A','#585C6A','#A7B0C2'];
+ const bCol=[['#E8652B','#C24E1B','#A13E12'],['#D94B73','#B3365A','#8F2848'],['#F0B93B','#CC9A26','#A97D18'],['#8E7CC3','#6F5EA6','#574887']];
+ cells.forEach(([i,j,lv,city])=>{
+  const col=Math.min(lv,5)-1,z=lv;const a=pj(i,j,z),b=pj(i+1,j,z),c=pj(i+1,j+1,z),d=pj(i,j+1,z),cb=pj(i+1,j+1,0),db=pj(i,j+1,0),bb=pj(i+1,j,0);
+  let tc=cT[col],lc=cL[col],rc=cR[col];
+  if(city){tc='#6E7282';lc='#555968';rc='#434756';lv=1}
+  s+=`<polygon points="${P([d,c,cb,db])}" fill="${lc}" stroke="${lc}" stroke-width=".5"/><polygon points="${P([b,c,cb,bb])}" fill="${rc}" stroke="${rc}" stroke-width=".5"/><polygon points="${P([a,b,c,d])}" fill="${tc}" stroke="${tc}" stroke-width=".5"/>`;
+  if(city&&R()<.75){const bc=bCol[Math.floor(R()*4)],hh=z+1.6+R()*2.6,m=.18,A=pj(i+m,j+m,hh),B=pj(i+1-m,j+m,hh),C=pj(i+1-m,j+1-m,hh),D=pj(i+m,j+1-m,hh),Cb=pj(i+1-m,j+1-m,z),Db=pj(i+m,j+1-m,z),Bb=pj(i+1-m,j+m,z);
+   s+=`<polygon points="${P([D,C,Cb,Db])}" fill="${bc[1]}"/><polygon points="${P([B,C,Cb,Bb])}" fill="${bc[2]}"/><polygon points="${P([A,B,C,D])}" fill="${lite(bc[0],.12)}"/>`}
+  else if(!city&&lv>=2&&lv<=3&&R()<.5){const p=pj(i+.5,j+.5,z);s+=`<polygon points="${p[0]-9},${p[1]} ${p[0]},${p[1]-26} ${p[0]+9},${p[1]}" fill="#2E7A40"/><polygon points="${p[0]},${p[1]-26} ${p[0]+9},${p[1]} ${p[0]+2},${p[1]}" fill="#25643A"/>`}
+ });
+ if(route){const a=pj(4.2,5.4,3),b=pj(9.6,8.6,2.4),m=[(a[0]+b[0])/2,Math.min(a[1],b[1])-110];
+  s+=`<path d="M${a[0]},${a[1]} Q${m[0]},${m[1]} ${b[0]},${b[1]}" stroke="#F3F5F9" stroke-width="6" fill="none" stroke-dasharray="1 13" stroke-linecap="round"/>`;
+  s+=`<circle cx="${a[0]}" cy="${a[1]}" r="10" fill="#F0B93B" stroke="#2A2A46" stroke-width="4"/>`;
+  s+=`<polygon points="${b[0]-14},${b[1]-34} ${b[0]+14},${b[1]-34} ${b[0]},${b[1]}" fill="#D93A2B"/><circle cx="${b[0]}" cy="${b[1]-40}" r="16" fill="#D93A2B"/><circle cx="${b[0]}" cy="${b[1]-40}" r="6" fill="#F3F5F9"/>`}
+ return s+'</svg>'}
+function isoBars(vals,wd=330,hh=170){let s=`<svg width="${wd}" height="${hh}">`;const bw=46,gap=18,mx=Math.max(...vals);
+ vals.forEach((v,i)=>{const x=20+i*(bw+gap),h=(v/mx)*(hh-52),y=hh-24-h,col=['#E8652B','#D94B73','#F0B93B','#3FA564'][i%4],d=12;
+  s+=`<polygon points="${x},${y} ${x+bw},${y} ${x+bw+d},${y-8} ${x+d},${y-8}" fill="${lite(col,.3)}"/><rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${col}"/><polygon points="${x},${y} ${x+bw},${y+h*.5} ${x+bw},${y+h} ${x},${y+h}" fill="${dk(col,.1)}" opacity=".35"/><polygon points="${x+bw},${y} ${x+bw+d},${y-8} ${x+bw+d},${y+h-8} ${x+bw},${y+h}" fill="${dk(col,.32)}"/>`});
+ return s+'</svg>'}
+const ui=document.getElementById('ui'),bg=document.getElementById('bg'),dim=document.getElementById('dim');
+const REF='ref/';
+if(F==='A'){
+ bg.style.backgroundImage=`url(${REF}4.png)`;bg.style.filter='saturate(1.12) contrast(1.04)';bg.style.backgroundSize='auto 1295px';bg.style.backgroundPosition='center 20%';
+ dim.style.background='radial-gradient(ellipse at 52% 48%,rgba(0,0,0,0) 40%,rgba(14,16,40,.38) 100%)';
+ ui.innerHTML=`
+ <div class="chip" data-f="dark" style="left:70px;top:56px">CH 03 · THE DOWNTOWN</div>
+ <div class="slab" data-f="dark" style="right:80px;top:70px;width:440px"><div class="kick">Population</div><div class="big">8.3M</div><div class="sub">people call it home</div></div>
+ <div class="slab" data-f="light" style="left:70px;bottom:70px;width:660px"><div class="kick">Manhattan · New York</div><div class="mid">The island that never sleeps</div></div>
+ <div class="mapwrap" style="right:55px;bottom:40px;transform:perspective(1100px) rotateY(-5deg)">${isoMap(440)}</div>
+ <div class="tag" data-f="light" style="left:880px;top:300px">Bayview Tower<small>Built 1998 · 52 floors</small></div>
+ <svg style="position:absolute;inset:0" width="1920" height="1080"><polyline points="1000,420 1000,372 1040,372" fill="none" stroke="#F3F5F9" stroke-width="4"/><circle cx="1000" cy="420" r="8" fill="#F0B93B" stroke="#2A2A46" stroke-width="4"/></svg>`;
+}
+if(F==='B'){
+ bg.style.backgroundImage=`url(${REF}6.webp)`;bg.style.backgroundSize='1080px 1080px';bg.style.backgroundRepeat='no-repeat';bg.style.backgroundPosition='430px 0';
+ dim.style.background='radial-gradient(ellipse 230px 470px at 1052px 640px,rgba(255,255,255,0) 0%,rgba(255,255,255,0) 60%,rgba(42,42,70,.30) 100%)';
+ ui.innerHTML=`
+ <div class="chip" data-f="teal" style="left:70px;top:56px">CH 05 · THE PEOPLE</div>
+ <svg style="position:absolute;inset:0" width="1920" height="1080"><ellipse cx="1050" cy="975" rx="115" ry="26" fill="none" stroke="#F0B93B" stroke-width="7"/><ellipse cx="1050" cy="975" rx="78" ry="17" fill="#F0B93B" opacity=".3"/><polyline points="1052,318 1120,230 1170,230" fill="none" stroke="#2A2A46" stroke-width="5"/><circle cx="1052" cy="318" r="9" fill="#F0B93B" stroke="#2A2A46" stroke-width="5"/></svg>
+ <div class="tag" data-f="light" style="left:1170px;top:170px;font-size:34px">Priya · 34<small>ICU nurse · night shift</small></div>
+ <div class="slab" data-f="orange" style="right:80px;top:330px;width:470px"><div class="kick">Fact</div><div class="mid">1 in 3 work nights</div></div>
+ <div class="slab" data-f="dark" style="left:70px;bottom:70px;width:520px"><div class="kick">Meet</div><div class="big" style="font-size:66px">Priya</div></div>
+ <div class="slab" data-f="teal" style="right:80px;bottom:60px;width:440px;padding:16px 24px"><div class="kick">Hours slept · avg</div>${isoBars([6.8,5.9,5.1,4.6],340,150)}</div>`;
+}
+if(F==='S'){
+ document.body.style.background='#E9EDF5';
+ const sw=[['#2A2A46','ink'],['#37254F','indigo'],['#163C53','deep'],['#26788F','teal'],['#706C81','slate'],['#BAAF9D','concrete'],['#2E3038','asphalt'],['#2F78D6','water'],['#5084A9','sky'],['#97C9A7','mint'],['#3FA564','green'],['#F0B93B','yellow'],['#E8652B','orange'],['#D94B73','pink'],['#D93A2B','red'],['#F3F5F9','white']];
+ ui.innerHTML=`
+ <div class="ink" style="position:absolute;left:70px;top:44px"><div class="kick" style="color:#706C81">Theme v2 · LOWPOLY FACETED ISO · from your references</div><div class="big" style="font-size:52px;margin-top:4px">Faceted, saturated, soft-lit</div></div>
+ <div class="ink" style="position:absolute;left:70px;top:190px;width:1140px">${sw.map(a=>`<div class="sw" style="background:${a[0]};color:${['#F3F5F9','#BAAF9D','#97C9A7','#F0B93B'].includes(a[0])?'#2A2A46':'#fff'}"><span>${a[1]}<br>${a[0]}</span></div>`).join('')}</div>
+ <div class="ink" style="position:absolute;left:70px;top:520px;width:580px">
+  <div class="kick" style="color:#706C81">Rules</div>
+  <div style="font-weight:600;font-size:21px;line-height:1.32;margin-top:4px">• Every panel = <b>triangulated facets</b> (like the low-poly humans), light from top-left<br>• Hard stepped extrusion shadow bottom-right, soft ambient shadow below<br>• Deep indigo / teal / white base; <b>5 vivid accents</b> only<br>• Map = faceted water + extruded terrain columns + coloured city blocks<br>• Charts = faceted 3-face columns<br>• Motion: panels rise like blocks (scale+lift), chips slide, bars grow</div>
+  <div class="kick" style="color:#706C81;margin-top:14px">Type</div><div style="font-weight:800;font-size:38px">Poppins ExtraBold</div><div style="font-weight:500;font-size:20px">Medium for captions · tracked caps for kickers</div>
+ </div>
+ <div class="slab" data-f="light" style="left:690px;top:520px;width:500px"><div class="kick">Lower third</div><div class="mid">The island that never sleeps</div></div>
+ <div class="slab" data-f="dark" style="left:690px;top:720px;width:500px"><div class="kick">Stat</div><div class="big">8.3M</div><div class="sub">people call it home</div></div>
+ <div class="slab" data-f="orange" style="left:690px;top:930px;width:500px;padding:14px 30px"><div class="kick">Fact</div><div class="mid" style="font-size:38px">1 in 3 walk to work</div></div>
+ <div class="tag" data-f="light" style="left:1280px;top:210px">Priya · 34<small>callout pinned to character</small></div>
+ <div class="chip" data-f="teal" style="left:1280px;top:330px">CH 05 · THE PEOPLE</div>
+ <div class="chip" data-f="pink" style="left:1280px;top:410px">BREAKING</div>
+ <div class="slab" data-f="teal" style="left:1280px;top:500px;width:430px;padding:16px 24px"><div class="kick">Chart · faceted bars</div>${isoBars([28,34,41,52],340,150)}</div>
+ <div class="mapwrap" style="left:1240px;top:700px">${isoMap(420)}</div>`;
+}
+document.fonts.ready.then(()=>setTimeout(applyFacets,200));
+</script></body></html>

@@ -23,6 +23,7 @@ control-panel/data/renders/
 control-panel/data/uploads/
 orchestrator/output/
 voice-pipeline/test_out/
+voice-pipeline/.cache/
 analysis/**/sheets/
 analysis/**/dense/
 analysis/**/design/crops/
@@ -32,3 +33,18 @@ analysis/**/design/crops/
 # stage dev preview project (junctions into compositions/assets)
 video-engine/.stage-dev/
 video-engine/.orchestrator-snap-*/
+
+# --- added for snapshot: large/generated/private local data ---
+/out/
+/orchestrator/test-out/
+/voice-pipeline/voices/
+/video-engine/.layout-audit-*.html
+/analysis/**/*.mp4
+/analysis/**/*.wav
+/analysis/**/*.mov
+/analysis/**/*.png
+/analysis/**/*.jpg
+/analysis/**/*.jpeg
+/analysis/**/node_modules/
+/analysis/**/frames/
+/docs/theme/ref/

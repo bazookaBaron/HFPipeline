@@ -5,7 +5,9 @@ import json,os,sys,subprocess,numpy as np,soundfile as sf
 d=sys.argv[1]; SPEED=float(sys.argv[2]) if len(sys.argv)>2 else 1.12; GAP=0.35
 E=os.path.join(os.path.dirname(__file__),"assets","endcard")
 body=os.path.join(d,"vo","voice-body.wav")
-if not os.path.exists(body): os.replace(os.path.join(d,"vo","voice.wav"),body); json.dump(json.load(open(os.path.join(d,"words.json"))),open(os.path.join(d,"words-body.json"),"w"))
+# words.json without endcard words (line 99) = a fresh voice.py run: refresh the body, never reuse a stale one
+fresh=not any(w.get("line")==99 for w in json.load(open(os.path.join(d,"words.json"))))
+if fresh or not os.path.exists(body): os.replace(os.path.join(d,"vo","voice.wav"),body); json.dump(json.load(open(os.path.join(d,"words.json"))),open(os.path.join(d,"words-body.json"),"w"))
 W=[w for w in json.load(open(os.path.join(d,"words-body.json")))]
 fast=os.path.join(E,f"fast-{SPEED}.wav")
 if not os.path.exists(fast): subprocess.run(["ffmpeg","-y","-v","error","-i",os.path.join(E,"raw.wav"),"-af",f"atempo={SPEED}","-ar","48000",fast],check=True)

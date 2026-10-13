@@ -1,0 +1,335 @@
+{
+  "name": "creator",
+  "description": "Original 2D flat-vector presenter: young South-Asian tech creator, short messy dark hair, light stubble, orange zip hoodie over a dark tee, black headphones around the neck. Chest/waist-up, bottom edge = crop line, transparent PNG.",
+  "canvas": {
+    "width": 1000,
+    "height": 1100,
+    "anchor": "bottom-center",
+    "bottomIsCropLine": true
+  },
+  "poses": [
+    "idle_open",
+    "talk_a",
+    "talk_b",
+    "blink",
+    "shocked",
+    "point_up",
+    "point_side",
+    "wave",
+    "thumbs_up",
+    "shrug",
+    "oops",
+    "both_arms_open",
+    "thinking"
+  ],
+  "swapGroups": {
+    "idle": [
+      "idle_open",
+      "talk_a",
+      "talk_b",
+      "blink"
+    ],
+    "note": "idle_open/talk_a/talk_b/blink are pixel-identical outside the mouth/eye patch (same alpha). shocked shares idle body/alpha too."
+  },
+  "talkVariants": {
+    "point_up": "point_up_talk_a",
+    "point_side": "point_side_talk_a",
+    "wave": "wave_talk_a",
+    "thumbs_up": "thumbs_up_talk_a",
+    "shrug": "shrug_talk_a",
+    "both_arms_open": "both_arms_open_talk_a",
+    "thinking": "thinking_talk_a"
+  },
+  "aliases": {
+    "facepalm": "oops",
+    "both_arms_open": "both_arms_open"
+  },
+  "regions": {
+    "_units": "fractions of canvas [x0,y0,x1,y1], approximate, valid for idle/talk/blink/shocked",
+    "head": [
+      0.275,
+      0.0,
+      0.725,
+      0.43
+    ],
+    "eyes": [
+      0.3,
+      0.19,
+      0.61,
+      0.28
+    ],
+    "mouth": [
+      0.4,
+      0.32,
+      0.6,
+      0.42
+    ]
+  },
+  "palette": {
+    "hoodie": "#FE5A1B",
+    "tee": "#403C3B",
+    "skin": "#9C462A",
+    "hair": "#1E120C",
+    "outline": "#1A1110"
+  },
+  "generation": {
+    "date": "2026-10-01",
+    "base": {
+      "model": "fal-ai/bytedance/seedream/v4/text-to-image",
+      "size": "1200x1504",
+      "seed": 44,
+      "picked_from_seeds": [
+        11,
+        22,
+        33,
+        44
+      ],
+      "prompt": "Flat 2D vector cartoon illustration of a friendly young South-Asian male tech content creator, chest-up portrait, front facing, looking at the viewer with a slight friendly smile, mouth closed. Warm brown skin, short messy dark black hair, light stubble shadow on the jaw (no beard, no glasses, no hat). He wears a bright orange zip hoodie open over a plain dark charcoal t-shirt, and a small pair of black over-ear headphones resting around his neck. Arms relaxed at his sides, hands out of frame. Style: clean flat vector cartoon like a modern explainer-video mascot, thick uniform dark brown-black outlines, flat solid colours with one simple hard-edged cel shadow tone, large simple expressive eyes, no gradients, no texture. Centered, the figure fills the frame width, cropped at mid-chest at the bottom edge, plain pure white background, no text, no logo."
+    },
+    "poses": {
+      "model": "fal-ai/bytedance/seedream/v4/edit",
+      "reference": "base seed 44 (idle_open)",
+      "prompts": {
+        "talk_a": "[face-crop edit] Change ONLY the mouth: slightly open as if mid-sentence, small open mouth, hint of upper teeth.",
+        "talk_b": "[face-crop edit] Change ONLY the mouth: open wider as if saying 'ah', upper teeth, dark inside, a little tongue; nose does not move.",
+        "blink": "[face-crop edit] Change ONLY the eyes: both closed in a natural blink.",
+        "shocked": "[face-crop edit] Change ONLY the expression: eyes wide, small pupils, brows high, mouth a small round O.",
+        "point_up": "Raises right hand beside face, index finger pointing straight up, brows slightly raised, confident smile. Keep everything else identical: same character, face, hair, orange hoodie, dark tee, headphones, flat vector style, thick outlines, cel shading, colours, framing, scale and position; plain white background; five fingers; no text.",
+        "point_side": "Extends right arm across, index finger pointing to the upper-left, glancing that way. Keep everything else identical: same character, face, hair, orange hoodie, dark tee, headphones, flat vector style, thick outlines, cel shading, colours, framing, scale and position; plain white background; five fingers; no text.",
+        "wave": "Raises one open hand beside his head and waves, big friendly smile. Keep everything else identical: same character, face, hair, orange hoodie, dark tee, headphones, flat vector style, thick outlines, cel shading, colours, framing, scale and position; plain white background; five fingers; no text.",
+        "thumbs_up": "Holds one hand in front of his chest giving a thumbs up, happy grin. Keep everything else identical: same character, face, hair, orange hoodie, dark tee, headphones, flat vector style, thick outlines, cel shading, colours, framing, scale and position; plain white background; five fingers; no text.",
+        "shrug": "Shrugs, both palms open facing up at chest height, brows raised, unsure smile. Keep everything else identical: same character, face, hair, orange hoodie, dark tee, headphones, flat vector style, thick outlines, cel shading, colours, framing, scale and position; plain white background; five fingers; no text.",
+        "oops": "Covers his mouth with one hand, sheepish 'oops', eyes wide. Keep everything else identical: same character, face, hair, orange hoodie, dark tee, headphones, flat vector style, thick outlines, cel shading, colours, framing, scale and position; plain white background; five fingers; no text.",
+        "both_arms_open": "Excited, elbows bent, forearms raised, open hands spread wide beside his shoulders, big open-mouth smile. Keep everything else identical: same character, face, hair, orange hoodie, dark tee, headphones, flat vector style, thick outlines, cel shading, colours, framing, scale and position; plain white background; five fingers; no text.",
+        "thinking": "Right hand to chin (thumb and bent index under chin), other arm down, eyes glance up, thoughtful mouth; same camera distance. Keep everything else identical: same character, face, hair, orange hoodie, dark tee, headphones, flat vector style, thick outlines, cel shading, colours, framing, scale and position; plain white background; five fingers; no text.",
+        "<pose>_talk_a": "[face-crop edit of each gesture pose] Change ONLY the mouth: slightly open as if mid-sentence."
+      },
+      "notes": "Mouth/eye/shocked variants: edit a 2x face crop of idle, align (multi-scale NCC, scipy), paste only the changed mouth or eye patch onto idle with a feathered mask, keep idle alpha. Gesture poses: full-frame edit, head-template aligned (scale/offset) to idle; <3.5% scale treated as identity."
+    },
+    "background_removal": "fal-ai/birefnet/v2 (Portrait) via orchestrator/lib/media/fal.js removeBackground",
+    "postprocess": "idle-coordinate canvas 1200x1320 cropped from 1200x1504, resized to 1000x1100, 14px alpha taper at top (hair tips touch top edge)",
+    "per_pose": {
+      "idle_open": {
+        "src": "base_44 (seedream t2i seed 44)",
+        "transform": [
+          1,
+          0,
+          0
+        ]
+      },
+      "talk_a": {
+        "src": "raw2_f_talk_a.png",
+        "face_patch_box_idle_px": [
+          347,
+          414,
+          853,
+          563
+        ],
+        "align": {
+          "file": "raw2_f_talk_a.png",
+          "score": 0.9858465790748596,
+          "s": 1.0000000000000002,
+          "dx": 0,
+          "dy": 2
+        }
+      },
+      "talk_b": {
+        "src": "raw4_f_talk_b.png",
+        "face_patch_box_idle_px": [
+          347,
+          414,
+          853,
+          603
+        ],
+        "align": {
+          "file": "raw4_f_talk_b.png",
+          "score": 0.967,
+          "s": 1.0,
+          "dx": 0,
+          "dy": 2
+        }
+      },
+      "blink": {
+        "src": "raw2_f_blink.png",
+        "face_patch_box_idle_px": [
+          346,
+          235,
+          854,
+          428
+        ],
+        "align": {
+          "file": "raw2_f_blink.png",
+          "score": 0.962285578250885,
+          "s": 1.0000000000000002,
+          "dx": 0,
+          "dy": 0
+        }
+      },
+      "shocked": {
+        "src": "raw2_f_shocked.png",
+        "face_patch_box_idle_px": [
+          346,
+          176,
+          854,
+          603
+        ],
+        "align": {
+          "file": "raw2_f_shocked.png",
+          "score": 0.9098363518714905,
+          "s": 1.0050000000000003,
+          "dx": -6,
+          "dy": 0
+        }
+      },
+      "point_up": {
+        "src": "raw_point_up.png",
+        "transform": [
+          1.0,
+          0,
+          0
+        ],
+        "align_score": 0.963
+      },
+      "point_side": {
+        "src": "raw_point_side.png",
+        "transform": [
+          1.0949999999999995,
+          -138,
+          -6
+        ],
+        "align_score": 0.682
+      },
+      "wave": {
+        "src": "raw_wave.png",
+        "transform": [
+          1.0,
+          0,
+          0
+        ],
+        "align_score": 0.933
+      },
+      "thumbs_up": {
+        "src": "raw_thumbs_up.png",
+        "transform": [
+          1.0,
+          0,
+          0
+        ],
+        "align_score": 0.975
+      },
+      "shrug": {
+        "src": "raw_shrug.png",
+        "transform": [
+          1.1849999999999994,
+          -118,
+          -34
+        ],
+        "align_score": 0.899
+      },
+      "oops": {
+        "src": "raw_oops.png",
+        "transform": [
+          1.0,
+          0,
+          0
+        ],
+        "align_score": 0.93
+      },
+      "both_arms_open": {
+        "src": "raw2_arms_open.png",
+        "transform": [
+          1.0,
+          0,
+          0
+        ],
+        "align_score": 0.91
+      },
+      "thinking": {
+        "src": "raw3_thinking.png",
+        "transform": [
+          1.04,
+          -16,
+          -6
+        ],
+        "align_score": 0
+      },
+      "point_up_talk_a": {
+        "src": "raw_f_talk_point_up.png",
+        "align": {
+          "file": "raw_f_talk_point_up.png",
+          "score": 0.987659752368927,
+          "s": 1.0,
+          "dx": -2,
+          "dy": -2
+        },
+        "changed_px": 51910
+      },
+      "point_side_talk_a": {
+        "src": "raw_f_talk_point_side.png",
+        "align": {
+          "file": "raw_f_talk_point_side.png",
+          "score": 0.9851534962654114,
+          "s": 1.005,
+          "dx": -2,
+          "dy": -2
+        },
+        "changed_px": 46701
+      },
+      "wave_talk_a": {
+        "src": "raw_f_talk_wave.png",
+        "align": {
+          "file": "raw_f_talk_wave.png",
+          "score": 0.971859872341156,
+          "s": 1.0549999999999995,
+          "dx": -68,
+          "dy": -10
+        },
+        "changed_px": 90755
+      },
+      "thumbs_up_talk_a": {
+        "src": "raw_f_talk_thumbs_up.png",
+        "align": {
+          "file": "raw_f_talk_thumbs_up.png",
+          "score": 0.9872831106185913,
+          "s": 1.0,
+          "dx": 0,
+          "dy": 0
+        },
+        "changed_px": 51549
+      },
+      "shrug_talk_a": {
+        "src": "raw_f_talk_shrug.png",
+        "align": {
+          "file": "raw_f_talk_shrug.png",
+          "score": 0.9858837127685547,
+          "s": 1.0050000000000001,
+          "dx": -2,
+          "dy": -2
+        },
+        "changed_px": 67825
+      },
+      "both_arms_open_talk_a": {
+        "src": "raw_f_talk_both_arms_open.png",
+        "align": {
+          "file": "raw_f_talk_both_arms_open.png",
+          "score": 0.9811263084411621,
+          "s": 1.0,
+          "dx": 2,
+          "dy": 0
+        },
+        "changed_px": 75357
+      },
+      "thinking_talk_a": {
+        "src": "raw_f_talk_thinking.png",
+        "align": {
+          "file": "raw_f_talk_thinking.png",
+          "score": 0.9843543767929077,
+          "s": 1.0,
+          "dx": 0,
+          "dy": 0
+        },
+        "changed_px": 49446
+      }
+    }
+  }
+}

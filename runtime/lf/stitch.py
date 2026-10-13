@@ -6,7 +6,7 @@ def run(a): subprocess.run(a,check=True)
 parts=[]
 for i,c in enumerate(C):
     ws=[w for w in W if firsts[i]<=w['line']<firsts[i+1]]
-    s=max(0,ws[0]['s']-0.25); v=f'ch{i:02d}.mp4'
+    pv=[w for w in W if w['line']<firsts[i]]; s=max(0,ws[0]['s']-(min(3.0,ws[0]['s']-pv[-1]['e']-0.27) if pv else 0.25)); v=f'ch{i:02d}.mp4'  # LEAD: start inside the chapter pause (= build.js)
     d=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0',v]))
     o=f'_st{i:02d}.mp4'
     run(['ffmpeg','-v','error','-y','-i',v,'-ss',f'{s:.3f}','-t',f'{d:.3f}','-i','mix.wav' if os.path.exists('mix.wav') else 'vo/voice.wav',

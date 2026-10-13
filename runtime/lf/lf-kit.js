@@ -3,9 +3,9 @@
  * LF.init(tl)                      V.use(tl), inject css. Call first.
  * LF.stage(W,H,{ch,title})         dot-grid bgs (bg/deep/pale), #cam>#maps+#fx, header chip top-left, year chip top-right. Returns {cam,maps,fx}.
  * LF.bg(tl,"bg|deep|pale",t)       hard-cut background swap.   LF.year(tl,"1971",t) / LF.yearOff(tl,t)   running year chip (scramble).
- * LF.chapterCard(tl,n,title,t,after="pale",{firstWord,lead=1.5,hold=1.8})  READABLE card, ~2.7 s: number slams (0.05), title types fast (0.3-0.75), then HOLDS >= 1.8 s with
+ * LF.chapterCard(tl,n,title,t,after="pale",{firstWord,lead=2.3,hold=2.6})  READABLE card, ~3.5 s: number slams (0.05), title types fast (0.3-0.75), then HOLDS >= 2.6 s with
  *      micro-motion only (scale 1.0->1.03), then exits; bg swaps deep->pale. Pass t=null + {firstWord: chapter-local time of the chapter's first word} to start it
- *      `lead` s before that word, i.e. inside the silent chapter pause made by `voice.py --chapters chapters.json --pause 1.6`. Returns the end time. (puppet sits above it)
+ *      `lead` s before that word, i.e. inside the silent chapter pause made by `voice.py --chapters chapters.json --pause 2.8`. Returns the end time. (puppet sits above it)
  * LF.photo(tl,id,media,{x,y,w,h,t,dur,kb,rot,pos,cap,out,z=50})  (z above stage boards; a photo under another board is a build failure, see strays.js occlusion) paper frame, Ken Burns 1.04->1.10, grain if media[id].grain, credit strip.
  * LF.badge(tl,id,media,name,role,{x,y,t,size})   circle person badge + name chip (+role chip).
  * LF.stamp(tl,text,{x,y,t,rot,size})  slams with shake+ring.   LF.counter(tl,label,from,to,{x,y,t,prefix,suffix,d,fmt,w})
@@ -21,6 +21,7 @@
  *   pz.walk(t,d,toX) pz.pose(t,name,{hold}) pz.shift(t,"l|r|c") pz.step(t,"l|r") pz.jump(t) pz.hop(t) pz.sit(t) pz.up(t) pz.lean(t,dir)
  *   pz.tap(t) pz.turn(t,m) pz.point(t,"l|r") pz.look(t,dir) pz.face(t,{...}) pz.talk(t0,t1) (restrict) ; run() sorts, auto-fills a weight shift / look /
  *   small gesture every ~2.4 s wherever nothing is queued, returns arms to stand after a gesture, adds talk+blinks+idle. pz.x(t) = centre x at t.
+ *   o.quiet = [[t0,t1],...] chapter-local windows (iso/board blocks) with NO auto-fill: queue explicit point/present tied to build steps there.
  */
 (function (root) {
   const LF = {}; let V, tl0, ZI = 1;
@@ -85,8 +86,8 @@
   LF.yearOff = (tl, t) => LF.set(tl, LF.yearEl, { autoAlpha: 0 }, t);
   LF.chapterCard = (tl, n, title, t, after, o) => {
     o = o || {};
-    if (t == null) t = Math.max(0, (o.firstWord || 0) - (o.lead == null ? 1.5 : o.lead)); // default: start inside the silent pause, before the chapter's first word
-    const r = rootEl(), z = 80, hold = Math.max(1.8, o.hold || 1.8), tEnd = t + 0.75 + hold; // slam 0.05, title types 0.3-0.75, then HOLD >= 1.8 s readable
+    if (t == null) t = Math.max(0, (o.firstWord || 0) - (o.lead == null ? 2.3 : o.lead)); // default: start inside the silent pause, before the chapter's first word
+    const r = rootEl(), z = 80, hold = Math.max(2.6, o.hold || 2.6), tEnd = t + 0.75 + hold; // slam 0.05, title types 0.3-0.75, then HOLD >= 1.8 s readable
     const ov = mk("", "", { inset: 0, background: "var(--deep)", zIndex: z, visibility: "visible", opacity: 0 }, r); ov.appendChild(Object.assign(document.createElement("div"), { className: "lf-bg" }));
     const num = mk("", String(n).padStart(2, "0"), { left: "70px", top: "170px", font: "400 560px/1 Anton,sans-serif", color: "var(--marker)", webkitTextStroke: "10px var(--ink)", textShadow: "14px 14px 0 var(--ink)", zIndex: z + 1 }, r);
     const ttl = mk("", "", { left: "80px", top: "770px", font: "400 96px/1 Anton,sans-serif", color: "var(--paper)", textShadow: "6px 6px 0 var(--ink)", textTransform: "uppercase", whiteSpace: "nowrap", zIndex: z + 1 }, r);
@@ -173,7 +174,7 @@
       look: (t, dir) => add(t, "look", { dir }, 0.5), face: (t, f) => add(t, "face", { f }, 0.8),
       x: (t) => { let x = startX; Q.slice().sort((a, b) => a.t - b.t).forEach((q) => { if (q.k === "walk" && q.t + q.d <= t) x = off(q.a.to); }); return cx + x; },
       run: () => {
-        const busy = (t) => B.some((b) => t > b[0] - 0.7 && t < b[1] + 0.5);
+        const quiet = o.quiet || [], busy = (t) => B.some((b) => t > b[0] - 0.7 && t < b[1] + 0.5) || quiet.some((w) => t >= w[0] - 0.3 && t <= w[1]);
         const autos = [["shift", "l"], ["look", "left"], ["shift", "r"], ["g", "both_open"], ["look", "right"], ["shift", "c"], ["look", "up"], ["g", "present_left"], ["shift", "l"], ["look", "left"], ["shift", "r"], ["g", "thinking"]];
         let ai = 0; for (let t = 0.8; t < dur - 0.8; t += 2.4) { if (busy(t)) continue; const a = autos[ai++ % autos.length]; if (a[0] === "g") { Q.push({ t, k: "pose", a: { n: a[1], hold: 1.0 }, d: 1 }); B.push([t, t + 1.1]); } else { Q.push({ t, k: a[0], a: { s: a[1], dir: a[1] }, d: 0.6 }); B.push([t, t + 0.6]); } }
         Q.sort((a, b) => a.t - b.t);

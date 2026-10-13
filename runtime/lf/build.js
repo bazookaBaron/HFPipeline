@@ -17,7 +17,8 @@ let words, est = false;
 if (fs.existsSync(path.join(D, "words.json"))) words = JSON.parse(fs.readFileSync(path.join(D, "words.json"), "utf8"));
 else { est = true; words = []; let t = 0.3; fs.readFileSync(path.join(D, "script.txt"), "utf8").split(/\r?\n/).filter((l) => l.trim() && !l.startsWith("#")).forEach((l, i) => { l.split(/\s+/).forEach((w) => { words.push({ w, s: +t.toFixed(3), e: +(t + 0.34).toFixed(3), line: i }); t += 0.4; }); t += 0.35; }); }
 const mine = words.filter((w) => w.line >= c.lines[0] && w.line <= c.lines[1]);
-const T0 = Math.max(0, mine[0].s - 0.25), END = mine[mine.length - 1].e + 0.3, DUR = +(END - T0).toFixed(3);
+const prev = words.filter((w) => w.line < c.lines[0]).pop(), LEAD = Math.min(3.0, prev ? mine[0].s - prev.e - 0.27 : 0.25); // window starts INSIDE the chapter pause (stitch.py/sfxmerge.py use the same LEAD)
+const T0 = Math.max(0, mine[0].s - LEAD), END = mine[mine.length - 1].e + 0.3, DUR = +(END - T0).toFixed(3);
 const local = mine.map((w) => ({ w: w.w, s: +(w.s - T0).toFixed(3), e: +(w.e - T0).toFixed(3), line: w.line }));
 const th = Theme.get("tomato"), css = Theme.css(th);
 const src = fs.readFileSync(path.join(D, "src", id + ".js"), "utf8");

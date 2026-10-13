@@ -5,6 +5,7 @@
  * make-video.js -- the one-click path: topic -> finished, gate-checked video. No human step.
  *
  *   node make-video.js --topic "How database indexes work" --out output/x.mp4 [--rounds 2]
+ *   node make-video.js --storyboard saved.storyboard.json --out output/retry.mp4 --rounds 0
  *
  * 1. generate-video-v3 --topic (Gemini storyboard, validated + repaired, voice, render, master)
  * 2. tools/v3_gates.py on the delivered mp4 (cadence, pace, loudness, frame geometry)
@@ -24,9 +25,15 @@ function arg(name, def) {
 function run(cmd, args, logFile) {
   return new Promise((resolve) => {
     const out = fs.openSync(logFile, "a");
-    const c = spawn(cmd, args, { cwd: __dirname, windowsHide: true, stdio: ["ignore", "pipe", out] });
+    const c = spawn(cmd, args, { cwd: __dirname, windowsHide: true, stdio: ["ignore", "pipe", "pipe"] });
     let stdout = "";
     c.stdout.on("data", (d) => (stdout += d.toString()));
+    // Keep the full render log on disk while forwarding progress to the parent
+    // job stream. stdout remains reserved for the final machine-readable JSON.
+    c.stderr.on("data", (chunk) => {
+      fs.writeSync(out, chunk);
+      process.stderr.write(chunk);
+    });
     c.on("close", (code) => {
       fs.closeSync(out);
       resolve({ code, stdout });
@@ -36,10 +43,15 @@ function run(cmd, args, logFile) {
 
 async function main() {
   const topic = arg("topic");
+  const storyboard = arg("storyboard");
   const outPath = path.resolve(arg("out", `output/${Date.now()}.mp4`));
-  const rounds = Number(arg("rounds", 2));
-  if (!topic) {
-    process.stderr.write("--topic is required\n");
+  const rounds = Number(arg("rounds", storyboard ? 0 : 2));
+  if (!topic && !storyboard) {
+    process.stderr.write("--topic or --storyboard is required\n");
+    process.exit(1);
+  }
+  if (storyboard && !fs.existsSync(path.resolve(storyboard))) {
+    process.stderr.write(`--storyboard not found: ${path.resolve(storyboard)}\n`);
     process.exit(1);
   }
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
@@ -49,7 +61,8 @@ async function main() {
   let problems = null;
   let gates = null;
   for (let r = 0; r <= rounds; r++) {
-    const args = ["generate-video-v3.js", "--topic", topic, "--out", outPath, "--run-id", runId, "--reuse-voice", "true"];
+    const args = ["generate-video-v3.js", ...(storyboard ? ["--storyboard", path.resolve(storyboard)] : ["--topic", topic]),
+      "--out", outPath, "--run-id", runId, "--reuse-voice", "true"];
     // pass-through options (control panel): voice profile, accent, target length
     ["ref-audio", "ref-text", "accent", "length-seconds", "profile", "captions", "sfx", "music", "endcard", "voice-profile", "promo", "caption-skin", "presenter"].forEach((k) => {
       if (arg(k) !== undefined) args.push("--" + k, arg(k));
@@ -74,6 +87,7 @@ async function main() {
       process.stdout.write(JSON.stringify({ ok: false, stage: "generate", round: r, failure, log: logFile }) + "\n");
       process.exit(1);
     }
+    process.stderr.write("[make-video] stage: final QA\n");
     const g = await run("python", ["tools/v3_gates.py", "--video", outPath, "--timeline", `${outPath}.timeline.json`, "--metrics", `${outPath}.metrics.json`], logFile);
     gates = JSON.parse(g.stdout);
     fs.writeFileSync(`${outPath}.gates.json`, JSON.stringify(gates, null, 1));

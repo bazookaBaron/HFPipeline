@@ -124,10 +124,11 @@
         <h2>30-day topic calendar</h2>
         <span class="badge badge-real">real Gemini + real full pipeline per click</span>
       </div>
-      <p class="hint">Generates 30 distinct CS/tech topics via a real Gemini call, one per day. Click any topic to immediately kick off BOTH a real cs-explainer video run and a real carousel run for it -- uses your active cloned voice if you've uploaded one.</p>
+      <p class="hint">Generate beginner-friendly tech topics, then choose Make reel or Make carousel independently for each one. Nothing starts when you click the topic text.</p>
       <div class="row">
         <button type="button" id="topics-generate-btn">Generate 30 topics</button>
         <span id="topics-generate-status" class="muted"></span>
+        <span id="topics-updated" class="muted"></span>
       </div>
       <div id="topics-list" class="topics-list">
         <p class="muted">No topic calendar yet -- click "Generate 30 topics".</p>
@@ -176,6 +177,7 @@
         <span id="run-status" class="status-pill status-idle">idle</span>
       </div>
       <div id="phase-timeline" class="phase-timeline"></div>
+      <p id="run-activity" class="muted" aria-live="polite"></p>
       <pre id="log-console" class="log-console">Run one of the pipelines above to see live logs here.</pre>
       <div id="preview-area" class="preview-area" hidden>
         <h3>Result preview</h3>
@@ -205,21 +207,27 @@
         <button type="button" id="save-review">Save edits</button>
       </div>
       <div class="row row-publish">
-        <button type="button" id="publish-youtube" class="publish-btn">Publish to YouTube (not yet wired)</button>
-        <button type="button" id="publish-instagram" class="publish-btn">Publish to Instagram (not yet wired)</button>
+        <button type="button" id="publish-youtube" class="publish-btn">Prepare YouTube post</button>
+        <button type="button" id="publish-instagram" class="publish-btn">Prepare Instagram post</button>
       </div>
+      <div class="row row-publish">
+        <button type="button" id="send-youtube" hidden>Upload privately to YouTube</button>
+        <button type="button" id="send-instagram" hidden>Publish 9:16 Reel to Instagram</button>
+        <button type="button" id="rearm-instagram" hidden>Confirm removed & retry Instagram</button>
+      </div>
+      <img id="publish-cover" class="publish-cover" alt="Generated thumbnail or cover" hidden>
       <p id="publish-result" class="hint"></p>
     </section>
 
     <section class="grid-2">
       <div class="card">
-        <div class="card-head"><h2>YouTube reconnect</h2></div>
+        <div class="card-head"><h2>Publishing accounts</h2></div>
         <p id="youtube-status" class="muted">checking…</p>
         <div class="row">
           <button type="button" id="youtube-connect">Connect / Reconnect YouTube</button>
-          <button type="button" id="youtube-force-expire" class="quiet">Force-expire (test)</button>
+          <button type="button" id="instagram-connect">Connect Instagram browser</button>
         </div>
-        <p class="hint">Real Google OAuth exchange is a placeholder (Phase 7). The click → redirect → consent → callback → reconnected shape is fully real and testable now.</p>
+        <p class="hint">YouTube needs local OAuth credentials and uploads privately first. Instagram uses an experimental desktop-browser flow; sign in once in the window it opens. Neither platform publishes during preparation.</p>
       </div>
 
       <div class="card">
@@ -234,12 +242,16 @@
     </section>
 
     <section class="card">
-      <div class="card-head"><h2>Run history</h2></div>
+      <div class="card-head"><h2>Run history</h2><span id="history-updated" class="muted">Loading…</span></div>
+      <div class="row history-controls">
+        <label>Show <select id="history-filter"><option value="all">All</option><option value="active">Active</option><option value="completed">Completed</option><option value="failed">Needs attention</option></select></label>
+        <button type="button" id="history-refresh" class="quiet">Refresh</button>
+      </div>
       <table class="history-table">
         <thead>
-          <tr><th>ID</th><th>Pipeline</th><th>Topic</th><th>Status</th><th>Started</th><th>Result</th></tr>
+          <tr><th>ID</th><th>Pipeline</th><th>Topic</th><th>Status</th><th>Started</th><th>Result</th><th>Actions</th></tr>
         </thead>
-        <tbody id="history-body"><tr><td colspan="6" class="muted">Loading…</td></tr></tbody>
+        <tbody id="history-body"><tr><td colspan="7" class="muted">Loading…</td></tr></tbody>
       </table>
     </section>
   </main>

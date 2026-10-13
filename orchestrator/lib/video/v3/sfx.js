@@ -14,7 +14,9 @@ const fs = require("fs");
 const path = require("path");
 const { spawnSync } = require("child_process");
 
-const PYTHON = process.env.SFX_PYTHON || "python";
+const PROJECT_PYTHON = path.resolve(__dirname, "..", "..", "..", "..", ".venv",
+  process.platform === "win32" ? "Scripts/python.exe" : "bin/python");
+const PYTHON = process.env.SFX_PYTHON || (fs.existsSync(PROJECT_PYTHON) ? PROJECT_PYTHON : "python");
 const MIN_GAP = 0.085;
 const PRIORITY = { chime: 5, whoosh: 4, pop: 4, strike: 3, swish: 2, roll: 2, keys: 2, blip: 1, tick: 0 };
 

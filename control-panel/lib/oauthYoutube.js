@@ -1,93 +1,66 @@
 "use strict";
 
-/**
- * YouTube "reconnect" flow -- SHAPE ONLY, no real Google OAuth.
- *
- * The full brief flags that unverified-app refresh tokens for this kind of
- * OAuth expire periodically, and the old repo had to bolt a reconnect flow on
- * after the fact. This module builds the real click -> redirect -> consent ->
- * callback -> "reconnected" shape now, with the actual Google token exchange
- * replaced by a single, clearly-marked placeholder function
- * (`exchangeCodeForToken`). Dropping in real client credentials later means
- * replacing that one function's body -- no redesign of the flow, storage
- * shape, or UI.
- *
- * Token state persists to data/oauth/youtube.json (JSON file, not a real
- * token store -- fine for a local single-operator control panel).
- */
-
 const path = require("path");
 const crypto = require("crypto");
 const { atomicWriteFileSync, readJsonSafe } = require("./util");
 
 const TOKEN_FILE = path.join(__dirname, "..", "data", "oauth", "youtube.json");
-const PENDING_STATES = new Set();
+const pending = new Map();
+const redirectUri = () => process.env.YOUTUBE_REDIRECT_URI || `http://127.0.0.1:${process.env.PORT || 4600}/api/oauth/youtube/callback`;
 
-// Demo TTL so the "reconnect required" UI path is actually observable without
-// waiting on a real unverified-app refresh-token expiry window (which is
-// usually 7 days). Swap for the provider's real `expires_in` once wired.
-const STUB_TOKEN_TTL_MS = 5 * 60 * 1000;
-
-function readToken() {
-  return readJsonSafe(TOKEN_FILE, { connected: false, stub: true });
+function config() {
+  const clientId = process.env.YOUTUBE_CLIENT_ID;
+  const clientSecret = process.env.YOUTUBE_CLIENT_SECRET;
+  if (!clientId || !clientSecret) throw Object.assign(new Error("Set YOUTUBE_CLIENT_ID and YOUTUBE_CLIENT_SECRET locally before connecting YouTube"), { statusCode: 409 });
+  return { clientId, clientSecret };
 }
 
-function writeToken(value) {
-  atomicWriteFileSync(TOKEN_FILE, JSON.stringify(value, null, 2));
+function readToken() {
+  const record = readJsonSafe(TOKEN_FILE, null);
+  return record && !record.stub ? record : null;
 }
 
 function status() {
   const token = readToken();
-  if (!token.connected) return { connected: false, stub: true };
-  const expired = token.expiresAt && Date.now() > new Date(token.expiresAt).getTime();
-  return { ...token, expired };
+  return { configured: Boolean(process.env.YOUTUBE_CLIENT_ID && process.env.YOUTUBE_CLIENT_SECRET), connected: Boolean(token?.refreshToken), expired: Boolean(token && Date.now() >= token.expiresAt), connectedAt: token?.connectedAt || null, expiresAt: token?.expiresAt ? new Date(token.expiresAt).toISOString() : null };
 }
 
-/** Step 1: user clicks "Connect/Reconnect YouTube". Returns where to redirect them. */
 function beginConnect() {
-  const state = crypto.randomBytes(16).toString("hex");
-  PENDING_STATES.add(state);
-  // Real implementation would build the Google OAuth consent URL here with
-  // client_id/redirect_uri/scope/state. We redirect to our own stub consent
-  // page instead, clearly labeled as a placeholder.
-  return `/oauth/youtube/consent?state=${state}`;
+  const { clientId } = config();
+  const state = crypto.randomBytes(24).toString("hex");
+  pending.set(state, Date.now() + 10 * 60_000);
+  const url = new URL("https://accounts.google.com/o/oauth2/v2/auth");
+  for (const [key, value] of Object.entries({ client_id: clientId, redirect_uri: redirectUri(), response_type: "code", scope: "https://www.googleapis.com/auth/youtube.upload", access_type: "offline", prompt: "consent", state })) url.searchParams.set(key, value);
+  return url.toString();
 }
 
-/**
- * PLACEHOLDER -- real Google OAuth code<->token exchange goes here in Phase 7.
- * Currently just fabricates a token record so the rest of the flow (storage,
- * status display, expiry, reconnect-on-expiry) is exercised end-to-end.
- */
-function exchangeCodeForToken(/* code */) {
-  return {
-    connected: true,
-    stub: true,
-    accessToken: `stub_access_${crypto.randomBytes(6).toString("hex")}`,
-    connectedAt: new Date().toISOString(),
-    expiresAt: new Date(Date.now() + STUB_TOKEN_TTL_MS).toISOString(),
-  };
+async function tokenRequest(fields) {
+  const response = await fetch("https://oauth2.googleapis.com/token", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams(fields) });
+  const body = await response.json();
+  if (!response.ok || !body.access_token) throw Object.assign(new Error(`YouTube OAuth failed: ${body.error || response.status}`), { statusCode: 502 });
+  return body;
 }
 
-/** Step 3: consent page posts back here with the state + a fake "code". */
-function handleCallback(state, code) {
-  if (!state || !PENDING_STATES.has(state)) {
-    const err = new Error("unknown or expired OAuth state");
-    err.statusCode = 400;
-    throw err;
-  }
-  PENDING_STATES.delete(state);
-  const token = exchangeCodeForToken(code);
-  writeToken(token);
-  return token;
-}
-
-/** Test-only helper so the "expired -> reconnect" UI path can be demonstrated on demand. */
-function forceExpireForTesting() {
-  const token = readToken();
-  if (!token.connected) return status();
-  token.expiresAt = new Date(Date.now() - 1000).toISOString();
-  writeToken(token);
+async function handleCallback(state, code) {
+  const expiry = pending.get(state);
+  pending.delete(state);
+  if (!state || !expiry || expiry < Date.now() || !code) throw Object.assign(new Error("Unknown or expired YouTube OAuth state"), { statusCode: 400 });
+  const { clientId, clientSecret } = config();
+  const data = await tokenRequest({ code, client_id: clientId, client_secret: clientSecret, redirect_uri: redirectUri(), grant_type: "authorization_code" });
+  if (!data.refresh_token) throw Object.assign(new Error("Google did not return a refresh token; reconnect with consent"), { statusCode: 502 });
+  const record = { accessToken: data.access_token, refreshToken: data.refresh_token, expiresAt: Date.now() + (data.expires_in || 3600) * 1000, connectedAt: new Date().toISOString() };
+  atomicWriteFileSync(TOKEN_FILE, JSON.stringify(record));
   return status();
 }
 
-module.exports = { status, beginConnect, handleCallback, forceExpireForTesting, isPendingState: (s) => PENDING_STATES.has(s) };
+async function accessToken() {
+  const token = readToken();
+  if (!token?.refreshToken) throw Object.assign(new Error("Connect YouTube before publishing"), { statusCode: 409 });
+  if (token.accessToken && token.expiresAt > Date.now() + 60_000) return token.accessToken;
+  const { clientId, clientSecret } = config();
+  const data = await tokenRequest({ refresh_token: token.refreshToken, client_id: clientId, client_secret: clientSecret, grant_type: "refresh_token" });
+  atomicWriteFileSync(TOKEN_FILE, JSON.stringify({ ...token, accessToken: data.access_token, expiresAt: Date.now() + (data.expires_in || 3600) * 1000 }));
+  return data.access_token;
+}
+
+module.exports = { status, beginConnect, handleCallback, accessToken };

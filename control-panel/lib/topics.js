@@ -89,30 +89,47 @@ function runGenerateTopicsCli(count, avoidTopics, log) {
  * calendar, replacing whatever calendar currently exists. Recently-used topics are passed as
  * avoid-context so Gemini doesn't just repeat them.
  */
-async function generateTopicCalendar({ count = DEFAULT_COUNT, log = () => {} } = {}) {
-  const existing = listTopics();
-  const avoidTopics = existing.map((t) => t.topic).slice(-60);
-
-  log(`Requesting ${count} topics from Gemini...`);
-  const raw = await runGenerateTopicsCli(count, avoidTopics, log);
-
-  const topics = raw
-    .map((item, i) => ({
-      id: newId("topic"),
-      day: i + 1,
-      date: addDaysIso(i),
+function mergeTopicCalendar(existing, raw, count) {
+  const preserved = new Map(existing.filter((t) => t.videoRunId || t.carouselRunId || t.status === "done" || t.status === "running")
+    .map((t) => [t.day, t]));
+  let next = 0;
+  return Array.from({ length: count }, (_, i) => {
+    const day = i + 1;
+    if (preserved.has(day)) return preserved.get(day);
+    const item = raw[next++];
+    const old = existing.find((t) => t.day === day);
+    return {
+      id: old?.id || newId("topic"),
+      day,
+      date: old?.date || addDaysIso(i),
       topic: item.topic,
       category: item.category || "uncategorized",
-      status: "pending", // pending | running | done
+      status: "pending",
       videoRunId: null,
       carouselRunId: null,
-      createdAt: new Date().toISOString(),
-    }))
-    .filter((t) => t.topic && t.topic.trim().length > 0);
+      createdAt: old?.createdAt || new Date().toISOString(),
+    };
+  });
+}
+
+async function generateTopicCalendar({ count = DEFAULT_COUNT, log = () => {} } = {}) {
+  if (!Number.isSafeInteger(count) || count < 1 || count > 60) throw new Error("count must be 1-60");
+  const existing = listTopics();
+  const avoidTopics = existing.map((t) => t.topic).slice(-60);
+  const preserved = existing.filter((t) => t.videoRunId || t.carouselRunId || t.status === "done" || t.status === "running");
+  const needed = Math.max(0, count - preserved.filter((t) => t.day >= 1 && t.day <= count).length);
+  if (!needed) {
+    log("All calendar slots have existing work; nothing was replaced.");
+    return existing;
+  }
+
+  log(`Requesting ${needed} beginner-friendly topics from Gemini...`);
+  const raw = await runGenerateTopicsCli(needed, avoidTopics, log);
+  const topics = mergeTopicCalendar(existing, raw, count);
 
   saveTopics(topics);
   log(`Saved ${topics.length} topics to the calendar.`);
   return topics;
 }
 
-module.exports = { listTopics, getTopic, updateTopic, generateTopicCalendar, TOPICS_FILE };
+module.exports = { listTopics, getTopic, updateTopic, mergeTopicCalendar, generateTopicCalendar, TOPICS_FILE };

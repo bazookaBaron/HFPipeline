@@ -90,6 +90,159 @@ function wordBand(lengthSeconds) {
   return [Math.round(n * 0.85), Math.round(n * 1.15)];
 }
 
+/** Keep diagram nodes inside the profile's content column. Gemini often puts a node a few
+ * hundredths outside the allowed range; moving it into the same column is a mechanical
+ * correction and does not change the written story or its events. */
+function normalizeNodePositions(sb) {
+  if (!sb || !Array.isArray(sb.scaffolds)) return 0;
+  const range = (PROFILES[sb.profile] || PROFILES.DH).nodeX;
+  let changed = 0;
+  for (const sc of sb.scaffolds) {
+    const slots = sc.slots || {};
+    for (const mod of [].concat(slots.top || [], slots.bottom || [], slots.stage || [])) {
+      if (mod.type !== "nodes" || !Array.isArray(mod.props && mod.props.nodes)) continue;
+      for (const node of mod.props.nodes) {
+        for (const [axis, lo, hi] of [["x", range[0], range[1]], ["y", 0.1, 0.86]]) {
+          if (!Number.isFinite(node[axis])) continue;
+          const next = Math.max(lo, Math.min(hi, node[axis]));
+          if (next !== node[axis]) {
+            node[axis] = next;
+            changed++;
+          }
+        }
+      }
+    }
+  }
+  return changed;
+}
+
+/** LC often continues a list across a cut. If an event in the next scene still names the
+ * previous scene's module, carry that module forward with rows already revealed on earlier
+ * words. This preserves the intended item and its word anchor. Refuse the carry if it would
+ * overflow the 716 px content band; the model then receives the normal compile error. */
+function carryOffscreenLCModules(sb) {
+  if (!sb || sb.profile !== "LC" || !Array.isArray(sb.scaffolds) || !Array.isArray(sb.events)) return 0;
+  const { preferred } = require("./templates-generic");
+  const index = new Map(sb.sentences.map((s, i) => [s.id, i]));
+  let carried = 0;
+  for (let i = 1; i < sb.scaffolds.length; i++) {
+    const sc = sb.scaffolds[i];
+    const prev = sb.scaffolds[i - 1];
+    if (sc.template !== "scene" || prev.template !== "scene") continue;
+    const start = index.get(sc.from);
+    const end = i + 1 < sb.scaffolds.length ? index.get(sb.scaffolds[i + 1].from) : sb.sentences.length;
+    if (start === undefined || end === undefined) continue;
+    const top = (sc.slots && sc.slots.top) || [];
+    const previous = (prev.slots && prev.slots.top) || [];
+    const missing = new Set(sb.events.filter((ev) => {
+      const at = index.get(ev.sentence);
+      return at >= start && at < end;
+    }).map((ev) => String(ev.target || "").split(".")[0]).filter((id) =>
+      !top.some((m) => m.id === id) && previous.some((m) => m.id === id)));
+    for (const id of missing) {
+      const source = previous.find((m) => m.id === id);
+      const h = source.h || preferred(source, 690);
+      const used = top.reduce((sum, m) => sum + (m.h || preferred(m, 690)), 0) +
+        (top.length ? top.length * 30 : 0) + h;
+      if (used > 716) continue;
+      const copy = structuredClone(source);
+      delete copy.anchor;
+      copy.at = 0.05;
+      // Materialize the state at the cut. A carried panel should show the rows already
+      // introduced in the previous scene; later rows retain their own rowIn events.
+      if (copy.type === "panel" && Array.isArray(copy.props && copy.props.rows)) {
+        const earlier = sb.events.filter((ev) => ev.target === id && ev.op === "rowIn" &&
+          index.get(ev.sentence) < start).map((ev) => Number(ev.value && ev.value.row));
+        for (const row of earlier) if (copy.props.rows[row - 1]) copy.props.rows[row - 1].hidden = false;
+      }
+      top.push(copy);
+      carried++;
+    }
+  }
+  return carried;
+}
+
+/** A density-only rejection can be repaired without regenerating the narration, scaffold
+ * order, events, and all the already valid modules. The repair model only supplies factual
+ * panel rows for the named scenes. The normal validator and DOM audit still decide whether
+ * the result can be used. */
+function sparseSceneIds(problems) {
+  if (!problems.length) return [];
+  const ids = [];
+  for (const p of problems) {
+    const match = p.match(/^scaffold (\S+): only \d+ px of content; the frame reads empty\./);
+    if (!match) return [];
+    ids.push(match[1]);
+  }
+  return [...new Set(ids)];
+}
+
+function sparseRepairPrompt(topic, sb, ids, priorIssues = []) {
+  const wanted = new Set(ids);
+  const scenes = sb.scaffolds.flatMap((sc, i) => {
+    if (!wanted.has(sc.id)) return [];
+    const start = sb.sentences.findIndex((s) => s.id === sc.from);
+    const next = sb.scaffolds[i + 1];
+    const end = next ? sb.sentences.findIndex((s) => s.id === next.from) : sb.sentences.length;
+    return [{ id: sc.id, title: sc.slots && sc.slots.title,
+      narration: sb.sentences.slice(start, end).map((s) => s.text),
+      existing: (sc.slots && sc.slots.top || []).map((m) => ({ type: m.type, props: m.props })) }];
+  });
+  return `Repair only the sparse visual scenes in this tech explainer: ${topic}.
+Output JSON ONLY: {"panels":[{"scaffoldId":"...","title":"...","rows":["...","...","..."]}]}.
+Return exactly one panel per listed scaffold, with 3-5 concise rows. Each row must be a
+specific fact or process step entailed by that scene's narration or existing modules.
+Do not invent measurements, dates, benchmarks, or product claims. Avoid repeating the
+same labels as the existing modules. Keep each row under 40 characters and the title
+under 30 characters. This panel appears with the scene, beside its existing graphics.
+Scenes: ${JSON.stringify(scenes)}
+${priorIssues.length ? `Previous panel patch failed: ${priorIssues.join("; ")}` : ""}`;
+}
+
+async function repairSparseLC(sb, problems, topic, opts, generate, log) {
+  if (sb.profile !== "LC") return null;
+  const ids = sparseSceneIds(problems);
+  if (!ids.length) return null;
+  for (let patchAttempt = 0, issues = []; patchAttempt < 2; patchAttempt++) {
+    let response;
+    try {
+      log(`repairing ${ids.length} sparse LC scene(s) with a small panel-only request`);
+      response = await generate(sparseRepairPrompt(topic, sb, ids, issues));
+    } catch (err) {
+      log(`  panel repair call failed: ${err.message}`);
+      return null;
+    }
+    issues = [];
+    const panels = response && response.panels;
+    if (!Array.isArray(panels) || panels.length !== ids.length) {
+      issues.push(`expected exactly ${ids.length} panels`);
+    } else {
+      const seen = new Set();
+      for (const panel of panels) {
+        if (!ids.includes(panel.scaffoldId) || seen.has(panel.scaffoldId)) issues.push(`unknown or repeated scaffold ${panel.scaffoldId}`);
+        seen.add(panel.scaffoldId);
+        if (typeof panel.title !== "string" || !panel.title.trim() || panel.title.length > 30 ||
+            !Array.isArray(panel.rows) || panel.rows.length < 3 || panel.rows.length > 5 ||
+            panel.rows.some((r) => typeof r !== "string" || !r.trim() || r.length > 40)) {
+          issues.push(`panel ${panel.scaffoldId} needs a short title and 3-5 short rows`);
+        }
+      }
+    }
+    if (issues.length) continue;
+    const candidate = structuredClone(sb);
+    for (const panel of panels) {
+      const sc = candidate.scaffolds.find((s) => s.id === panel.scaffoldId);
+      sc.slots.top.push({ id: `${sc.id}_context`, type: "panel",
+        props: { title: panel.title.trim(), rows: panel.rows.map((text) => ({ text: text.trim() })) } });
+    }
+    const checked = validate(candidate, opts);
+    if (!checked.length) return candidate;
+    issues = checked.slice(0, 6);
+    log(`  panel patch rejected: ${issues.join(" | ")}`);
+  }
+  return null;
+}
+
 /** @returns {string[]} problems (empty = valid) */
 function validate(sb, opts = {}) {
   const WORDS = wordBand(opts.lengthSeconds);
@@ -701,7 +854,19 @@ async function generateStoryboard(topic, opts = {}) {
     }
     if (raw && !raw.version) raw.version = "storyboard.v3";
     if (raw) raw.profile = opts.profile; // the chosen style is authoritative
+    const moved = normalizeNodePositions(raw);
+    if (moved) log(`  clamped ${moved} diagram coordinate(s) to the ${opts.profile} content column`);
+    const carried = carryOffscreenLCModules(raw);
+    if (carried) log(`  carried ${carried} referenced module(s) across LC cuts`);
     problems = validate(raw, opts);
+    if (sparseSceneIds(problems).length) {
+      const patched = await repairSparseLC(raw, problems, topic, opts, generate, log);
+      if (patched) {
+        raw = patched;
+        problems = [];
+        log("  sparse scenes repaired without rewriting the storyboard");
+      }
+    }
     if (!problems.length) problems = await layoutProblems(raw, opts, log);
     attempts.push({ problems });
     problems.forEach((p) => log(`  - ${p}`));
@@ -722,4 +887,4 @@ async function generateStoryboard(topic, opts = {}) {
   throw err;
 }
 
-module.exports = { PROFILES, validateLF, generateStoryboard, validate, buildPrompt, syntheticTimeline, BANDS, wordBand, autoFillGaps, chooseProfile, loadGemini, catalogText };
+module.exports = { PROFILES, validateLF, generateStoryboard, validate, buildPrompt, syntheticTimeline, BANDS, wordBand, autoFillGaps, chooseProfile, loadGemini, catalogText, normalizeNodePositions, carryOffscreenLCModules, sparseSceneIds, sparseRepairPrompt, repairSparseLC };

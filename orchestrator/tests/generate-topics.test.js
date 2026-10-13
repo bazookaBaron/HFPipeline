@@ -6,7 +6,7 @@ const { buildPrompt, cleanTopic, isNearDuplicate, appendUnique, collectTopics } 
 
 test("prompt specifies the short video criteria and balanced coverage", () => {
   const prompt = buildPrompt(30, ["Why caches go stale"]);
-  for (const phrase of ["45–55 second", "concrete question", "technical mechanism", "practical consequence", "6-14 words", "Do NOT append a colon", "computer science", "software engineering", "AI mechanisms", "platforms/infrastructure", "company", "Why caches go stale"]) {
+  for (const phrase of ["45–55 second", "concrete question", "technical mechanism", "practical consequence", "6-14 words", "beginner-friendly", "everyday words", "ONE idea", "Do NOT append a colon", "computer science", "software engineering", "AI mechanisms", "platforms/infrastructure", "company", "Why caches go stale"]) {
     assert.ok(prompt.includes(phrase), phrase);
   }
 });

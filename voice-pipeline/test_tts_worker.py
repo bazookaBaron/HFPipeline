@@ -3,7 +3,10 @@
 import math
 import io
 import json
+import os
+import tempfile
 import unittest
+from pathlib import Path
 from unittest.mock import patch
 
 from tts_worker import VoiceWorker, main, map_aligned_words, trim_bounds
@@ -51,6 +54,12 @@ class TrimTests(unittest.TestCase):
 
 
 class ProtocolTests(unittest.TestCase):
+    def test_numba_cache_is_writable(self):
+        cache = Path(os.environ["NUMBA_CACHE_DIR"]).resolve()
+        self.assertTrue(cache.is_dir())
+        with tempfile.TemporaryFile(dir=cache) as file:
+            file.write(b"ok")
+
     def test_model_chatter_goes_to_stderr_only(self):
         stdin = io.StringIO(json.dumps({"id": 7, "op": "synthesize", "genText": "test"}) + "\n")
         stdout, stderr = io.StringIO(), io.StringIO()

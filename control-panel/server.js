@@ -10,7 +10,6 @@ const http = require("http");
 const fs = require("fs");
 const path = require("path");
 const { URL } = require("url");
-const querystring = require("querystring");
 
 const store = require("./lib/store");
 const jobs = require("./lib/jobs");
@@ -19,9 +18,23 @@ const renderEngine = require("./lib/renderEngine");
 const carouselEngine = require("./lib/carouselEngine");
 const oauthYoutube = require("./lib/oauthYoutube");
 const publish = require("./lib/publish");
+const publishPackage = require("./lib/publishPackage");
 const voiceUpload = require("./lib/voiceUpload");
 const topics = require("./lib/topics");
 const topicsLong = require("./lib/topicsLong");
+const { summarizeTopic, ACTIVE } = require("./lib/topicStatus");
+
+// A restarted server cannot safely resume an untracked child process or queue promise.
+// Preserve the record, but never claim that the old run is still progressing.
+jobs.onStatusChange((job) => {
+  store.updateRun(job.id, {
+    status: job.status,
+    startedAt: job.startedAt ? new Date(job.startedAt).toISOString() : null,
+    endedAt: job.endedAt ? new Date(job.endedAt).toISOString() : null,
+    result: job.result,
+    error: job.error,
+  });
+});
 
 const HOST = process.env.HOST || "127.0.0.1";
 const PORT = Number(process.env.PORT) || 4600;
@@ -232,23 +245,7 @@ const server = http.createServer(async (req, res) => {
 
     // ---- 30-day topic calendar ----
     if (method === "GET" && pathname === "/api/topics") {
-      // Compute each topic's real status from the actual run records server-side (not just
-      // client-side after a browser tab watches both streams to completion) -- otherwise a
-      // topic can look stuck on "running" forever after a page refresh/reopen even though both
-      // jobs genuinely finished.
-      const list = topics.listTopics().map((t) => {
-        if (t.status !== "running" || !t.videoRunId || !t.carouselRunId) return t;
-        const videoRun = store.getRun(t.videoRunId);
-        const carouselRun = store.getRun(t.carouselRunId);
-        const videoDone = videoRun && ["succeeded", "failed", "stubbed"].includes(videoRun.status);
-        const carouselDone = carouselRun && ["succeeded", "failed", "stubbed"].includes(carouselRun.status);
-        if (videoDone && carouselDone) {
-          const bothOk = videoRun.status === "succeeded" && carouselRun.status === "succeeded";
-          const patched = topics.updateTopic(t.id, { status: bothOk ? "done" : "pending" });
-          return patched || t;
-        }
-        return t;
-      });
+      const list = topics.listTopics().map((t) => summarizeTopic(t, store.getRun));
       return sendJson(res, 200, list);
     }
     if (method === "POST" && pathname === "/api/topics/generate") {
@@ -269,6 +266,15 @@ const server = http.createServer(async (req, res) => {
       if (!topic) return sendJson(res, 404, { error: "topic not found" });
 
       const body = await readJsonBody(req).catch(() => ({}));
+      const pipeline = body.pipeline;
+      if (pipeline !== "cs-explainer" && pipeline !== "carousel") {
+        return sendJson(res, 400, { error: "pipeline must be 'cs-explainer' or 'carousel'" });
+      }
+      const runKey = pipeline === "cs-explainer" ? "videoRunId" : "carouselRunId";
+      const previousRun = topic[runKey] ? store.getRun(topic[runKey]) : null;
+      if (previousRun && ACTIVE.has(runSummary(previousRun).liveStatus)) {
+        return sendJson(res, 409, { error: `${pipeline} is already queued or running for this topic` });
+      }
       const sharedConfig = {
         topic: topic.topic,
         lengthSeconds: Number(body.lengthSeconds) || 45,
@@ -280,19 +286,14 @@ const server = http.createServer(async (req, res) => {
         profile: ["DH", "LC", "DC", "BR", "BP"].includes(body.profile) ? body.profile : "auto",
       };
 
-      const videoRun = startPipelineRun("cs-explainer", sharedConfig);
-      const carouselRun = startPipelineRun("carousel", { topic: topic.topic, accentColor: sharedConfig.accentColor, brandHandle: body.brandHandle || "", profile: sharedConfig.profile });
-
-      topics.updateTopic(topicId, {
-        status: "running",
-        videoRunId: videoRun.id,
-        carouselRunId: carouselRun.id,
-      });
+      const config = pipeline === "cs-explainer" ? sharedConfig :
+        { topic: topic.topic, accentColor: sharedConfig.accentColor, brandHandle: body.brandHandle || "", profile: sharedConfig.profile };
+      const run = startPipelineRun(pipeline, config);
+      topics.updateTopic(topicId, { [runKey]: run.id, status: "running" });
 
       return sendJson(res, 202, {
         topicId,
-        videoRun: { ...videoRun, streamUrl: `/api/runs/${videoRun.id}/stream` },
-        carouselRun: { ...carouselRun, streamUrl: `/api/runs/${carouselRun.id}/stream` },
+        run: { ...run, streamUrl: `/api/runs/${run.id}/stream` },
       });
     }
 
@@ -374,12 +375,41 @@ const server = http.createServer(async (req, res) => {
         if (!run) return sendJson(res, 404, { error: "run not found" });
         return sendJson(res, 200, run);
       }
-      const publishMatch = sub.match(/^publish\/(youtube|instagram)$/);
-      if (method === "POST" && publishMatch) {
+      const prepareMatch = sub.match(/^prepare\/(youtube|instagram)$/);
+      if (method === "POST" && prepareMatch) {
         const run = store.getRun(runId);
         if (!run) return sendJson(res, 404, { error: "run not found" });
         try {
-          const result = publishMatch[1] === "youtube" ? publish.publishYoutube(runId, run.review) : publish.publishInstagram(runId, run.review);
+          const prepared = await publishPackage.prepare(run, prepareMatch[1]);
+          const rel = path.relative(RENDERS_DIR, prepared.coverPath).split(path.sep).map(encodeURIComponent).join("/");
+          return sendJson(res, 200, { ...prepared, coverUrl: `/media/${rel}` });
+        } catch (err) { return sendError(res, err); }
+      }
+      const publishMatch = sub.match(/^publish\/(youtube|instagram)$/);
+      if (method === "GET" && sub === "publish/instagram/status") {
+        const run = store.getRun(runId);
+        if (!run) return sendJson(res, 404, { error: "run not found" });
+        try { return sendJson(res, 200, publish.instagramPublishStatus(run)); }
+        catch (err) { return sendError(res, err); }
+      }
+      if (method === "POST" && sub === "publish/instagram/rearm") {
+        if (!['127.0.0.1', 'localhost', '::1'].includes(HOST) || req.headers['x-hf-action'] !== 'rearm') return sendJson(res, 403, { error: "Instagram retry confirmation is local-only" });
+        const body = await readJsonBody(req).catch(() => ({}));
+        if (body.confirmedRemoved !== true) return sendJson(res, 400, { error: "Confirm the previous Instagram post was removed before retrying" });
+        const run = store.getRun(runId);
+        if (!run) return sendJson(res, 404, { error: "run not found" });
+        try { return sendJson(res, 200, publish.rearmInstagram(run)); }
+        catch (err) { return sendError(res, err); }
+      }
+      if (method === "POST" && publishMatch) {
+        if (!['127.0.0.1', 'localhost', '::1'].includes(HOST) || req.headers['x-hf-action'] !== 'publish') return sendJson(res, 403, { error: "Publishing requires the local control panel and an explicit action" });
+        const run = store.getRun(runId);
+        if (!run) return sendJson(res, 404, { error: "run not found" });
+        try {
+          if (run.status !== "succeeded") return sendJson(res, 409, { error: "Only completed runs can be published" });
+          const body = publishMatch[1] === "instagram" ? await readJsonBody(req).catch(() => ({})) : {};
+          const result = publishMatch[1] === "youtube" ? await publish.publishYoutube(run, run.review) : await publish.publishInstagram(run, run.review, String(body?.expectedAccount || ""));
+          store.updateRun(runId, { publications: { ...(run.publications || {}), [publishMatch[1]]: result } });
           return sendJson(res, 200, result);
         } catch (err) {
           return sendError(res, err);
@@ -432,32 +462,43 @@ const server = http.createServer(async (req, res) => {
       return sendJson(res, 200, voiceUpload.activeVoiceProfile());
     }
 
-    // ---- YouTube OAuth reconnect flow (stubbed exchange, real flow shape) ----
+    // ---- YouTube OAuth ----
     if (method === "GET" && pathname === "/api/oauth/youtube/status") {
       return sendJson(res, 200, oauthYoutube.status());
     }
+    if (method === "POST" && pathname === "/api/instagram/connect") {
+      if (!['127.0.0.1', 'localhost', '::1'].includes(HOST) || req.headers['x-hf-action'] !== 'connect') return sendJson(res, 403, { error: "Instagram browser connection is local-only" });
+      try { return sendJson(res, 200, await require("./lib/publishInstagramBrowser").connect()); }
+      catch (err) { return sendError(res, err); }
+    }
+    if (method === "GET" && pathname === "/api/instagram/session") {
+      if (!['127.0.0.1', 'localhost', '::1'].includes(HOST)) return sendJson(res, 403, { error: "Instagram session is local-only" });
+      try { return sendJson(res, 200, await require("./lib/publishInstagramBrowser").sessionStatus()); }
+      catch (err) { return sendError(res, err); }
+    }
+    if (method === "GET" && pathname === "/api/instagram/private-preflight") {
+      if (!['127.0.0.1', 'localhost', '::1'].includes(HOST)) return sendJson(res, 403, { error: "Instagram preflight is local-only" });
+      try {
+        const session = await require("./lib/publishInstagramBrowser").sessionStatus();
+        if (!session.signedIn) throw Object.assign(new Error("Connect Instagram in the local browser first"), { statusCode: 409 });
+        return sendJson(res, 200, await require("./lib/publishInstagramPrivate").preflight(session.username));
+      }
+      catch (err) { return sendError(res, err); }
+    }
     if (method === "GET" && pathname === "/api/oauth/youtube/connect") {
-      const redirectTo = oauthYoutube.beginConnect();
+      let redirectTo;
+      try { redirectTo = oauthYoutube.beginConnect(); } catch (err) { return sendError(res, err); }
       res.writeHead(302, { Location: redirectTo });
       return res.end();
     }
-    if (method === "GET" && pathname === "/oauth/youtube/consent") {
-      const state = url.searchParams.get("state") || "";
-      return serveConsentPage(res, state);
-    }
-    if (method === "POST" && pathname === "/api/oauth/youtube/callback") {
-      const buf = await readBody(req, 8 * 1024);
-      const form = querystring.parse(buf.toString("utf8"));
+    if (method === "GET" && pathname === "/api/oauth/youtube/callback") {
       try {
-        oauthYoutube.handleCallback(String(form.state || ""), `stub_code_${newId()}`);
+        await oauthYoutube.handleCallback(url.searchParams.get("state"), url.searchParams.get("code"));
         res.writeHead(302, { Location: "/?oauth=youtube_connected" });
         return res.end();
       } catch (err) {
         return sendError(res, err);
       }
-    }
-    if (method === "POST" && pathname === "/api/oauth/youtube/expire") {
-      return sendJson(res, 200, oauthYoutube.forceExpireForTesting());
     }
 
     return sendJson(res, 404, { error: "not found" });
@@ -466,31 +507,7 @@ const server = http.createServer(async (req, res) => {
   }
 });
 
-function serveConsentPage(res, state) {
-  const html = `<!doctype html>
-<html lang="en">
-<head><meta charset="utf-8"><title>YouTube reconnect (stub)</title>
-<style>
-  body{font-family:system-ui,sans-serif;max-width:560px;margin:64px auto;padding:0 24px;color:#1a1a1a}
-  .banner{background:#fff3cd;border:1px solid #ffe69c;border-radius:8px;padding:16px;margin-bottom:24px}
-  button{background:#c4302b;color:#fff;border:0;border-radius:6px;padding:12px 20px;font-size:15px;cursor:pointer}
-  code{background:#f1f1f1;padding:1px 5px;border-radius:4px}
-</style></head>
-<body>
-  <div class="banner"><strong>PLACEHOLDER SCREEN</strong> — this simulates Google's OAuth consent screen.
-  No real Google OAuth call happens here. This exists to prove the click&nbsp;&rarr;&nbsp;redirect&nbsp;&rarr;&nbsp;
-  consent&nbsp;&rarr;&nbsp;callback&nbsp;&rarr;&nbsp;"reconnected" flow shape end-to-end, so real credentials can
-  drop in later (see <code>lib/oauthYoutube.js</code>, function <code>exchangeCodeForToken</code>).</div>
-  <h1>Reconnect YouTube (stub)</h1>
-  <p>App: <strong>HyperFrames Control Panel (dev)</strong> is requesting stub access to your stub YouTube channel.</p>
-  <form method="POST" action="/api/oauth/youtube/callback">
-    <input type="hidden" name="state" value="${state.replace(/"/g, "&quot;")}">
-    <button type="submit">Authorize (stub)</button>
-  </form>
-</body></html>`;
-  send(res, 200, html, { "Content-Type": "text/html; charset=utf-8" });
-}
-
 server.listen(PORT, HOST, () => {
+  store.reconcileInterruptedRuns();
   console.log(`HyperFrames control panel: http://${HOST}:${PORT}`);
 });

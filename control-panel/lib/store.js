@@ -50,4 +50,18 @@ function updateRun(id, patch) {
   return runs[idx];
 }
 
-module.exports = { listRuns, getRun, createRun, updateRun, RUNS_FILE, DATA_DIR };
+function reconcileInterruptedRuns(at = new Date().toISOString()) {
+  const runs = load();
+  let changed = 0;
+  for (const run of runs) {
+    if (run.status !== "queued" && run.status !== "running") continue;
+    run.status = "interrupted";
+    run.endedAt = at;
+    run.error = "Control panel restarted before this run reported completion. Check its output/log before retrying.";
+    changed++;
+  }
+  if (changed) persist();
+  return changed;
+}
+
+module.exports = { listRuns, getRun, createRun, updateRun, reconcileInterruptedRuns, RUNS_FILE, DATA_DIR };

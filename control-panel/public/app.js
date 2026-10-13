@@ -4,9 +4,16 @@ let currentRunId = null;
 let currentEventSource = null;
 let currentPipeline = "cs-explainer";
 let currentPhaseMax = 0;
+let v3LogTimer = null;
+let v3LogLength = 0;
+let v3DetailedSse = false;
+let v3LastCompletedStage = "";
+let lastActivityAt = null;
+let currentRunStatus = "idle";
+const SELECTED_RUN_KEY = "hf-selected-run-id";
 
 const PHASE_LABELS = {
-  "cs-explainer": ["Script (Gemini)", "Voice synthesis", "Anchor timing", "Compose", "Render"],
+  "cs-explainer": ["Storyboard", "Voice synthesis", "Compose & layout", "Check", "Render & master", "Final QA"],
   carousel: ["Content (Gemini)", "Write content", "Render slides"],
   longform: ["Research", "Outline", "Script", "Storyboards", "Media", "Render chapters", "Stitch", "Music + master", "Gates", "Package", "Thumbnails"],
 };
@@ -55,9 +62,21 @@ function collectConfig(form) {
 }
 
 function setStatusPill(status) {
+  currentRunStatus = status;
   const pill = $("run-status");
   pill.textContent = status;
   pill.className = `status-pill status-${status}`;
+  updateRunActivity();
+}
+
+function updateRunActivity() {
+  const el = $("run-activity");
+  if (!["queued", "running"].includes(currentRunStatus)) { el.textContent = ""; return; }
+  const labels = PHASE_LABELS[currentPipeline] || PHASE_LABELS["cs-explainer"];
+  const stage = currentRunStatus === "queued" ? "Queued" : labels[Math.max(0, currentPhaseMax - 1)] || "Starting";
+  const age = lastActivityAt == null ? "waiting for first report" :
+    `last reported ${Math.max(0, Math.floor((Date.now() - lastActivityAt) / 60_000))} min ago`;
+  el.textContent = `${stage} · ${age}`;
 }
 
 function clearLog() {
@@ -84,11 +103,35 @@ function resetPhaseTimeline(pipeline) {
   currentPipeline = pipeline || "cs-explainer";
   currentPhaseMax = 0;
   renderPhaseTimeline(1, false);
+  updateRunActivity();
 }
 
 /** Parses the real "Step X/Y: ..." prefixes both orchestrators log at each phase boundary and
  * advances the visible timeline accordingly -- never goes backwards within one run. */
 function updatePhaseFromLine(text) {
+  if (currentPipeline === "cs-explainer") {
+    const stage = text.match(/^\[(?:generate-video-v3|make-video)\] stage: (.*)$/);
+    if (stage) {
+      const name = stage[1];
+      const step = /^storyboard/.test(name) ? 1 : /^voice/.test(name) ? 2 :
+        /^compose/.test(name) ? 3 : /^hyperframes check/.test(name) ? 4 :
+        /^(render|audio\/video master)/.test(name) ? 5 : /^final QA/.test(name) ? 6 : 0;
+      if (step > currentPhaseMax) {
+        currentPhaseMax = step;
+        renderPhaseTimeline(step, false);
+      }
+      return;
+    }
+    const v3 = text.match(/^\[generate-video-v3\] (storyboard attempt|voice lock acquired|waiting for the voice lock|reused voice for|pace:|speed |composition ->|true peak )/);
+    const step = !v3 ? 0 :
+      v3[1] === "storyboard attempt" ? 1 :
+      ["voice lock acquired", "waiting for the voice lock", "reused voice for"].includes(v3[1]) ? 2 :
+      ["pace:", "speed ", "composition ->"].includes(v3[1]) ? 3 : 5;
+    if (step > currentPhaseMax) {
+      currentPhaseMax = step;
+      renderPhaseTimeline(step, false);
+    }
+  }
   const lf = text.match(/^@@lf (\{.*\})$/);
   if (lf) {
     let ev = null;
@@ -115,7 +158,7 @@ function updatePhaseFromLine(text) {
 function appendLog(entry) {
   const el = $("log-console");
   const line = document.createElement("div");
-  const stamp = new Date(entry.t).toLocaleTimeString();
+  const stamp = entry.t == null ? "saved log" : new Date(entry.t).toLocaleTimeString();
   const lfm = (entry.line || "").match(/^@@lf (\{.*\})$/);
   let shown = entry.line;
   if (lfm) {
@@ -129,6 +172,11 @@ function appendLog(entry) {
   line.className = cls;
   el.appendChild(line);
   el.scrollTop = el.scrollHeight;
+
+  if (entry.t != null && Number.isFinite(Number(entry.t))) {
+    lastActivityAt = Math.max(lastActivityAt || 0, Number(entry.t));
+    updateRunActivity();
+  }
 
   updatePhaseFromLine(entry.line || "");
   if (cls === "log-line-error") {
@@ -226,20 +274,80 @@ function showResult(result) {
   }
 }
 
+function stopV3LogPolling() {
+  if (v3LogTimer) clearInterval(v3LogTimer);
+  v3LogTimer = null;
+  v3LogLength = 0;
+  v3DetailedSse = false;
+  v3LastCompletedStage = "";
+}
+
+// Older in-flight v3 jobs write detailed progress only to this existing render log.
+// New jobs stream the same lines via SSE; stop polling as soon as those arrive.
+function pollV3Log(runId) {
+  if (v3DetailedSse || currentRunId !== runId) return;
+  fetch(`/media/${encodeURIComponent(runId)}.mp4.log`, { cache: "no-store" })
+    .then((res) => res.ok ? res.text() : "")
+    .then((body) => {
+      if (v3DetailedSse || currentRunId !== runId || !body) return;
+      if (body.length < v3LogLength) v3LogLength = 0;
+      const fresh = body.slice(v3LogLength);
+      v3LogLength = body.length;
+      for (const line of fresh.split(/\r?\n/)) {
+        if (line.trim()) appendLog({ t: null, stream: "generator", line });
+      }
+    })
+    .catch(() => { /* The render log may not exist until the process starts. */ });
+  fetch(`/media/${encodeURIComponent(runId)}.mp4.metrics.json`, { cache: "no-store" })
+    .then((res) => res.ok ? res.json() : null)
+    .then((data) => {
+      if (!data || currentRunId !== runId || v3DetailedSse) return;
+      const stages = data.stages || [];
+      const last = stages[stages.length - 1];
+      if (!last || last.stage === v3LastCompletedStage) return;
+      v3LastCompletedStage = last.stage;
+      const next = { script: 2, voice: 3, compose: 4, check: 5, render: 5, post: 6 }[last.stage];
+      if (next && next > currentPhaseMax) {
+        currentPhaseMax = next;
+        renderPhaseTimeline(next, false);
+      }
+      const endedAt = new Date(data.startedAt).getTime() + last.startMs + last.wallMs;
+      appendLog({ t: endedAt, stream: "meta", line: `${last.stage} completed in ${(last.wallMs / 1000).toFixed(1)}s${next ? "; next stage started or pending" : ""}.` });
+    })
+    .catch(() => { /* Stage metrics may not exist until the first phase completes. */ });
+}
+
 function attachStream(runId, streamUrl, pipeline) {
   if (currentEventSource) currentEventSource.close();
+  stopV3LogPolling();
+  currentRunId = runId;
+  lastActivityAt = null;
+  sessionStorage.setItem(SELECTED_RUN_KEY, runId);
   clearLog();
   resetPhaseTimeline(pipeline);
   showOutputFolder(null);
   setStatusPill("running");
   const es = new EventSource(streamUrl);
   currentEventSource = es;
-  es.addEventListener("log", (evt) => appendLog(JSON.parse(evt.data)));
+  es.addEventListener("log", (evt) => {
+    const entry = JSON.parse(evt.data);
+    if (pipeline === "cs-explainer" && /^\[generate-video-v3\]/.test(entry.line || "")) {
+      v3DetailedSse = true;
+      if (v3LogTimer) clearInterval(v3LogTimer);
+      v3LogTimer = null;
+    }
+    appendLog(entry);
+  });
+  if (pipeline === "cs-explainer") {
+    pollV3Log(runId);
+    v3LogTimer = setInterval(() => pollV3Log(runId), 5000);
+  }
   es.addEventListener("status", (evt) => {
     const data = JSON.parse(evt.data);
     setStatusPill(data.status);
     if (["succeeded", "failed", "stubbed"].includes(data.status)) {
       es.close();
+      stopV3LogPolling();
       const totalSteps = (PHASE_LABELS[currentPipeline] || PHASE_LABELS["cs-explainer"]).length;
       if (data.status === "succeeded") {
         currentPhaseMax = totalSteps;
@@ -247,9 +355,11 @@ function attachStream(runId, streamUrl, pipeline) {
       } else if (data.status === "failed") {
         renderPhaseTimeline(currentPhaseMax || 1, true);
       }
-      if (data.result) showResult(data.result);
-      if (data.status === "succeeded") openReviewPanel(runId);
-      loadHistory();
+    if (data.result) showResult(data.result);
+      if (data.status === "succeeded") openReviewPanel(runId, null, data.result);
+    loadHistory();
+    loadTopics();
+    loadLongCalendar();
     }
   });
   es.onerror = () => {
@@ -296,7 +406,7 @@ function wireForm(formId) {
 }
 
 // ---- Review & publish ----
-function openReviewPanel(runId, review) {
+function openReviewPanel(runId, review, result) {
   currentRunId = runId;
   $("review-panel").hidden = false;
   $("review-run-id").textContent = runId;
@@ -304,6 +414,11 @@ function openReviewPanel(runId, review) {
   $("review-caption").value = (review && review.caption) || "";
   $("review-hashtags").value = (review && review.hashtags) || "";
   $("publish-result").textContent = "";
+  $("publish-cover").hidden = true;
+  $("send-youtube").hidden = true;
+  $("send-instagram").hidden = true;
+  $("rearm-instagram").hidden = true;
+  $("publish-youtube").hidden = result && result.type === "image-set";
 }
 
 /** Reopen a past run from history: repopulate preview + review panel from stored state. */
@@ -311,13 +426,22 @@ async function openRun(runId) {
   try {
     const run = await api(`/api/runs/${runId}`);
     currentRunId = run.id;
+    sessionStorage.setItem(SELECTED_RUN_KEY, run.id);
+    if (["queued", "running"].includes(run.liveStatus || run.status)) {
+      attachStream(run.id, `/api/runs/${run.id}/stream`, run.pipeline);
+      return;
+    }
+    if (currentEventSource) { currentEventSource.close(); currentEventSource = null; }
+    stopV3LogPolling();
+    lastActivityAt = null;
+    currentPipeline = run.pipeline;
     setStatusPill(run.liveStatus || run.status);
     clearLog();
     for (const entry of run.recentLogs || []) appendLog(entry);
     if (run.result) showResult(run.result);
     else { $("preview-area").hidden = true; }
-    if (["succeeded", "failed", "stubbed"].includes(run.status)) {
-      openReviewPanel(run.id, run.review);
+    if (run.status === "succeeded") {
+      openReviewPanel(run.id, run.review, run.result);
     } else {
       $("review-panel").hidden = true;
     }
@@ -347,22 +471,109 @@ async function saveReview() {
 
 async function doPublish(platform) {
   if (!currentRunId) return;
-  $("publish-result").textContent = `Requesting ${platform} publish…`;
+  const runId = currentRunId;
+  $("publish-result").textContent = `Preparing ${platform} description and tags…`;
   try {
-    const result = await api(`/api/runs/${currentRunId}/publish/${platform}`, { method: "POST" });
-    $("publish-result").textContent = `Published: ${JSON.stringify(result)}`;
+    const prepared = await api(`/api/runs/${runId}/prepare/${platform}`, { method: "POST" });
+    if (currentRunId !== runId) return;
+    if (!$("review-title").value.trim()) $("review-title").value = prepared.metadata.title;
+    if (!$("review-caption").value.trim()) $("review-caption").value = prepared.metadata.description;
+    if (!$("review-hashtags").value.trim()) $("review-hashtags").value = prepared.metadata.tags.map((tag) => `#${tag.replace(/\s+/g, "")}`).join(" ");
+    // Covers are generated for package audit but are not sent to either platform.
+    $("publish-cover").hidden = true;
+    const uncertain = prepared.publication?.state === "share-unknown" || prepared.publication?.state === "uploading-unknown";
+    const complete = prepared.publication?.state === "complete";
+    $("send-youtube").hidden = platform !== "youtube" || uncertain || complete;
+    $("send-instagram").hidden = platform !== "instagram" || uncertain || complete;
+    $("rearm-instagram").hidden = platform !== "instagram" || prepared.publication?.state !== "share-unknown";
+    $("publish-result").textContent = uncertain
+      ? "Previous upload outcome is uncertain. Check the account first. If you removed the post, use the explicit retry button."
+      : prepared.publication?.state === "complete" ? `Already published: ${prepared.publication.url || prepared.publication.message || platform}`
+      : "Review the description and tags, then choose the separate upload/publish button. No custom thumbnail is sent.";
   } catch (err) {
-    $("publish-result").textContent = `${platform}: ${err.message}`;
+    if (currentRunId === runId) $("publish-result").textContent = err.status === 404 && err.message === "not found"
+      ? "The running control-panel server is older than this page. Restart the server to enable publishing preparation."
+      : `${platform}: ${err.message}`;
   }
+}
+
+async function restoreSelectedRun() {
+  try {
+    const runs = await api("/api/runs");
+    const saved = sessionStorage.getItem(SELECTED_RUN_KEY);
+    const selected = runs.find((run) => run.id === saved);
+    const active = runs.find((run) => ["queued", "running"].includes(run.liveStatus || run.status));
+    const target = selected || active;
+    if (target && !currentRunId) await openRun(target.id);
+  } catch (_) { /* History still exposes runs when restoration is unavailable. */ }
+}
+
+async function sendPrepared(platform) {
+  if (!currentRunId) return;
+  const runId = currentRunId;
+  const button = $(platform === "youtube" ? "send-youtube" : "send-instagram");
+  button.disabled = true;
+  let stageTicker = null;
+  try {
+    let expectedAccount = "";
+    if (platform === "instagram") {
+      const session = await api("/api/instagram/session");
+      if (!session.signedIn || !session.username) throw new Error("Sign in via Connect Instagram first");
+      expectedAccount = session.username;
+    }
+    const warning = platform === "youtube"
+      ? "Upload this video as PRIVATE to your connected YouTube channel, without a custom thumbnail?"
+      : `Publish this as a regular PUBLIC 9:16 Reel on @${expectedAccount}, without a custom cover? This is not a Trial Reel.`;
+    if (!window.confirm(warning)) return;
+    $("publish-result").textContent = `Sending to ${platform}… Do not retry if the connection drops; check the account first.`;
+    if (platform === "instagram") {
+      stageTicker = setInterval(async () => {
+        try {
+          const progress = await api(`/api/runs/${runId}/publish/instagram/status`);
+          if (currentRunId === runId && progress.stage !== "prepared") $("publish-result").textContent = `Instagram: ${progress.stage.replace(/-/g, " ")}…`;
+        } catch (_) { /* the publish request reports actionable errors */ }
+      }, 2000);
+    }
+    await api(`/api/runs/${runId}/review`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title: $("review-title").value, caption: $("review-caption").value, hashtags: $("review-hashtags").value }) });
+    const result = await api(`/api/runs/${runId}/publish/${platform}`, { method: "POST", headers: { "X-HF-Action": "publish", "Content-Type": "application/json" }, body: JSON.stringify({ expectedAccount }) });
+    if (currentRunId !== runId) return;
+    $("publish-result").textContent = result.url ? `Uploaded privately: ${result.url}` : result.message || `Instagram reported Share; verify the profile.`;
+    button.hidden = true;
+  } catch (err) {
+    if (currentRunId === runId) $("publish-result").textContent = `${platform} publishing failed or is uncertain: ${err.message}`;
+  } finally { if (stageTicker) clearInterval(stageTicker); button.disabled = false; }
+}
+
+async function rearmInstagram() {
+  if (!currentRunId) return;
+  const runId = currentRunId;
+  if (!window.confirm("Only continue if you checked the Instagram account and removed the previous upload. Clear the duplicate-prevention guard and try again?")) return;
+  const button = $("rearm-instagram");
+  button.disabled = true;
+  try {
+    await api(`/api/runs/${runId}/publish/instagram/rearm`, { method: "POST", headers: { "X-HF-Action": "rearm", "Content-Type": "application/json" }, body: JSON.stringify({ confirmedRemoved: true }) });
+    if (currentRunId === runId) await doPublish("instagram");
+  } catch (err) {
+    if (currentRunId === runId) $("publish-result").textContent = `Instagram retry not enabled: ${err.message}`;
+  } finally { button.disabled = false; }
 }
 
 // ---- History ----
 async function loadHistory() {
   const body = $("history-body");
   try {
-    const runs = await api("/api/runs");
+    const allRuns = await api("/api/runs");
+    $("history-updated").textContent = `Updated ${new Date().toLocaleTimeString()}`;
+    const filter = $("history-filter").value;
+    const runs = allRuns.filter((run) => {
+      const status = run.liveStatus || run.status;
+      if (filter === "active") return status === "queued" || status === "running";
+      if (filter === "completed") return status === "succeeded";
+      if (filter === "failed") return ["failed", "interrupted", "stubbed"].includes(status);
+      return true;
+    });
     if (!runs.length) {
-      body.innerHTML = `<tr><td colspan="6" class="muted">No runs yet.</td></tr>`;
+      body.innerHTML = `<tr><td colspan="7" class="muted">No matching jobs.</td></tr>`;
       return;
     }
     body.innerHTML = "";
@@ -373,18 +584,41 @@ async function loadHistory() {
         : run.result && run.result.images && run.result.images.length
         ? `<a href="${run.result.images[0]}" target="_blank">${run.result.images.length} slides</a>`
         : run.result && run.result.stubbed ? "stubbed" : "-";
-      tr.innerHTML = `<td><code>${run.id}</code></td><td>${run.pipeline}</td><td>${run.topic || ""}</td>` +
-        `<td>${run.liveStatus || run.status}</td><td>${fmtTime(run.createdAt)}</td><td>${resultLabel}</td>`;
+      const publicationLabel = Object.entries(run.publications || {}).map(([platform, item]) => item.url
+        ? `<a href="${esc(item.url)}" target="_blank" rel="noopener">${esc(platform)} uploaded</a>`
+        : `${esc(platform)}: ${esc(item.state || "unknown")}`).join(" · ");
+      const folderPath = run.result && run.result.path
+        ? (run.result.type === "video" ? dirnameOf(run.result.path) : run.result.path) : null;
+      const ready = run.status === "succeeded" && !!folderPath;
+      tr.innerHTML = `<td><code>${esc(run.id)}</code></td><td>${esc(run.pipeline)}</td><td>${esc(run.topic || "")}</td>` +
+        `<td>${esc(run.liveStatus || run.status)}</td><td>${fmtTime(run.createdAt)}</td><td>${resultLabel}${publicationLabel ? `<br>${publicationLabel}` : ""}</td>` +
+        `<td class="history-actions"><button type="button" data-act="open">Preview</button>` +
+        `${folderPath ? '<button type="button" data-act="folder">Open folder</button>' : ""}` +
+        `${ready && run.result.type === "video" ? '<button type="button" data-act="youtube">Prepare YT post</button>' : ""}` +
+        `${ready ? '<button type="button" data-act="instagram">Prepare IG post</button>' : ""}</td>`;
       tr.style.cursor = "pointer";
       tr.title = "Click to reopen this run's preview and review panel";
       tr.addEventListener("click", (e) => {
-        if (e.target.tagName === "A") return; // let result links open normally
+        if (e.target.tagName === "A" || e.target.tagName === "BUTTON") return;
         openRun(run.id);
       });
+      tr.querySelectorAll("button[data-act]").forEach((button) => button.addEventListener("click", async () => {
+        const action = button.dataset.act;
+        if (action === "open") return openRun(run.id);
+        if (action === "folder") {
+          try {
+            await api("/api/open-folder", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ path: folderPath }) });
+          } catch (err) { appendLog({ t: Date.now(), stream: "stderr", line: `Could not open folder: ${err.message}` }); }
+          return;
+        }
+        await openRun(run.id);
+        $("review-panel").scrollIntoView({ behavior: "smooth", block: "start" });
+        doPublish(action);
+      }));
       body.appendChild(tr);
     }
   } catch (err) {
-    body.innerHTML = `<tr><td colspan="6" class="muted">Failed to load: ${err.message}</td></tr>`;
+    body.innerHTML = `<tr><td colspan="7" class="muted">Failed to load: ${esc(err.message)}</td></tr>`;
   }
 }
 
@@ -393,12 +627,14 @@ async function refreshYoutubeStatus() {
   const el = $("youtube-status");
   try {
     const status = await api("/api/oauth/youtube/status");
-    if (!status.connected) {
-      el.textContent = "Not connected (stub).";
+    if (status.stub) {
+      el.textContent = "Not connected: the running server only has a simulated YouTube token. Restart the server, configure real OAuth, then reconnect.";
+    } else if (!status.connected) {
+      el.textContent = status.configured ? "YouTube not connected." : "YouTube credentials not configured locally.";
     } else if (status.expired) {
-      el.textContent = `Token expired at ${fmtTime(status.expiresAt)} — reconnect needed (stub).`;
+      el.textContent = `YouTube token expired at ${fmtTime(status.expiresAt)}; refresh will run on upload.`;
     } else {
-      el.textContent = `Connected (stub) since ${fmtTime(status.connectedAt)}, expires ${fmtTime(status.expiresAt)}.`;
+      el.textContent = `YouTube connected since ${fmtTime(status.connectedAt)}.`;
     }
   } catch (err) {
     el.textContent = `Status check failed: ${err.message}`;
@@ -443,17 +679,25 @@ function renderTopics(list) {
   el.innerHTML = "";
   list.forEach((t) => {
     const row = document.createElement("div");
-    row.className = `topic-row${t.status === "running" ? " topic-running" : ""}`;
+    row.className = "topic-row";
     row.dataset.topicId = t.id;
+    const videoStatus = t.videoStatus || "not-started";
+    const carouselStatus = t.carouselStatus || "not-started";
+    const videoBusy = videoStatus === "queued" || videoStatus === "running";
+    const carouselBusy = carouselStatus === "queued" || carouselStatus === "running";
     row.innerHTML = `
-      <div class="topic-day">Day ${t.day}<br>${t.date}</div>
+      <div class="topic-day">Day ${esc(t.day)}<br>${esc(t.date)}</div>
       <div class="topic-main">
-        <div class="topic-title">${t.topic}</div>
-        <div class="topic-meta">${t.category}${t.videoRunId ? " · video: " + t.videoRunId : ""}${t.carouselRunId ? " · carousel: " + t.carouselRunId : ""}</div>
+        <div class="topic-title">${esc(t.topic)}</div>
+        <div class="topic-meta">${esc(t.category)} · Reel: ${esc(videoStatus)} · Carousel: ${esc(carouselStatus)}</div>
+        <div class="topic-actions">
+          <button type="button" data-pipeline="cs-explainer" ${videoBusy ? "disabled" : ""}>${t.videoRunId ? "Rerun reel" : "Make reel"}</button>
+          <button type="button" data-pipeline="carousel" ${carouselBusy ? "disabled" : ""}>${t.carouselRunId ? "Rerun carousel" : "Make carousel"}</button>
+        </div>
       </div>
-      <div class="topic-status status-${t.status}">${t.status}</div>
+      <div class="topic-status status-${esc(t.status)}">${esc(t.status)}</div>
     `;
-    row.addEventListener("click", () => runTopic(t.id, row));
+    row.querySelectorAll("button[data-pipeline]").forEach((button) => button.addEventListener("click", () => runTopic(t.id, button.dataset.pipeline, button)));
     el.appendChild(row);
   });
 }
@@ -462,7 +706,9 @@ async function loadTopics() {
   try {
     const list = await api("/api/topics");
     renderTopics(list);
+    $("topics-updated").textContent = `Updated ${new Date().toLocaleTimeString()}`;
   } catch (err) {
+    $("topics-updated").textContent = "Refresh failed";
     $("topics-list").innerHTML = `<p class="muted">Could not load topics: ${err.message}</p>`;
   }
 }
@@ -487,9 +733,7 @@ async function generateTopics() {
   }
 }
 
-/** Watches a run's status via its own short-lived EventSource just to know when it finishes --
- * used for the carousel half of a topic click so both halves can mark the topic "done"
- * without fighting the single global log console, which stays attached to the video run. */
+/** Watches a run's status via its own short-lived EventSource. */
 function watchRunUntilDone(streamUrl) {
   return new Promise((resolve) => {
     const es = new EventSource(streamUrl);
@@ -512,37 +756,21 @@ function watchRunUntilDone(streamUrl) {
   });
 }
 
-async function runTopic(topicId, rowEl) {
-  if (rowEl.classList.contains("topic-running")) return;
-  rowEl.classList.add("topic-running");
-  rowEl.querySelector(".topic-status").textContent = "running";
-  rowEl.querySelector(".topic-status").className = "topic-status status-running";
-
+async function runTopic(topicId, pipeline, button) {
+  button.disabled = true;
   try {
-    const { videoRun, carouselRun } = await api(`/api/topics/${topicId}/run`, {
+    const { run } = await api(`/api/topics/${topicId}/run`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({}),
+      body: JSON.stringify({ pipeline }),
     });
-
-    // Primary experience: the shared log console + preview follow the video run.
-    currentRunId = videoRun.id;
-    attachStream(videoRun.id, videoRun.streamUrl, "cs-explainer");
-    loadHistory();
-
-    const [videoOutcome, carouselOutcome] = await Promise.all([
-      watchRunUntilDone(videoRun.streamUrl),
-      watchRunUntilDone(carouselRun.streamUrl),
-    ]);
-    const bothOk = videoOutcome === "succeeded" && carouselOutcome === "succeeded";
-    rowEl.classList.remove("topic-running");
-    rowEl.querySelector(".topic-status").textContent = bothOk ? "done" : "failed";
-    rowEl.querySelector(".topic-status").className = `topic-status status-${bothOk ? "done" : "pending"}`;
+    currentRunId = run.id;
+    attachStream(run.id, run.streamUrl, pipeline);
     loadTopics();
     loadHistory();
   } catch (err) {
-    rowEl.classList.remove("topic-running");
-    rowEl.querySelector(".topic-status").textContent = "failed";
+    $("history-updated").textContent = "Refresh failed";
+    button.disabled = false;
     appendLog({ t: Date.now(), stream: "stderr", line: `Failed to start topic run: ${err.message}` });
   }
 }
@@ -679,22 +907,41 @@ wireForm("form-carousel");
 $("save-review").addEventListener("click", saveReview);
 $("publish-youtube").addEventListener("click", () => doPublish("youtube"));
 $("publish-instagram").addEventListener("click", () => doPublish("instagram"));
+$("send-youtube").addEventListener("click", () => sendPrepared("youtube"));
+$("send-instagram").addEventListener("click", () => sendPrepared("instagram"));
+$("rearm-instagram").addEventListener("click", rearmInstagram);
 $("youtube-connect").addEventListener("click", () => { window.location.href = "/api/oauth/youtube/connect"; });
-$("youtube-force-expire").addEventListener("click", async () => { await api("/api/oauth/youtube/expire", { method: "POST" }); refreshYoutubeStatus(); });
+$("instagram-connect").addEventListener("click", async () => { try { const result = await api("/api/instagram/connect", { method: "POST", headers: { "X-HF-Action": "connect" } }); alert(result.message); } catch (err) { alert(err.message); } });
 $("voice-upload-btn").addEventListener("click", () => {
   const file = $("voice-file").files[0];
   if (!file) { $("voice-status").textContent = "Choose a reference clip first."; return; }
   uploadVoice(file);
 });
 $("topics-generate-btn").addEventListener("click", generateTopics);
+$("history-filter").addEventListener("change", loadHistory);
+$("history-refresh").addEventListener("click", () => { loadHistory(); loadTopics(); loadLongCalendar(); });
 $("lf-cal-generate-btn").addEventListener("click", generateLongCalendar);
 $("lf-cal-weeks").addEventListener("change", syncLongGenerateLabel);
 loadLongCalendar();
 
 loadHistory();
+restoreSelectedRun();
 loadTopics();
 refreshYoutubeStatus();
 resetPhaseTimeline("cs-explainer");
+
+// SSE gives immediate updates for the selected run; polling keeps every other row
+// accurate across page changes, dropped connections, and server restarts.
+setInterval(() => {
+  if (document.visibilityState !== "visible") return;
+  updateRunActivity();
+  loadHistory();
+  loadTopics();
+  loadLongCalendar();
+}, 8000);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") { loadHistory(); loadTopics(); loadLongCalendar(); }
+});
 
 if (new URLSearchParams(location.search).get("oauth") === "youtube_connected") {
   refreshYoutubeStatus();

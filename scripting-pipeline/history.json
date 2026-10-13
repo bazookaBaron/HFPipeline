@@ -157,6 +157,16 @@
         "particle-swarm",
         "gauge-meter",
         "scanline-reveal",
+        "takeaway-banner",
+        "big-stat-callout",
+        "definition-card",
+        "problem-solution-pair",
+        "node-graph-diagram",
+        "step-list-card",
+        "gauge-meter",
+        "particle-swarm",
+        "latency-waterfall",
+        "scanline-reveal",
         "takeaway-banner"
       ]
     },

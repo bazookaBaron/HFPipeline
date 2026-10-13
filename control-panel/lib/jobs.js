@@ -16,6 +16,11 @@ const MAX_LOG_LINES = 5000;
 
 /** @type {Map<string, object>} */
 const jobs = new Map();
+let statusListener = null;
+
+function onStatusChange(listener) {
+  statusListener = listener;
+}
 
 function createJob(id, meta) {
   const job = {
@@ -54,6 +59,7 @@ function setStatus(id, status, extra) {
   if (status === "running" && !job.startedAt) job.startedAt = Date.now();
   if (TERMINAL.has(status)) job.endedAt = Date.now();
   Object.assign(job, extra || {});
+  if (statusListener) statusListener(job);
   broadcast(job, "status", { status, ...(extra || {}) });
   if (TERMINAL.has(status)) {
     // Give subscribers a beat to receive the final event, then close politely.
@@ -105,4 +111,4 @@ function subscribe(id, res) {
   return true;
 }
 
-module.exports = { createJob, getJob, appendLog, setStatus, subscribe };
+module.exports = { createJob, getJob, appendLog, setStatus, subscribe, onStatusChange };

@@ -1,0 +1,280 @@
+{
+  "generatedAt": "2026-09-26T20:31:49.373Z",
+  "days": [
+    "mon",
+    "tue",
+    "thu",
+    "sat"
+  ],
+  "schedule": [
+    {
+      "id": "lft-8299f87c6f8c32f6",
+      "date": "2026-09-28",
+      "topic": "How DMart Built a Retail Empire Without Heavy Advertising",
+      "category": "business-model",
+      "angle": "How does a discount retailer generate industry-leading profitability while owning its real estate?",
+      "entities": [
+        "Avenue Supermarts",
+        "DMart",
+        "India"
+      ],
+      "region": "india",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.369Z"
+    },
+    {
+      "id": "lft-0c16eb56d9e86bb8",
+      "date": "2026-09-29",
+      "topic": "How Jet Airways Went From Market Leader to Insolvency",
+      "category": "collapse-turnaround",
+      "angle": "What financial choices and market pressures led India's premier full-service airline into restructuring?",
+      "entities": [
+        "Jet Airways",
+        "State Bank of India",
+        "NCLT"
+      ],
+      "region": "india",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-0aeb91b7ec426640",
+      "date": "2026-10-01",
+      "topic": "Why Sri Lanka Ran Out of Foreign Exchange Reserves",
+      "category": "country-economics",
+      "angle": "How did tax policy changes and international debt service create a sovereign balance of payments crisis?",
+      "entities": [
+        "Sri Lanka",
+        "Central Bank of Sri Lanka",
+        "IMF"
+      ],
+      "region": "south-asia",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-fcea4ae1ca1a2fb9",
+      "date": "2026-10-03",
+      "topic": "How to Understand the Economics of the Indian Sugar Industry",
+      "category": "sectors-commodities",
+      "angle": "How do government price controls and ethanol blending mandates shape mill earnings and supply cycles?",
+      "entities": [
+        "Sugar",
+        "Ethanol",
+        "India"
+      ],
+      "region": "india",
+      "whyNow": "Ethanol blending mandate shifts in India",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-1017157a7c5b49ea",
+      "date": "2026-10-05",
+      "topic": "How the SWIFT Payment Network Controls Global Money Transfers",
+      "category": "money-systems",
+      "angle": "How does a financial messaging co-op in Belgium connect over eleven thousand banking institutions worldwide?",
+      "entities": [
+        "SWIFT",
+        "Bank for International Settlements"
+      ],
+      "region": "global",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-74e43a69df6c52db",
+      "date": "2026-10-06",
+      "topic": "How Costco Makes Most of Its Profit From Membership Fees",
+      "category": "business-model",
+      "angle": "Why does a retail giant cap its product margins low and depend on annual subscriptions for income?",
+      "entities": [
+        "Costco",
+        "United States"
+      ],
+      "region": "global",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-c3268c10175440bb",
+      "date": "2026-10-08",
+      "topic": "Why Credit Suisse Ended Up Merging With UBS",
+      "category": "collapse-turnaround",
+      "angle": "How years of risk management breaches and deposit outflows led to a emergency regulatory integration?",
+      "entities": [
+        "Credit Suisse",
+        "UBS",
+        "Swiss National Bank"
+      ],
+      "region": "global",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-603d81906c3f01ff",
+      "date": "2026-10-10",
+      "topic": "How the Reserve Bank of India Manages Foreign Exchange Reserves",
+      "category": "country-economics",
+      "angle": "How does India's central bank accumulate and deploy dollar assets to manage exchange rate volatility?",
+      "entities": [
+        "Reserve Bank of India",
+        "India",
+        "US Dollar"
+      ],
+      "region": "india",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-cfc9c78bdf7ba469",
+      "date": "2026-10-12",
+      "topic": "How Semiconductor Fabrication Plants Economics Actually Work",
+      "category": "sectors-commodities",
+      "angle": "Why does building a modern microchip factory require tens of billions in initial capital expenditure?",
+      "entities": [
+        "TSMC",
+        "Semiconductors"
+      ],
+      "region": "global",
+      "whyNow": "Global supply chain restructuring and chip subsidies",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-b06729787d32c708",
+      "date": "2026-10-13",
+      "topic": "How the Unified Payments Interface Changed Indian Banking",
+      "category": "money-systems",
+      "angle": "How did a public digital payments infrastructure reduce transaction costs across an entire economy?",
+      "entities": [
+        "National Payments Corporation of India",
+        "UPI",
+        "India"
+      ],
+      "region": "india",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-35ad15858c748979",
+      "date": "2026-10-15",
+      "topic": "How IRCTC Monopoly Drives High Operating Profit Margins",
+      "category": "business-model",
+      "angle": "How does a public railway platform monetize ticketing, catering services, and user convenience fees?",
+      "entities": [
+        "IRCTC",
+        "Indian Railways",
+        "India"
+      ],
+      "region": "india",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-78b26123101667e8",
+      "date": "2026-10-17",
+      "topic": "How Maruti Suzuki Transformed From State Venture to Car Giant",
+      "category": "collapse-turnaround",
+      "angle": "How did a government initiative turn into a dominant commercial joint venture in the automotive market?",
+      "entities": [
+        "Maruti Suzuki",
+        "Suzuki Motor Corporation",
+        "India"
+      ],
+      "region": "india",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-4d6e49835289747b",
+      "date": "2026-10-19",
+      "topic": "Why Japan Endured Decades of Zero Percent Interest Rates",
+      "category": "country-economics",
+      "angle": "How did asset market contraction in the 1990s push the central bank into long-term quantitative easing?",
+      "entities": [
+        "Japan",
+        "Bank of Japan",
+        "Japanese Yen"
+      ],
+      "region": "global",
+      "whyNow": "Bank of Japan ending negative interest rate policy",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-1a9d3f33e26bca5f",
+      "date": "2026-10-20",
+      "topic": "How to Research the Indian Pharmaceutical Industry Pipeline",
+      "category": "sectors-commodities",
+      "angle": "How do generic drug exporters navigate regulatory compliance costs alongside domestic price regulations?",
+      "entities": [
+        "Pharmaceuticals",
+        "US FDA",
+        "India"
+      ],
+      "region": "india",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-eba9dc3372c0311b",
+      "date": "2026-10-22",
+      "topic": "How Petrodollar Recyclings Shaped Global Financial Markets",
+      "category": "money-systems",
+      "angle": "How did oil trade settlement in dollars generate massive capital flows into global debt markets?",
+      "entities": [
+        "OPEC",
+        "Federal Reserve",
+        "US Dollar",
+        "Crude Oil"
+      ],
+      "region": "global",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    },
+    {
+      "id": "lft-13b262b72d3120b8",
+      "date": "2026-10-24",
+      "topic": "How Asian Paints Built Its Direct Dealer Logistics Network",
+      "category": "business-model",
+      "angle": "How does a manufacturing firm deliver inventory multiple times daily directly to tens of thousands of retailers?",
+      "entities": [
+        "Asian Paints",
+        "India"
+      ],
+      "region": "india",
+      "whyNow": "",
+      "status": "planned",
+      "runId": null,
+      "createdAt": "2026-09-26T20:31:49.370Z"
+    }
+  ]
+}

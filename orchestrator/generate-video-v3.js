@@ -174,6 +174,7 @@ async function main() {
   };
 
   metrics.start("script");
+  log("stage: storyboard");
   if (topic) {
     // --topic: Gemini storyboard with validation + bounded repair (lib/video/v3/storyboardGen.js);
     // --previous/--problems feed a failed render's gate results back into the repair loop.
@@ -256,12 +257,14 @@ async function main() {
 
   // ---- voice ----
   metrics.start("voice");
+  log(`stage: voice synthesis (${sb.sentences.length} sentences)`);
   // --voice-lock: one F5 worker at a time across parallel chapter renders (make-longform.js)
   const releaseVoice = typeof args["voice-lock"] === "string" ? await acquireLock(path.resolve(args["voice-lock"]), log) : () => {};
   const assetsDir = path.join(VIDEO_ENGINE_DIR, "assets", "generated", runId);
   fs.mkdirSync(assetsDir, { recursive: true });
   const clips = [];
   const svc = voiceMode === "worker" ? createVoiceService({ log }) : null;
+  const voiceStageTimer = svc ? setTimeout(() => svc.abort(new Error("Voice stage exceeded 8 minutes; worker terminated")), 8 * 60 * 1000) : null;
   const synth = async (o) => {
     if (!svc) return synthesizeScene({ ...o, refAudio: refAudio || undefined, refText: refText || undefined, log });
     const req = { genText: o.genText, outAudio: o.outAudio, outTiming: o.outTiming, speed: o.speed };
@@ -271,6 +274,7 @@ async function main() {
   };
   for (let i = 0; i < sb.sentences.length; i++) {
     const s = sb.sentences[i];
+    log(`voice sentence ${i + 1}/${sb.sentences.length}: ${s.id}`);
     const audioPath = path.join(assetsDir, `s${i + 1}.wav`);
     const timingPath = path.join(assetsDir, `s${i + 1}.timing.json`);
     const textPath = path.join(assetsDir, `s${i + 1}.txt`);
@@ -284,18 +288,22 @@ async function main() {
       const res = await synth({ genText: s.text, outAudio: audioPath, outTiming: timingPath, speed: ttsSpeed });
       fs.writeFileSync(textPath, key, "utf-8");
       clips.push({ audioPath, durationSeconds: res.durationSeconds || probe(audioPath), words: JSON.parse(fs.readFileSync(timingPath, "utf-8")) });
+      log(`voice sentence ${i + 1}/${sb.sentences.length} complete`);
     } catch (err) {
+      if (voiceStageTimer) clearTimeout(voiceStageTimer);
       if (svc) await svc.close().catch(() => {});
       releaseVoice();
       return die("voice", `voice failed for ${s.id}: ${err.message}`, err);
     }
   }
+  if (voiceStageTimer) clearTimeout(voiceStageTimer);
   if (svc) await svc.close().catch(() => {});
   releaseVoice();
   metrics.end({ ttsCalls: clips.length });
 
   // ---- narration timeline at final speed ----
   metrics.start("compose");
+  log("stage: compose and layout");
   let timeline, speed;
   const authoredWav = path.join(assetsDir, "narration-authored.wav");
   const narrationRel = `assets/generated/${runId}/narration.wav`;
@@ -381,6 +389,7 @@ async function main() {
 
   // ---- check ----
   metrics.start("check");
+  log("stage: hyperframes check");
   const check = await checkComposition(compositionPath, log).catch((err) => die("check", err.message, err));
   if (!check || check.code !== 0 || !check.result || check.result.ok !== true) {
     if (check && check.result) process.stderr.write(JSON.stringify(check.result, null, 2).slice(0, 6000) + "\n");
@@ -390,11 +399,13 @@ async function main() {
 
   // ---- render at final speed, then master ----
   metrics.start("render");
+  log("stage: render");
   const draftPath = path.join(path.dirname(outPath), `.${path.basename(outPath)}.draft-${runId}.mp4`);
   const rendered = await renderComposition({ compositionRelPath: `generated/${runId}.html`, outputPath: draftPath, quality }, log).catch((err) => die("render", err.message, err));
   if (!rendered || rendered.code !== 0 || !fs.existsSync(draftPath)) return die("render", "hyperframes render failed");
 
   metrics.start("post");
+  log("stage: audio/video master");
   let mastered;
   try {
     mastered = await masterVideo({ inputPath: draftPath, outputPath: outPath, speed: 1, log });

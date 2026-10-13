@@ -8,11 +8,22 @@ from __future__ import annotations
 
 import json
 import math
+import os
+import faulthandler
 import re
 import sys
 import tempfile
+import threading
+import types
 from contextlib import redirect_stdout
 from pathlib import Path
+
+# Numba/librosa compile caches must live in a writable directory. The shared
+# TTS virtualenv can be read-only under the app sandbox; tempfile otherwise
+# retries denied writes under site-packages thousands of times on Windows.
+_numba_cache = Path(__file__).resolve().parent / ".cache" / "numba"
+_numba_cache.mkdir(parents=True, exist_ok=True)
+os.environ.setdefault("NUMBA_CACHE_DIR", str(_numba_cache))
 
 from synthesize import (
     DEFAULT_REF_TEXT,
@@ -124,9 +135,30 @@ class VoiceWorker:
     def _load(self):
         if self.f5 is not None and self.aligner is not None:
             return
+        print("[tts_worker] importing torch", file=sys.stderr, flush=True)
         import torch
+        print("[tts_worker] importing whisperx", file=sys.stderr, flush=True)
         import whisperx
-        from f5_tts.api import F5TTS
+        print("[tts_worker] importing F5TTS", file=sys.stderr, flush=True)
+        faulthandler.dump_traceback_later(30, repeat=False, file=sys.stderr)
+        # F5 imports transformers.pipeline at module load even when the caller
+        # supplies an exact reference transcript. On this installation that
+        # optional ASR import scans hundreds of model modules and stalls for
+        # minutes. The worker always supplies reference text, so keep the
+        # unused pipeline unavailable while loading F5, then restore imports.
+        had_transformers = "transformers" in sys.modules
+        if not had_transformers:
+            optional_asr = types.ModuleType("transformers")
+            def unavailable_pipeline(*args, **kwargs):
+                raise RuntimeError("F5 reference ASR is disabled; supply refText")
+            optional_asr.pipeline = unavailable_pipeline
+            sys.modules["transformers"] = optional_asr
+        try:
+            from f5_tts.api import F5TTS
+        finally:
+            if not had_transformers:
+                sys.modules.pop("transformers", None)
+            faulthandler.cancel_dump_traceback_later()
 
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         print(f"[tts_worker] loading models (device={self.device})", file=sys.stderr, flush=True)
@@ -191,6 +223,7 @@ class VoiceWorker:
 
 
 def main():
+    print(f"[tts_worker] pid={os.getpid()}", file=sys.stderr, flush=True)
     worker = VoiceWorker()
     for line in sys.stdin:
         if not line.strip():
@@ -204,10 +237,22 @@ def main():
                 return
             if request.get("op") != "synthesize":
                 raise ValueError("Unsupported op")
+            watchdog_ms = request.get("watchdogMs", 175000)
+            if not isinstance(watchdog_ms, (int, float)) or not 100 <= watchdog_ms <= 600000:
+                raise ValueError("watchdogMs must be between 100 and 600000")
+            def watchdog_expired():
+                print(f"[tts_worker] synthesis watchdog expired after {watchdog_ms}ms", file=sys.stderr, flush=True)
+                os._exit(124)
+            watchdog = threading.Timer(watchdog_ms / 1000, watchdog_expired)
+            watchdog.daemon = True
+            watchdog.start()
             # F5-TTS and its dependencies print progress to stdout. Keep the
             # JSON-lines protocol clean by redirecting model chatter to stderr.
-            with redirect_stdout(sys.stderr):
-                result = worker.synthesize(request)
+            try:
+                with redirect_stdout(sys.stderr):
+                    result = worker.synthesize(request)
+            finally:
+                watchdog.cancel()
             response = {"id": request_id, "ok": True, "result": result}
         except Exception as error:
             print(f"[tts_worker] {type(error).__name__}: {error}", file=sys.stderr, flush=True)

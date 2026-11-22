@@ -1,0 +1,351 @@
+{
+ "picks": {
+  "arjun_A": [
+   {
+    "line": 0,
+    "text": "Per my last email, we have eleven days of runway. I'm sure it's fine.",
+    "tag": "flat",
+    "seed": 4000,
+    "whisper": "Per my last email, we have 11 days of runway. I'm sure it's fine.",
+    "wer": 0.0,
+    "dur": 5.04,
+    "pitch_std_st": 6.205896773648111,
+    "f0_med": 170.2127659574468,
+    "rejected": 1,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "Ninety-four percent of the budget is gone. I'd call that front-loaded.",
+    "tag": "worried",
+    "seed": 4010,
+    "whisper": "94% of the budget is gone. I'd call that front loaded.",
+    "wer": 0.077,
+    "dur": 6.2,
+    "gen_s": 12.78,
+    "pitch_std_st": 5.999592093457569,
+    "f0_med": 181.8181818181818,
+    "rejected": 2,
+    "all_clean": false
+   }
+  ],
+  "arjun_B": [
+   {
+    "line": 0,
+    "text": "Per my last email, we have eleven days of runway. I'm sure it's fine.",
+    "tag": "flat",
+    "seed": 4000,
+    "whisper": "Per my last email, we have 11 days of runway. I'm sure it's fine.",
+    "wer": 0.0,
+    "dur": 5.04,
+    "gen_s": 10.59,
+    "pitch_std_st": 5.256569741951045,
+    "f0_med": 170.2127659574468,
+    "rejected": 2,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "Ninety-four percent of the budget is gone. I'd call that front-loaded.",
+    "tag": "worried",
+    "seed": 4010,
+    "whisper": "94% of the budget is gone. I'd call that front-loaded.",
+    "wer": 0.077,
+    "dur": 6.2,
+    "gen_s": 12.39,
+    "pitch_std_st": 5.6688776235567,
+    "f0_med": 186.04651162790697,
+    "rejected": 2,
+    "all_clean": false
+   }
+  ],
+  "arjun_C": [
+   {
+    "line": 0,
+    "text": "Per my last email, we have eleven days of runway. I'm sure it's fine.",
+    "tag": "flat",
+    "seed": 4000,
+    "whisper": "Per my last email, we have 11 days of runway. I'm sure it's fine.",
+    "wer": 0.0,
+    "dur": 5.04,
+    "gen_s": 12.22,
+    "pitch_std_st": 6.093084612499852,
+    "f0_med": 193.5483870967742,
+    "rejected": 2,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "Ninety-four percent of the budget is gone. I'd call that front-loaded.",
+    "tag": "worried",
+    "seed": 4010,
+    "whisper": "94% of the budget is gone. I'd call that front loaded.",
+    "wer": 0.077,
+    "dur": 6.2,
+    "gen_s": 17.65,
+    "pitch_std_st": 6.0633112813296846,
+    "f0_med": 201.68067226890756,
+    "rejected": 2,
+    "all_clean": false
+   }
+  ],
+  "dadu_A": [
+   {
+    "line": 0,
+    "text": "Nineteen seventy-one. The jute mill by the river was hiring a clerk. Shirt. Tie. A chair with wheels.",
+    "tag": "warm",
+    "seed": 4002,
+    "whisper": "1971 The jute mill by the river was hiring a clerk. Shirt. Tie. A chair with wheels.",
+    "wer": 0.0,
+    "dur": 9.96,
+    "pitch_std_st": 6.4510622136495686,
+    "f0_med": 172.66187050359713,
+    "rejected": 0,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "Keep showing up. And this time... learn the guard's name.",
+    "tag": "warm",
+    "seed": 4011,
+    "whisper": "Keep showing up, and this time, learn the guard's name.",
+    "wer": 0.0,
+    "dur": 6.08,
+    "pitch_std_st": 8.614260311222807,
+    "f0_med": 161.0738255033557,
+    "rejected": 0,
+    "all_clean": true
+   }
+  ],
+  "dadu_B": [
+   {
+    "line": 0,
+    "text": "Nineteen seventy-one. The jute mill by the river was hiring a clerk. Shirt. Tie. A chair with wheels.",
+    "tag": "warm",
+    "seed": 4000,
+    "whisper": "1971. The jute mill by the river was hiring a clerk. Shirt. Tie. A chair with wheels.",
+    "wer": 0.0,
+    "dur": 9.32,
+    "pitch_std_st": 5.399462497420192,
+    "f0_med": 132.59668508287294,
+    "rejected": 0,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "Keep showing up. And this time... learn the guard's name.",
+    "tag": "warm",
+    "seed": 4010,
+    "whisper": "Keep showing up, and this time, learn the guard's name.",
+    "wer": 0.0,
+    "dur": 4.96,
+    "pitch_std_st": 4.049535855441215,
+    "f0_med": 133.33333333333334,
+    "rejected": 0,
+    "all_clean": true
+   }
+  ],
+  "dadu_C": [
+   {
+    "line": 0,
+    "text": "Nineteen seventy-one. The jute mill by the river was hiring a clerk. Shirt. Tie. A chair with wheels.",
+    "tag": "warm",
+    "seed": 4000,
+    "whisper": "1971 The jute mill by the river was hiring a clerk. Shirt, tie, a chair with wheels.",
+    "wer": 0.0,
+    "dur": 9.32,
+    "pitch_std_st": 6.161906783372252,
+    "f0_med": 184.6153846153846,
+    "rejected": 0,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "Keep showing up. And this time... learn the guard's name.",
+    "tag": "warm",
+    "seed": 4010,
+    "whisper": "Keep showing up and this time learn the guard's name.",
+    "wer": 0.0,
+    "dur": 4.96,
+    "pitch_std_st": 5.9742537616997575,
+    "f0_med": 176.47058823529412,
+    "rejected": 0,
+    "all_clean": true
+   }
+  ],
+  "meera_A": [
+   {
+    "line": 0,
+    "text": "Okay, who actually asked him if he wants the promotion?",
+    "tag": "curious",
+    "seed": 4000,
+    "whisper": "Okay, who actually asked him if he wants the promotion?",
+    "wer": 0.0,
+    "dur": 3.2,
+    "gen_s": 10.9,
+    "pitch_std_st": 9.273560176543407,
+    "f0_med": 173.91304347826087,
+    "rejected": 0,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "You've checked your phone four times. Just text her.",
+    "tag": "amused",
+    "seed": 4010,
+    "whisper": "You've checked your phone four times. Just text her.",
+    "wer": 0.0,
+    "dur": 3.4,
+    "gen_s": 11.0,
+    "pitch_std_st": 8.287927075923381,
+    "f0_med": 149.60385272642537,
+    "rejected": 0,
+    "all_clean": true
+   }
+  ],
+  "meera_B": [
+   {
+    "line": 0,
+    "text": "Okay, who actually asked him if he wants the promotion?",
+    "tag": "curious",
+    "seed": 4000,
+    "whisper": "Okay, who actually asked him if he wants the promotion?",
+    "wer": 0.0,
+    "dur": 3.2,
+    "gen_s": 11.38,
+    "pitch_std_st": 5.988007589924173,
+    "f0_med": 156.86274509803923,
+    "rejected": 0,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "You've checked your phone four times. Just text her.",
+    "tag": "amused",
+    "seed": 4011,
+    "whisper": "You've checked your phone four times. Just text her.",
+    "wer": 0.0,
+    "dur": 4.04,
+    "gen_s": 12.58,
+    "pitch_std_st": 6.421051121826469,
+    "f0_med": 193.5483870967742,
+    "rejected": 0,
+    "all_clean": true
+   }
+  ],
+  "meera_C": [
+   {
+    "line": 0,
+    "text": "Okay, who actually asked him if he wants the promotion?",
+    "tag": "curious",
+    "seed": 4000,
+    "whisper": "Okay, who actually asked him if he wants the promotion?",
+    "wer": 0.0,
+    "dur": 3.2,
+    "gen_s": 10.47,
+    "pitch_std_st": 6.003256378616816,
+    "f0_med": 161.0738255033557,
+    "rejected": 0,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "You've checked your phone four times. Just text her.",
+    "tag": "amused",
+    "seed": 4011,
+    "whisper": "You've checked your phone four times. Just text her.",
+    "wer": 0.0,
+    "dur": 4.04,
+    "gen_s": 13.21,
+    "pitch_std_st": 7.784514300028482,
+    "f0_med": 211.45784816022356,
+    "rejected": 0,
+    "all_clean": true
+   }
+  ],
+  "rohan_A": [
+   {
+    "line": 0,
+    "text": "Forty-two applications. Forty-two, we'll keep your CV on file.",
+    "tag": "flat",
+    "seed": 4001,
+    "whisper": "42 applications, 42, we'll keep your CV on file.",
+    "wer": 0.0,
+    "dur": 4.4,
+    "pitch_std_st": 8.855359561546418,
+    "f0_med": 216.21621621621622,
+    "rejected": 2,
+    "all_clean": true
+   },
+   {
+    "line": 1,
+    "text": "You became the guard?",
+    "tag": "laugh",
+    "seed": 4011,
+    "whisper": "You became the guard.",
+    "wer": 0.0,
+    "dur": 1.8,
+    "pitch_std_st": 7.130840720746828,
+    "f0_med": 168.42312616960504,
+    "rejected": 0,
+    "all_clean": true
+   }
+  ],
+  "rohan_B": [
+   {
+    "line": 0,
+    "text": "Forty-two applications. Forty-two, we'll keep your CV on file.",
+    "tag": "flat",
+    "seed": 4000,
+    "whisper": "42 applications. 42 will keep your CV on file.",
+    "wer": 0.091,
+    "dur": 4.04,
+    "pitch_std_st": 6.4066156636938665,
+    "f0_med": 187.5,
+    "rejected": 2,
+    "all_clean": false
+   },
+   {
+    "line": 1,
+    "text": "You became the guard?",
+    "tag": "laugh",
+    "seed": 4010,
+    "whisper": "You became the guard?",
+    "wer": 0.0,
+    "dur": 1.64,
+    "pitch_std_st": 6.680884541518916,
+    "f0_med": 251.31578947368422,
+    "rejected": 0,
+    "all_clean": true
+   }
+  ],
+  "rohan_C": [
+   {
+    "line": 0,
+    "text": "Forty-two applications. Forty-two, we'll keep your CV on file.",
+    "tag": "flat",
+    "seed": 4000,
+    "whisper": "42 applications. 42 will keep your CV on file.",
+    "wer": 0.091,
+    "dur": 4.04,
+    "pitch_std_st": 8.125980321912538,
+    "f0_med": 224.29906542056074,
+    "rejected": 2,
+    "all_clean": false
+   },
+   {
+    "line": 1,
+    "text": "You became the guard?",
+    "tag": "laugh",
+    "seed": 4010,
+    "whisper": "You became the guard?",
+    "wer": 0.0,
+    "dur": 1.64,
+    "pitch_std_st": 6.221634270837572,
+    "f0_med": 324.3243243243243,
+    "rejected": 1,
+    "all_clean": true
+   }
+  ]
+ }
+}

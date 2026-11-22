@@ -1,0 +1,2767 @@
+{
+ "ep": "gps2",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 49.73,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_gps_1p5x.wav",
+ "words_src": "dialogue/fish/words_gps.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "CU",
+   "text": "Grandpa, my phone says I'm at the fire. How does it know?",
+   "s": 0,
+   "e": 2.04,
+   "w0": 0,
+   "w1": 11
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "Satellites. Twenty thousand kilometres up. They only say the time.",
+   "s": 2.32,
+   "e": 5.42,
+   "w0": 12,
+   "w1": 21
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": "OTS",
+   "text": "Just the time? That's all?",
+   "s": 5.62,
+   "e": 6.84,
+   "w0": 22,
+   "w1": 26
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Over and over. Your phone hears it a tiny bit late.",
+   "s": 7.08,
+   "e": 9.14,
+   "w0": 27,
+   "w1": 37
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "Late by how much?",
+   "s": 9.46,
+   "e": 10.22,
+   "w0": 38,
+   "w1": 41
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Enough to measure. Late times the speed of light is distance.",
+   "s": 10.46,
+   "e": 13.2,
+   "w0": 42,
+   "w1": 52
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "So one satellite says I'm this far from it.",
+   "s": 13.56,
+   "e": 15.18,
+   "w0": 53,
+   "w1": 61
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "A ball of possible places. Four satellites, four balls. They cross in one spot. That's you.",
+   "s": 15.48,
+   "e": 20.78,
+   "w0": 62,
+   "w1": 77
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "confused",
+   "cam": "OTS",
+   "text": "Why four? Three would cross.",
+   "s": 20.94,
+   "e": 21.9,
+   "w0": 78,
+   "w1": 82
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "2S",
+   "text": "Your phone's clock is cheap. The fourth one fixes it.",
+   "s": 22.2,
+   "e": 24.6,
+   "w0": 83,
+   "w1": 92
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "shocked",
+   "cam": "CU",
+   "text": "Light is fast. One tiny mistake and I'm in the ocean?",
+   "s": 24.82,
+   "e": 27.32,
+   "w0": 93,
+   "w1": 103
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "A millionth of a second is three hundred metres. So the satellites carry atomic clocks, and Einstein corrects them. Thirty-eight microseconds a day.",
+   "s": 27.72,
+   "e": 34.06,
+   "w0": 104,
+   "w1": 126
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "OTS",
+   "text": "Einstein works for my phone?",
+   "s": 34.34,
+   "e": 35.38,
+   "w0": 127,
+   "w1": 131
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Skip him, and you drift ten kilometres a day.",
+   "s": 35.6,
+   "e": 37.6,
+   "w0": 132,
+   "w1": 140
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "And in the city, between buildings?",
+   "s": 37.74,
+   "e": 38.9,
+   "w0": 141,
+   "w1": 146
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": "MS",
+   "text": "Maps and wifi names fill the gaps.",
+   "s": 39.2,
+   "e": 40.68,
+   "w0": 147,
+   "w1": 153
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "CU",
+   "text": "Okay, but then why were we lost last summer?",
+   "s": 41.04,
+   "e": 42.58,
+   "w0": 154,
+   "w1": 162
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "dry, smiling",
+   "cam": "CU",
+   "text": "The phone knew exactly where we were. You were the lost one.",
+   "s": 42.94,
+   "e": 45.7,
+   "w0": 163,
+   "w1": 174
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 2.17,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "push",
+    "amt": 0.03
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 2,
+   "t0": 2.17,
+   "t1": 5.47,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 3,
+   "t0": 5.47,
+   "t1": 6.93,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 6.93,
+   "t1": 9.31,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 9.31,
+   "t1": 10.31,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 6,
+   "t0": 10.31,
+   "t1": 13.41,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 7,
+   "t0": 13.41,
+   "t1": 15.33,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 8,
+   "t0": 15.33,
+   "t1": 20.79,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 9,
+   "t0": 20.79,
+   "t1": 22.05,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 22.05,
+   "t1": 24.67,
+   "rig": "profile2",
+   "plan": "profile2",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 11,
+   "t0": 24.67,
+   "t1": 27.57,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 12,
+   "t0": 27.57,
+   "t1": 34.19,
+   "rig": "high34",
+   "plan": "high34",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 13,
+   "t0": 34.19,
+   "t1": 35.45,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 14,
+   "t0": 35.45,
+   "t1": 37.74,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 15,
+   "t0": 37.74,
+   "t1": 39.05,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "latch",
+   "cu": false
+  },
+  {
+   "n": 16,
+   "t0": 39.05,
+   "t1": 40.89,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 17,
+   "t0": 40.89,
+   "t1": 42.79,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 18,
+   "t0": 42.79,
+   "t1": 47.25,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 19,
+   "t0": 47.25,
+   "t1": 49.73,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    5.47,
+    "amused",
+    0.6
+   ],
+   [
+    6.93,
+    "amused",
+    1
+   ],
+   [
+    9.31,
+    "warm",
+    1
+   ],
+   [
+    10.31,
+    "firm_light",
+    1
+   ],
+   [
+    13.41,
+    "warm",
+    1
+   ],
+   [
+    15.33,
+    "firm_light",
+    1
+   ],
+   [
+    20.79,
+    "amused",
+    1
+   ],
+   [
+    22.05,
+    "warm",
+    1
+   ],
+   [
+    24.67,
+    "tender",
+    1
+   ],
+   [
+    27.57,
+    "firm_light",
+    1
+   ],
+   [
+    34.19,
+    "warm",
+    1
+   ],
+   [
+    35.45,
+    "amused",
+    1
+   ],
+   [
+    37.74,
+    "warm",
+    1
+   ],
+   [
+    39.05,
+    "amused",
+    1
+   ],
+   [
+    40.89,
+    "warm",
+    1
+   ],
+   [
+    41.86,
+    "worried",
+    1
+   ],
+   [
+    42.79,
+    "dry",
+    1
+   ],
+   [
+    47.25,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    5.47,
+    "surprised",
+    1
+   ],
+   [
+    6.24,
+    "curious",
+    1
+   ],
+   [
+    13.41,
+    "thinking",
+    1
+   ],
+   [
+    15.33,
+    "curious",
+    1
+   ],
+   [
+    20.79,
+    "confused",
+    1
+   ],
+   [
+    22.05,
+    "curious",
+    1
+   ],
+   [
+    24.67,
+    "surprised",
+    1
+   ],
+   [
+    27.57,
+    "curious",
+    1
+   ],
+   [
+    34.19,
+    "grin",
+    1
+   ],
+   [
+    35.45,
+    "curious",
+    1
+   ],
+   [
+    40.89,
+    "grin",
+    1
+   ],
+   [
+    42.79,
+    "worried",
+    1
+   ],
+   [
+    47.25,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 1.32,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 0.58,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 1,
+   "word": "phone"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 2.55,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 2,
+   "word": "Satellites."
+  },
+  {
+   "actor": "A",
+   "kind": "lean_back",
+   "t": 2.67,
+   "rise": 0.5,
+   "dur": 2.45,
+   "line": 2,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "hand_lift",
+   "t": 4.02,
+   "rise": 0.3,
+   "dur": 0.45,
+   "line": 2,
+   "word": "up"
+  },
+  {
+   "actor": "B",
+   "kind": "head_back",
+   "t": 5.98,
+   "rise": 0.22,
+   "dur": 0.45,
+   "line": 3,
+   "word": "time?"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 6.4,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 3,
+   "word": "That's"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 7.52,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 4,
+   "word": "over."
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 9.06,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 4,
+   "word": "late"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 9.66,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 5,
+   "word": "Late"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 9.81,
+   "rise": 0.5,
+   "dur": 0.3,
+   "line": 5,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 12.98,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 6,
+   "word": "distance"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 14.04,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 7,
+   "word": "satellite"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 15.72,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 8,
+   "word": "ball"
+  },
+  {
+   "actor": "A",
+   "kind": "count",
+   "t": 17.02,
+   "rise": 0.42,
+   "dur": 0.55,
+   "line": 8,
+   "word": "Four",
+   "marks": [
+    17.02
+   ]
+  },
+  {
+   "actor": "B",
+   "kind": "count",
+   "t": 21.21,
+   "rise": 0.42,
+   "dur": 0.52,
+   "line": 9,
+   "word": "four?",
+   "marks": [
+    21.18
+   ]
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 22.43,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 10,
+   "word": "phone's"
+  },
+  {
+   "actor": "B",
+   "kind": "hands_lift",
+   "t": 27.16,
+   "rise": 0.3,
+   "dur": 0.75,
+   "line": 11,
+   "word": "ocean?"
+  },
+  {
+   "actor": "A",
+   "kind": "count",
+   "t": 28.74,
+   "rise": 0.42,
+   "dur": 0.55,
+   "line": 12,
+   "word": "three",
+   "marks": [
+    28.74
+   ]
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 31.78,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 12,
+   "word": "einstein"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 33.92,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 12,
+   "word": "day"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 35.14,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 13,
+   "word": "my"
+  },
+  {
+   "actor": "A",
+   "kind": "flick",
+   "t": 35.72,
+   "rise": 0.3,
+   "dur": 0.3,
+   "line": 14,
+   "word": "skip"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 38.09,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 15,
+   "word": "city,"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 38.24,
+   "rise": 0.5,
+   "dur": 0.46,
+   "line": 15,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 39.32,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 16,
+   "word": "maps"
+  },
+  {
+   "actor": "B",
+   "kind": "two_hand_open",
+   "t": 42.02,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 17,
+   "word": "lost"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 43.52,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 18,
+   "word": "exactly"
+  },
+  {
+   "actor": "A",
+   "kind": "flick",
+   "t": 43.52,
+   "rise": 0.3,
+   "dur": 0.3,
+   "line": 18,
+   "word": "exactly"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 45.38,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 18,
+   "word": "lost"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 48.1,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 13.61,
+   "t1": 14.93,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 47.5,
+   "t1": 50.73,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.2,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "my",
+   "s": 0.42,
+   "e": 0.52,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "phone",
+   "s": 0.52,
+   "e": 0.72,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "says",
+   "s": 0.72,
+   "e": 0.86,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "I'm",
+   "s": 0.86,
+   "e": 1.02,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "at",
+   "s": 1.02,
+   "e": 1.04,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "the",
+   "s": 1.04,
+   "e": 1.14,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "fire.",
+   "s": 1.14,
+   "e": 1.34,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "How",
+   "s": 1.56,
+   "e": 1.66,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 9,
+   "w": "does",
+   "s": 1.66,
+   "e": 1.76,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "it",
+   "s": 1.76,
+   "e": 1.84,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 11,
+   "w": "know?",
+   "s": 1.84,
+   "e": 2.04,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 12,
+   "w": "Satellites.",
+   "s": 2.32,
+   "e": 2.72,
+   "sp": "A",
+   "line": 2,
+   "stress": true
+  },
+  {
+   "i": 13,
+   "w": "Twenty",
+   "s": 2.98,
+   "e": 3.2,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 14,
+   "w": "thousand",
+   "s": 3.2,
+   "e": 3.62,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 15,
+   "w": "kilometres",
+   "s": 3.62,
+   "e": 3.9,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 16,
+   "w": "up.",
+   "s": 3.9,
+   "e": 4.2,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 17,
+   "w": "They",
+   "s": 4.62,
+   "e": 4.72,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 18,
+   "w": "only",
+   "s": 4.72,
+   "e": 4.9,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 19,
+   "w": "say",
+   "s": 4.9,
+   "e": 5.08,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 20,
+   "w": "the",
+   "s": 5.08,
+   "e": 5.18,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 21,
+   "w": "time.",
+   "s": 5.18,
+   "e": 5.42,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 22,
+   "w": "Just",
+   "s": 5.62,
+   "e": 5.74,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 23,
+   "w": "the",
+   "s": 5.74,
+   "e": 5.92,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 24,
+   "w": "time?",
+   "s": 5.92,
+   "e": 6.12,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 25,
+   "w": "That's",
+   "s": 6.34,
+   "e": 6.6,
+   "sp": "B",
+   "line": 3,
+   "stress": true
+  },
+  {
+   "i": 26,
+   "w": "all?",
+   "s": 6.6,
+   "e": 6.84,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 27,
+   "w": "Over",
+   "s": 7.08,
+   "e": 7.3,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 28,
+   "w": "and",
+   "s": 7.3,
+   "e": 7.46,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 29,
+   "w": "over.",
+   "s": 7.46,
+   "e": 7.64,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 30,
+   "w": "Your",
+   "s": 7.86,
+   "e": 7.92,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 31,
+   "w": "phone",
+   "s": 7.92,
+   "e": 8.18,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 32,
+   "w": "hears",
+   "s": 8.18,
+   "e": 8.38,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 33,
+   "w": "it",
+   "s": 8.38,
+   "e": 8.5,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 34,
+   "w": "a",
+   "s": 8.5,
+   "e": 8.6,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 35,
+   "w": "tiny",
+   "s": 8.6,
+   "e": 8.76,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 36,
+   "w": "bit",
+   "s": 8.76,
+   "e": 8.94,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 37,
+   "w": "late.",
+   "s": 8.94,
+   "e": 9.14,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 38,
+   "w": "Late",
+   "s": 9.46,
+   "e": 9.7,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 39,
+   "w": "by",
+   "s": 9.7,
+   "e": 9.86,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 40,
+   "w": "how",
+   "s": 9.86,
+   "e": 10.02,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 41,
+   "w": "much?",
+   "s": 10.02,
+   "e": 10.22,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 42,
+   "w": "Enough",
+   "s": 10.46,
+   "e": 10.68,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 43,
+   "w": "to",
+   "s": 10.68,
+   "e": 10.84,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 44,
+   "w": "measure.",
+   "s": 10.84,
+   "e": 11.02,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 45,
+   "w": "Late",
+   "s": 11.54,
+   "e": 11.76,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 46,
+   "w": "times",
+   "s": 11.76,
+   "e": 12.04,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 47,
+   "w": "the",
+   "s": 12.16,
+   "e": 12.22,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 48,
+   "w": "speed",
+   "s": 12.22,
+   "e": 12.4,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 49,
+   "w": "of",
+   "s": 12.4,
+   "e": 12.52,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 50,
+   "w": "light",
+   "s": 12.52,
+   "e": 12.7,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 51,
+   "w": "is",
+   "s": 12.7,
+   "e": 12.86,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 52,
+   "w": "distance.",
+   "s": 12.86,
+   "e": 13.2,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 53,
+   "w": "So",
+   "s": 13.56,
+   "e": 13.72,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 54,
+   "w": "one",
+   "s": 13.72,
+   "e": 13.92,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 55,
+   "w": "satellite",
+   "s": 13.92,
+   "e": 14.18,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 56,
+   "w": "says",
+   "s": 14.18,
+   "e": 14.42,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 57,
+   "w": "I'm",
+   "s": 14.42,
+   "e": 14.62,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 58,
+   "w": "this",
+   "s": 14.62,
+   "e": 14.72,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 59,
+   "w": "far",
+   "s": 14.72,
+   "e": 14.9,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 60,
+   "w": "from",
+   "s": 14.9,
+   "e": 15.08,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 61,
+   "w": "it.",
+   "s": 15.08,
+   "e": 15.18,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 62,
+   "w": "A",
+   "s": 15.48,
+   "e": 15.6,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 63,
+   "w": "ball",
+   "s": 15.6,
+   "e": 15.78,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 64,
+   "w": "of",
+   "s": 15.78,
+   "e": 15.9,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 65,
+   "w": "possible",
+   "s": 15.9,
+   "e": 16.18,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 66,
+   "w": "places.",
+   "s": 16.18,
+   "e": 16.56,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 67,
+   "w": "Four",
+   "s": 16.96,
+   "e": 17.18,
+   "sp": "A",
+   "line": 8,
+   "stress": true
+  },
+  {
+   "i": 68,
+   "w": "satellites,",
+   "s": 17.18,
+   "e": 17.56,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 69,
+   "w": "four",
+   "s": 17.9,
+   "e": 18.08,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 70,
+   "w": "balls.",
+   "s": 18.08,
+   "e": 18.4,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 71,
+   "w": "They",
+   "s": 18.9,
+   "e": 19,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 72,
+   "w": "cross",
+   "s": 19,
+   "e": 19.22,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 73,
+   "w": "in",
+   "s": 19.22,
+   "e": 19.4,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 74,
+   "w": "one",
+   "s": 19.4,
+   "e": 19.54,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 75,
+   "w": "spot.",
+   "s": 19.54,
+   "e": 19.76,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 76,
+   "w": "That's",
+   "s": 20.36,
+   "e": 20.64,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 77,
+   "w": "you.",
+   "s": 20.64,
+   "e": 20.78,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 78,
+   "w": "Why",
+   "s": 20.94,
+   "e": 21.12,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 79,
+   "w": "four?",
+   "s": 21.12,
+   "e": 21.34,
+   "sp": "B",
+   "line": 9,
+   "stress": true
+  },
+  {
+   "i": 80,
+   "w": "Three",
+   "s": 21.44,
+   "e": 21.58,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 81,
+   "w": "would",
+   "s": 21.58,
+   "e": 21.72,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 82,
+   "w": "cross.",
+   "s": 21.72,
+   "e": 21.9,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 83,
+   "w": "Your",
+   "s": 22.2,
+   "e": 22.32,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 84,
+   "w": "phone's",
+   "s": 22.32,
+   "e": 22.62,
+   "sp": "A",
+   "line": 10,
+   "stress": true
+  },
+  {
+   "i": 85,
+   "w": "clock",
+   "s": 22.62,
+   "e": 22.78,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 86,
+   "w": "is",
+   "s": 22.78,
+   "e": 22.96,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 87,
+   "w": "cheap.",
+   "s": 22.96,
+   "e": 23.18,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 88,
+   "w": "The",
+   "s": 23.7,
+   "e": 23.84,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 89,
+   "w": "fourth",
+   "s": 23.84,
+   "e": 24.02,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 90,
+   "w": "one",
+   "s": 24.02,
+   "e": 24.18,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 91,
+   "w": "fixes",
+   "s": 24.18,
+   "e": 24.38,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 92,
+   "w": "it.",
+   "s": 24.38,
+   "e": 24.6,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 93,
+   "w": "Light",
+   "s": 24.82,
+   "e": 25.04,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 94,
+   "w": "is",
+   "s": 25.04,
+   "e": 25.22,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 95,
+   "w": "fast.",
+   "s": 25.22,
+   "e": 25.44,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 96,
+   "w": "One",
+   "s": 25.84,
+   "e": 26.08,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 97,
+   "w": "tiny",
+   "s": 26.08,
+   "e": 26.34,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 98,
+   "w": "mistake",
+   "s": 26.34,
+   "e": 26.58,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 99,
+   "w": "and",
+   "s": 26.58,
+   "e": 26.86,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 100,
+   "w": "I'm",
+   "s": 26.86,
+   "e": 26.98,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 101,
+   "w": "in",
+   "s": 26.98,
+   "e": 27.02,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 102,
+   "w": "the",
+   "s": 27.02,
+   "e": 27.1,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 103,
+   "w": "ocean?",
+   "s": 27.1,
+   "e": 27.32,
+   "sp": "B",
+   "line": 11,
+   "stress": true
+  },
+  {
+   "i": 104,
+   "w": "A",
+   "s": 27.72,
+   "e": 27.88,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 105,
+   "w": "millionth",
+   "s": 27.88,
+   "e": 28.22,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 106,
+   "w": "of",
+   "s": 28.22,
+   "e": 28.26,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 107,
+   "w": "a",
+   "s": 28.26,
+   "e": 28.38,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 108,
+   "w": "second",
+   "s": 28.38,
+   "e": 28.54,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 109,
+   "w": "is",
+   "s": 28.54,
+   "e": 28.68,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 110,
+   "w": "three",
+   "s": 28.68,
+   "e": 28.805,
+   "sp": "A",
+   "line": 12,
+   "stress": true
+  },
+  {
+   "i": 111,
+   "w": "hundred",
+   "s": 28.805,
+   "e": 28.98,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 112,
+   "w": "metres.",
+   "s": 28.98,
+   "e": 29.32,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 113,
+   "w": "So",
+   "s": 29.32,
+   "e": 29.96,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 114,
+   "w": "the",
+   "s": 29.96,
+   "e": 30.12,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 115,
+   "w": "satellites",
+   "s": 30.12,
+   "e": 30.42,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 116,
+   "w": "carry",
+   "s": 30.42,
+   "e": 30.72,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 117,
+   "w": "atomic",
+   "s": 30.72,
+   "e": 31.02,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 118,
+   "w": "clocks,",
+   "s": 31.02,
+   "e": 31.36,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 119,
+   "w": "and",
+   "s": 31.36,
+   "e": 31.66,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 120,
+   "w": "Einstein",
+   "s": 31.66,
+   "e": 31.96,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 121,
+   "w": "corrects",
+   "s": 31.96,
+   "e": 32.44,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 122,
+   "w": "them.",
+   "s": 32.44,
+   "e": 32.54,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 123,
+   "w": "Thirty-eight",
+   "s": 32.8,
+   "e": 33.02,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 124,
+   "w": "microseconds",
+   "s": 33.02,
+   "e": 33.68,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 125,
+   "w": "a",
+   "s": 33.68,
+   "e": 33.8,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 126,
+   "w": "day.",
+   "s": 33.8,
+   "e": 34.06,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 127,
+   "w": "Einstein",
+   "s": 34.34,
+   "e": 34.6,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 128,
+   "w": "works",
+   "s": 34.6,
+   "e": 34.86,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 129,
+   "w": "for",
+   "s": 34.86,
+   "e": 35.02,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 130,
+   "w": "my",
+   "s": 35.02,
+   "e": 35.14,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 131,
+   "w": "phone?",
+   "s": 35.14,
+   "e": 35.38,
+   "sp": "B",
+   "line": 13,
+   "stress": true
+  },
+  {
+   "i": 132,
+   "w": "Skip",
+   "s": 35.6,
+   "e": 35.84,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 133,
+   "w": "him,",
+   "s": 35.84,
+   "e": 36.04,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 134,
+   "w": "and",
+   "s": 36.04,
+   "e": 36.28,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 135,
+   "w": "you",
+   "s": 36.28,
+   "e": 36.38,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 136,
+   "w": "drift",
+   "s": 36.38,
+   "e": 36.54,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 137,
+   "w": "ten",
+   "s": 36.54,
+   "e": 36.84,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 138,
+   "w": "kilometres",
+   "s": 36.84,
+   "e": 37.08,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 139,
+   "w": "a",
+   "s": 37.08,
+   "e": 37.4,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 140,
+   "w": "day.",
+   "s": 37.4,
+   "e": 37.6,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 141,
+   "w": "And",
+   "s": 37.74,
+   "e": 37.82,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 142,
+   "w": "in",
+   "s": 37.82,
+   "e": 37.92,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 143,
+   "w": "the",
+   "s": 37.92,
+   "e": 38,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 144,
+   "w": "city,",
+   "s": 38,
+   "e": 38.2,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 145,
+   "w": "between",
+   "s": 38.2,
+   "e": 38.54,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 146,
+   "w": "buildings?",
+   "s": 38.54,
+   "e": 38.9,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 147,
+   "w": "Maps",
+   "s": 39.2,
+   "e": 39.34,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 148,
+   "w": "and",
+   "s": 39.34,
+   "e": 39.5,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 149,
+   "w": "wifi",
+   "s": 39.5,
+   "e": 39.84,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 150,
+   "w": "names",
+   "s": 39.84,
+   "e": 40.1,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 151,
+   "w": "fill",
+   "s": 40.1,
+   "e": 40.32,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 152,
+   "w": "the",
+   "s": 40.32,
+   "e": 40.44,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 153,
+   "w": "gaps.",
+   "s": 40.44,
+   "e": 40.68,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 154,
+   "w": "Okay,",
+   "s": 41.04,
+   "e": 41.28,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 155,
+   "w": "but",
+   "s": 41.4,
+   "e": 41.46,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 156,
+   "w": "then",
+   "s": 41.46,
+   "e": 41.58,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 157,
+   "w": "why",
+   "s": 41.58,
+   "e": 41.76,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 158,
+   "w": "were",
+   "s": 41.76,
+   "e": 41.88,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 159,
+   "w": "we",
+   "s": 41.88,
+   "e": 41.96,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 160,
+   "w": "lost",
+   "s": 41.96,
+   "e": 42.16,
+   "sp": "B",
+   "line": 17,
+   "stress": true
+  },
+  {
+   "i": 161,
+   "w": "last",
+   "s": 42.16,
+   "e": 42.34,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 162,
+   "w": "summer?",
+   "s": 42.34,
+   "e": 42.58,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 163,
+   "w": "The",
+   "s": 42.94,
+   "e": 43.04,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 164,
+   "w": "phone",
+   "s": 43.04,
+   "e": 43.28,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 165,
+   "w": "knew",
+   "s": 43.28,
+   "e": 43.46,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 166,
+   "w": "exactly",
+   "s": 43.46,
+   "e": 43.76,
+   "sp": "A",
+   "line": 18,
+   "stress": true
+  },
+  {
+   "i": 167,
+   "w": "where",
+   "s": 43.76,
+   "e": 44.02,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 168,
+   "w": "we",
+   "s": 44.02,
+   "e": 44.14,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 169,
+   "w": "were.",
+   "s": 44.14,
+   "e": 44.34,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 170,
+   "w": "You",
+   "s": 44.88,
+   "e": 45.02,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 171,
+   "w": "were",
+   "s": 45.02,
+   "e": 45.16,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 172,
+   "w": "the",
+   "s": 45.16,
+   "e": 45.26,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 173,
+   "w": "lost",
+   "s": 45.26,
+   "e": 45.52,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 174,
+   "w": "one.",
+   "s": 45.52,
+   "e": 45.7,
+   "sp": "A",
+   "line": 18
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, my phone says",
+   "s": 0,
+   "e": 0.8,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "I'm at the fire.",
+   "s": 0.86,
+   "e": 1.5,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "How does it know?",
+   "s": 1.56,
+   "e": 2.26,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Satellites. Twenty thousand kilometres up.",
+   "s": 2.32,
+   "e": 4.55,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "They only say the time.",
+   "s": 4.62,
+   "e": 5.56,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "Just the time?",
+   "s": 5.62,
+   "e": 6.28,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "That's all?",
+   "s": 6.34,
+   "e": 7.02,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "Over and over.",
+   "s": 7.08,
+   "e": 7.8,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Your phone hears it",
+   "s": 7.86,
+   "e": 8.44,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "a tiny bit late.",
+   "s": 8.5,
+   "e": 9.4,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Late by how much?",
+   "s": 9.46,
+   "e": 10.4,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "Enough to measure.",
+   "s": 10.46,
+   "e": 11.37,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Late times the speed",
+   "s": 11.54,
+   "e": 12.34,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "of light is distance.",
+   "s": 12.4,
+   "e": 13.5,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "So one satellite says I'm",
+   "s": 13.56,
+   "e": 14.56,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "this far from it.",
+   "s": 14.62,
+   "e": 15.42,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "A ball of possible places.",
+   "s": 15.48,
+   "e": 16.9,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Four satellites,",
+   "s": 16.96,
+   "e": 17.84,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "four balls.",
+   "s": 17.9,
+   "e": 18.75,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "They cross in one spot.",
+   "s": 18.9,
+   "e": 20.11,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "That's you.",
+   "s": 20.36,
+   "e": 20.88,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Why four?",
+   "s": 20.94,
+   "e": 21.38,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "Three would cross.",
+   "s": 21.44,
+   "e": 22.14,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "Your phone's clock is cheap.",
+   "s": 22.2,
+   "e": 23.53,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "The fourth one fixes it.",
+   "s": 23.7,
+   "e": 24.76,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "Light is fast.",
+   "s": 24.82,
+   "e": 25.78,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "One tiny mistake and",
+   "s": 25.84,
+   "e": 26.8,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "I'm in the ocean?",
+   "s": 26.86,
+   "e": 27.66,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "A millionth of a second",
+   "s": 27.72,
+   "e": 28.48,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "is three hundred metres.",
+   "s": 28.54,
+   "e": 29.26,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "So the satellites carry atomic clocks,",
+   "s": 29.32,
+   "e": 31.3,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "and Einstein corrects them.",
+   "s": 31.36,
+   "e": 32.74,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Thirty-eight microseconds a day.",
+   "s": 32.8,
+   "e": 34.28,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Einstein works for my phone?",
+   "s": 34.34,
+   "e": 35.54,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "Skip him,",
+   "s": 35.6,
+   "e": 35.98,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "and you drift ten",
+   "s": 36.04,
+   "e": 36.78,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "kilometres a day.",
+   "s": 36.84,
+   "e": 37.68,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "And in the city,",
+   "s": 37.74,
+   "e": 38.14,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "between buildings?",
+   "s": 38.2,
+   "e": 39.14,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Maps and wifi names",
+   "s": 39.2,
+   "e": 40.04,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "fill the gaps.",
+   "s": 40.1,
+   "e": 40.98,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "Okay, but then why were",
+   "s": 41.04,
+   "e": 41.82,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "we lost last summer?",
+   "s": 41.88,
+   "e": 42.88,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "The phone knew exactly",
+   "s": 42.94,
+   "e": 43.7,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "where we were.",
+   "s": 43.76,
+   "e": 44.69,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "You were the lost one.",
+   "s": 44.88,
+   "e": 46.05,
+   "line": 18,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": [
+  {
+   "t0": 2.17,
+   "t1": 10.31,
+   "name": "THE SIGNAL"
+  },
+  {
+   "t0": 10.31,
+   "t1": 24.67,
+   "name": "HOW FAR / FOUR BALLS"
+  },
+  {
+   "t0": 27.57,
+   "t1": 37.74,
+   "name": "ONE MICROSECOND / SKIP EINSTEIN"
+  },
+  {
+   "t0": 37.74,
+   "t1": 40.89,
+   "name": "IN THE CITY"
+  }
+ ],
+ "warnings": [
+  "line 2: fuzzy align \"kilometres\" ~ ASR \"kilometers\"",
+  "line 12: fuzzy align \"metres.\" ~ ASR \"meters.\"",
+  "line 14: fuzzy align \"kilometres\" ~ ASR \"kilometers\""
+ ]
+}

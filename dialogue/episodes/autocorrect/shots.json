@@ -1,0 +1,2532 @@
+{
+ "ep": "autocorrect",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 53.87,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_autocorrect_1p3x.wav",
+ "words_src": "dialogue/fish/words_autocorrect.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "CU",
+   "text": "Grandpa, I typed \"hello\" to my teacher. My phone sent \"jello.\"",
+   "s": 0,
+   "e": 3.22,
+   "w0": 0,
+   "w1": 10
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Your thumb landed between two keys. H and J are neighbors.",
+   "s": 3.56,
+   "e": 6.84,
+   "w0": 11,
+   "w1": 21
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "confused",
+   "cam": "OTS",
+   "text": "So it just picked one?",
+   "s": 7.22,
+   "e": 8.14,
+   "w0": 22,
+   "w1": 26
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "It guessed. It always guesses.",
+   "s": 8.42,
+   "e": 10.08,
+   "w0": 27,
+   "w1": 31
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "Guesses how?",
+   "s": 10.44,
+   "e": 11,
+   "w0": 32,
+   "w1": 33
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "First clue: where your thumb landed. That much it knows.",
+   "s": 11.36,
+   "e": 14.36,
+   "w0": 34,
+   "w1": 43
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "What's the other clue?",
+   "s": 14.68,
+   "e": 15.44,
+   "w0": 44,
+   "w1": 47
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "The words before it. You'd just typed \"pudding.\"",
+   "s": 15.82,
+   "e": 18.5,
+   "w0": 48,
+   "w1": 55
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "thinking, sheepish",
+   "cam": "OTS",
+   "text": "Okay. That's fair.",
+   "s": 18.78,
+   "e": 19.9,
+   "w0": 56,
+   "w1": 58
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": "MS",
+   "text": "Then it scores every word it knows. Thumb spot, word before, how common. Top score wins.",
+   "s": 20.18,
+   "e": 26.66,
+   "w0": 59,
+   "w1": 74
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": "CU",
+   "text": "Every word? How many?",
+   "s": 26.98,
+   "e": 28.5,
+   "w0": 75,
+   "w1": 78
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Thousands. In a blink.",
+   "s": 28.5,
+   "e": 30.12,
+   "w0": 79,
+   "w1": 82
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "So how does it know me?",
+   "s": 30.46,
+   "e": 31.4,
+   "w0": 83,
+   "w1": 88
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "2S",
+   "text": "You teach it. A word you keep goes in your own list.",
+   "s": 31.66,
+   "e": 35,
+   "w0": 89,
+   "w1": 100
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "And if I undo a fix?",
+   "s": 35.38,
+   "e": 36.4,
+   "w0": 101,
+   "w1": 106
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "Then it learns it was wrong. Do that enough, and it stops.",
+   "s": 36.72,
+   "e": 40.26,
+   "w0": 107,
+   "w1": 118
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "CU",
+   "text": "So why does it still turn Moe into \"more\"?",
+   "s": 41.22,
+   "e": 43.74,
+   "w0": 119,
+   "w1": 127
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "dry, flat",
+   "cam": "MS",
+   "text": "Everyone types \"more.\" Almost nobody types Moe. Nothing personal.",
+   "s": 45.14,
+   "e": 49.72,
+   "w0": 128,
+   "w1": 136
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 2.05,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "push",
+    "amt": 0.03
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 2,
+   "t0": 2.05,
+   "t1": 3.41,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "A",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 3,
+   "t0": 3.41,
+   "t1": 5.45,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 5.45,
+   "t1": 7.07,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 7.07,
+   "t1": 8.27,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 6,
+   "t0": 8.27,
+   "t1": 10.29,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 7,
+   "t0": 10.29,
+   "t1": 11.21,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 8,
+   "t0": 11.21,
+   "t1": 14.53,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 9,
+   "t0": 14.53,
+   "t1": 15.67,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 15.67,
+   "t1": 17.07,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 11,
+   "t0": 17.07,
+   "t1": 18.63,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 12,
+   "t0": 18.63,
+   "t1": 20.03,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 13,
+   "t0": 20.03,
+   "t1": 26.83,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 14,
+   "t0": 26.83,
+   "t1": 28.5,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 15,
+   "t0": 28.5,
+   "t1": 30.31,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "latch",
+   "cu": false
+  },
+  {
+   "n": 16,
+   "t0": 30.31,
+   "t1": 31.51,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 17,
+   "t0": 31.51,
+   "t1": 35.23,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 18,
+   "t0": 35.23,
+   "t1": 36.57,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 19,
+   "t0": 36.57,
+   "t1": 38.41,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 20,
+   "t0": 38.41,
+   "t1": 41.07,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 21,
+   "t0": 41.07,
+   "t1": 44.99,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 22,
+   "t0": 44.99,
+   "t1": 46.93,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 23,
+   "t0": 46.93,
+   "t1": 48.93,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 24,
+   "t0": 48.93,
+   "t1": 51.27,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 25,
+   "t0": 51.27,
+   "t1": 53.87,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    3.41,
+    "amused",
+    1
+   ],
+   [
+    8.27,
+    "firm_light",
+    1
+   ],
+   [
+    10.29,
+    "warm",
+    1
+   ],
+   [
+    15.67,
+    "firm_light",
+    1
+   ],
+   [
+    18.63,
+    "warm",
+    1
+   ],
+   [
+    20.03,
+    "amused",
+    1
+   ],
+   [
+    26.83,
+    "amused",
+    0.6
+   ],
+   [
+    28.5,
+    "firm_light",
+    1
+   ],
+   [
+    30.31,
+    "warm",
+    1
+   ],
+   [
+    36.57,
+    "firm_light",
+    1
+   ],
+   [
+    41.07,
+    "warm",
+    1
+   ],
+   [
+    44.99,
+    "firm_light",
+    1
+   ],
+   [
+    51.27,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    7.07,
+    "confused",
+    1
+   ],
+   [
+    8.27,
+    "curious",
+    1
+   ],
+   [
+    14.53,
+    "thinking",
+    1
+   ],
+   [
+    15.67,
+    "curious",
+    1
+   ],
+   [
+    18.63,
+    "thinking",
+    1
+   ],
+   [
+    20.03,
+    "curious",
+    1
+   ],
+   [
+    26.83,
+    "surprised",
+    1
+   ],
+   [
+    27.98,
+    "curious",
+    1
+   ],
+   [
+    35.23,
+    "thinking",
+    1
+   ],
+   [
+    36.57,
+    "curious",
+    1
+   ],
+   [
+    37.48,
+    "worried",
+    1
+   ],
+   [
+    41.07,
+    "grin",
+    1
+   ],
+   [
+    44.99,
+    "curious",
+    1
+   ],
+   [
+    51.27,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 2.56,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 0.76,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 1,
+   "word": "typed"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 0.82,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 1,
+   "word": "typed"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 2.34,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 1,
+   "word": "phone"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 4.06,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 2,
+   "word": "landed"
+  },
+  {
+   "actor": "A",
+   "kind": "two_fingers",
+   "t": 4.64,
+   "rise": 0.4,
+   "dur": 0.9,
+   "line": 2,
+   "word": "two"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 6.64,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "neighbors."
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 7.68,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 3,
+   "word": "picked"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 8.66,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 4,
+   "word": "guessed"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 10.79,
+   "rise": 0.5,
+   "dur": 0.3,
+   "line": 5,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 11.59,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 6,
+   "word": "First"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 12.66,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 6,
+   "word": "thumb"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 14.26,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 6,
+   "word": "knows"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 15.26,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 7,
+   "word": "clue?"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 16.16,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 8,
+   "word": "words"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 17.28,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 8,
+   "word": "You'd"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 20.48,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 10,
+   "word": "scores"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 20.48,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 10,
+   "word": "scores"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 20.86,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 10,
+   "word": "every"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 26.44,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 10,
+   "word": "wins"
+  },
+  {
+   "actor": "B",
+   "kind": "head_back",
+   "t": 27.04,
+   "rise": 0.22,
+   "dur": 0.45,
+   "line": 11,
+   "word": "Every"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_lift",
+   "t": 28.4,
+   "rise": 0.3,
+   "dur": 0.45,
+   "line": 11,
+   "word": "many"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 28.62,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 12,
+   "word": "thousands"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 30.81,
+   "rise": 0.5,
+   "dur": 0.35,
+   "line": 13,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 31.32,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 13,
+   "word": "me"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 31.88,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 14,
+   "word": "teach"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 34.72,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 14,
+   "word": "list"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_lift",
+   "t": 35.86,
+   "rise": 0.3,
+   "dur": 0.45,
+   "line": 15,
+   "word": "undo"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 37.7,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 16,
+   "word": "wrong"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 38.98,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 16,
+   "word": "enough,"
+  },
+  {
+   "actor": "A",
+   "kind": "flick",
+   "t": 40.08,
+   "rise": 0.3,
+   "dur": 0.3,
+   "line": 16,
+   "word": "stops"
+  },
+  {
+   "actor": "B",
+   "kind": "two_hand_open",
+   "t": 42.12,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 17,
+   "word": "turn"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 45.26,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 18,
+   "word": "everyone"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 49.44,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 18,
+   "word": "personal"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 52.12,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 14.73,
+   "t1": 15.19,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 18.83,
+   "t1": 19.65,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 35.43,
+   "t1": 36.15,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 51.52,
+   "t1": 54.87,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.18,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "I",
+   "s": 0.56,
+   "e": 0.7,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "typed",
+   "s": 0.7,
+   "e": 0.9,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "\"hello\"",
+   "s": 0.9,
+   "e": 1.2,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "to",
+   "s": 1.2,
+   "e": 1.4,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "my",
+   "s": 1.4,
+   "e": 1.52,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "teacher.",
+   "s": 1.52,
+   "e": 1.76,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "My",
+   "s": 2.2,
+   "e": 2.28,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "phone",
+   "s": 2.28,
+   "e": 2.56,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 9,
+   "w": "sent",
+   "s": 2.56,
+   "e": 2.84,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "\"jello.\"",
+   "s": 2.84,
+   "e": 3.22,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 11,
+   "w": "Your",
+   "s": 3.56,
+   "e": 3.66,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 12,
+   "w": "thumb",
+   "s": 3.66,
+   "e": 3.94,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 13,
+   "w": "landed",
+   "s": 3.94,
+   "e": 4.28,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 14,
+   "w": "between",
+   "s": 4.28,
+   "e": 4.58,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 15,
+   "w": "two",
+   "s": 4.58,
+   "e": 4.9,
+   "sp": "A",
+   "line": 2,
+   "stress": true
+  },
+  {
+   "i": 16,
+   "w": "keys.",
+   "s": 4.9,
+   "e": 5.22,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 17,
+   "w": "H",
+   "s": 5.6,
+   "e": 5.9,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 18,
+   "w": "and",
+   "s": 5.9,
+   "e": 6.12,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 19,
+   "w": "J",
+   "s": 6.12,
+   "e": 6.36,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 20,
+   "w": "are",
+   "s": 6.36,
+   "e": 6.58,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 21,
+   "w": "neighbors.",
+   "s": 6.58,
+   "e": 6.84,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 22,
+   "w": "So",
+   "s": 7.22,
+   "e": 7.36,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 23,
+   "w": "it",
+   "s": 7.36,
+   "e": 7.48,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 24,
+   "w": "just",
+   "s": 7.48,
+   "e": 7.62,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 25,
+   "w": "picked",
+   "s": 7.62,
+   "e": 7.88,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 26,
+   "w": "one?",
+   "s": 7.88,
+   "e": 8.14,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 27,
+   "w": "It",
+   "s": 8.42,
+   "e": 8.54,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 28,
+   "w": "guessed.",
+   "s": 8.54,
+   "e": 8.8,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 29,
+   "w": "It",
+   "s": 9.22,
+   "e": 9.36,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 30,
+   "w": "always",
+   "s": 9.36,
+   "e": 9.72,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 31,
+   "w": "guesses.",
+   "s": 9.72,
+   "e": 10.08,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 32,
+   "w": "Guesses",
+   "s": 10.44,
+   "e": 10.78,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 33,
+   "w": "how?",
+   "s": 10.78,
+   "e": 11,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 34,
+   "w": "First",
+   "s": 11.36,
+   "e": 11.56,
+   "sp": "A",
+   "line": 6,
+   "stress": true
+  },
+  {
+   "i": 35,
+   "w": "clue:",
+   "s": 11.56,
+   "e": 11.84,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 36,
+   "w": "where",
+   "s": 12.26,
+   "e": 12.36,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 37,
+   "w": "your",
+   "s": 12.36,
+   "e": 12.54,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 38,
+   "w": "thumb",
+   "s": 12.54,
+   "e": 12.82,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 39,
+   "w": "landed.",
+   "s": 12.82,
+   "e": 13.16,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 40,
+   "w": "That",
+   "s": 13.56,
+   "e": 13.78,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 41,
+   "w": "much",
+   "s": 13.78,
+   "e": 14.02,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 42,
+   "w": "it",
+   "s": 14.02,
+   "e": 14.14,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 43,
+   "w": "knows.",
+   "s": 14.14,
+   "e": 14.36,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 44,
+   "w": "What's",
+   "s": 14.68,
+   "e": 14.96,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 45,
+   "w": "the",
+   "s": 14.96,
+   "e": 15.06,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 46,
+   "w": "other",
+   "s": 15.06,
+   "e": 15.2,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 47,
+   "w": "clue?",
+   "s": 15.2,
+   "e": 15.44,
+   "sp": "B",
+   "line": 7,
+   "stress": true
+  },
+  {
+   "i": 48,
+   "w": "The",
+   "s": 15.82,
+   "e": 16.04,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 49,
+   "w": "words",
+   "s": 16.04,
+   "e": 16.28,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 50,
+   "w": "before",
+   "s": 16.28,
+   "e": 16.6,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 51,
+   "w": "it.",
+   "s": 16.6,
+   "e": 16.8,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 52,
+   "w": "You'd",
+   "s": 17.22,
+   "e": 17.4,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 53,
+   "w": "just",
+   "s": 17.4,
+   "e": 17.68,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 54,
+   "w": "typed",
+   "s": 17.68,
+   "e": 18,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 55,
+   "w": "\"pudding.\"",
+   "s": 18,
+   "e": 18.5,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 56,
+   "w": "Okay.",
+   "s": 18.78,
+   "e": 19.02,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 57,
+   "w": "That's",
+   "s": 19.42,
+   "e": 19.76,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 58,
+   "w": "fair.",
+   "s": 19.76,
+   "e": 19.9,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 59,
+   "w": "Then",
+   "s": 20.18,
+   "e": 20.32,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 60,
+   "w": "it",
+   "s": 20.32,
+   "e": 20.42,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 61,
+   "w": "scores",
+   "s": 20.42,
+   "e": 20.74,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 62,
+   "w": "every",
+   "s": 20.74,
+   "e": 21.2,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 63,
+   "w": "word",
+   "s": 21.2,
+   "e": 21.48,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 64,
+   "w": "it",
+   "s": 21.48,
+   "e": 21.6,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 65,
+   "w": "knows.",
+   "s": 21.6,
+   "e": 21.92,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 66,
+   "w": "Thumb",
+   "s": 22.54,
+   "e": 22.74,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 67,
+   "w": "spot,",
+   "s": 22.74,
+   "e": 22.96,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 68,
+   "w": "word",
+   "s": 23.52,
+   "e": 23.76,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 69,
+   "w": "before,",
+   "s": 23.76,
+   "e": 24.12,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 70,
+   "w": "how",
+   "s": 24.64,
+   "e": 24.8,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 71,
+   "w": "common.",
+   "s": 24.8,
+   "e": 25.18,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 72,
+   "w": "Top",
+   "s": 25.76,
+   "e": 26,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 73,
+   "w": "score",
+   "s": 26,
+   "e": 26.32,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 74,
+   "w": "wins.",
+   "s": 26.32,
+   "e": 26.66,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 75,
+   "w": "Every",
+   "s": 26.98,
+   "e": 27.26,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 76,
+   "w": "word?",
+   "s": 27.26,
+   "e": 27.66,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 77,
+   "w": "How",
+   "s": 28.08,
+   "e": 28.28,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 78,
+   "w": "many?",
+   "s": 28.28,
+   "e": 28.5,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 79,
+   "w": "Thousands.",
+   "s": 28.5,
+   "e": 29.16,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 80,
+   "w": "In",
+   "s": 29.64,
+   "e": 29.8,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 81,
+   "w": "a",
+   "s": 29.8,
+   "e": 29.92,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 82,
+   "w": "blink.",
+   "s": 29.92,
+   "e": 30.12,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 83,
+   "w": "So",
+   "s": 30.46,
+   "e": 30.58,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 84,
+   "w": "how",
+   "s": 30.58,
+   "e": 30.78,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 85,
+   "w": "does",
+   "s": 30.78,
+   "e": 30.9,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 86,
+   "w": "it",
+   "s": 30.9,
+   "e": 30.98,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 87,
+   "w": "know",
+   "s": 30.98,
+   "e": 31.2,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 88,
+   "w": "me?",
+   "s": 31.2,
+   "e": 31.4,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 89,
+   "w": "You",
+   "s": 31.66,
+   "e": 31.82,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 90,
+   "w": "teach",
+   "s": 31.82,
+   "e": 32.12,
+   "sp": "A",
+   "line": 14,
+   "stress": true
+  },
+  {
+   "i": 91,
+   "w": "it.",
+   "s": 32.12,
+   "e": 32.32,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 92,
+   "w": "A",
+   "s": 32.78,
+   "e": 32.92,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 93,
+   "w": "word",
+   "s": 32.92,
+   "e": 33.18,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 94,
+   "w": "you",
+   "s": 33.18,
+   "e": 33.36,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 95,
+   "w": "keep",
+   "s": 33.36,
+   "e": 33.68,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 96,
+   "w": "goes",
+   "s": 33.68,
+   "e": 34.08,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 97,
+   "w": "in",
+   "s": 34.08,
+   "e": 34.26,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 98,
+   "w": "your",
+   "s": 34.26,
+   "e": 34.38,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 99,
+   "w": "own",
+   "s": 34.38,
+   "e": 34.6,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 100,
+   "w": "list.",
+   "s": 34.6,
+   "e": 35,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 101,
+   "w": "And",
+   "s": 35.38,
+   "e": 35.54,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 102,
+   "w": "if",
+   "s": 35.54,
+   "e": 35.64,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 103,
+   "w": "I",
+   "s": 35.64,
+   "e": 35.74,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 104,
+   "w": "undo",
+   "s": 35.74,
+   "e": 35.98,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 105,
+   "w": "a",
+   "s": 35.98,
+   "e": 36.16,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 106,
+   "w": "fix?",
+   "s": 36.16,
+   "e": 36.4,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 107,
+   "w": "Then",
+   "s": 36.72,
+   "e": 36.94,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 108,
+   "w": "it",
+   "s": 36.94,
+   "e": 37.04,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 109,
+   "w": "learns",
+   "s": 37.04,
+   "e": 37.32,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 110,
+   "w": "it",
+   "s": 37.32,
+   "e": 37.46,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 111,
+   "w": "was",
+   "s": 37.46,
+   "e": 37.58,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 112,
+   "w": "wrong.",
+   "s": 37.58,
+   "e": 37.88,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 113,
+   "w": "Do",
+   "s": 38.56,
+   "e": 38.72,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 114,
+   "w": "that",
+   "s": 38.72,
+   "e": 38.92,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 115,
+   "w": "enough,",
+   "s": 38.92,
+   "e": 39.18,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 116,
+   "w": "and",
+   "s": 39.18,
+   "e": 39.86,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 117,
+   "w": "it",
+   "s": 39.86,
+   "e": 39.96,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 118,
+   "w": "stops.",
+   "s": 39.96,
+   "e": 40.26,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 119,
+   "w": "So",
+   "s": 41.22,
+   "e": 41.32,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 120,
+   "w": "why",
+   "s": 41.32,
+   "e": 41.58,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 121,
+   "w": "does",
+   "s": 41.58,
+   "e": 41.72,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 122,
+   "w": "it",
+   "s": 41.72,
+   "e": 41.84,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 123,
+   "w": "still",
+   "s": 41.84,
+   "e": 42.06,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 124,
+   "w": "turn",
+   "s": 42.06,
+   "e": 42.36,
+   "sp": "B",
+   "line": 17,
+   "stress": true
+  },
+  {
+   "i": 125,
+   "w": "Moe",
+   "s": 42.36,
+   "e": 42.92,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 126,
+   "w": "into",
+   "s": 42.92,
+   "e": 43.1,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 127,
+   "w": "\"more\"?",
+   "s": 43.1,
+   "e": 43.74,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 128,
+   "w": "Everyone",
+   "s": 45.14,
+   "e": 45.62,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 129,
+   "w": "types",
+   "s": 45.62,
+   "e": 45.98,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 130,
+   "w": "\"more.\"",
+   "s": 45.98,
+   "e": 46.4,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 131,
+   "w": "Almost",
+   "s": 47.08,
+   "e": 47.32,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 132,
+   "w": "nobody",
+   "s": 47.32,
+   "e": 47.84,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 133,
+   "w": "types",
+   "s": 47.84,
+   "e": 48.18,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 134,
+   "w": "Moe.",
+   "s": 48.18,
+   "e": 48.84,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 135,
+   "w": "Nothing",
+   "s": 49.08,
+   "e": 49.32,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 136,
+   "w": "personal.",
+   "s": 49.32,
+   "e": 49.72,
+   "sp": "A",
+   "line": 18
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, I typed \"hello\"",
+   "s": 0,
+   "e": 1.14,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "to my teacher.",
+   "s": 1.2,
+   "e": 2.11,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "My phone sent \"jello.\"",
+   "s": 2.2,
+   "e": 3.5,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Your thumb landed between two keys.",
+   "s": 3.56,
+   "e": 5.54,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "H and J are neighbors.",
+   "s": 5.6,
+   "e": 7.16,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "So it just picked one?",
+   "s": 7.22,
+   "e": 8.36,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "It guessed.",
+   "s": 8.42,
+   "e": 9.15,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "It always guesses.",
+   "s": 9.22,
+   "e": 10.38,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Guesses how?",
+   "s": 10.44,
+   "e": 11.3,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "First clue: where your thumb landed.",
+   "s": 11.36,
+   "e": 13.5,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "That much it knows.",
+   "s": 13.56,
+   "e": 14.62,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "What's the other clue?",
+   "s": 14.68,
+   "e": 15.76,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "The words before it.",
+   "s": 15.82,
+   "e": 17.15,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "You'd just typed \"pudding.\"",
+   "s": 17.22,
+   "e": 18.72,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Okay. That's fair.",
+   "s": 18.78,
+   "e": 20.12,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "Then it scores every",
+   "s": 20.18,
+   "e": 21.14,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "word it knows.",
+   "s": 21.2,
+   "e": 22.27,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "Thumb spot,",
+   "s": 22.54,
+   "e": 23.31,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "word before,",
+   "s": 23.52,
+   "e": 24.47,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "how common.",
+   "s": 24.64,
+   "e": 25.53,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "Top score wins.",
+   "s": 25.76,
+   "e": 26.92,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "Every word?",
+   "s": 26.98,
+   "e": 28.01,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "How many?",
+   "s": 28.08,
+   "e": 28.44,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "Thousands. In a blink.",
+   "s": 28.5,
+   "e": 30.4,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "So how does it know me?",
+   "s": 30.46,
+   "e": 31.6,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "You teach it.",
+   "s": 31.66,
+   "e": 32.67,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "A word you keep goes",
+   "s": 32.78,
+   "e": 34.02,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "in your own list.",
+   "s": 34.08,
+   "e": 35.32,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "And if I undo a fix?",
+   "s": 35.38,
+   "e": 36.66,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Then it learns it was wrong.",
+   "s": 36.72,
+   "e": 38.23,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "Do that enough,",
+   "s": 38.56,
+   "e": 39.12,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "and it stops.",
+   "s": 39.18,
+   "e": 40.61,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "So why does it still",
+   "s": 41.22,
+   "e": 42,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "turn Moe into \"more\"?",
+   "s": 42.06,
+   "e": 44.09,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "Everyone types \"more.\" Almost",
+   "s": 45.14,
+   "e": 47.26,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "nobody types Moe.",
+   "s": 47.32,
+   "e": 49.02,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "Nothing personal.",
+   "s": 49.08,
+   "e": 50.07,
+   "line": 18,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": [
+  {
+   "t0": 0.4,
+   "t1": 7.1,
+   "name": "BETWEEN TWO KEYS"
+  },
+  {
+   "t0": 10.4,
+   "t1": 14.6,
+   "name": "CLUE 1"
+  },
+  {
+   "t0": 14.7,
+   "t1": 20.1,
+   "name": "CLUE 2"
+  },
+  {
+   "t0": 20.2,
+   "t1": 27,
+   "name": "SCORES"
+  },
+  {
+   "t0": 28.3,
+   "t1": 30.4,
+   "name": "THOUSANDS"
+  },
+  {
+   "t0": 31.6,
+   "t1": 35.3,
+   "name": "YOUR LIST"
+  },
+  {
+   "t0": 35.4,
+   "t1": 41,
+   "name": "UNDO"
+  },
+  {
+   "t0": 41.4,
+   "t1": 50.4,
+   "name": "COMMON WINS"
+  }
+ ],
+ "warnings": [
+  "line 1: fuzzy align \"Grandpa,\" ~ ASR \"In grandpa,\"",
+  "line 8: fuzzy align \"You'd\" ~ ASR \"You\"",
+  "camera variety R3: 41.0-51.0 s: 2 distinct angles (shots #21 #22)",
+  "camera variety R3: 41.5-51.5 s: 2 distinct angles (shots #21 #22)",
+  "camera variety R4: #16 ots_B -> #18 ots_B (B): 0.0 deg, size x1.00"
+ ]
+}

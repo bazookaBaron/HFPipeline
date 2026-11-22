@@ -1,0 +1,13 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "control-panel",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "control-panel/server.js"
+      ],
+      "port": 4600
+    }
+  ]
+}

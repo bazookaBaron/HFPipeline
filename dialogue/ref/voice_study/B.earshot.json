@@ -1,0 +1,8476 @@
+{
+ "full_describe": {
+  "path": "B.48k.wav",
+  "start": null,
+  "end": null,
+  "duration": 150.211,
+  "measurements": {
+   "duration": 150.211,
+   "peak_dbfs": -0.6,
+   "true_peak_dbtp": 0.1,
+   "rms_dbfs": -17.2,
+   "lufs": -14.3,
+   "lra_lu": 2.4,
+   "attack_ms": 234.0,
+   "decay_ms": 12175.0,
+   "brightness_hz": 1980,
+   "bandwidth_hz": 16254,
+   "noise_floor_dbfs": -28.0,
+   "flatness": 0.0006,
+   "width": "mono",
+   "digital_silence_frac": 0.0002
+  },
+  "shape": "long recording, loudness range 2 LU",
+  "top_tags": [
+   {
+    "term": "high heels walking",
+    "category": "foley",
+    "z": 1.42,
+    "cosine": -0.089,
+    "verdict": "no match"
+   },
+   {
+    "term": "a punchy impact hit",
+    "category": "impacts",
+    "z": 1.39,
+    "cosine": -0.087,
+    "verdict": "no match"
+   },
+   {
+    "term": "a mouth pop",
+    "category": "foley",
+    "z": 1.39,
+    "cosine": 0.019,
+    "verdict": "no match"
+   },
+   {
+    "term": "footsteps on wood",
+    "category": "foley",
+    "z": 1.36,
+    "cosine": -0.081,
+    "verdict": "no match"
+   },
+   {
+    "term": "ice cubes in a glass",
+    "category": "water",
+    "z": 1.3,
+    "cosine": -0.028,
+    "verdict": "no match"
+   },
+   {
+    "term": "a mouse click",
+    "category": "ui",
+    "z": 1.3,
+    "cosine": -0.001,
+    "verdict": "no match"
+   },
+   {
+    "term": "a phone vibration buzz",
+    "category": "ui",
+    "z": 1.26,
+    "cosine": -0.052,
+    "verdict": "no match"
+   },
+   {
+    "term": "a chat message pop",
+    "category": "ui",
+    "z": 1.26,
+    "cosine": 0.054,
+    "verdict": "no match"
+   }
+  ],
+  "music_hints": [
+   {
+    "term": "a voice-over narration",
+    "category": "voice",
+    "z": 2.69,
+    "cosine": 0.026
+   },
+   {
+    "term": "a woman speaking",
+    "category": "voice",
+    "z": 2.49,
+    "cosine": -0.067
+   },
+   {
+    "term": "hip hop beat with heavy bass",
+    "category": "music_genre",
+    "z": 2.46,
+    "cosine": 0.036
+   },
+   {
+    "term": "jazz music",
+    "category": "music_genre",
+    "z": 2.33,
+    "cosine": 0.048
+   },
+   {
+    "term": "inspirational corporate background music",
+    "category": "music_genre",
+    "z": 2.33,
+    "cosine": 0.106
+   },
+   {
+    "term": "funk music",
+    "category": "music_genre",
+    "z": 2.32,
+    "cosine": 0.075
+   },
+   {
+    "term": "trap beat",
+    "category": "music_genre",
+    "z": 2.11,
+    "cosine": 0.079
+   },
+   {
+    "term": "playful children's piano music",
+    "category": "music_genre",
+    "z": 2.03,
+    "cosine": 0.066
+   }
+  ],
+  "tags": {
+   "transitions": [
+    {
+     "term": "a quick swipe",
+     "z": 0.87,
+     "cosine": -0.02
+    },
+    {
+     "term": "a reverse cymbal swell",
+     "z": 0.37,
+     "cosine": -0.069
+    },
+    {
+     "term": "an uplifter sweep",
+     "z": 0.27,
+     "cosine": -0.062
+    }
+   ],
+   "impacts": [
+    {
+     "term": "a punchy impact hit",
+     "z": 1.39,
+     "cosine": -0.087
+    },
+    {
+     "term": "a sub bass drop",
+     "z": 1.01,
+     "cosine": -0.046
+    },
+    {
+     "term": "a wooden knock",
+     "z": 0.69,
+     "cosine": -0.072
+    }
+   ],
+   "ui": [
+    {
+     "term": "a mouse click",
+     "z": 1.3,
+     "cosine": -0.001
+    },
+    {
+     "term": "a phone vibration buzz",
+     "z": 1.26,
+     "cosine": -0.052
+    },
+    {
+     "term": "a chat message pop",
+     "z": 1.26,
+     "cosine": 0.054
+    }
+   ],
+   "keyboard": [
+    {
+     "term": "an enter key press",
+     "z": 0.79,
+     "cosine": 0.017
+    },
+    {
+     "term": "a soft key release click",
+     "z": 0.79,
+     "cosine": -0.056
+    },
+    {
+     "term": "a single mechanical keyboard key press",
+     "z": 0.79,
+     "cosine": -0.015
+    }
+   ],
+   "foley": [
+    {
+     "term": "high heels walking",
+     "z": 1.42,
+     "cosine": -0.089
+    },
+    {
+     "term": "a mouth pop",
+     "z": 1.39,
+     "cosine": 0.019
+    },
+    {
+     "term": "footsteps on wood",
+     "z": 1.36,
+     "cosine": -0.081
+    }
+   ],
+   "water": [
+    {
+     "term": "ice cubes in a glass",
+     "z": 1.3,
+     "cosine": -0.028
+    },
+    {
+     "term": "bubbles underwater",
+     "z": 0.85,
+     "cosine": -0.067
+    },
+    {
+     "term": "a liquid bloop",
+     "z": 0.03,
+     "cosine": -0.062
+    }
+   ],
+   "nature": [
+    {
+     "term": "an apple falling on grass",
+     "z": 1.08,
+     "cosine": -0.048
+    },
+    {
+     "term": "walking through dry leaves",
+     "z": 0.97,
+     "cosine": -0.068
+    },
+    {
+     "term": "a horse galloping",
+     "z": 0.39,
+     "cosine": -0.106
+    }
+   ],
+   "chimes": [
+    {
+     "term": "a music box melody",
+     "z": 1.1,
+     "cosine": 0.002
+    },
+    {
+     "term": "a magic sparkle chime",
+     "z": 0.51,
+     "cosine": -0.02
+    },
+    {
+     "term": "a glass ting",
+     "z": 0.46,
+     "cosine": -0.05
+    }
+   ],
+   "ambience": [
+    {
+     "term": "people talking in the background",
+     "z": 1.02,
+     "cosine": -0.177
+    },
+    {
+     "term": "an office ambience",
+     "z": 0.76,
+     "cosine": -0.123
+    },
+    {
+     "term": "a busy cafe",
+     "z": 0.72,
+     "cosine": -0.182
+    }
+   ],
+   "everyday": [
+    {
+     "term": "a heartbeat",
+     "z": 1.12,
+     "cosine": -0.036
+    },
+    {
+     "term": "a spray can hissing",
+     "z": 0.98,
+     "cosine": -0.072
+    },
+    {
+     "term": "a knock on a door",
+     "z": 0.86,
+     "cosine": -0.096
+    }
+   ],
+   "music_genre": [
+    {
+     "term": "hip hop beat with heavy bass",
+     "z": 2.46,
+     "cosine": 0.036
+    },
+    {
+     "term": "jazz music",
+     "z": 2.33,
+     "cosine": 0.048
+    },
+    {
+     "term": "inspirational corporate background music",
+     "z": 2.33,
+     "cosine": 0.106
+    }
+   ],
+   "music_mood": [
+    {
+     "term": "confident and cool music",
+     "z": 1.91,
+     "cosine": 0.072
+    },
+    {
+     "term": "playful and quirky music",
+     "z": 1.82,
+     "cosine": 0.074
+    },
+    {
+     "term": "celebratory and joyful music",
+     "z": 1.49,
+     "cosine": 0.008
+    }
+   ],
+   "instruments": [
+    {
+     "term": "a vocal chop",
+     "z": 1.97,
+     "cosine": 0.085
+    },
+    {
+     "term": "a music box",
+     "z": 1.39,
+     "cosine": 0.036
+    },
+    {
+     "term": "a synthesizer lead",
+     "z": 1.31,
+     "cosine": 0.022
+    }
+   ],
+   "voice": [
+    {
+     "term": "a voice-over narration",
+     "z": 2.69,
+     "cosine": 0.026
+    },
+    {
+     "term": "a woman speaking",
+     "z": 2.49,
+     "cosine": -0.067
+    },
+    {
+     "term": "a man speaking",
+     "z": 1.95,
+     "cosine": -0.114
+    }
+   ],
+   "quality": [
+    {
+     "term": "a satisfying sound",
+     "z": 0.38,
+     "cosine": -0.019
+    },
+    {
+     "term": "a punchy sound",
+     "z": 0.31,
+     "cosine": -0.083
+    },
+    {
+     "term": "a tight snappy sound",
+     "z": 0.12,
+     "cosine": -0.083
+    }
+   ],
+   "production": [
+    {
+     "term": "a cheap synthesized beep",
+     "z": 2.09,
+     "cosine": -0.001
+    },
+    {
+     "term": "an 8-bit sound effect",
+     "z": 1.48,
+     "cosine": 0.006
+    },
+    {
+     "term": "a square wave chiptune blip",
+     "z": 1.47,
+     "cosine": -0.017
+    }
+   ]
+  },
+  "audioset": [
+   {
+    "label": "Speech",
+    "p": 0.815
+   },
+   {
+    "label": "Music",
+    "p": 0.769
+   },
+   {
+    "label": "Speech synthesizer",
+    "p": 0.315
+   },
+   {
+    "label": "Spray",
+    "p": 0.154
+   },
+   {
+    "label": "Gasp",
+    "p": 0.107
+   }
+  ],
+  "character": [],
+  "distinct_windows": [
+   {
+    "start": 0.0,
+    "end": 10.0,
+    "top_tag": {
+     "term": "a finger squeaking on glass",
+     "category": "foley",
+     "z": 2.34,
+     "cosine": 0.079,
+     "verdict": "weak"
+    },
+    "audioset": [
+     {
+      "label": "Music",
+      "p": 0.753
+     },
+     {
+      "label": "Speech",
+      "p": 0.693
+     }
+    ]
+   },
+   {
+    "start": 115.0,
+    "end": 125.0,
+    "top_tag": {
+     "term": "a punchy impact hit",
+     "category": "impacts",
+     "z": 1.8,
+     "cosine": -0.044,
+     "verdict": "no match"
+    },
+    "audioset": [
+     {
+      "label": "Speech",
+      "p": 0.815
+     },
+     {
+      "label": "Music",
+      "p": 0.769
+     },
+     {
+      "label": "Spray",
+      "p": 0.154
+     }
+    ]
+   },
+   {
+    "start": 140.211,
+    "end": 150.211,
+    "top_tag": {
+     "term": "a mouse click",
+     "category": "ui",
+     "z": 1.91,
+     "cosine": 0.028,
+     "verdict": "no match"
+    },
+    "audioset": [
+     {
+      "label": "Speech",
+      "p": 0.665
+     },
+     {
+      "label": "Music",
+      "p": 0.567
+     },
+     {
+      "label": "Speech synthesizer",
+      "p": 0.315
+     }
+    ]
+   }
+  ],
+  "summary": "150.21 s long recording, loudness range 2 LU. Music (AudioSet Music 0.77). Unvalidated hints - genre: hip hop beat with heavy bass (z +2.4), jazz music (z +2.3); mood (wrong for ~1 in 5 tracks in a test): . No sound-effect description stands out (closest: high heels walking z +1.4, a punchy impact hit z +1.3; tentative). AudioSet: Speech 0.81, Music 0.77, Speech synthesizer 0.32. peak -0.6 dBFS, -14.3 LUFS, brightness 2.0 kHz, bandwidth 16.3 kHz, mono. Windows that read differently: 0:00.00-0:10.00 a finger squeaking on glass (z +2.3; AudioSet Music 0.75); 1:55.00-2:05.00 a punchy impact hit (z +1.8; AudioSet Speech 0.81); 2:20.21-2:30.21 a mouse click (z +1.9; AudioSet Speech 0.67)."
+ },
+ "segments": [
+  {
+   "i": 0,
+   "text": "God, if anyone can build an app in a weekend now, what's actually becoming valuable?",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.525,
+     4.39
+    ],
+    [
+     "a sad person speaking",
+     0.305,
+     4.13
+    ],
+    [
+     "a person speaking excitedly",
+     0.082,
+     4.21
+    ],
+    [
+     "a worried anxious person speaking",
+     0.028,
+     3.22
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.887
+    ],
+    [
+     "a man speaking",
+     0.08
+    ],
+    [
+     "a child speaking",
+     0.033
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.898,
+     2.51
+    ],
+    [
+     "people laughing",
+     0.102,
+     1.66
+    ]
+   ]
+  },
+  {
+   "i": 1,
+   "text": "Not the app.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.897,
+     3.32
+    ],
+    [
+     "a person speaking sarcastically",
+     0.075,
+     2.27
+    ],
+    [
+     "a sad person speaking",
+     0.014,
+     2.05
+    ],
+    [
+     "a confused person asking a question",
+     0.007,
+     2.07
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.962
+    ],
+    [
+     "a woman speaking",
+     0.024
+    ],
+    [
+     "a child speaking",
+     0.014
+    ]
+   ],
+   "laugh": [
+    [
+     "people laughing",
+     0.614,
+     1.24
+    ],
+    [
+     "a person speaking",
+     0.386,
+     1.12
+    ]
+   ]
+  },
+  {
+   "i": 2,
+   "text": "The people waiting for it.",
+   "tone": [
+    [
+     "a sad person speaking",
+     0.33,
+     2.76
+    ],
+    [
+     "a person speaking sarcastically",
+     0.251,
+     2.35
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.192,
+     2.64
+    ],
+    [
+     "a calm narrator speaking",
+     0.192,
+     2.38
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.935
+    ],
+    [
+     "a woman speaking",
+     0.062
+    ],
+    [
+     "a child speaking",
+     0.003
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.961,
+     1.92
+    ],
+    [
+     "people laughing",
+     0.039,
+     0.84
+    ]
+   ]
+  },
+  {
+   "i": 3,
+   "text": "Wait, the app isn't the valuable part?",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.535,
+     4.52
+    ],
+    [
+     "a person speaking excitedly",
+     0.266,
+     4.76
+    ],
+    [
+     "a sad person speaking",
+     0.074,
+     3.73
+    ],
+    [
+     "a calm narrator speaking",
+     0.061,
+     3.46
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.629
+    ],
+    [
+     "a man speaking",
+     0.351
+    ],
+    [
+     "a child speaking",
+     0.02
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.982,
+     2.76
+    ],
+    [
+     "people laughing",
+     0.018,
+     1.29
+    ]
+   ]
+  },
+  {
+   "i": 4,
+   "text": "Over half a million new apps hit the App Store in just six months this year.",
+   "tone": [
+    [
+     "a calm narrator speaking",
+     0.336,
+     2.92
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.288,
+     3.17
+    ],
+    [
+     "a person speaking excitedly",
+     0.22,
+     3.61
+    ],
+    [
+     "a sad person speaking",
+     0.094,
+     2.63
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.816
+    ],
+    [
+     "a woman speaking",
+     0.167
+    ],
+    [
+     "a child speaking",
+     0.018
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.979,
+     2.15
+    ],
+    [
+     "people laughing",
+     0.021,
+     0.56
+    ]
+   ]
+  },
+  {
+   "i": 5,
+   "text": "That's almost as many as all of last year, but downloads only went up 2%.",
+   "tone": [
+    [
+     "a calm narrator speaking",
+     0.443,
+     3.2
+    ],
+    [
+     "a person speaking excitedly",
+     0.289,
+     3.87
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.175,
+     3.14
+    ],
+    [
+     "a sad person speaking",
+     0.037,
+     2.46
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.96
+    ],
+    [
+     "a woman speaking",
+     0.032
+    ],
+    [
+     "a child speaking",
+     0.008
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.976,
+     2.22
+    ],
+    [
+     "people laughing",
+     0.024,
+     0.73
+    ]
+   ]
+  },
+  {
+   "i": 6,
+   "text": "So everybody's building and nobody's downloading?",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.675,
+     5.17
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.195,
+     4.08
+    ],
+    [
+     "a calm narrator speaking",
+     0.05,
+     3.17
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.034,
+     3.68
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.824
+    ],
+    [
+     "a man speaking",
+     0.123
+    ],
+    [
+     "a child speaking",
+     0.053
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.931,
+     2.64
+    ],
+    [
+     "people laughing",
+     0.069,
+     1.51
+    ]
+   ]
+  },
+  {
+   "i": 7,
+   "text": "Picture two taco trucks.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.633,
+     3.2
+    ],
+    [
+     "a person speaking excitedly",
+     0.24,
+     3.32
+    ],
+    [
+     "a person speaking sarcastically",
+     0.049,
+     2.02
+    ],
+    [
+     "a confused person asking a question",
+     0.031,
+     2.41
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.924
+    ],
+    [
+     "a woman speaking",
+     0.072
+    ],
+    [
+     "a child speaking",
+     0.005
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.717,
+     1.79
+    ],
+    [
+     "people laughing",
+     0.283,
+     1.49
+    ]
+   ]
+  },
+  {
+   "i": 8,
+   "text": "Same tacos.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.801,
+     3.19
+    ],
+    [
+     "a person speaking sarcastically",
+     0.157,
+     2.3
+    ],
+    [
+     "a person speaking excitedly",
+     0.017,
+     2.41
+    ],
+    [
+     "a confused person asking a question",
+     0.006,
+     1.81
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.986
+    ],
+    [
+     "a woman speaking",
+     0.013
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "people laughing",
+     0.685,
+     1.69
+    ],
+    [
+     "a person speaking",
+     0.315,
+     1.46
+    ]
+   ]
+  },
+  {
+   "i": 9,
+   "text": "One has a line of people down the street.",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.415,
+     3.11
+    ],
+    [
+     "a calm narrator speaking",
+     0.384,
+     2.3
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.116,
+     2.14
+    ],
+    [
+     "a person speaking in a flat deadpan monotone",
+     0.044,
+     1.75
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.968
+    ],
+    [
+     "a woman speaking",
+     0.03
+    ],
+    [
+     "a child speaking",
+     0.003
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.998,
+     2.0
+    ],
+    [
+     "people laughing",
+     0.002,
+     -0.27
+    ]
+   ]
+  },
+  {
+   "i": 10,
+   "text": "Anyone can make tacos now.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.553,
+     2.99
+    ],
+    [
+     "a calm narrator speaking",
+     0.202,
+     2.41
+    ],
+    [
+     "a person speaking excitedly",
+     0.097,
+     2.87
+    ],
+    [
+     "a person speaking sarcastically",
+     0.048,
+     1.8
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.97
+    ],
+    [
+     "a woman speaking",
+     0.03
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.994,
+     2.09
+    ],
+    [
+     "people laughing",
+     0.006,
+     0.38
+    ]
+   ]
+  },
+  {
+   "i": 11,
+   "text": "The line is the valuable part.",
+   "tone": [
+    [
+     "a calm narrator speaking",
+     0.495,
+     2.39
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.174,
+     2.28
+    ],
+    [
+     "a person speaking excitedly",
+     0.149,
+     2.73
+    ],
+    [
+     "a person speaking sarcastically",
+     0.077,
+     1.54
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.97
+    ],
+    [
+     "a woman speaking",
+     0.029
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.99,
+     1.81
+    ],
+    [
+     "people laughing",
+     0.01,
+     0.09
+    ]
+   ]
+  },
+  {
+   "i": 12,
+   "text": "Okay, but how do I get a line?",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.9,
+     4.74
+    ],
+    [
+     "a person speaking excitedly",
+     0.062,
+     4.26
+    ],
+    [
+     "a confused person asking a question",
+     0.013,
+     3.33
+    ],
+    [
+     "a sad person speaking",
+     0.01,
+     2.96
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.913
+    ],
+    [
+     "a man speaking",
+     0.027
+    ],
+    [
+     "a child speaking",
+     0.061
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.948,
+     2.38
+    ],
+    [
+     "people laughing",
+     0.052,
+     1.26
+    ]
+   ]
+  },
+  {
+   "i": 13,
+   "text": "I have like nine followers.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.71,
+     5.11
+    ],
+    [
+     "a person speaking excitedly",
+     0.269,
+     5.27
+    ],
+    [
+     "a confused person asking a question",
+     0.008,
+     3.52
+    ],
+    [
+     "a person shouting",
+     0.004,
+     3.39
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.939
+    ],
+    [
+     "a man speaking",
+     0.03
+    ],
+    [
+     "a child speaking",
+     0.031
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.978,
+     2.85
+    ],
+    [
+     "people laughing",
+     0.022,
+     1.32
+    ]
+   ]
+  },
+  {
+   "i": 14,
+   "text": "You don't need millions.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.817,
+     3.01
+    ],
+    [
+     "a person speaking excitedly",
+     0.093,
+     2.76
+    ],
+    [
+     "a confused person asking a question",
+     0.028,
+     2.09
+    ],
+    [
+     "a person speaking sarcastically",
+     0.021,
+     1.46
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.958
+    ],
+    [
+     "a woman speaking",
+     0.034
+    ],
+    [
+     "a child speaking",
+     0.008
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.807,
+     1.11
+    ],
+    [
+     "people laughing",
+     0.193,
+     0.63
+    ]
+   ]
+  },
+  {
+   "i": 15,
+   "text": "You need a few hundred people with the same problem.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.635,
+     3.09
+    ],
+    [
+     "a person speaking excitedly",
+     0.191,
+     3.14
+    ],
+    [
+     "a calm narrator speaking",
+     0.103,
+     2.27
+    ],
+    [
+     "a person speaking sarcastically",
+     0.025,
+     1.71
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.98
+    ],
+    [
+     "a woman speaking",
+     0.02
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.99,
+     1.82
+    ],
+    [
+     "people laughing",
+     0.01,
+     0.35
+    ]
+   ]
+  },
+  {
+   "i": 16,
+   "text": "Step one, pick one kind of person and one problem you know well, like parents with picky",
+   "tone": [
+    [
+     "a calm narrator speaking",
+     0.734,
+     3.29
+    ],
+    [
+     "a person speaking excitedly",
+     0.119,
+     3.44
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.045,
+     2.74
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.036,
+     2.26
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.96
+    ],
+    [
+     "a woman speaking",
+     0.036
+    ],
+    [
+     "a child speaking",
+     0.005
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.988,
+     2.72
+    ],
+    [
+     "people laughing",
+     0.012,
+     0.64
+    ]
+   ]
+  },
+  {
+   "i": 17,
+   "text": "eaters.",
+   "tone": [
+    [
+     "a confused person asking a question",
+     0.416,
+     2.98
+    ],
+    [
+     "a person speaking sarcastically",
+     0.305,
+     2.3
+    ],
+    [
+     "a calm narrator speaking",
+     0.107,
+     2.08
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.085,
+     2.26
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.936
+    ],
+    [
+     "a woman speaking",
+     0.058
+    ],
+    [
+     "a child speaking",
+     0.006
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.548,
+     1.77
+    ],
+    [
+     "people laughing",
+     0.452,
+     1.68
+    ]
+   ]
+  },
+  {
+   "i": 18,
+   "text": "How do I find out what they need?",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.583,
+     3.58
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.352,
+     2.97
+    ],
+    [
+     "a confused person asking a question",
+     0.023,
+     2.27
+    ],
+    [
+     "a worried anxious person speaking",
+     0.011,
+     1.79
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.973
+    ],
+    [
+     "a man speaking",
+     0.019
+    ],
+    [
+     "a child speaking",
+     0.008
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.931,
+     2.07
+    ],
+    [
+     "people laughing",
+     0.069,
+     1.2
+    ]
+   ]
+  },
+  {
+   "i": 19,
+   "text": "Step two, in the Claude app, ask me to find what parents of picky eaters complain about",
+   "tone": [
+    [
+     "a calm narrator speaking",
+     0.651,
+     3.39
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.128,
+     2.97
+    ],
+    [
+     "a person speaking excitedly",
+     0.074,
+     3.38
+    ],
+    [
+     "a sad person speaking",
+     0.036,
+     2.25
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.905
+    ],
+    [
+     "a woman speaking",
+     0.079
+    ],
+    [
+     "a child speaking",
+     0.017
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.992,
+     2.87
+    ],
+    [
+     "people laughing",
+     0.008,
+     0.5
+    ]
+   ]
+  },
+  {
+   "i": 20,
+   "text": "most online.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.907,
+     3.46
+    ],
+    [
+     "a person speaking sarcastically",
+     0.056,
+     2.18
+    ],
+    [
+     "a confused person asking a question",
+     0.012,
+     2.24
+    ],
+    [
+     "a sad person speaking",
+     0.011,
+     1.99
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.997
+    ],
+    [
+     "a woman speaking",
+     0.003
+    ],
+    [
+     "a child speaking",
+     0.0
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.685,
+     1.16
+    ],
+    [
+     "people laughing",
+     0.315,
+     0.89
+    ]
+   ]
+  },
+  {
+   "i": 21,
+   "text": "I search and hand you their top 10 problems in their own words.",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.412,
+     4.34
+    ],
+    [
+     "a calm narrator speaking",
+     0.382,
+     3.31
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.102,
+     3.05
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.047,
+     3.09
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.877
+    ],
+    [
+     "a woman speaking",
+     0.117
+    ],
+    [
+     "a child speaking",
+     0.006
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.996,
+     3.26
+    ],
+    [
+     "people laughing",
+     0.004,
+     0.7
+    ]
+   ]
+  },
+  {
+   "i": 22,
+   "text": "Then I build the app.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.862,
+     3.95
+    ],
+    [
+     "a person speaking excitedly",
+     0.111,
+     3.74
+    ],
+    [
+     "a confused person asking a question",
+     0.017,
+     2.9
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.002,
+     2.41
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.824
+    ],
+    [
+     "a child speaking",
+     0.156
+    ],
+    [
+     "a man speaking",
+     0.021
+    ]
+   ],
+   "laugh": [
+    [
+     "people laughing",
+     0.65,
+     1.76
+    ],
+    [
+     "a person speaking",
+     0.35,
+     1.59
+    ]
+   ]
+  },
+  {
+   "i": 23,
+   "text": "That's the mistake everybody makes.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.863,
+     3.33
+    ],
+    [
+     "a person speaking excitedly",
+     0.064,
+     2.92
+    ],
+    [
+     "a confused person asking a question",
+     0.022,
+     2.28
+    ],
+    [
+     "a sad person speaking",
+     0.017,
+     1.95
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.863
+    ],
+    [
+     "a woman speaking",
+     0.129
+    ],
+    [
+     "a child speaking",
+     0.008
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.865,
+     2.21
+    ],
+    [
+     "people laughing",
+     0.135,
+     1.57
+    ]
+   ]
+  },
+  {
+   "i": 24,
+   "text": "They build for months, then launch to nobody.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.484,
+     2.68
+    ],
+    [
+     "a confused person asking a question",
+     0.431,
+     2.79
+    ],
+    [
+     "a person speaking excitedly",
+     0.041,
+     2.36
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.015,
+     1.93
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.935
+    ],
+    [
+     "a woman speaking",
+     0.06
+    ],
+    [
+     "a child speaking",
+     0.005
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.98,
+     1.39
+    ],
+    [
+     "people laughing",
+     0.02,
+     0.28
+    ]
+   ]
+  },
+  {
+   "i": 25,
+   "text": "Step three, post one free tip for them every day.",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.433,
+     3.61
+    ],
+    [
+     "a calm narrator speaking",
+     0.224,
+     2.42
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.13,
+     2.52
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.082,
+     2.66
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.851
+    ],
+    [
+     "a woman speaking",
+     0.127
+    ],
+    [
+     "a child speaking",
+     0.021
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.983,
+     2.91
+    ],
+    [
+     "people laughing",
+     0.017,
+     1.14
+    ]
+   ]
+  },
+  {
+   "i": 26,
+   "text": "I can turn each problem into a short video script.",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.388,
+     2.87
+    ],
+    [
+     "a calm narrator speaking",
+     0.308,
+     2.02
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.147,
+     2.04
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.043,
+     1.89
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.888
+    ],
+    [
+     "a woman speaking",
+     0.101
+    ],
+    [
+     "a child speaking",
+     0.011
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.991,
+     2.24
+    ],
+    [
+     "people laughing",
+     0.009,
+     0.56
+    ]
+   ]
+  },
+  {
+   "i": 27,
+   "text": "Why give it away for free?",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.579,
+     3.99
+    ],
+    [
+     "a sad person speaking",
+     0.288,
+     3.68
+    ],
+    [
+     "a calm narrator speaking",
+     0.071,
+     2.97
+    ],
+    [
+     "a person speaking sarcastically",
+     0.022,
+     2.42
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.877
+    ],
+    [
+     "a man speaking",
+     0.117
+    ],
+    [
+     "a child speaking",
+     0.007
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.95,
+     2.43
+    ],
+    [
+     "people laughing",
+     0.05,
+     1.36
+    ]
+   ]
+  },
+  {
+   "i": 28,
+   "text": "Free help is how strangers start to trust you.",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.35,
+     3.1
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.288,
+     2.45
+    ],
+    [
+     "a calm narrator speaking",
+     0.247,
+     2.08
+    ],
+    [
+     "a confused person asking a question",
+     0.034,
+     1.8
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.849
+    ],
+    [
+     "a woman speaking",
+     0.143
+    ],
+    [
+     "a child speaking",
+     0.008
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.997,
+     2.24
+    ],
+    [
+     "people laughing",
+     0.003,
+     -0.13
+    ]
+   ]
+  },
+  {
+   "i": 29,
+   "text": "Trust is what builds the line at your taco truck.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.68,
+     2.78
+    ],
+    [
+     "a person speaking excitedly",
+     0.213,
+     2.85
+    ],
+    [
+     "a calm narrator speaking",
+     0.045,
+     1.62
+    ],
+    [
+     "a sad person speaking",
+     0.016,
+     1.48
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.952
+    ],
+    [
+     "a woman speaking",
+     0.045
+    ],
+    [
+     "a child speaking",
+     0.003
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.968,
+     1.6
+    ],
+    [
+     "people laughing",
+     0.032,
+     0.44
+    ]
+   ]
+  },
+  {
+   "i": 30,
+   "text": "Step four, get them on an email list.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.487,
+     2.7
+    ],
+    [
+     "a calm narrator speaking",
+     0.262,
+     2.24
+    ],
+    [
+     "a sad person speaking",
+     0.079,
+     2.03
+    ],
+    [
+     "a person speaking sarcastically",
+     0.073,
+     1.69
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.991
+    ],
+    [
+     "a woman speaking",
+     0.008
+    ],
+    [
+     "a child speaking",
+     0.0
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.995,
+     2.04
+    ],
+    [
+     "people laughing",
+     0.005,
+     0.24
+    ]
+   ]
+  },
+  {
+   "i": 31,
+   "text": "Kit is free for your first 10,000 people.",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.349,
+     3.42
+    ],
+    [
+     "a calm narrator speaking",
+     0.266,
+     2.48
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.256,
+     2.77
+    ],
+    [
+     "a person speaking sarcastically",
+     0.038,
+     1.57
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.956
+    ],
+    [
+     "a woman speaking",
+     0.037
+    ],
+    [
+     "a child speaking",
+     0.008
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.968,
+     1.71
+    ],
+    [
+     "people laughing",
+     0.032,
+     0.37
+    ]
+   ]
+  },
+  {
+   "i": 32,
+   "text": "Why email?",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.889,
+     3.19
+    ],
+    [
+     "a confused person asking a question",
+     0.069,
+     2.55
+    ],
+    [
+     "a person speaking excitedly",
+     0.022,
+     2.46
+    ],
+    [
+     "a person speaking sarcastically",
+     0.012,
+     1.45
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.566
+    ],
+    [
+     "a man speaking",
+     0.152
+    ],
+    [
+     "a child speaking",
+     0.282
+    ]
+   ],
+   "laugh": [
+    [
+     "people laughing",
+     0.901,
+     0.86
+    ],
+    [
+     "a person speaking",
+     0.099,
+     0.19
+    ]
+   ]
+  },
+  {
+   "i": 33,
+   "text": "I already have followers.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.569,
+     2.6
+    ],
+    [
+     "a person speaking excitedly",
+     0.2,
+     2.72
+    ],
+    [
+     "a confused person asking a question",
+     0.152,
+     2.34
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.017,
+     1.67
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.732
+    ],
+    [
+     "a man speaking",
+     0.204
+    ],
+    [
+     "a child speaking",
+     0.064
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.995,
+     1.79
+    ],
+    [
+     "people laughing",
+     0.005,
+     -0.11
+    ]
+   ]
+  },
+  {
+   "i": 34,
+   "text": "Followers are rented.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.258,
+     2.05
+    ],
+    [
+     "a calm narrator speaking",
+     0.258,
+     1.8
+    ],
+    [
+     "a person speaking sarcastically",
+     0.189,
+     1.57
+    ],
+    [
+     "a confused person asking a question",
+     0.087,
+     1.88
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.988
+    ],
+    [
+     "a woman speaking",
+     0.01
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.819,
+     1.7
+    ],
+    [
+     "people laughing",
+     0.181,
+     1.19
+    ]
+   ]
+  },
+  {
+   "i": 35,
+   "text": "Instagram can change its rules any day.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.502,
+     3.65
+    ],
+    [
+     "a person speaking excitedly",
+     0.43,
+     4.07
+    ],
+    [
+     "a calm narrator speaking",
+     0.029,
+     2.42
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.01,
+     2.61
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.948
+    ],
+    [
+     "a woman speaking",
+     0.037
+    ],
+    [
+     "a child speaking",
+     0.016
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.782,
+     1.81
+    ],
+    [
+     "people laughing",
+     0.218,
+     1.36
+    ]
+   ]
+  },
+  {
+   "i": 36,
+   "text": "Your email list is yours.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.888,
+     2.8
+    ],
+    [
+     "a sad person speaking",
+     0.043,
+     1.86
+    ],
+    [
+     "a person speaking excitedly",
+     0.027,
+     2.17
+    ],
+    [
+     "a person speaking sarcastically",
+     0.015,
+     1.27
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.969
+    ],
+    [
+     "a woman speaking",
+     0.022
+    ],
+    [
+     "a child speaking",
+     0.009
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.861,
+     0.82
+    ],
+    [
+     "people laughing",
+     0.139,
+     0.27
+    ]
+   ]
+  },
+  {
+   "i": 37,
+   "text": "Kit gives you a free sign up page.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.662,
+     3.4
+    ],
+    [
+     "a person speaking excitedly",
+     0.293,
+     3.57
+    ],
+    [
+     "a calm narrator speaking",
+     0.01,
+     1.85
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.009,
+     2.31
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.783
+    ],
+    [
+     "a woman speaking",
+     0.202
+    ],
+    [
+     "a child speaking",
+     0.016
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.807,
+     1.42
+    ],
+    [
+     "people laughing",
+     0.193,
+     0.95
+    ]
+   ]
+  },
+  {
+   "i": 38,
+   "text": "Put its link in your Instagram bio.",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.366,
+     3.67
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.339,
+     3.2
+    ],
+    [
+     "a calm narrator speaking",
+     0.205,
+     2.76
+    ],
+    [
+     "a person speaking sarcastically",
+     0.033,
+     2.02
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.972
+    ],
+    [
+     "a woman speaking",
+     0.026
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.974,
+     2.22
+    ],
+    [
+     "people laughing",
+     0.026,
+     0.97
+    ]
+   ]
+  },
+  {
+   "i": 39,
+   "text": "Okay, now do I build the app?",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.872,
+     4.93
+    ],
+    [
+     "a person speaking excitedly",
+     0.082,
+     4.59
+    ],
+    [
+     "a confused person asking a question",
+     0.017,
+     3.76
+    ],
+    [
+     "a sad person speaking",
+     0.014,
+     3.46
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.88
+    ],
+    [
+     "a man speaking",
+     0.086
+    ],
+    [
+     "a child speaking",
+     0.034
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.961,
+     2.32
+    ],
+    [
+     "people laughing",
+     0.039,
+     1.2
+    ]
+   ]
+  },
+  {
+   "i": 40,
+   "text": "Almost.",
+   "tone": [
+    [
+     "a person speaking sarcastically",
+     0.399,
+     2.42
+    ],
+    [
+     "a confused person asking a question",
+     0.369,
+     2.96
+    ],
+    [
+     "a sad person speaking",
+     0.164,
+     2.45
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.049,
+     2.11
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.854
+    ],
+    [
+     "a woman speaking",
+     0.118
+    ],
+    [
+     "a child speaking",
+     0.028
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.94,
+     1.58
+    ],
+    [
+     "people laughing",
+     0.06,
+     0.64
+    ]
+   ]
+  },
+  {
+   "i": 41,
+   "text": "Here's the tip most people skip.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.773,
+     2.71
+    ],
+    [
+     "a person speaking excitedly",
+     0.065,
+     2.36
+    ],
+    [
+     "a sad person speaking",
+     0.051,
+     1.81
+    ],
+    [
+     "a person speaking sarcastically",
+     0.047,
+     1.49
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.975
+    ],
+    [
+     "a woman speaking",
+     0.022
+    ],
+    [
+     "a child speaking",
+     0.003
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.632,
+     1.27
+    ],
+    [
+     "people laughing",
+     0.368,
+     1.08
+    ]
+   ]
+  },
+  {
+   "i": 42,
+   "text": "Sell it before you build it.",
+   "tone": [
+    [
+     "a calm narrator speaking",
+     0.563,
+     2.29
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.19,
+     2.18
+    ],
+    [
+     "a person speaking sarcastically",
+     0.084,
+     1.46
+    ],
+    [
+     "a sad person speaking",
+     0.057,
+     1.67
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.985
+    ],
+    [
+     "a woman speaking",
+     0.014
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.995,
+     1.84
+    ],
+    [
+     "people laughing",
+     0.005,
+     -0.11
+    ]
+   ]
+  },
+  {
+   "i": 43,
+   "text": "Sell an app that doesn't even exist yet?",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.946,
+     4.77
+    ],
+    [
+     "a person speaking excitedly",
+     0.015,
+     3.77
+    ],
+    [
+     "a sad person speaking",
+     0.014,
+     3.19
+    ],
+    [
+     "a confused person asking a question",
+     0.009,
+     3.28
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.88
+    ],
+    [
+     "a man speaking",
+     0.109
+    ],
+    [
+     "a child speaking",
+     0.012
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.878,
+     2.38
+    ],
+    [
+     "people laughing",
+     0.122,
+     1.65
+    ]
+   ]
+  },
+  {
+   "i": 44,
+   "text": "Ask me for one screen of it.",
+   "tone": [
+    [
+     "a calm narrator speaking",
+     0.49,
+     2.36
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.308,
+     2.46
+    ],
+    [
+     "a sad person speaking",
+     0.058,
+     1.82
+    ],
+    [
+     "a person speaking sarcastically",
+     0.05,
+     1.42
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.983
+    ],
+    [
+     "a woman speaking",
+     0.016
+    ],
+    [
+     "a child speaking",
+     0.0
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.976,
+     1.52
+    ],
+    [
+     "people laughing",
+     0.024,
+     0.2
+    ]
+   ]
+  },
+  {
+   "i": 45,
+   "text": "Email a screenshot to your list.",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.526,
+     2.84
+    ],
+    [
+     "a calm narrator speaking",
+     0.318,
+     1.89
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.067,
+     1.6
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.031,
+     1.62
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.899
+    ],
+    [
+     "a woman speaking",
+     0.095
+    ],
+    [
+     "a child speaking",
+     0.006
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.987,
+     1.42
+    ],
+    [
+     "people laughing",
+     0.013,
+     -0.17
+    ]
+   ]
+  },
+  {
+   "i": 46,
+   "text": "Sell early access in Kit for $5.",
+   "tone": [
+    [
+     "a person speaking excitedly",
+     0.63,
+     3.45
+    ],
+    [
+     "a frustrated angry person speaking",
+     0.175,
+     2.46
+    ],
+    [
+     "a calm narrator speaking",
+     0.139,
+     2.09
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.019,
+     1.94
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.91
+    ],
+    [
+     "a woman speaking",
+     0.082
+    ],
+    [
+     "a child speaking",
+     0.008
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.991,
+     2.01
+    ],
+    [
+     "people laughing",
+     0.009,
+     0.23
+    ]
+   ]
+  },
+  {
+   "i": 47,
+   "text": "They pay now and get it first.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.525,
+     2.89
+    ],
+    [
+     "a calm narrator speaking",
+     0.283,
+     2.4
+    ],
+    [
+     "a person speaking excitedly",
+     0.135,
+     2.89
+    ],
+    [
+     "a person speaking sarcastically",
+     0.019,
+     1.33
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.991
+    ],
+    [
+     "a woman speaking",
+     0.008
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.992,
+     1.67
+    ],
+    [
+     "people laughing",
+     0.008,
+     0.01
+    ]
+   ]
+  },
+  {
+   "i": 48,
+   "text": "If 10 people pay, we build the rest this weekend.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.459,
+     2.33
+    ],
+    [
+     "a person speaking excitedly",
+     0.379,
+     2.7
+    ],
+    [
+     "a calm narrator speaking",
+     0.118,
+     1.64
+    ],
+    [
+     "a person speaking sarcastically",
+     0.013,
+     0.78
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.927
+    ],
+    [
+     "a woman speaking",
+     0.067
+    ],
+    [
+     "a child speaking",
+     0.006
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.994,
+     1.24
+    ],
+    [
+     "people laughing",
+     0.006,
+     -0.47
+    ]
+   ]
+  },
+  {
+   "i": 49,
+   "text": "If nobody pays, you just saved a month.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.524,
+     3.21
+    ],
+    [
+     "a person speaking excitedly",
+     0.305,
+     3.5
+    ],
+    [
+     "a calm narrator speaking",
+     0.13,
+     2.44
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.015,
+     2.24
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.981
+    ],
+    [
+     "a woman speaking",
+     0.018
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.983,
+     1.83
+    ],
+    [
+     "people laughing",
+     0.017,
+     0.37
+    ]
+   ]
+  },
+  {
+   "i": 50,
+   "text": "So the app is the easy part now?",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.805,
+     4.75
+    ],
+    [
+     "a person speaking excitedly",
+     0.082,
+     4.36
+    ],
+    [
+     "a worried anxious person speaking",
+     0.035,
+     3.39
+    ],
+    [
+     "a sad person speaking",
+     0.034,
+     3.36
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.897
+    ],
+    [
+     "a man speaking",
+     0.07
+    ],
+    [
+     "a child speaking",
+     0.033
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.942,
+     2.69
+    ],
+    [
+     "people laughing",
+     0.058,
+     1.53
+    ]
+   ]
+  },
+  {
+   "i": 51,
+   "text": "Anyone can make the tacos.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.683,
+     2.96
+    ],
+    [
+     "a person speaking excitedly",
+     0.095,
+     2.75
+    ],
+    [
+     "a person speaking sarcastically",
+     0.084,
+     1.86
+    ],
+    [
+     "a sad person speaking",
+     0.045,
+     1.97
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.588
+    ],
+    [
+     "a woman speaking",
+     0.399
+    ],
+    [
+     "a child speaking",
+     0.013
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.923,
+     1.57
+    ],
+    [
+     "people laughing",
+     0.077,
+     0.7
+    ]
+   ]
+  },
+  {
+   "i": 52,
+   "text": "Not everyone has the line.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.381,
+     2.1
+    ],
+    [
+     "a person speaking excitedly",
+     0.291,
+     2.44
+    ],
+    [
+     "a calm narrator speaking",
+     0.156,
+     1.6
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.064,
+     1.82
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.96
+    ],
+    [
+     "a woman speaking",
+     0.036
+    ],
+    [
+     "a child speaking",
+     0.004
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.946,
+     1.72
+    ],
+    [
+     "people laughing",
+     0.054,
+     0.84
+    ]
+   ]
+  },
+  {
+   "i": 53,
+   "text": "Okay, one free tip every day.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.691,
+     4.01
+    ],
+    [
+     "a person speaking excitedly",
+     0.273,
+     4.15
+    ],
+    [
+     "a confused person asking a question",
+     0.02,
+     3.05
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.007,
+     2.81
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.887
+    ],
+    [
+     "a man speaking",
+     0.08
+    ],
+    [
+     "a child speaking",
+     0.033
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.894,
+     1.81
+    ],
+    [
+     "people laughing",
+     0.106,
+     1.12
+    ]
+   ]
+  },
+  {
+   "i": 54,
+   "text": "I'm starting next Monday.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.633,
+     4.45
+    ],
+    [
+     "a person speaking excitedly",
+     0.354,
+     4.73
+    ],
+    [
+     "a confused person asking a question",
+     0.005,
+     2.91
+    ],
+    [
+     "a cheerful happy person speaking",
+     0.002,
+     2.64
+    ]
+   ],
+   "gender": [
+    [
+     "a woman speaking",
+     0.979
+    ],
+    [
+     "a man speaking",
+     0.017
+    ],
+    [
+     "a child speaking",
+     0.004
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.988,
+     2.26
+    ],
+    [
+     "people laughing",
+     0.012,
+     0.65
+    ]
+   ]
+  },
+  {
+   "i": 55,
+   "text": "You said that last Monday.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.858,
+     3.08
+    ],
+    [
+     "a person speaking excitedly",
+     0.047,
+     2.57
+    ],
+    [
+     "a calm narrator speaking",
+     0.031,
+     1.73
+    ],
+    [
+     "a person speaking sarcastically",
+     0.019,
+     1.45
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.988
+    ],
+    [
+     "a woman speaking",
+     0.011
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.632,
+     1.53
+    ],
+    [
+     "people laughing",
+     0.368,
+     1.34
+    ]
+   ]
+  },
+  {
+   "i": 56,
+   "text": "Ask me anything.",
+   "tone": [
+    [
+     "a frustrated angry person speaking",
+     0.246,
+     2.06
+    ],
+    [
+     "a calm narrator speaking",
+     0.236,
+     1.77
+    ],
+    [
+     "a sad person speaking",
+     0.202,
+     1.93
+    ],
+    [
+     "a person speaking sarcastically",
+     0.148,
+     1.47
+    ]
+   ],
+   "gender": [
+    [
+     "a man speaking",
+     0.989
+    ],
+    [
+     "a woman speaking",
+     0.01
+    ],
+    [
+     "a child speaking",
+     0.001
+    ]
+   ],
+   "laugh": [
+    [
+     "a person speaking",
+     0.935,
+     2.05
+    ],
+    [
+     "people laughing",
+     0.065,
+     1.08
+    ]
+   ]
+  }
+ ],
+ "gaps": [
+  {
+   "start": 5.91,
+   "end": 6.47,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.65,
+      "cosine": 0.169
+     },
+     {
+      "term": "a stick swung fast through the air",
+      "z": 0.31,
+      "cosine": -0.018
+     },
+     {
+      "term": "a record scratch",
+      "z": 0.3,
+      "cosine": 0.009
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a punchy impact hit",
+      "z": 1.49,
+      "cosine": 0.03
+     },
+     {
+      "term": "a snare hit",
+      "z": 0.96,
+      "cosine": -0.0
+     },
+     {
+      "term": "a kick drum",
+      "z": 0.69,
+      "cosine": -0.003
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 1.72,
+      "cosine": 0.107
+     },
+     {
+      "term": "a chat message pop",
+      "z": 1.39,
+      "cosine": 0.169
+     },
+     {
+      "term": "a digital glitch",
+      "z": 1.28,
+      "cosine": 0.116
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 1.47,
+      "cosine": 0.169
+     },
+     {
+      "term": "a soft key release click",
+      "z": 1.1,
+      "cosine": 0.061
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.43,
+      "cosine": 0.058
+     }
+    ],
+    "foley": [
+     {
+      "term": "a finger squeaking on glass",
+      "z": 2.21,
+      "cosine": 0.116
+     },
+     {
+      "term": "a mouth pop",
+      "z": 1.57,
+      "cosine": 0.142
+     },
+     {
+      "term": "a balloon squeak",
+      "z": 1.42,
+      "cosine": 0.059
+     }
+    ],
+    "water": [
+     {
+      "term": "a liquid bloop",
+      "z": 0.73,
+      "cosine": 0.069
+     },
+     {
+      "term": "a water drop",
+      "z": -0.03,
+      "cosine": 0.009
+     },
+     {
+      "term": "ice cubes in a glass",
+      "z": -0.1,
+      "cosine": -0.052
+     }
+    ],
+    "nature": [
+     {
+      "term": "a horse galloping",
+      "z": 0.16,
+      "cosine": -0.05
+     },
+     {
+      "term": "digging in soil",
+      "z": -0.25,
+      "cosine": -0.128
+     },
+     {
+      "term": "a bee flying by",
+      "z": -0.4,
+      "cosine": -0.096
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a glass ting",
+      "z": 1.32,
+      "cosine": 0.108
+     },
+     {
+      "term": "a wine glass ring",
+      "z": 1.1,
+      "cosine": 0.03
+     },
+     {
+      "term": "a kalimba note",
+      "z": 0.96,
+      "cosine": 0.064
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 1.27,
+      "cosine": -0.044
+     },
+     {
+      "term": "a crowd cheering",
+      "z": 1.05,
+      "cosine": -0.021
+     },
+     {
+      "term": "crickets at night",
+      "z": 0.8,
+      "cosine": -0.016
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a car engine starting",
+      "z": 1.57,
+      "cosine": 0.104
+     },
+     {
+      "term": "an alarm clock beeping",
+      "z": 1.38,
+      "cosine": 0.066
+     },
+     {
+      "term": "a basketball bouncing",
+      "z": 1.31,
+      "cosine": 0.104
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "trap beat",
+      "z": 2.55,
+      "cosine": 0.248
+     },
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 2.38,
+      "cosine": 0.168
+     },
+     {
+      "term": "glitch hop music",
+      "z": 2.15,
+      "cosine": 0.212
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 1.62,
+      "cosine": 0.135
+     },
+     {
+      "term": "confident and cool music",
+      "z": 1.26,
+      "cosine": 0.135
+     },
+     {
+      "term": "dark and tense music",
+      "z": 1.19,
+      "cosine": 0.116
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a vocal chop",
+      "z": 3.79,
+      "cosine": 0.376
+     },
+     {
+      "term": "pizzicato strings",
+      "z": 1.33,
+      "cosine": 0.109
+     },
+     {
+      "term": "a punchy kick drum pattern",
+      "z": 1.05,
+      "cosine": 0.004
+     }
+    ],
+    "voice": [
+     {
+      "term": "a person coughing",
+      "z": 3.17,
+      "cosine": 0.187
+     },
+     {
+      "term": "singing vocals",
+      "z": 2.81,
+      "cosine": 0.195
+     },
+     {
+      "term": "people laughing",
+      "z": 2.67,
+      "cosine": 0.064
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.37,
+      "cosine": 0.15
+     },
+     {
+      "term": "a boomy sound",
+      "z": 0.95,
+      "cosine": 0.081
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 0.85,
+      "cosine": 0.054
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 2.06,
+      "cosine": 0.125
+     },
+     {
+      "term": "an 8-bit sound effect",
+      "z": 1.4,
+      "cosine": 0.109
+     },
+     {
+      "term": "a square wave chiptune blip",
+      "z": 1.15,
+      "cosine": 0.064
+     }
+    ]
+   }
+  },
+  {
+   "start": 7.42,
+   "end": 8.01,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a record scratch",
+      "z": 1.45,
+      "cosine": 0.137
+     },
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.33,
+      "cosine": 0.161
+     },
+     {
+      "term": "a tape stop slowing down",
+      "z": 0.87,
+      "cosine": 0.101
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a snare hit",
+      "z": 3.18,
+      "cosine": 0.227
+     },
+     {
+      "term": "a body falling on the ground",
+      "z": 1.82,
+      "cosine": 0.115
+     },
+     {
+      "term": "an explosion",
+      "z": 1.1,
+      "cosine": 0.03
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 3.62,
+      "cosine": 0.305
+     },
+     {
+      "term": "a phone vibration buzz",
+      "z": 2.44,
+      "cosine": 0.183
+     },
+     {
+      "term": "a digital glitch",
+      "z": 1.91,
+      "cosine": 0.196
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 1.79,
+      "cosine": 0.221
+     },
+     {
+      "term": "a spacebar press",
+      "z": 1.32,
+      "cosine": 0.162
+     },
+     {
+      "term": "a soft key release click",
+      "z": 1.3,
+      "cosine": 0.103
+     }
+    ],
+    "foley": [
+     {
+      "term": "a box lid closing",
+      "z": 1.72,
+      "cosine": 0.171
+     },
+     {
+      "term": "a zipper",
+      "z": 1.62,
+      "cosine": 0.144
+     },
+     {
+      "term": "a balloon squeak",
+      "z": 1.5,
+      "cosine": 0.088
+     }
+    ],
+    "water": [
+     {
+      "term": "a water drop",
+      "z": 0.52,
+      "cosine": 0.082
+     },
+     {
+      "term": "a liquid bloop",
+      "z": 0.45,
+      "cosine": 0.065
+     },
+     {
+      "term": "a dripping tap",
+      "z": -0.34,
+      "cosine": -0.024
+     }
+    ],
+    "nature": [
+     {
+      "term": "an apple falling on grass",
+      "z": 1.28,
+      "cosine": 0.091
+     },
+     {
+      "term": "a bee flying by",
+      "z": 0.83,
+      "cosine": 0.04
+     },
+     {
+      "term": "something falling into bushes",
+      "z": 0.77,
+      "cosine": 0.047
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a doorbell",
+      "z": 0.85,
+      "cosine": 0.097
+     },
+     {
+      "term": "a triangle hit",
+      "z": 0.42,
+      "cosine": -0.014
+     },
+     {
+      "term": "a celesta note",
+      "z": 0.34,
+      "cosine": 0.076
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a crowd cheering",
+      "z": 0.86,
+      "cosine": -0.016
+     },
+     {
+      "term": "a dog barking",
+      "z": 0.56,
+      "cosine": -0.03
+     },
+     {
+      "term": "a busy cafe",
+      "z": 0.54,
+      "cosine": -0.09
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a microwave beep",
+      "z": 1.94,
+      "cosine": 0.151
+     },
+     {
+      "term": "a basketball bouncing",
+      "z": 1.48,
+      "cosine": 0.142
+     },
+     {
+      "term": "an alarm clock beeping",
+      "z": 1.39,
+      "cosine": 0.089
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 0.85,
+      "cosine": 0.049
+     },
+     {
+      "term": "chiptune video game music",
+      "z": 0.78,
+      "cosine": 0.099
+     },
+     {
+      "term": "rock music with electric guitars",
+      "z": 0.4,
+      "cosine": 0.024
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "triumphant and heroic music",
+      "z": 1.06,
+      "cosine": 0.096
+     },
+     {
+      "term": "celebratory and joyful music",
+      "z": 0.69,
+      "cosine": 0.066
+     },
+     {
+      "term": "aggressive music",
+      "z": 0.67,
+      "cosine": 0.069
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a snare roll",
+      "z": 3.29,
+      "cosine": 0.253
+     },
+     {
+      "term": "a plucked synth arpeggio",
+      "z": 1.27,
+      "cosine": 0.166
+     },
+     {
+      "term": "a synthesizer lead",
+      "z": 1.24,
+      "cosine": 0.143
+     }
+    ],
+    "voice": [
+     {
+      "term": "a man shouting",
+      "z": 1.14,
+      "cosine": -0.047
+     },
+     {
+      "term": "people laughing",
+      "z": 0.96,
+      "cosine": -0.071
+     },
+     {
+      "term": "children laughing",
+      "z": 0.81,
+      "cosine": -0.047
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.59,
+      "cosine": 0.192
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 0.77,
+      "cosine": 0.068
+     },
+     {
+      "term": "a loud sound",
+      "z": 0.73,
+      "cosine": 0.002
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 3.8,
+      "cosine": 0.309
+     },
+     {
+      "term": "a square wave chiptune blip",
+      "z": 3.1,
+      "cosine": 0.266
+     },
+     {
+      "term": "a computer-generated electronic tone",
+      "z": 2.65,
+      "cosine": 0.24
+     }
+    ]
+   }
+  },
+  {
+   "start": 33.81,
+   "end": 34.44,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.78,
+      "cosine": 0.102
+     },
+     {
+      "term": "a record scratch",
+      "z": 1.74,
+      "cosine": 0.064
+     },
+     {
+      "term": "a deep cinematic whoosh",
+      "z": 0.81,
+      "cosine": -0.049
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a punchy impact hit",
+      "z": 2.33,
+      "cosine": 0.023
+     },
+     {
+      "term": "a kick drum",
+      "z": 2.25,
+      "cosine": 0.058
+     },
+     {
+      "term": "a sub bass drop",
+      "z": 2.0,
+      "cosine": 0.06
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.82,
+      "cosine": 0.12
+     },
+     {
+      "term": "a digital glitch",
+      "z": 1.9,
+      "cosine": 0.093
+     },
+     {
+      "term": "a phone vibration buzz",
+      "z": 1.0,
+      "cosine": -0.044
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "a soft key release click",
+      "z": 1.82,
+      "cosine": 0.049
+     },
+     {
+      "term": "an enter key press",
+      "z": 1.74,
+      "cosine": 0.115
+     },
+     {
+      "term": "a single mechanical keyboard key press",
+      "z": 0.94,
+      "cosine": 0.017
+     }
+    ],
+    "foley": [
+     {
+      "term": "footsteps on gravel",
+      "z": 1.75,
+      "cosine": -0.045
+     },
+     {
+      "term": "a rubber stretch",
+      "z": 1.55,
+      "cosine": 0.018
+     },
+     {
+      "term": "a box lid closing",
+      "z": 1.44,
+      "cosine": 0.047
+     }
+    ],
+    "water": [
+     {
+      "term": "a liquid bloop",
+      "z": 0.19,
+      "cosine": -0.045
+     },
+     {
+      "term": "a water drop",
+      "z": 0.1,
+      "cosine": -0.042
+     },
+     {
+      "term": "ice cubes in a glass",
+      "z": -0.33,
+      "cosine": -0.133
+     }
+    ],
+    "nature": [
+     {
+      "term": "an apple falling on grass",
+      "z": 1.56,
+      "cosine": 0.017
+     },
+     {
+      "term": "footsteps on grass",
+      "z": 1.34,
+      "cosine": -0.04
+     },
+     {
+      "term": "a small animal running through grass",
+      "z": 1.06,
+      "cosine": -0.028
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a kalimba note",
+      "z": 0.87,
+      "cosine": -0.014
+     },
+     {
+      "term": "a triangle hit",
+      "z": 0.17,
+      "cosine": -0.123
+     },
+     {
+      "term": "a glass ting",
+      "z": 0.14,
+      "cosine": -0.064
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 0.71,
+      "cosine": -0.165
+     },
+     {
+      "term": "people talking in the background",
+      "z": 0.63,
+      "cosine": -0.185
+     },
+     {
+      "term": "a dog barking",
+      "z": 0.6,
+      "cosine": -0.116
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a cow mooing",
+      "z": 1.22,
+      "cosine": -0.059
+     },
+     {
+      "term": "keys jingling",
+      "z": 1.16,
+      "cosine": -0.022
+     },
+     {
+      "term": "a cat meowing",
+      "z": 1.08,
+      "cosine": -0.071
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 2.86,
+      "cosine": 0.124
+     },
+     {
+      "term": "chiptune video game music",
+      "z": 2.05,
+      "cosine": 0.113
+     },
+     {
+      "term": "techno music",
+      "z": 1.87,
+      "cosine": 0.073
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 0.98,
+      "cosine": 0.004
+     },
+     {
+      "term": "confident and cool music",
+      "z": 0.74,
+      "cosine": 0.018
+     },
+     {
+      "term": "futuristic music",
+      "z": 0.3,
+      "cosine": -0.014
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a punchy kick drum pattern",
+      "z": 2.67,
+      "cosine": 0.067
+     },
+     {
+      "term": "crisp hi-hats",
+      "z": 2.28,
+      "cosine": 0.097
+     },
+     {
+      "term": "a snare roll",
+      "z": 2.21,
+      "cosine": 0.048
+     }
+    ],
+    "voice": [
+     {
+      "term": "a man shouting",
+      "z": 1.67,
+      "cosine": -0.098
+     },
+     {
+      "term": "a man speaking",
+      "z": 1.2,
+      "cosine": -0.133
+     },
+     {
+      "term": "a person breathing",
+      "z": 1.19,
+      "cosine": -0.041
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.67,
+      "cosine": 0.099
+     },
+     {
+      "term": "a punchy sound",
+      "z": 1.47,
+      "cosine": 0.023
+     },
+     {
+      "term": "a boomy sound",
+      "z": 1.43,
+      "cosine": 0.05
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 2.82,
+      "cosine": 0.106
+     },
+     {
+      "term": "an 8-bit sound effect",
+      "z": 2.65,
+      "cosine": 0.137
+     },
+     {
+      "term": "a square wave chiptune blip",
+      "z": 2.58,
+      "cosine": 0.109
+     }
+    ]
+   }
+  },
+  {
+   "start": 41.15,
+   "end": 42.56,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stick swung fast through the air",
+      "z": 0.7,
+      "cosine": 0.03
+     },
+     {
+      "term": "a soft air whoosh",
+      "z": 0.62,
+      "cosine": 0.013
+     },
+     {
+      "term": "a record scratch",
+      "z": 0.44,
+      "cosine": 0.038
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a punchy impact hit",
+      "z": 1.96,
+      "cosine": 0.075
+     },
+     {
+      "term": "a snare hit",
+      "z": 1.74,
+      "cosine": 0.074
+     },
+     {
+      "term": "a kick drum",
+      "z": 1.69,
+      "cosine": 0.094
+     }
+    ],
+    "ui": [
+     {
+      "term": "a chat message pop",
+      "z": 0.84,
+      "cosine": 0.13
+     },
+     {
+      "term": "an error buzz",
+      "z": 0.27,
+      "cosine": -0.01
+     },
+     {
+      "term": "a notification ding",
+      "z": 0.25,
+      "cosine": 0.018
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "a soft key release click",
+      "z": 0.91,
+      "cosine": 0.055
+     },
+     {
+      "term": "an enter key press",
+      "z": 0.45,
+      "cosine": 0.09
+     },
+     {
+      "term": "a single mechanical keyboard key press",
+      "z": -0.79,
+      "cosine": -0.044
+     }
+    ],
+    "foley": [
+     {
+      "term": "footsteps on gravel",
+      "z": 2.12,
+      "cosine": 0.067
+     },
+     {
+      "term": "a box lid closing",
+      "z": 1.46,
+      "cosine": 0.131
+     },
+     {
+      "term": "footsteps on wood",
+      "z": 1.32,
+      "cosine": 0.029
+     }
+    ],
+    "water": [
+     {
+      "term": "a water drop",
+      "z": -0.57,
+      "cosine": -0.017
+     },
+     {
+      "term": "a dripping tap",
+      "z": -1.05,
+      "cosine": -0.082
+     },
+     {
+      "term": "a liquid bloop",
+      "z": -1.11,
+      "cosine": -0.072
+     }
+    ],
+    "nature": [
+     {
+      "term": "an apple falling on grass",
+      "z": 0.99,
+      "cosine": 0.051
+     },
+     {
+      "term": "footsteps on grass",
+      "z": 0.72,
+      "cosine": -0.01
+     },
+     {
+      "term": "digging in soil",
+      "z": 0.49,
+      "cosine": -0.045
+     }
+    ],
+    "chimes": [
+     {
+      "term": "church bells",
+      "z": 0.42,
+      "cosine": 0.0
+     },
+     {
+      "term": "a glass ting",
+      "z": 0.02,
+      "cosine": 0.007
+     },
+     {
+      "term": "a music box melody",
+      "z": -0.04,
+      "cosine": 0.015
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a crowd cheering",
+      "z": 1.17,
+      "cosine": -0.001
+     },
+     {
+      "term": "crickets at night",
+      "z": 1.0,
+      "cosine": 0.012
+     },
+     {
+      "term": "birds singing in the morning",
+      "z": 0.87,
+      "cosine": -0.02
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a match being struck",
+      "z": 1.69,
+      "cosine": 0.084
+     },
+     {
+      "term": "fireworks exploding",
+      "z": 1.2,
+      "cosine": 0.024
+     },
+     {
+      "term": "a heartbeat",
+      "z": 1.16,
+      "cosine": 0.075
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 2.81,
+      "cosine": 0.202
+     },
+     {
+      "term": "lo-fi hip hop beat",
+      "z": 2.72,
+      "cosine": 0.257
+     },
+     {
+      "term": "trap beat",
+      "z": 1.92,
+      "cosine": 0.192
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 2.78,
+      "cosine": 0.236
+     },
+     {
+      "term": "confident and cool music",
+      "z": 2.31,
+      "cosine": 0.23
+     },
+     {
+      "term": "sad and melancholic music",
+      "z": 1.44,
+      "cosine": 0.15
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a vocal chop",
+      "z": 2.23,
+      "cosine": 0.232
+     },
+     {
+      "term": "a punchy kick drum pattern",
+      "z": 1.74,
+      "cosine": 0.072
+     },
+     {
+      "term": "a bass guitar",
+      "z": 1.1,
+      "cosine": 0.092
+     }
+    ],
+    "voice": [
+     {
+      "term": "singing vocals",
+      "z": 2.86,
+      "cosine": 0.194
+     },
+     {
+      "term": "a man shouting",
+      "z": 2.43,
+      "cosine": 0.047
+     },
+     {
+      "term": "people laughing",
+      "z": 1.86,
+      "cosine": -0.008
+     }
+    ],
+    "quality": [
+     {
+      "term": "a tight snappy sound",
+      "z": 1.47,
+      "cosine": 0.117
+     },
+     {
+      "term": "a satisfying sound",
+      "z": 1.26,
+      "cosine": 0.147
+     },
+     {
+      "term": "a punchy sound",
+      "z": 1.18,
+      "cosine": 0.081
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 1.15,
+      "cosine": 0.05
+     },
+     {
+      "term": "a distorted clipped recording",
+      "z": 0.71,
+      "cosine": 0.023
+     },
+     {
+      "term": "a low quality recording with hiss",
+      "z": 0.66,
+      "cosine": 0.005
+     }
+    ]
+   }
+  },
+  {
+   "start": 66.13,
+   "end": 66.9,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stick swung fast through the air",
+      "z": 1.46,
+      "cosine": 0.085
+     },
+     {
+      "term": "a reverse cymbal swell",
+      "z": 1.32,
+      "cosine": 0.094
+     },
+     {
+      "term": "a deep cinematic whoosh",
+      "z": 1.05,
+      "cosine": 0.045
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a punchy impact hit",
+      "z": 2.37,
+      "cosine": 0.098
+     },
+     {
+      "term": "a body falling on the ground",
+      "z": 2.31,
+      "cosine": 0.125
+     },
+     {
+      "term": "a snare hit",
+      "z": 1.85,
+      "cosine": 0.073
+     }
+    ],
+    "ui": [
+     {
+      "term": "a phone vibration buzz",
+      "z": 1.07,
+      "cosine": 0.036
+     },
+     {
+      "term": "an error buzz",
+      "z": 0.86,
+      "cosine": 0.032
+     },
+     {
+      "term": "a camera shutter click",
+      "z": 0.51,
+      "cosine": 0.045
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 0.84,
+      "cosine": 0.115
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.2,
+      "cosine": 0.049
+     },
+     {
+      "term": "a soft key release click",
+      "z": 0.06,
+      "cosine": -0.021
+     }
+    ],
+    "foley": [
+     {
+      "term": "footsteps on gravel",
+      "z": 2.4,
+      "cosine": 0.08
+     },
+     {
+      "term": "footsteps on wood",
+      "z": 1.95,
+      "cosine": 0.071
+     },
+     {
+      "term": "high heels walking",
+      "z": 1.12,
+      "cosine": -0.007
+     }
+    ],
+    "water": [
+     {
+      "term": "a waterfall",
+      "z": 0.05,
+      "cosine": 0.007
+     },
+     {
+      "term": "water splashing",
+      "z": -0.65,
+      "cosine": -0.091
+     },
+     {
+      "term": "an object plunging into water",
+      "z": -0.91,
+      "cosine": -0.081
+     }
+    ],
+    "nature": [
+     {
+      "term": "an apple falling on grass",
+      "z": 1.94,
+      "cosine": 0.12
+     },
+     {
+      "term": "footsteps on grass",
+      "z": 1.81,
+      "cosine": 0.071
+     },
+     {
+      "term": "walking through dry leaves",
+      "z": 1.57,
+      "cosine": 0.078
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a kalimba note",
+      "z": 0.05,
+      "cosine": -0.006
+     },
+     {
+      "term": "church bells",
+      "z": -0.08,
+      "cosine": -0.046
+     },
+     {
+      "term": "a celesta note",
+      "z": -0.5,
+      "cosine": -0.003
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a crowd cheering",
+      "z": 0.56,
+      "cosine": -0.058
+     },
+     {
+      "term": "a city street with traffic",
+      "z": 0.45,
+      "cosine": -0.075
+     },
+     {
+      "term": "a busy cafe",
+      "z": 0.43,
+      "cosine": -0.112
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a car engine starting",
+      "z": 1.98,
+      "cosine": 0.133
+     },
+     {
+      "term": "a match being struck",
+      "z": 1.9,
+      "cosine": 0.091
+     },
+     {
+      "term": "a spray can hissing",
+      "z": 1.58,
+      "cosine": 0.074
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 2.05,
+      "cosine": 0.128
+     },
+     {
+      "term": "techno music",
+      "z": 1.57,
+      "cosine": 0.121
+     },
+     {
+      "term": "rock music with electric guitars",
+      "z": 1.45,
+      "cosine": 0.096
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 2.67,
+      "cosine": 0.215
+     },
+     {
+      "term": "triumphant and heroic music",
+      "z": 1.31,
+      "cosine": 0.096
+     },
+     {
+      "term": "suspenseful build-up music",
+      "z": 1.11,
+      "cosine": 0.121
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a vocal chop",
+      "z": 1.62,
+      "cosine": 0.173
+     },
+     {
+      "term": "a punchy kick drum pattern",
+      "z": 1.35,
+      "cosine": 0.031
+     },
+     {
+      "term": "crisp hi-hats",
+      "z": 1.33,
+      "cosine": 0.093
+     }
+    ],
+    "voice": [
+     {
+      "term": "a person breathing",
+      "z": 3.22,
+      "cosine": 0.197
+     },
+     {
+      "term": "a person coughing",
+      "z": 2.28,
+      "cosine": 0.093
+     },
+     {
+      "term": "a man shouting",
+      "z": 2.19,
+      "cosine": 0.016
+     }
+    ],
+    "quality": [
+     {
+      "term": "a punchy sound",
+      "z": 1.3,
+      "cosine": 0.082
+     },
+     {
+      "term": "an airy sound",
+      "z": 1.29,
+      "cosine": 0.057
+     },
+     {
+      "term": "a satisfying sound",
+      "z": 1.09,
+      "cosine": 0.125
+     }
+    ],
+    "production": [
+     {
+      "term": "a low quality recording with hiss",
+      "z": 2.01,
+      "cosine": 0.107
+     },
+     {
+      "term": "a distorted clipped recording",
+      "z": 1.43,
+      "cosine": 0.074
+     },
+     {
+      "term": "pink noise",
+      "z": 0.72,
+      "cosine": 0.039
+     }
+    ]
+   }
+  },
+  {
+   "start": 77.31,
+   "end": 77.83,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a quick swipe",
+      "z": 2.31,
+      "cosine": 0.223
+     },
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.94,
+      "cosine": 0.216
+     },
+     {
+      "term": "a short swish",
+      "z": 1.64,
+      "cosine": 0.181
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a body falling on the ground",
+      "z": 1.83,
+      "cosine": 0.115
+     },
+     {
+      "term": "a punchy impact hit",
+      "z": 1.67,
+      "cosine": 0.069
+     },
+     {
+      "term": "an explosion",
+      "z": 1.59,
+      "cosine": 0.076
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.07,
+      "cosine": 0.159
+     },
+     {
+      "term": "a digital glitch",
+      "z": 1.76,
+      "cosine": 0.182
+     },
+     {
+      "term": "a phone vibration buzz",
+      "z": 1.35,
+      "cosine": 0.085
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 2.06,
+      "cosine": 0.244
+     },
+     {
+      "term": "a soft key release click",
+      "z": 1.56,
+      "cosine": 0.127
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.75,
+      "cosine": 0.116
+     }
+    ],
+    "foley": [
+     {
+      "term": "footsteps on gravel",
+      "z": 1.82,
+      "cosine": 0.061
+     },
+     {
+      "term": "a finger squeaking on glass",
+      "z": 1.21,
+      "cosine": 0.05
+     },
+     {
+      "term": "a zipper",
+      "z": 1.19,
+      "cosine": 0.107
+     }
+    ],
+    "water": [
+     {
+      "term": "a liquid bloop",
+      "z": 0.02,
+      "cosine": 0.037
+     },
+     {
+      "term": "a water drop",
+      "z": -0.08,
+      "cosine": 0.037
+     },
+     {
+      "term": "a waterfall",
+      "z": -0.13,
+      "cosine": 0.01
+     }
+    ],
+    "nature": [
+     {
+      "term": "an apple falling on grass",
+      "z": 1.17,
+      "cosine": 0.084
+     },
+     {
+      "term": "footsteps on grass",
+      "z": 0.92,
+      "cosine": 0.024
+     },
+     {
+      "term": "something falling into bushes",
+      "z": 0.72,
+      "cosine": 0.048
+     }
+    ],
+    "chimes": [
+     {
+      "term": "church bells",
+      "z": 0.3,
+      "cosine": 0.005
+     },
+     {
+      "term": "a glass ting",
+      "z": -0.1,
+      "cosine": 0.011
+     },
+     {
+      "term": "a kalimba note",
+      "z": -0.33,
+      "cosine": -0.019
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 0.91,
+      "cosine": -0.05
+     },
+     {
+      "term": "crickets at night",
+      "z": 0.59,
+      "cosine": -0.006
+     },
+     {
+      "term": "a city street with traffic",
+      "z": 0.5,
+      "cosine": -0.05
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a microwave beep",
+      "z": 2.09,
+      "cosine": 0.162
+     },
+     {
+      "term": "a car engine starting",
+      "z": 1.93,
+      "cosine": 0.158
+     },
+     {
+      "term": "a printer printing",
+      "z": 1.63,
+      "cosine": 0.126
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "rock music with electric guitars",
+      "z": 1.55,
+      "cosine": 0.131
+     },
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 1.5,
+      "cosine": 0.111
+     },
+     {
+      "term": "lo-fi hip hop beat",
+      "z": 1.45,
+      "cosine": 0.169
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 1.85,
+      "cosine": 0.178
+     },
+     {
+      "term": "confident and cool music",
+      "z": 1.01,
+      "cosine": 0.139
+     },
+     {
+      "term": "energetic and driving music",
+      "z": 0.99,
+      "cosine": 0.107
+     }
+    ],
+    "instruments": [
+     {
+      "term": "crisp hi-hats",
+      "z": 1.15,
+      "cosine": 0.103
+     },
+     {
+      "term": "a bass guitar",
+      "z": 0.97,
+      "cosine": 0.097
+     },
+     {
+      "term": "a vocal chop",
+      "z": 0.9,
+      "cosine": 0.138
+     }
+    ],
+    "voice": [
+     {
+      "term": "people laughing",
+      "z": 1.5,
+      "cosine": -0.019
+     },
+     {
+      "term": "a man speaking",
+      "z": 1.42,
+      "cosine": -0.015
+     },
+     {
+      "term": "a man shouting",
+      "z": 1.39,
+      "cosine": -0.021
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.46,
+      "cosine": 0.182
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 1.29,
+      "cosine": 0.12
+     },
+     {
+      "term": "a metallic sound",
+      "z": 0.75,
+      "cosine": 0.013
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 2.46,
+      "cosine": 0.179
+     },
+     {
+      "term": "a distorted clipped recording",
+      "z": 2.17,
+      "cosine": 0.164
+     },
+     {
+      "term": "a low bitrate mp3 with artifacts",
+      "z": 1.77,
+      "cosine": 0.177
+     }
+    ]
+   }
+  },
+  {
+   "start": 82.47,
+   "end": 83.22,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a quick swipe",
+      "z": 0.88,
+      "cosine": 0.045
+     },
+     {
+      "term": "a stutter glitch transition",
+      "z": 0.86,
+      "cosine": 0.069
+     },
+     {
+      "term": "a reverse cymbal swell",
+      "z": 0.54,
+      "cosine": 0.005
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a punchy impact hit",
+      "z": 1.18,
+      "cosine": -0.033
+     },
+     {
+      "term": "a gunshot",
+      "z": 1.14,
+      "cosine": 0.018
+     },
+     {
+      "term": "an explosion",
+      "z": 0.82,
+      "cosine": -0.044
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.21,
+      "cosine": 0.092
+     },
+     {
+      "term": "a button being pressed",
+      "z": 1.42,
+      "cosine": 0.065
+     },
+     {
+      "term": "a digital glitch",
+      "z": 1.15,
+      "cosine": 0.07
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 3.04,
+      "cosine": 0.233
+     },
+     {
+      "term": "a spacebar press",
+      "z": 1.82,
+      "cosine": 0.136
+     },
+     {
+      "term": "a soft key release click",
+      "z": 1.44,
+      "cosine": 0.052
+     }
+    ],
+    "foley": [
+     {
+      "term": "footsteps on wood",
+      "z": 1.57,
+      "cosine": 0.0
+     },
+     {
+      "term": "a finger squeaking on glass",
+      "z": 1.21,
+      "cosine": -0.011
+     },
+     {
+      "term": "a ratchet clicking",
+      "z": 1.12,
+      "cosine": 0.045
+     }
+    ],
+    "water": [
+     {
+      "term": "a water drop",
+      "z": 0.55,
+      "cosine": 0.043
+     },
+     {
+      "term": "a liquid bloop",
+      "z": 0.2,
+      "cosine": 0.01
+     },
+     {
+      "term": "a dripping tap",
+      "z": -0.46,
+      "cosine": -0.05
+     }
+    ],
+    "nature": [
+     {
+      "term": "walking through dry leaves",
+      "z": 1.17,
+      "cosine": 0.012
+     },
+     {
+      "term": "an apple falling on grass",
+      "z": 1.17,
+      "cosine": 0.024
+     },
+     {
+      "term": "a branch snapping",
+      "z": 0.57,
+      "cosine": 0.003
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a doorbell",
+      "z": 0.87,
+      "cosine": 0.049
+     },
+     {
+      "term": "a music box melody",
+      "z": 0.64,
+      "cosine": 0.037
+     },
+     {
+      "term": "church bells",
+      "z": 0.63,
+      "cosine": -0.016
+     }
+    ],
+    "ambience": [
+     {
+      "term": "an office ambience",
+      "z": 1.37,
+      "cosine": -0.017
+     },
+     {
+      "term": "a busy cafe",
+      "z": 0.98,
+      "cosine": -0.101
+     },
+     {
+      "term": "crickets at night",
+      "z": 0.97,
+      "cosine": -0.03
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a microwave beep",
+      "z": 1.97,
+      "cosine": 0.077
+     },
+     {
+      "term": "keys jingling",
+      "z": 1.32,
+      "cosine": 0.027
+     },
+     {
+      "term": "a sword being drawn",
+      "z": 1.26,
+      "cosine": 0.011
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "glitch hop music",
+      "z": 1.86,
+      "cosine": 0.135
+     },
+     {
+      "term": "jazz music",
+      "z": 1.72,
+      "cosine": 0.079
+     },
+     {
+      "term": "techno music",
+      "z": 1.61,
+      "cosine": 0.083
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 2.6,
+      "cosine": 0.156
+     },
+     {
+      "term": "confident and cool music",
+      "z": 1.84,
+      "cosine": 0.137
+     },
+     {
+      "term": "sad and melancholic music",
+      "z": 1.22,
+      "cosine": 0.088
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a vocal chop",
+      "z": 2.49,
+      "cosine": 0.19
+     },
+     {
+      "term": "pizzicato strings",
+      "z": 1.47,
+      "cosine": 0.081
+     },
+     {
+      "term": "a bass guitar",
+      "z": 1.25,
+      "cosine": 0.06
+     }
+    ],
+    "voice": [
+     {
+      "term": "a man shouting",
+      "z": 1.97,
+      "cosine": -0.047
+     },
+     {
+      "term": "a voice-over narration",
+      "z": 1.85,
+      "cosine": 0.043
+     },
+     {
+      "term": "a person coughing",
+      "z": 1.71,
+      "cosine": 0.005
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.47,
+      "cosine": 0.117
+     },
+     {
+      "term": "a boomy sound",
+      "z": 1.2,
+      "cosine": 0.069
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 0.48,
+      "cosine": 0.003
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 1.5,
+      "cosine": 0.031
+     },
+     {
+      "term": "a low quality recording with hiss",
+      "z": 1.32,
+      "cosine": 0.015
+     },
+     {
+      "term": "a professionally mixed and mastered music track",
+      "z": 1.16,
+      "cosine": 0.193
+     }
+    ]
+   }
+  },
+  {
+   "start": 85.58,
+   "end": 86.11,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stick swung fast through the air",
+      "z": 1.72,
+      "cosine": 0.116
+     },
+     {
+      "term": "a quick swipe",
+      "z": 1.63,
+      "cosine": 0.147
+     },
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.45,
+      "cosine": 0.154
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a punchy impact hit",
+      "z": 2.42,
+      "cosine": 0.121
+     },
+     {
+      "term": "a kick drum",
+      "z": 1.86,
+      "cosine": 0.11
+     },
+     {
+      "term": "an explosion",
+      "z": 1.49,
+      "cosine": 0.047
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.66,
+      "cosine": 0.201
+     },
+     {
+      "term": "a phone vibration buzz",
+      "z": 2.53,
+      "cosine": 0.175
+     },
+     {
+      "term": "a digital glitch",
+      "z": 1.74,
+      "cosine": 0.163
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "a soft key release click",
+      "z": 2.11,
+      "cosine": 0.16
+     },
+     {
+      "term": "an enter key press",
+      "z": 2.0,
+      "cosine": 0.223
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.92,
+      "cosine": 0.106
+     }
+    ],
+    "foley": [
+     {
+      "term": "a box lid closing",
+      "z": 1.54,
+      "cosine": 0.136
+     },
+     {
+      "term": "a mouth pop",
+      "z": 1.41,
+      "cosine": 0.132
+     },
+     {
+      "term": "a latch clicking shut",
+      "z": 1.05,
+      "cosine": 0.063
+     }
+    ],
+    "water": [
+     {
+      "term": "a water drop",
+      "z": 0.34,
+      "cosine": 0.045
+     },
+     {
+      "term": "a liquid bloop",
+      "z": 0.09,
+      "cosine": 0.01
+     },
+     {
+      "term": "a dripping tap",
+      "z": -0.8,
+      "cosine": -0.088
+     }
+    ],
+    "nature": [
+     {
+      "term": "an apple falling on grass",
+      "z": 1.53,
+      "cosine": 0.096
+     },
+     {
+      "term": "footsteps on grass",
+      "z": 0.81,
+      "cosine": -0.012
+     },
+     {
+      "term": "a bee flying by",
+      "z": 0.37,
+      "cosine": -0.023
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a kalimba note",
+      "z": 0.55,
+      "cosine": 0.028
+     },
+     {
+      "term": "a doorbell",
+      "z": -0.05,
+      "cosine": -0.008
+     },
+     {
+      "term": "a triangle hit",
+      "z": -0.09,
+      "cosine": -0.083
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a dog barking",
+      "z": 0.99,
+      "cosine": -0.01
+     },
+     {
+      "term": "crickets at night",
+      "z": 0.61,
+      "cosine": -0.032
+     },
+     {
+      "term": "an electrical hum",
+      "z": 0.59,
+      "cosine": -0.029
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a cow mooing",
+      "z": 1.21,
+      "cosine": 0.018
+     },
+     {
+      "term": "a microwave beep",
+      "z": 1.17,
+      "cosine": 0.061
+     },
+     {
+      "term": "a heartbeat",
+      "z": 1.12,
+      "cosine": 0.066
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 1.48,
+      "cosine": 0.089
+     },
+     {
+      "term": "glitch hop music",
+      "z": 1.36,
+      "cosine": 0.143
+     },
+     {
+      "term": "techno music",
+      "z": 1.17,
+      "cosine": 0.092
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 0.96,
+      "cosine": 0.076
+     },
+     {
+      "term": "futuristic music",
+      "z": 0.45,
+      "cosine": 0.066
+     },
+     {
+      "term": "confident and cool music",
+      "z": 0.34,
+      "cosine": 0.051
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a punchy kick drum pattern",
+      "z": 1.92,
+      "cosine": 0.09
+     },
+     {
+      "term": "a vocal chop",
+      "z": 1.71,
+      "cosine": 0.19
+     },
+     {
+      "term": "a bass guitar",
+      "z": 1.31,
+      "cosine": 0.106
+     }
+    ],
+    "voice": [
+     {
+      "term": "a man shouting",
+      "z": 2.09,
+      "cosine": 0.024
+     },
+     {
+      "term": "singing vocals",
+      "z": 0.91,
+      "cosine": 0.023
+     },
+     {
+      "term": "a man speaking",
+      "z": 0.9,
+      "cosine": -0.084
+     }
+    ],
+    "quality": [
+     {
+      "term": "a tight snappy sound",
+      "z": 1.55,
+      "cosine": 0.122
+     },
+     {
+      "term": "a boomy sound",
+      "z": 1.55,
+      "cosine": 0.14
+     },
+     {
+      "term": "a punchy sound",
+      "z": 1.51,
+      "cosine": 0.107
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 2.95,
+      "cosine": 0.214
+     },
+     {
+      "term": "a square wave chiptune blip",
+      "z": 2.3,
+      "cosine": 0.175
+     },
+     {
+      "term": "a computer-generated electronic tone",
+      "z": 1.86,
+      "cosine": 0.148
+     }
+    ]
+   }
+  },
+  {
+   "start": 97.19,
+   "end": 97.77,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a quick swipe",
+      "z": 1.26,
+      "cosine": 0.066
+     },
+     {
+      "term": "a record scratch",
+      "z": 0.98,
+      "cosine": 0.034
+     },
+     {
+      "term": "a whip pan transition",
+      "z": 0.64,
+      "cosine": 0.034
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a snare hit",
+      "z": 1.52,
+      "cosine": 0.006
+     },
+     {
+      "term": "a body falling on the ground",
+      "z": 1.02,
+      "cosine": -0.02
+     },
+     {
+      "term": "a punchy impact hit",
+      "z": 0.86,
+      "cosine": -0.065
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.44,
+      "cosine": 0.117
+     },
+     {
+      "term": "a chat message pop",
+      "z": 1.8,
+      "cosine": 0.159
+     },
+     {
+      "term": "a phone vibration buzz",
+      "z": 1.4,
+      "cosine": 0.021
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "a soft key release click",
+      "z": 1.43,
+      "cosine": 0.049
+     },
+     {
+      "term": "an enter key press",
+      "z": 1.25,
+      "cosine": 0.107
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.14,
+      "cosine": 0.003
+     }
+    ],
+    "foley": [
+     {
+      "term": "a rubber stretch",
+      "z": 1.91,
+      "cosine": 0.078
+     },
+     {
+      "term": "a finger squeaking on glass",
+      "z": 1.88,
+      "cosine": 0.036
+     },
+     {
+      "term": "a zipper",
+      "z": 1.39,
+      "cosine": 0.057
+     }
+    ],
+    "water": [
+     {
+      "term": "a liquid bloop",
+      "z": 1.2,
+      "cosine": 0.072
+     },
+     {
+      "term": "bubbles underwater",
+      "z": 1.06,
+      "cosine": 0.004
+     },
+     {
+      "term": "a water drop",
+      "z": 0.63,
+      "cosine": 0.036
+     }
+    ],
+    "nature": [
+     {
+      "term": "an apple falling on grass",
+      "z": 1.36,
+      "cosine": 0.033
+     },
+     {
+      "term": "footsteps on grass",
+      "z": 1.2,
+      "cosine": -0.019
+     },
+     {
+      "term": "digging in soil",
+      "z": 0.48,
+      "cosine": -0.093
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a kalimba note",
+      "z": 0.36,
+      "cosine": -0.021
+     },
+     {
+      "term": "a triangle hit",
+      "z": 0.36,
+      "cosine": -0.072
+     },
+     {
+      "term": "a sustained glass harp tone",
+      "z": 0.36,
+      "cosine": -0.087
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 1.97,
+      "cosine": -0.03
+     },
+     {
+      "term": "people talking in the background",
+      "z": 1.49,
+      "cosine": -0.082
+     },
+     {
+      "term": "crickets at night",
+      "z": 1.02,
+      "cosine": -0.035
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a microwave beep",
+      "z": 0.97,
+      "cosine": 0.001
+     },
+     {
+      "term": "keys jingling",
+      "z": 0.97,
+      "cosine": -0.005
+     },
+     {
+      "term": "a power drill",
+      "z": 0.95,
+      "cosine": -0.028
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "chiptune video game music",
+      "z": 1.62,
+      "cosine": 0.109
+     },
+     {
+      "term": "rock music with electric guitars",
+      "z": 1.27,
+      "cosine": 0.04
+     },
+     {
+      "term": "jazz music",
+      "z": 1.17,
+      "cosine": 0.036
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "confident and cool music",
+      "z": 2.49,
+      "cosine": 0.191
+     },
+     {
+      "term": "aggressive music",
+      "z": 1.78,
+      "cosine": 0.102
+     },
+     {
+      "term": "celebratory and joyful music",
+      "z": 1.46,
+      "cosine": 0.071
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a synthesizer lead",
+      "z": 1.63,
+      "cosine": 0.11
+     },
+     {
+      "term": "a vocal chop",
+      "z": 1.63,
+      "cosine": 0.131
+     },
+     {
+      "term": "a bass guitar",
+      "z": 1.59,
+      "cosine": 0.082
+     }
+    ],
+    "voice": [
+     {
+      "term": "a man speaking",
+      "z": 2.9,
+      "cosine": 0.035
+     },
+     {
+      "term": "a man shouting",
+      "z": 2.55,
+      "cosine": 0.004
+     },
+     {
+      "term": "a crowd talking",
+      "z": 2.08,
+      "cosine": -0.035
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.35,
+      "cosine": 0.105
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 1.29,
+      "cosine": 0.053
+     },
+     {
+      "term": "a boomy sound",
+      "z": 0.77,
+      "cosine": 0.029
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 2.4,
+      "cosine": 0.1
+     },
+     {
+      "term": "a retro video game sound effect",
+      "z": 2.15,
+      "cosine": 0.131
+     },
+     {
+      "term": "a distorted clipped recording",
+      "z": 1.57,
+      "cosine": 0.043
+     }
+    ]
+   }
+  },
+  {
+   "start": 98.8,
+   "end": 99.64,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.25,
+      "cosine": 0.02
+     },
+     {
+      "term": "a quick swipe",
+      "z": 0.36,
+      "cosine": -0.091
+     },
+     {
+      "term": "a record scratch",
+      "z": 0.32,
+      "cosine": -0.105
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a punchy impact hit",
+      "z": 1.74,
+      "cosine": -0.057
+     },
+     {
+      "term": "a kick drum",
+      "z": 0.99,
+      "cosine": -0.088
+     },
+     {
+      "term": "a snare hit",
+      "z": 0.95,
+      "cosine": -0.115
+     }
+    ],
+    "ui": [
+     {
+      "term": "a digital glitch",
+      "z": 1.24,
+      "cosine": 0.0
+     },
+     {
+      "term": "an error buzz",
+      "z": 1.23,
+      "cosine": -0.05
+     },
+     {
+      "term": "a chat message pop",
+      "z": 1.16,
+      "cosine": 0.035
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 1.86,
+      "cosine": 0.096
+     },
+     {
+      "term": "a soft key release click",
+      "z": 1.61,
+      "cosine": -0.002
+     },
+     {
+      "term": "a single mechanical keyboard key press",
+      "z": 0.96,
+      "cosine": -0.023
+     }
+    ],
+    "foley": [
+     {
+      "term": "a squishy wet squelch",
+      "z": 1.67,
+      "cosine": -0.032
+     },
+     {
+      "term": "a finger squeaking on glass",
+      "z": 1.63,
+      "cosine": -0.047
+     },
+     {
+      "term": "a mouth pop",
+      "z": 1.44,
+      "cosine": 0.02
+     }
+    ],
+    "water": [
+     {
+      "term": "ice cubes in a glass",
+      "z": 1.16,
+      "cosine": -0.049
+     },
+     {
+      "term": "a liquid bloop",
+      "z": 0.82,
+      "cosine": -0.036
+     },
+     {
+      "term": "bubbles underwater",
+      "z": 0.04,
+      "cosine": -0.168
+     }
+    ],
+    "nature": [
+     {
+      "term": "digging in soil",
+      "z": 1.0,
+      "cosine": -0.127
+     },
+     {
+      "term": "a horse galloping",
+      "z": 0.53,
+      "cosine": -0.131
+     },
+     {
+      "term": "an apple falling on grass",
+      "z": 0.03,
+      "cosine": -0.165
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a glass ting",
+      "z": 2.04,
+      "cosine": 0.067
+     },
+     {
+      "term": "a kalimba note",
+      "z": 1.65,
+      "cosine": 0.017
+     },
+     {
+      "term": "a wine glass ring",
+      "z": 1.16,
+      "cosine": -0.076
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 1.86,
+      "cosine": -0.099
+     },
+     {
+      "term": "a dog barking",
+      "z": 1.38,
+      "cosine": -0.088
+     },
+     {
+      "term": "people talking in the background",
+      "z": 0.89,
+      "cosine": -0.206
+     }
+    ],
+    "everyday": [
+     {
+      "term": "keys jingling",
+      "z": 1.65,
+      "cosine": -0.014
+     },
+     {
+      "term": "a cow mooing",
+      "z": 1.24,
+      "cosine": -0.095
+     },
+     {
+      "term": "an alarm clock beeping",
+      "z": 1.15,
+      "cosine": -0.068
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 2.57,
+      "cosine": 0.079
+     },
+     {
+      "term": "glitch hop music",
+      "z": 2.17,
+      "cosine": 0.106
+     },
+     {
+      "term": "funk music",
+      "z": 2.01,
+      "cosine": 0.073
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 1.53,
+      "cosine": 0.016
+     },
+     {
+      "term": "confident and cool music",
+      "z": 1.29,
+      "cosine": 0.026
+     },
+     {
+      "term": "playful and quirky music",
+      "z": 0.74,
+      "cosine": -0.02
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a vocal chop",
+      "z": 3.26,
+      "cosine": 0.225
+     },
+     {
+      "term": "a punchy kick drum pattern",
+      "z": 1.69,
+      "cosine": -0.047
+     },
+     {
+      "term": "crisp hi-hats",
+      "z": 1.43,
+      "cosine": -0.009
+     }
+    ],
+    "voice": [
+     {
+      "term": "a man shouting",
+      "z": 2.67,
+      "cosine": -0.034
+     },
+     {
+      "term": "people laughing",
+      "z": 2.24,
+      "cosine": -0.083
+     },
+     {
+      "term": "a man speaking",
+      "z": 2.16,
+      "cosine": -0.079
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.56,
+      "cosine": 0.056
+     },
+     {
+      "term": "a punchy sound",
+      "z": 0.8,
+      "cosine": -0.077
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 0.76,
+      "cosine": -0.069
+     }
+    ],
+    "production": [
+     {
+      "term": "a distorted clipped recording",
+      "z": 1.7,
+      "cosine": -0.009
+     },
+     {
+      "term": "a cheap synthesized beep",
+      "z": 1.63,
+      "cosine": -0.026
+     },
+     {
+      "term": "a professionally mixed and mastered music track",
+      "z": 0.95,
+      "cosine": 0.095
+     }
+    ]
+   }
+  },
+  {
+   "start": 101.51,
+   "end": 102.16,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a tape stop slowing down",
+      "z": 1.17,
+      "cosine": 0.105
+     },
+     {
+      "term": "a rising riser building tension",
+      "z": 0.55,
+      "cosine": 0.047
+     },
+     {
+      "term": "a record scratch",
+      "z": 0.06,
+      "cosine": 0.002
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a snare hit",
+      "z": 1.31,
+      "cosine": 0.029
+     },
+     {
+      "term": "a metallic clang",
+      "z": 0.7,
+      "cosine": 0.014
+     },
+     {
+      "term": "a body falling on the ground",
+      "z": 0.53,
+      "cosine": -0.019
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.06,
+      "cosine": 0.125
+     },
+     {
+      "term": "a phone vibration buzz",
+      "z": 1.37,
+      "cosine": 0.058
+     },
+     {
+      "term": "a chat message pop",
+      "z": 1.29,
+      "cosine": 0.158
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "a soft key release click",
+      "z": 0.92,
+      "cosine": 0.048
+     },
+     {
+      "term": "an enter key press",
+      "z": 0.79,
+      "cosine": 0.11
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.5,
+      "cosine": 0.073
+     }
+    ],
+    "foley": [
+     {
+      "term": "a balloon squeak",
+      "z": 1.3,
+      "cosine": 0.045
+     },
+     {
+      "term": "a finger squeaking on glass",
+      "z": 1.08,
+      "cosine": 0.013
+     },
+     {
+      "term": "a finger tapping on glass",
+      "z": 0.83,
+      "cosine": 0.063
+     }
+    ],
+    "water": [
+     {
+      "term": "a liquid bloop",
+      "z": 0.77,
+      "cosine": 0.077
+     },
+     {
+      "term": "bubbles underwater",
+      "z": 0.34,
+      "cosine": -0.013
+     },
+     {
+      "term": "a dripping tap",
+      "z": 0.19,
+      "cosine": 0.017
+     }
+    ],
+    "nature": [
+     {
+      "term": "a horse galloping",
+      "z": 0.05,
+      "cosine": -0.045
+     },
+     {
+      "term": "a bee flying by",
+      "z": 0.02,
+      "cosine": -0.042
+     },
+     {
+      "term": "insects buzzing",
+      "z": -0.04,
+      "cosine": -0.041
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a sustained glass harp tone",
+      "z": 1.21,
+      "cosine": 0.02
+     },
+     {
+      "term": "church bells",
+      "z": 1.13,
+      "cosine": 0.05
+     },
+     {
+      "term": "a doorbell",
+      "z": 1.02,
+      "cosine": 0.091
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 1.3,
+      "cosine": -0.044
+     },
+     {
+      "term": "a crowd cheering",
+      "z": 1.02,
+      "cosine": -0.022
+     },
+     {
+      "term": "a crackling fire",
+      "z": 0.52,
+      "cosine": 0.04
+     }
+    ],
+    "everyday": [
+     {
+      "term": "an alarm clock beeping",
+      "z": 2.07,
+      "cosine": 0.115
+     },
+     {
+      "term": "a basketball bouncing",
+      "z": 1.79,
+      "cosine": 0.139
+     },
+     {
+      "term": "a microwave beep",
+      "z": 1.37,
+      "cosine": 0.072
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 2.18,
+      "cosine": 0.135
+     },
+     {
+      "term": "jazz music",
+      "z": 1.95,
+      "cosine": 0.137
+     },
+     {
+      "term": "inspirational corporate background music",
+      "z": 1.53,
+      "cosine": 0.161
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 1.98,
+      "cosine": 0.156
+     },
+     {
+      "term": "triumphant and heroic music",
+      "z": 1.87,
+      "cosine": 0.137
+     },
+     {
+      "term": "celebratory and joyful music",
+      "z": 1.74,
+      "cosine": 0.132
+     }
+    ],
+    "instruments": [
+     {
+      "term": "orchestral percussion",
+      "z": 1.68,
+      "cosine": 0.151
+     },
+     {
+      "term": "brass section",
+      "z": 1.53,
+      "cosine": 0.11
+     },
+     {
+      "term": "pizzicato strings",
+      "z": 1.46,
+      "cosine": 0.116
+     }
+    ],
+    "voice": [
+     {
+      "term": "singing vocals",
+      "z": 1.22,
+      "cosine": 0.047
+     },
+     {
+      "term": "a man shouting",
+      "z": 1.17,
+      "cosine": -0.068
+     },
+     {
+      "term": "people laughing",
+      "z": 1.09,
+      "cosine": -0.081
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.32,
+      "cosine": 0.141
+     },
+     {
+      "term": "a metallic sound",
+      "z": 1.19,
+      "cosine": 0.024
+     },
+     {
+      "term": "a boomy sound",
+      "z": 1.02,
+      "cosine": 0.089
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 2.28,
+      "cosine": 0.128
+     },
+     {
+      "term": "a robotic synthetic sound",
+      "z": 1.96,
+      "cosine": 0.213
+     },
+     {
+      "term": "a square wave chiptune blip",
+      "z": 1.36,
+      "cosine": 0.079
+     }
+    ]
+   }
+  },
+  {
+   "start": 105.8,
+   "end": 106.35,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.57,
+      "cosine": 0.178
+     },
+     {
+      "term": "a stick swung fast through the air",
+      "z": 0.45,
+      "cosine": 0.011
+     },
+     {
+      "term": "a soft air whoosh",
+      "z": 0.28,
+      "cosine": -0.014
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a snare hit",
+      "z": 1.8,
+      "cosine": 0.092
+     },
+     {
+      "term": "a punchy impact hit",
+      "z": 0.94,
+      "cosine": -0.004
+     },
+     {
+      "term": "a body falling on the ground",
+      "z": 0.6,
+      "cosine": -0.003
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.41,
+      "cosine": 0.186
+     },
+     {
+      "term": "a phone vibration buzz",
+      "z": 2.03,
+      "cosine": 0.139
+     },
+     {
+      "term": "a chat message pop",
+      "z": 1.88,
+      "cosine": 0.23
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 1.47,
+      "cosine": 0.185
+     },
+     {
+      "term": "a soft key release click",
+      "z": 1.06,
+      "cosine": 0.074
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.28,
+      "cosine": 0.061
+     }
+    ],
+    "foley": [
+     {
+      "term": "a mouth pop",
+      "z": 2.95,
+      "cosine": 0.284
+     },
+     {
+      "term": "a finger squeaking on glass",
+      "z": 2.26,
+      "cosine": 0.136
+     },
+     {
+      "term": "a balloon squeak",
+      "z": 1.52,
+      "cosine": 0.084
+     }
+    ],
+    "water": [
+     {
+      "term": "a liquid bloop",
+      "z": 1.76,
+      "cosine": 0.18
+     },
+     {
+      "term": "a water drop",
+      "z": 1.26,
+      "cosine": 0.144
+     },
+     {
+      "term": "a dripping tap",
+      "z": 0.56,
+      "cosine": 0.056
+     }
+    ],
+    "nature": [
+     {
+      "term": "a horse galloping",
+      "z": 0.47,
+      "cosine": -0.004
+     },
+     {
+      "term": "a bee flying by",
+      "z": 0.35,
+      "cosine": -0.01
+     },
+     {
+      "term": "an apple falling on grass",
+      "z": 0.2,
+      "cosine": -0.014
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a glass ting",
+      "z": 1.45,
+      "cosine": 0.137
+     },
+     {
+      "term": "a wine glass ring",
+      "z": 0.99,
+      "cosine": 0.037
+     },
+     {
+      "term": "a kalimba note",
+      "z": 0.76,
+      "cosine": 0.063
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 1.15,
+      "cosine": -0.038
+     },
+     {
+      "term": "crickets at night",
+      "z": 1.08,
+      "cosine": 0.026
+     },
+     {
+      "term": "a crowd cheering",
+      "z": 1.0,
+      "cosine": -0.009
+     }
+    ],
+    "everyday": [
+     {
+      "term": "an alarm clock beeping",
+      "z": 1.98,
+      "cosine": 0.137
+     },
+     {
+      "term": "a car horn honking",
+      "z": 1.94,
+      "cosine": 0.088
+     },
+     {
+      "term": "a basketball bouncing",
+      "z": 1.86,
+      "cosine": 0.171
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 1.52,
+      "cosine": 0.105
+     },
+     {
+      "term": "trap beat",
+      "z": 1.47,
+      "cosine": 0.165
+     },
+     {
+      "term": "lo-fi hip hop beat",
+      "z": 1.19,
+      "cosine": 0.138
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 1.03,
+      "cosine": 0.097
+     },
+     {
+      "term": "confident and cool music",
+      "z": 0.58,
+      "cosine": 0.089
+     },
+     {
+      "term": "sad and melancholic music",
+      "z": 0.42,
+      "cosine": 0.067
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a vocal chop",
+      "z": 3.05,
+      "cosine": 0.323
+     },
+     {
+      "term": "a snare roll",
+      "z": 0.9,
+      "cosine": 0.026
+     },
+     {
+      "term": "pizzicato strings",
+      "z": 0.83,
+      "cosine": 0.08
+     }
+    ],
+    "voice": [
+     {
+      "term": "people laughing",
+      "z": 2.42,
+      "cosine": 0.057
+     },
+     {
+      "term": "a person coughing",
+      "z": 2.34,
+      "cosine": 0.126
+     },
+     {
+      "term": "singing vocals",
+      "z": 2.23,
+      "cosine": 0.158
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.61,
+      "cosine": 0.188
+     },
+     {
+      "term": "a boomy sound",
+      "z": 0.91,
+      "cosine": 0.094
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 0.51,
+      "cosine": 0.04
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 2.84,
+      "cosine": 0.212
+     },
+     {
+      "term": "a square wave chiptune blip",
+      "z": 1.37,
+      "cosine": 0.099
+     },
+     {
+      "term": "a computer-generated electronic tone",
+      "z": 1.25,
+      "cosine": 0.104
+     }
+    ]
+   }
+  },
+  {
+   "start": 110.04,
+   "end": 111.37,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stick swung fast through the air",
+      "z": 1.81,
+      "cosine": 0.147
+     },
+     {
+      "term": "a record scratch",
+      "z": 1.64,
+      "cosine": 0.161
+     },
+     {
+      "term": "cloth whipping through the air",
+      "z": 1.29,
+      "cosine": 0.093
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a snare hit",
+      "z": 2.44,
+      "cosine": 0.159
+     },
+     {
+      "term": "a body falling on the ground",
+      "z": 2.25,
+      "cosine": 0.156
+     },
+     {
+      "term": "a kick drum",
+      "z": 1.99,
+      "cosine": 0.143
+     }
+    ],
+    "ui": [
+     {
+      "term": "a phone vibration buzz",
+      "z": 1.61,
+      "cosine": 0.113
+     },
+     {
+      "term": "an error buzz",
+      "z": 1.46,
+      "cosine": 0.113
+     },
+     {
+      "term": "a button being pressed",
+      "z": 0.9,
+      "cosine": 0.092
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 1.19,
+      "cosine": 0.175
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.94,
+      "cosine": 0.139
+     },
+     {
+      "term": "a soft key release click",
+      "z": -0.13,
+      "cosine": -0.01
+     }
+    ],
+    "foley": [
+     {
+      "term": "a box lid closing",
+      "z": 2.68,
+      "cosine": 0.258
+     },
+     {
+      "term": "a balloon squeak",
+      "z": 2.59,
+      "cosine": 0.188
+     },
+     {
+      "term": "a finger squeaking on glass",
+      "z": 2.12,
+      "cosine": 0.133
+     }
+    ],
+    "water": [
+     {
+      "term": "a water drop",
+      "z": 0.49,
+      "cosine": 0.094
+     },
+     {
+      "term": "a dripping tap",
+      "z": 0.02,
+      "cosine": 0.03
+     },
+     {
+      "term": "an object plunging into water",
+      "z": -0.05,
+      "cosine": 0.015
+     }
+    ],
+    "nature": [
+     {
+      "term": "an apple falling on grass",
+      "z": 1.75,
+      "cosine": 0.14
+     },
+     {
+      "term": "a bee flying by",
+      "z": 1.7,
+      "cosine": 0.126
+     },
+     {
+      "term": "something falling into bushes",
+      "z": 1.33,
+      "cosine": 0.107
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a kalimba note",
+      "z": 0.42,
+      "cosine": 0.053
+     },
+     {
+      "term": "a doorbell",
+      "z": -0.01,
+      "cosine": 0.036
+     },
+     {
+      "term": "a wine glass ring",
+      "z": -0.06,
+      "cosine": -0.035
+     }
+    ],
+    "ambience": [
+     {
+      "term": "crickets at night",
+      "z": 0.45,
+      "cosine": -0.011
+     },
+     {
+      "term": "a crowd cheering",
+      "z": 0.36,
+      "cosine": -0.046
+     },
+     {
+      "term": "a crackling fire",
+      "z": -0.15,
+      "cosine": 0.012
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a basketball bouncing",
+      "z": 2.11,
+      "cosine": 0.203
+     },
+     {
+      "term": "fireworks exploding",
+      "z": 2.1,
+      "cosine": 0.124
+     },
+     {
+      "term": "a match being struck",
+      "z": 1.62,
+      "cosine": 0.102
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 2.14,
+      "cosine": 0.171
+     },
+     {
+      "term": "lo-fi hip hop beat",
+      "z": 1.91,
+      "cosine": 0.214
+     },
+     {
+      "term": "trap beat",
+      "z": 1.46,
+      "cosine": 0.178
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 1.33,
+      "cosine": 0.139
+     },
+     {
+      "term": "sad and melancholic music",
+      "z": 0.15,
+      "cosine": 0.065
+     },
+     {
+      "term": "suspenseful build-up music",
+      "z": -0.1,
+      "cosine": 0.05
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a snare roll",
+      "z": 2.33,
+      "cosine": 0.165
+     },
+     {
+      "term": "a punchy kick drum pattern",
+      "z": 1.77,
+      "cosine": 0.098
+     },
+     {
+      "term": "orchestral percussion",
+      "z": 1.15,
+      "cosine": 0.143
+     }
+    ],
+    "voice": [
+     {
+      "term": "a person breathing",
+      "z": 1.36,
+      "cosine": 0.079
+     },
+     {
+      "term": "a person coughing",
+      "z": 1.09,
+      "cosine": 0.028
+     },
+     {
+      "term": "a man shouting",
+      "z": 0.82,
+      "cosine": -0.064
+     }
+    ],
+    "quality": [
+     {
+      "term": "a punchy sound",
+      "z": 1.73,
+      "cosine": 0.151
+     },
+     {
+      "term": "a boomy sound",
+      "z": 1.31,
+      "cosine": 0.145
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 1.24,
+      "cosine": 0.122
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 1.99,
+      "cosine": 0.144
+     },
+     {
+      "term": "a low quality recording with hiss",
+      "z": 1.2,
+      "cosine": 0.074
+     },
+     {
+      "term": "an 8-bit sound effect",
+      "z": 1.18,
+      "cosine": 0.121
+     }
+    ]
+   }
+  },
+  {
+   "start": 112.02,
+   "end": 112.58,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.26,
+      "cosine": 0.141
+     },
+     {
+      "term": "a record scratch",
+      "z": 0.83,
+      "cosine": 0.072
+     },
+     {
+      "term": "a tape stop slowing down",
+      "z": 0.63,
+      "cosine": 0.073
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a snare hit",
+      "z": 2.21,
+      "cosine": 0.111
+     },
+     {
+      "term": "a body falling on the ground",
+      "z": 1.17,
+      "cosine": 0.042
+     },
+     {
+      "term": "a metallic clang",
+      "z": 1.02,
+      "cosine": 0.049
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.64,
+      "cosine": 0.185
+     },
+     {
+      "term": "a chat message pop",
+      "z": 1.36,
+      "cosine": 0.174
+     },
+     {
+      "term": "a digital glitch",
+      "z": 1.32,
+      "cosine": 0.127
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 1.79,
+      "cosine": 0.201
+     },
+     {
+      "term": "a soft key release click",
+      "z": 1.19,
+      "cosine": 0.08
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.73,
+      "cosine": 0.101
+     }
+    ],
+    "foley": [
+     {
+      "term": "a finger squeaking on glass",
+      "z": 1.92,
+      "cosine": 0.09
+     },
+     {
+      "term": "a balloon squeak",
+      "z": 1.62,
+      "cosine": 0.081
+     },
+     {
+      "term": "a box lid closing",
+      "z": 1.4,
+      "cosine": 0.125
+     }
+    ],
+    "water": [
+     {
+      "term": "a water drop",
+      "z": 0.51,
+      "cosine": 0.076
+     },
+     {
+      "term": "a liquid bloop",
+      "z": 0.28,
+      "cosine": 0.048
+     },
+     {
+      "term": "a dripping tap",
+      "z": 0.25,
+      "cosine": 0.031
+     }
+    ],
+    "nature": [
+     {
+      "term": "a bee flying by",
+      "z": 0.55,
+      "cosine": 0.008
+     },
+     {
+      "term": "an apple falling on grass",
+      "z": 0.42,
+      "cosine": 0.007
+     },
+     {
+      "term": "footsteps on grass",
+      "z": 0.31,
+      "cosine": -0.04
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a glass ting",
+      "z": 0.84,
+      "cosine": 0.078
+     },
+     {
+      "term": "a doorbell",
+      "z": 0.65,
+      "cosine": 0.072
+     },
+     {
+      "term": "a triangle hit",
+      "z": 0.37,
+      "cosine": -0.022
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 1.35,
+      "cosine": -0.029
+     },
+     {
+      "term": "a crowd cheering",
+      "z": 0.82,
+      "cosine": -0.028
+     },
+     {
+      "term": "people talking in the background",
+      "z": 0.46,
+      "cosine": -0.115
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a microwave beep",
+      "z": 1.67,
+      "cosine": 0.107
+     },
+     {
+      "term": "an alarm clock beeping",
+      "z": 1.64,
+      "cosine": 0.094
+     },
+     {
+      "term": "a car horn honking",
+      "z": 1.63,
+      "cosine": 0.047
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 3.48,
+      "cosine": 0.252
+     },
+     {
+      "term": "lo-fi hip hop beat",
+      "z": 2.49,
+      "cosine": 0.235
+     },
+     {
+      "term": "glitch hop music",
+      "z": 2.41,
+      "cosine": 0.231
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 1.92,
+      "cosine": 0.164
+     },
+     {
+      "term": "confident and cool music",
+      "z": 1.2,
+      "cosine": 0.138
+     },
+     {
+      "term": "suspenseful build-up music",
+      "z": 0.76,
+      "cosine": 0.102
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a snare roll",
+      "z": 2.26,
+      "cosine": 0.131
+     },
+     {
+      "term": "a bass guitar",
+      "z": 1.33,
+      "cosine": 0.112
+     },
+     {
+      "term": "a vocal chop",
+      "z": 1.33,
+      "cosine": 0.158
+     }
+    ],
+    "voice": [
+     {
+      "term": "people laughing",
+      "z": 1.88,
+      "cosine": -0.007
+     },
+     {
+      "term": "a man shouting",
+      "z": 1.69,
+      "cosine": -0.015
+     },
+     {
+      "term": "children laughing",
+      "z": 1.33,
+      "cosine": -0.014
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.48,
+      "cosine": 0.165
+     },
+     {
+      "term": "a metallic sound",
+      "z": 1.38,
+      "cosine": 0.05
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 0.97,
+      "cosine": 0.077
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 2.27,
+      "cosine": 0.141
+     },
+     {
+      "term": "a distorted clipped recording",
+      "z": 1.61,
+      "cosine": 0.097
+     },
+     {
+      "term": "a computer-generated electronic tone",
+      "z": 1.5,
+      "cosine": 0.117
+     }
+    ]
+   }
+  },
+  {
+   "start": 114.17,
+   "end": 114.69,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.96,
+      "cosine": 0.198
+     },
+     {
+      "term": "a record scratch",
+      "z": 1.3,
+      "cosine": 0.107
+     },
+     {
+      "term": "a quick swipe",
+      "z": 0.65,
+      "cosine": 0.063
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a snare hit",
+      "z": 1.52,
+      "cosine": 0.055
+     },
+     {
+      "term": "a body falling on the ground",
+      "z": 1.18,
+      "cosine": 0.041
+     },
+     {
+      "term": "a punchy impact hit",
+      "z": 0.9,
+      "cosine": -0.015
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.96,
+      "cosine": 0.214
+     },
+     {
+      "term": "a digital glitch",
+      "z": 2.18,
+      "cosine": 0.198
+     },
+     {
+      "term": "a success chime",
+      "z": 1.77,
+      "cosine": 0.189
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 1.97,
+      "cosine": 0.216
+     },
+     {
+      "term": "a soft key release click",
+      "z": 1.9,
+      "cosine": 0.137
+     },
+     {
+      "term": "a spacebar press",
+      "z": 1.06,
+      "cosine": 0.124
+     }
+    ],
+    "foley": [
+     {
+      "term": "a zipper",
+      "z": 1.54,
+      "cosine": 0.119
+     },
+     {
+      "term": "a finger squeaking on glass",
+      "z": 1.35,
+      "cosine": 0.043
+     },
+     {
+      "term": "a box lid closing",
+      "z": 1.32,
+      "cosine": 0.117
+     }
+    ],
+    "water": [
+     {
+      "term": "a liquid bloop",
+      "z": 0.79,
+      "cosine": 0.085
+     },
+     {
+      "term": "a water drop",
+      "z": 0.39,
+      "cosine": 0.061
+     },
+     {
+      "term": "ice cubes in a glass",
+      "z": -0.18,
+      "cosine": -0.042
+     }
+    ],
+    "nature": [
+     {
+      "term": "a horse galloping",
+      "z": 0.7,
+      "cosine": 0.011
+     },
+     {
+      "term": "an apple falling on grass",
+      "z": 0.3,
+      "cosine": -0.007
+     },
+     {
+      "term": "a bee flying by",
+      "z": -0.03,
+      "cosine": -0.045
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a glass ting",
+      "z": 0.48,
+      "cosine": 0.044
+     },
+     {
+      "term": "a triangle hit",
+      "z": 0.13,
+      "cosine": -0.048
+     },
+     {
+      "term": "a doorbell",
+      "z": 0.04,
+      "cosine": 0.017
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 0.95,
+      "cosine": -0.064
+     },
+     {
+      "term": "an office ambience",
+      "z": 0.22,
+      "cosine": -0.069
+     },
+     {
+      "term": "a crowd cheering",
+      "z": 0.19,
+      "cosine": -0.084
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a microwave beep",
+      "z": 1.56,
+      "cosine": 0.098
+     },
+     {
+      "term": "a basketball bouncing",
+      "z": 1.25,
+      "cosine": 0.105
+     },
+     {
+      "term": "an alarm clock beeping",
+      "z": 0.95,
+      "cosine": 0.035
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "chiptune video game music",
+      "z": 2.42,
+      "cosine": 0.225
+     },
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 1.72,
+      "cosine": 0.11
+     },
+     {
+      "term": "glitch hop music",
+      "z": 1.65,
+      "cosine": 0.169
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "confident and cool music",
+      "z": 1.5,
+      "cosine": 0.161
+     },
+     {
+      "term": "celebratory and joyful music",
+      "z": 1.31,
+      "cosine": 0.107
+     },
+     {
+      "term": "aggressive music",
+      "z": 1.28,
+      "cosine": 0.11
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a snare roll",
+      "z": 2.02,
+      "cosine": 0.113
+     },
+     {
+      "term": "orchestral percussion",
+      "z": 1.92,
+      "cosine": 0.183
+     },
+     {
+      "term": "pizzicato strings",
+      "z": 1.7,
+      "cosine": 0.146
+     }
+    ],
+    "voice": [
+     {
+      "term": "people laughing",
+      "z": 0.98,
+      "cosine": -0.082
+     },
+     {
+      "term": "a man shouting",
+      "z": 0.88,
+      "cosine": -0.083
+     },
+     {
+      "term": "children laughing",
+      "z": 0.66,
+      "cosine": -0.072
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 2.3,
+      "cosine": 0.233
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 1.45,
+      "cosine": 0.114
+     },
+     {
+      "term": "a boomy sound",
+      "z": 0.93,
+      "cosine": 0.088
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 3.74,
+      "cosine": 0.265
+     },
+     {
+      "term": "a square wave chiptune blip",
+      "z": 3.57,
+      "cosine": 0.273
+     },
+     {
+      "term": "an 8-bit sound effect",
+      "z": 2.82,
+      "cosine": 0.233
+     }
+    ]
+   }
+  },
+  {
+   "start": 126.02,
+   "end": 126.56,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stick swung fast through the air",
+      "z": 1.05,
+      "cosine": 0.079
+     },
+     {
+      "term": "cloth whipping through the air",
+      "z": 0.53,
+      "cosine": 0.027
+     },
+     {
+      "term": "a whip pan transition",
+      "z": 0.44,
+      "cosine": 0.085
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a snare hit",
+      "z": 1.83,
+      "cosine": 0.102
+     },
+     {
+      "term": "a punchy impact hit",
+      "z": 1.69,
+      "cosine": 0.073
+     },
+     {
+      "term": "a kick drum",
+      "z": 1.35,
+      "cosine": 0.085
+     }
+    ],
+    "ui": [
+     {
+      "term": "a chat message pop",
+      "z": 1.68,
+      "cosine": 0.221
+     },
+     {
+      "term": "an error buzz",
+      "z": 1.55,
+      "cosine": 0.117
+     },
+     {
+      "term": "a notification ding",
+      "z": 0.66,
+      "cosine": 0.072
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "a soft key release click",
+      "z": 0.78,
+      "cosine": 0.065
+     },
+     {
+      "term": "an enter key press",
+      "z": 0.75,
+      "cosine": 0.135
+     },
+     {
+      "term": "a single mechanical keyboard key press",
+      "z": -0.47,
+      "cosine": 0.002
+     }
+    ],
+    "foley": [
+     {
+      "term": "a mouth pop",
+      "z": 2.12,
+      "cosine": 0.214
+     },
+     {
+      "term": "high heels walking",
+      "z": 1.31,
+      "cosine": 0.037
+     },
+     {
+      "term": "a bubble pop",
+      "z": 0.98,
+      "cosine": 0.151
+     }
+    ],
+    "water": [
+     {
+      "term": "a water drop",
+      "z": 1.45,
+      "cosine": 0.172
+     },
+     {
+      "term": "a liquid bloop",
+      "z": 1.35,
+      "cosine": 0.154
+     },
+     {
+      "term": "a dripping tap",
+      "z": 0.25,
+      "cosine": 0.047
+     }
+    ],
+    "nature": [
+     {
+      "term": "an apple falling on grass",
+      "z": 0.59,
+      "cosine": 0.039
+     },
+     {
+      "term": "footsteps on grass",
+      "z": 0.39,
+      "cosine": -0.016
+     },
+     {
+      "term": "a horse galloping",
+      "z": 0.21,
+      "cosine": -0.008
+     }
+    ],
+    "chimes": [
+     {
+      "term": "church bells",
+      "z": 0.61,
+      "cosine": 0.036
+     },
+     {
+      "term": "a kalimba note",
+      "z": 0.61,
+      "cosine": 0.066
+     },
+     {
+      "term": "a glass ting",
+      "z": 0.47,
+      "cosine": 0.065
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a busy cafe",
+      "z": 1.31,
+      "cosine": -0.012
+     },
+     {
+      "term": "crickets at night",
+      "z": 0.73,
+      "cosine": 0.01
+     },
+     {
+      "term": "people talking in the background",
+      "z": 0.69,
+      "cosine": -0.078
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a basketball bouncing",
+      "z": 1.15,
+      "cosine": 0.118
+     },
+     {
+      "term": "a cow mooing",
+      "z": 1.01,
+      "cosine": 0.027
+     },
+     {
+      "term": "a knock on a door",
+      "z": 0.96,
+      "cosine": 0.036
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "inspirational corporate background music",
+      "z": 1.97,
+      "cosine": 0.23
+     },
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 1.84,
+      "cosine": 0.141
+     },
+     {
+      "term": "trap beat",
+      "z": 1.78,
+      "cosine": 0.201
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "confident and cool music",
+      "z": 2.43,
+      "cosine": 0.26
+     },
+     {
+      "term": "aggressive music",
+      "z": 2.2,
+      "cosine": 0.208
+     },
+     {
+      "term": "dark and tense music",
+      "z": 1.24,
+      "cosine": 0.148
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a vocal chop",
+      "z": 2.56,
+      "cosine": 0.281
+     },
+     {
+      "term": "a bass guitar",
+      "z": 1.51,
+      "cosine": 0.146
+     },
+     {
+      "term": "a deep sub bass",
+      "z": 1.25,
+      "cosine": 0.112
+     }
+    ],
+    "voice": [
+     {
+      "term": "a man shouting",
+      "z": 2.61,
+      "cosine": 0.083
+     },
+     {
+      "term": "singing vocals",
+      "z": 2.54,
+      "cosine": 0.187
+     },
+     {
+      "term": "a man speaking",
+      "z": 2.1,
+      "cosine": 0.044
+     }
+    ],
+    "quality": [
+     {
+      "term": "a satisfying sound",
+      "z": 1.85,
+      "cosine": 0.216
+     },
+     {
+      "term": "a tight snappy sound",
+      "z": 1.42,
+      "cosine": 0.134
+     },
+     {
+      "term": "a boomy sound",
+      "z": 1.39,
+      "cosine": 0.149
+     }
+    ],
+    "production": [
+     {
+      "term": "a cheap synthesized beep",
+      "z": 1.84,
+      "cosine": 0.127
+     },
+     {
+      "term": "a square wave chiptune blip",
+      "z": 1.33,
+      "cosine": 0.107
+     },
+     {
+      "term": "a pure sine wave tone",
+      "z": 1.02,
+      "cosine": 0.095
+     }
+    ]
+   }
+  },
+  {
+   "start": 131.85,
+   "end": 132.4,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.87,
+      "cosine": 0.214
+     },
+     {
+      "term": "a record scratch",
+      "z": 1.66,
+      "cosine": 0.161
+     },
+     {
+      "term": "a quick swipe",
+      "z": 0.99,
+      "cosine": 0.114
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a snare hit",
+      "z": 2.61,
+      "cosine": 0.172
+     },
+     {
+      "term": "a kick drum",
+      "z": 1.49,
+      "cosine": 0.099
+     },
+     {
+      "term": "a body falling on the ground",
+      "z": 1.48,
+      "cosine": 0.088
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.12,
+      "cosine": 0.168
+     },
+     {
+      "term": "a digital glitch",
+      "z": 1.94,
+      "cosine": 0.201
+     },
+     {
+      "term": "a phone vibration buzz",
+      "z": 0.72,
+      "cosine": 0.035
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 0.9,
+      "cosine": 0.148
+     },
+     {
+      "term": "a soft key release click",
+      "z": 0.56,
+      "cosine": 0.046
+     },
+     {
+      "term": "a spacebar press",
+      "z": 0.25,
+      "cosine": 0.077
+     }
+    ],
+    "foley": [
+     {
+      "term": "a box lid closing",
+      "z": 1.99,
+      "cosine": 0.198
+     },
+     {
+      "term": "a zipper",
+      "z": 1.86,
+      "cosine": 0.169
+     },
+     {
+      "term": "footsteps on gravel",
+      "z": 1.55,
+      "cosine": 0.042
+     }
+    ],
+    "water": [
+     {
+      "term": "water splashing",
+      "z": -0.28,
+      "cosine": -0.04
+     },
+     {
+      "term": "an object plunging into water",
+      "z": -0.31,
+      "cosine": -0.012
+     },
+     {
+      "term": "a water drop",
+      "z": -0.55,
+      "cosine": 0.002
+     }
+    ],
+    "nature": [
+     {
+      "term": "something falling into bushes",
+      "z": 0.75,
+      "cosine": 0.055
+     },
+     {
+      "term": "footsteps on grass",
+      "z": 0.61,
+      "cosine": 0.001
+     },
+     {
+      "term": "an apple falling on grass",
+      "z": 0.51,
+      "cosine": 0.031
+     }
+    ],
+    "chimes": [
+     {
+      "term": "church bells",
+      "z": -0.14,
+      "cosine": -0.029
+     },
+     {
+      "term": "a triangle hit",
+      "z": -0.24,
+      "cosine": -0.058
+     },
+     {
+      "term": "a doorbell",
+      "z": -1.03,
+      "cosine": -0.055
+     }
+    ],
+    "ambience": [
+     {
+      "term": "a crowd cheering",
+      "z": 1.33,
+      "cosine": 0.034
+     },
+     {
+      "term": "a busy cafe",
+      "z": 1.12,
+      "cosine": -0.028
+     },
+     {
+      "term": "birds singing in the morning",
+      "z": 0.93,
+      "cosine": 0.006
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a microwave beep",
+      "z": 1.66,
+      "cosine": 0.129
+     },
+     {
+      "term": "a printer printing",
+      "z": 1.59,
+      "cosine": 0.127
+     },
+     {
+      "term": "a match being struck",
+      "z": 1.11,
+      "cosine": 0.056
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 2.46,
+      "cosine": 0.197
+     },
+     {
+      "term": "glitch hop music",
+      "z": 2.45,
+      "cosine": 0.261
+     },
+     {
+      "term": "lo-fi hip hop beat",
+      "z": 1.88,
+      "cosine": 0.211
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 2.37,
+      "cosine": 0.226
+     },
+     {
+      "term": "confident and cool music",
+      "z": 1.35,
+      "cosine": 0.172
+     },
+     {
+      "term": "energetic and driving music",
+      "z": 1.01,
+      "cosine": 0.112
+     }
+    ],
+    "instruments": [
+     {
+      "term": "a snare roll",
+      "z": 2.47,
+      "cosine": 0.175
+     },
+     {
+      "term": "crisp hi-hats",
+      "z": 1.33,
+      "cosine": 0.122
+     },
+     {
+      "term": "a punchy kick drum pattern",
+      "z": 1.21,
+      "cosine": 0.048
+     }
+    ],
+    "voice": [
+     {
+      "term": "a man shouting",
+      "z": 2.1,
+      "cosine": 0.043
+     },
+     {
+      "term": "people laughing",
+      "z": 1.9,
+      "cosine": 0.018
+     },
+     {
+      "term": "children laughing",
+      "z": 1.5,
+      "cosine": 0.021
+     }
+    ],
+    "quality": [
+     {
+      "term": "a tight snappy sound",
+      "z": 1.59,
+      "cosine": 0.149
+     },
+     {
+      "term": "a metallic sound",
+      "z": 1.22,
+      "cosine": 0.058
+     },
+     {
+      "term": "a loud sound",
+      "z": 0.97,
+      "cosine": 0.033
+     }
+    ],
+    "production": [
+     {
+      "term": "a distorted clipped recording",
+      "z": 2.56,
+      "cosine": 0.201
+     },
+     {
+      "term": "a cheap synthesized beep",
+      "z": 1.91,
+      "cosine": 0.136
+     },
+     {
+      "term": "a square wave chiptune blip",
+      "z": 1.11,
+      "cosine": 0.089
+     }
+    ]
+   }
+  },
+  {
+   "start": 134.72,
+   "end": 135.27,
+   "tags": {
+    "transitions": [
+     {
+      "term": "a stutter glitch transition",
+      "z": 1.71,
+      "cosine": 0.162
+     },
+     {
+      "term": "a quick swipe",
+      "z": 1.13,
+      "cosine": 0.089
+     },
+     {
+      "term": "a tape stop slowing down",
+      "z": 1.11,
+      "cosine": 0.095
+     }
+    ],
+    "impacts": [
+     {
+      "term": "a punchy impact hit",
+      "z": 1.09,
+      "cosine": -0.013
+     },
+     {
+      "term": "a metallic clang",
+      "z": 0.97,
+      "cosine": 0.028
+     },
+     {
+      "term": "a snare hit",
+      "z": 0.89,
+      "cosine": -0.011
+     }
+    ],
+    "ui": [
+     {
+      "term": "an error buzz",
+      "z": 2.23,
+      "cosine": 0.136
+     },
+     {
+      "term": "a digital glitch",
+      "z": 1.92,
+      "cosine": 0.16
+     },
+     {
+      "term": "a phone vibration buzz",
+      "z": 1.74,
+      "cosine": 0.083
+     }
+    ],
+    "keyboard": [
+     {
+      "term": "an enter key press",
+      "z": 2.04,
+      "cosine": 0.206
+     },
+     {
+      "term": "a soft key release click",
+      "z": 1.95,
+      "cosine": 0.125
+     },
+     {
+      "term": "a spacebar press",
+      "z": 1.12,
+      "cosine": 0.115
+     }
+    ],
+    "foley": [
+     {
+      "term": "a can opening",
+      "z": 2.5,
+      "cosine": 0.217
+     },
+     {
+      "term": "a balloon squeak",
+      "z": 1.92,
+      "cosine": 0.091
+     },
+     {
+      "term": "a box lid closing",
+      "z": 1.79,
+      "cosine": 0.141
+     }
+    ],
+    "water": [
+     {
+      "term": "ice cubes in a glass",
+      "z": -0.23,
+      "cosine": -0.057
+     },
+     {
+      "term": "a waterfall",
+      "z": -0.33,
+      "cosine": -0.034
+     },
+     {
+      "term": "a water drop",
+      "z": -0.4,
+      "cosine": -0.016
+     }
+    ],
+    "nature": [
+     {
+      "term": "digging in soil",
+      "z": 0.75,
+      "cosine": -0.039
+     },
+     {
+      "term": "insects buzzing",
+      "z": 0.69,
+      "cosine": 0.008
+     },
+     {
+      "term": "a branch snapping",
+      "z": 0.63,
+      "cosine": 0.027
+     }
+    ],
+    "chimes": [
+     {
+      "term": "a glass ting",
+      "z": 0.96,
+      "cosine": 0.07
+     },
+     {
+      "term": "a triangle hit",
+      "z": 0.74,
+      "cosine": -0.01
+     },
+     {
+      "term": "a wine glass ring",
+      "z": 0.23,
+      "cosine": -0.047
+     }
+    ],
+    "ambience": [
+     {
+      "term": "an electrical hum",
+      "z": 1.05,
+      "cosine": 0.006
+     },
+     {
+      "term": "a computer fan hum",
+      "z": 0.94,
+      "cosine": 0.006
+     },
+     {
+      "term": "an office ambience",
+      "z": 0.92,
+      "cosine": -0.024
+     }
+    ],
+    "everyday": [
+     {
+      "term": "a spray can hissing",
+      "z": 4.57,
+      "cosine": 0.312
+     },
+     {
+      "term": "a power drill",
+      "z": 2.86,
+      "cosine": 0.162
+     },
+     {
+      "term": "a match being struck",
+      "z": 2.47,
+      "cosine": 0.131
+     }
+    ],
+    "music_genre": [
+     {
+      "term": "hip hop beat with heavy bass",
+      "z": 2.03,
+      "cosine": 0.12
+     },
+     {
+      "term": "drum and bass music",
+      "z": 1.5,
+      "cosine": 0.081
+     },
+     {
+      "term": "techno music",
+      "z": 1.43,
+      "cosine": 0.103
+     }
+    ],
+    "music_mood": [
+     {
+      "term": "aggressive music",
+      "z": 1.19,
+      "cosine": 0.088
+     },
+     {
+      "term": "suspenseful build-up music",
+      "z": 1.08,
+      "cosine": 0.111
+     },
+     {
+      "term": "energetic and driving music",
+      "z": 0.92,
+      "cosine": 0.069
+     }
+    ],
+    "instruments": [
+     {
+      "term": "crisp hi-hats",
+      "z": 2.72,
+      "cosine": 0.199
+     },
+     {
+      "term": "a snare roll",
+      "z": 1.65,
+      "cosine": 0.067
+     },
+     {
+      "term": "a punchy kick drum pattern",
+      "z": 0.67,
+      "cosine": -0.033
+     }
+    ],
+    "voice": [
+     {
+      "term": "a person breathing",
+      "z": 1.23,
+      "cosine": 0.029
+     },
+     {
+      "term": "a man speaking",
+      "z": 0.85,
+      "cosine": -0.096
+     },
+     {
+      "term": "a person coughing",
+      "z": 0.81,
+      "cosine": -0.034
+     }
+    ],
+    "quality": [
+     {
+      "term": "an airy sound",
+      "z": 1.83,
+      "cosine": 0.094
+     },
+     {
+      "term": "a satisfying sound",
+      "z": 1.69,
+      "cosine": 0.166
+     },
+     {
+      "term": "a metallic sound",
+      "z": 1.14,
+      "cosine": 0.014
+     }
+    ],
+    "production": [
+     {
+      "term": "a low quality recording with hiss",
+      "z": 2.83,
+      "cosine": 0.168
+     },
+     {
+      "term": "a distorted clipped recording",
+      "z": 2.51,
+      "cosine": 0.155
+     },
+     {
+      "term": "a cheap synthesized beep",
+      "z": 1.45,
+      "cosine": 0.058
+     }
+    ]
+   }
+  }
+ ]
+}

@@ -1,0 +1,70 @@
+{
+ "episode": "compress",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "TEN TO TWO",
+   "at": 2.2,
+   "end": 8,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "WRITE IT ONCE",
+   "at": 9.25,
+   "end": 15.95,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "UNZIP",
+   "at": 17,
+   "end": 20.3,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "THROW IT AWAY",
+   "at": 23.4,
+   "end": 27.6,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "BRIGHT VS COLOR",
+   "at": 30.7,
+   "end": 38.8,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "HIDDEN SOUNDS",
+   "at": 40.2,
+   "end": 46.9,
+   "beats": []
+  },
+  {
+   "id": 7,
+   "name": "TEN TIMES",
+   "at": 48.9,
+   "end": 51.4,
+   "beats": []
+  },
+  {
+   "id": 8,
+   "name": "COPY OF A COPY",
+   "at": 54.4,
+   "end": 59.7,
+   "beats": []
+  },
+  {
+   "id": 9,
+   "name": "ZIP THE ZIP",
+   "at": 60.3,
+   "end": 68,
+   "beats": []
+  }
+ ]
+}

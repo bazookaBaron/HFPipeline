@@ -1,0 +1,85 @@
+[  0.00-  5.84] SPEAKER 1 (USER, 15 w, 154 wpm): God, if anyone can build an app in a weekend now, what's actually becoming valuable?
+      pause 480 ms after "God,"
+      -> gap 540 ms (energy)
+[  6.36-  9.60] SPEAKER 2 (CLAUDE, 8 w, 148 wpm): Not the app. The people waiting for it.
+      pause 580 ms after "app."
+      -> gap 440 ms (energy)
+[  9.88- 12.48] SPEAKER 1 (USER, 7 w, 162 wpm): Wait, the app isn't the valuable part?
+      pause 519 ms after "Wait,"
+      -> gap 380 ms (energy)
+[ 12.76- 22.82] SPEAKER 2 (CLAUDE, 31 w, 185 wpm): Over half a million new apps hit the App Store in just six months this year. That's almost as many as all of last year, but downloads only went up 2%.
+      -> gap 390 ms (energy)
+[ 22.82- 26.52] SPEAKER 1 (USER, 6 w, 97 wpm): So everybody's building and nobody's downloading?
+      -> gap 340 ms (energy)
+[ 26.90- 36.28] SPEAKER 2 (CLAUDE, 26 w, 166 wpm): Picture two taco trucks. Same tacos. One has a line of people down the street. Anyone can make tacos now. The line is the valuable part.
+      pause 500 ms after "trucks."
+      pause 620 ms after "tacos."
+      pause 500 ms after "now."
+      -> gap 370 ms (energy)
+[ 36.78- 41.18] SPEAKER 1 (USER, 13 w, 177 wpm): Okay, but how do I get a line? I have like nine followers.
+      pause 519 ms after "line?"
+      -> gap 590 ms (energy)
+[ 42.50- 53.08] SPEAKER 2 (CLAUDE, 32 w, 181 wpm): You don't need millions. You need a few hundred people with the same problem. Step one, pick one kind of person and one problem you know well, like parents with picky eaters.
+      pause 600 ms after "millions."
+      pause 539 ms after "problem."
+      pause 560 ms after "one,"
+      pause 420 ms after "well,"
+      -> gap 330 ms (energy)
+[ 53.44- 55.04] SPEAKER 1 (USER, 8 w, 300 wpm): How do I find out what they need?
+      -> gap 430 ms (energy)
+[ 55.34- 66.12] SPEAKER 2 (CLAUDE, 32 w, 178 wpm): Step two, in the Claude app, ask me to find what parents of picky eaters complain about most online. I search and hand you their top 10 problems in their own words.
+      pause 580 ms after "two,"
+      pause 439 ms after "app,"
+      pause 539 ms after "online."
+      -> gap 800 ms (energy)
+[ 67.00- 68.10] SPEAKER 1 (USER, 5 w, 273 wpm): Then I build the app.
+      -> gap 500 ms (energy)
+[ 68.56- 80.60] SPEAKER 2 (CLAUDE, 33 w, 164 wpm): That's the mistake everybody makes. They build for months, then launch to nobody. Step three, post one free tip for them every day. I can turn each problem into a short video script.
+      pause 520 ms after "makes."
+      pause 520 ms after "nobody."
+      pause 700 ms after "three,"
+      pause 539 ms after "day."
+      -> gap 510 ms (energy)
+[ 80.92- 82.44] SPEAKER 1 (USER, 6 w, 237 wpm): Why give it away for free?
+      -> gap 410 ms (energy)
+[ 83.14- 94.40] SPEAKER 2 (CLAUDE, 36 w, 192 wpm): Free help is how strangers start to trust you. Trust is what builds the line at your taco truck. Step four, get them on an email list. Kit is free for your first 10,000 people.
+      pause 559 ms after "you."
+      pause 400 ms after "truck."
+      pause 519 ms after "four,"
+      pause 620 ms after "list."
+      -> gap 80 ms (energy)
+[ 94.62- 97.32] SPEAKER 1 (USER, 6 w, 133 wpm): Why email? I already have followers.
+      pause 719 ms after "email?"
+      -> gap 710 ms (energy)
+[ 97.86-107.82] SPEAKER 2 (CLAUDE, 30 w, 181 wpm): Followers are rented. Instagram can change its rules any day. Your email list is yours. Kit gives you a free sign up page. Put its link in your Instagram bio.
+      pause 1019 ms after "rented."
+      pause 700 ms after "day."
+      pause 600 ms after "yours."
+      pause 420 ms after "page."
+      -> gap 460 ms (energy)
+[108.18-110.00] SPEAKER 1 (USER, 7 w, 231 wpm): Okay, now do I build the app?
+      pause 439 ms after "Okay,"
+      -> gap 350 ms (energy)
+[111.22-116.76] SPEAKER 2 (CLAUDE, 13 w, 141 wpm): Almost. Here's the tip most people skip. Sell it before you build it.
+      pause 959 ms after "Almost."
+      pause 740 ms after "skip."
+      -> gap 650 ms (energy)
+[117.12-119.30] SPEAKER 1 (USER, 8 w, 220 wpm): Sell an app that doesn't even exist yet?
+      -> gap 360 ms (energy)
+[119.68-134.66] SPEAKER 2 (CLAUDE, 45 w, 180 wpm): Ask me for one screen of it. Email a screenshot to your list. Sell early access in Kit for $5. They pay now and get it first. If 10 people pay, we build the rest this weekend. If nobody pays, you just saved a month.
+      pause 599 ms after "list."
+      pause 599 ms after "$5."
+      pause 659 ms after "first."
+      pause 439 ms after "weekend."
+      -> gap 570 ms (energy)
+[135.10-137.90] SPEAKER 1 (USER, 8 w, 171 wpm): So the app is the easy part now?
+      -> gap 290 ms (energy)
+[137.90-141.42] SPEAKER 2 (CLAUDE, 10 w, 170 wpm): Anyone can make the tacos. Not everyone has the line.
+      pause 760 ms after "tacos."
+      -> gap 470 ms (energy)
+[141.92-146.24] SPEAKER 1 (USER, 10 w, 139 wpm): Okay, one free tip every day. I'm starting next Monday.
+      pause 559 ms after "Okay,"
+      pause 459 ms after "day."
+      -> gap 510 ms (energy)
+[146.78-149.62] SPEAKER 2 (CLAUDE, 8 w, 169 wpm): You said that last Monday. Ask me anything.
+      pause 539 ms after "Monday."

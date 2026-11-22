@@ -1,0 +1,1 @@
+<|speaker:0|>[thinking] And if I undo a fix?<|speaker:1|>[firm, light] Then it learns it was wrong. Do that enough, and it stops.<|speaker:0|>[grinning] So why does it still turn Moe into "more"?

@@ -1,0 +1,56 @@
+{
+ "episode": "faceid",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "THE DOTS",
+   "at": 5.14,
+   "end": 10.3,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "THE BEND",
+   "at": 10.44,
+   "end": 17.7,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "THE MAP",
+   "at": 17.84,
+   "end": 24.5,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "NO DEPTH",
+   "at": 24.9,
+   "end": 30.7,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "THE MASK",
+   "at": 30.82,
+   "end": 36.3,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "STRANGERS",
+   "at": 36.5,
+   "end": 42.3,
+   "beats": []
+  },
+  {
+   "id": 7,
+   "name": "TWINS",
+   "at": 42.6,
+   "end": 46.7,
+   "beats": []
+  }
+ ]
+}

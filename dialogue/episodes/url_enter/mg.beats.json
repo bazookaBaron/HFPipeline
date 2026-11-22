@@ -1,0 +1,10 @@
+{"cues":[
+{"name":"ASK A NAME","at":3.9,"end":9.3,"beats":[]},
+{"name":"PHONE BOOK","at":9.3,"end":14.5,"beats":[]},
+{"name":"THE ADDRESS","at":14.5,"end":20.0,"beats":[]},
+{"name":"HANDSHAKE","at":21.3,"end":27.5,"beats":[]},
+{"name":"SECRET CODE","at":31.1,"end":38.1,"beats":[]},
+{"name":"ASK FOR THE PAGE","at":40.2,"end":46.2,"beats":[]},
+{"name":"FETCH + PAINT","at":47.9,"end":54.0,"beats":[]},
+{"name":"THE ADS","at":57.1,"end":64.8,"beats":[]}
+]}

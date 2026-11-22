@@ -1,0 +1,53 @@
+{
+ "shotsToLook": [
+  1,
+  4,
+  6,
+  7,
+  9,
+  10,
+  11,
+  13,
+  15,
+  16,
+  17,
+  19,
+  20,
+  21
+ ],
+ "byLine": {
+  "1": [
+   "wide2 choice (curious)"
+  ],
+  "4": [
+   "wide2 choice (firm_light)"
+  ],
+  "6": [
+   "split into a cut-in at 17.61 (pause 680 ms)"
+  ],
+  "8": [
+   "wide2 choice (warm)"
+  ],
+  "9": [
+   "mcu_B choice (shocked)"
+  ],
+  "10": [
+   "wide2 choice (firm_light)"
+  ],
+  "12": [
+   "wide2 choice (firm_light)"
+  ],
+  "14": [
+   "wide2 choice (amused)"
+  ],
+  "15": [
+   "mcu_B choice (shocked)"
+  ],
+  "16": [
+   "wide2 choice (firm_light)"
+  ],
+  "18": [
+   "split into a cut-in at 65.43 (pause 560 ms)"
+  ]
+ }
+}

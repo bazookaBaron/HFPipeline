@@ -1,0 +1,63 @@
+{
+ "episode": "url_enter",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "ASK A NAME",
+   "at": 3.9,
+   "end": 9.3,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "PHONE BOOK",
+   "at": 9.3,
+   "end": 14.5,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "THE ADDRESS",
+   "at": 14.5,
+   "end": 20,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "HANDSHAKE",
+   "at": 21.3,
+   "end": 27.5,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "SECRET CODE",
+   "at": 31.1,
+   "end": 38.1,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "ASK FOR THE PAGE",
+   "at": 40.2,
+   "end": 46.2,
+   "beats": []
+  },
+  {
+   "id": 7,
+   "name": "FETCH + PAINT",
+   "at": 47.9,
+   "end": 54,
+   "beats": []
+  },
+  {
+   "id": 8,
+   "name": "THE ADS",
+   "at": 57.1,
+   "end": 64.8,
+   "beats": []
+  }
+ ]
+}

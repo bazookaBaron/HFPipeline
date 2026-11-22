@@ -1,0 +1,2935 @@
+{
+ "ep": "url_enter",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 68.45,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_url_1p3x.wav",
+ "words_src": "dialogue/fish/words_url.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "CU",
+   "text": "Grandpa, I press Enter and the page is there in half a second. What happened?",
+   "s": 0,
+   "e": 3.36,
+   "w0": 0,
+   "w1": 14
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "First, the computer asks where that name lives. It has no idea.",
+   "s": 4,
+   "e": 7.82,
+   "w0": 15,
+   "w1": 26
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "Asks who?",
+   "s": 8.48,
+   "e": 9.06,
+   "w0": 27,
+   "w1": 28
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "A phone book for the internet. Name in, number out. It's called DNS.",
+   "s": 9.46,
+   "e": 13.98,
+   "w0": 29,
+   "w1": 41
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "What kind of number?",
+   "s": 14.66,
+   "e": 15.48,
+   "w0": 42,
+   "w1": 45
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "An address, like a street. Now it knows which machine to call.",
+   "s": 15.88,
+   "e": 19.56,
+   "w0": 46,
+   "w1": 57
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "So it starts talking?",
+   "s": 20,
+   "e": 20.8,
+   "w0": 58,
+   "w1": 61
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "First, a handshake. Hello. Hello back. Okay, go. Three tiny messages.",
+   "s": 21.38,
+   "e": 27.06,
+   "w0": 62,
+   "w1": 72
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": "OTS",
+   "text": "Hello? To a computer?",
+   "s": 27.78,
+   "e": 28.96,
+   "w0": 73,
+   "w1": 76
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Computers are polite.",
+   "s": 29.56,
+   "e": 30.68,
+   "w0": 77,
+   "w1": 79
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "And the little padlock?",
+   "s": 31.18,
+   "e": 32.28,
+   "w0": 80,
+   "w1": 83
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "2S",
+   "text": "Then they agree on a secret code, out in the open. The padlock means it worked.",
+   "s": 32.86,
+   "e": 37.26,
+   "w0": 84,
+   "w1": 99
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "shocked",
+   "cam": "CU",
+   "text": "Wait. I haven't even asked for the page yet?",
+   "s": 37.76,
+   "e": 39.76,
+   "w0": 100,
+   "w1": 108
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Now you ask. One line: give me this page. Back comes the skeleton, called HTML.",
+   "s": 40.3,
+   "e": 45.98,
+   "w0": 109,
+   "w1": 123
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "confused",
+   "cam": "OTS",
+   "text": "Just a skeleton?",
+   "s": 46.68,
+   "e": 47.64,
+   "w0": 124,
+   "w1": 126
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": "MS",
+   "text": "It lists pictures, styles, scripts. The browser fetches each one, then paints the page.",
+   "s": 48.1,
+   "e": 53.6,
+   "w0": 127,
+   "w1": 140
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "OTS",
+   "text": "All of that in half a second?",
+   "s": 54.1,
+   "e": 55.54,
+   "w0": 141,
+   "w1": 147
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Usually less.",
+   "s": 55.96,
+   "e": 56.74,
+   "w0": 148,
+   "w1": 149
+  },
+  {
+   "n": 19,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "CU",
+   "text": "Then why does my news site take five seconds?",
+   "s": 57.16,
+   "e": 59.58,
+   "w0": 150,
+   "w1": 158
+  },
+  {
+   "n": 20,
+   "sp": "A",
+   "beat": "dry, flat",
+   "cam": "CU",
+   "text": "The page arrived in half a second. The ads are still shaking hands.",
+   "s": 60.64,
+   "e": 64.24,
+   "w0": 159,
+   "w1": 171
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 3.85,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "push",
+    "amt": 0.03
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 2,
+   "t0": 3.85,
+   "t1": 6.59,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 3,
+   "t0": 6.59,
+   "t1": 8.33,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 8.33,
+   "t1": 9.31,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 9.31,
+   "t1": 14.51,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 6,
+   "t0": 14.51,
+   "t1": 15.73,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 7,
+   "t0": 15.73,
+   "t1": 17.61,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 8,
+   "t0": 17.61,
+   "t1": 19.85,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": true
+  },
+  {
+   "n": 9,
+   "t0": 19.85,
+   "t1": 21.23,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 21.23,
+   "t1": 27.63,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 11,
+   "t0": 27.63,
+   "t1": 29.41,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 12,
+   "t0": 29.41,
+   "t1": 31.03,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 13,
+   "t0": 31.03,
+   "t1": 32.71,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 14,
+   "t0": 32.71,
+   "t1": 37.61,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 15,
+   "t0": 37.61,
+   "t1": 40.15,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 16,
+   "t0": 40.15,
+   "t1": 46.53,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 17,
+   "t0": 46.53,
+   "t1": 47.95,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 18,
+   "t0": 47.95,
+   "t1": 53.95,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 19,
+   "t0": 53.95,
+   "t1": 55.81,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 20,
+   "t0": 55.81,
+   "t1": 57.01,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 21,
+   "t0": 57.01,
+   "t1": 60.49,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "push",
+    "amt": 0.03
+   },
+   "line": 19,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 22,
+   "t0": 60.49,
+   "t1": 62.65,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 20,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 23,
+   "t0": 62.65,
+   "t1": 65.79,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 20,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 24,
+   "t0": 65.79,
+   "t1": 68.45,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    3.85,
+    "amused",
+    1
+   ],
+   [
+    8.33,
+    "warm",
+    1
+   ],
+   [
+    15.73,
+    "firm_light",
+    1
+   ],
+   [
+    19.85,
+    "warm",
+    1
+   ],
+   [
+    21.23,
+    "firm_light",
+    1
+   ],
+   [
+    27.63,
+    "amused",
+    0.6
+   ],
+   [
+    29.41,
+    "amused",
+    1
+   ],
+   [
+    31.03,
+    "warm",
+    1
+   ],
+   [
+    37.61,
+    "tender",
+    1
+   ],
+   [
+    40.15,
+    "firm_light",
+    1
+   ],
+   [
+    46.53,
+    "amused",
+    1
+   ],
+   [
+    53.95,
+    "warm",
+    1
+   ],
+   [
+    55.81,
+    "amused",
+    1
+   ],
+   [
+    57.01,
+    "warm",
+    1
+   ],
+   [
+    60.49,
+    "firm_light",
+    1
+   ],
+   [
+    65.79,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    14.51,
+    "thinking",
+    1
+   ],
+   [
+    15.73,
+    "curious",
+    1
+   ],
+   [
+    27.63,
+    "surprised",
+    1
+   ],
+   [
+    28.38,
+    "curious",
+    1
+   ],
+   [
+    37.61,
+    "surprised",
+    1
+   ],
+   [
+    40.15,
+    "curious",
+    1
+   ],
+   [
+    46.53,
+    "confused",
+    1
+   ],
+   [
+    47.95,
+    "curious",
+    1
+   ],
+   [
+    53.95,
+    "grin",
+    1
+   ],
+   [
+    55.81,
+    "curious",
+    1
+   ],
+   [
+    57.01,
+    "grin",
+    1
+   ],
+   [
+    60.49,
+    "curious",
+    1
+   ],
+   [
+    65.79,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 3,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 0.56,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 1,
+   "word": "i"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 0.6,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 1,
+   "word": "press"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 4.72,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 2,
+   "word": "computer"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 4.72,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "computer"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 6.06,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 2,
+   "word": "lives"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 7.46,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "idea."
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 8.83,
+   "rise": 0.5,
+   "dur": 0.3,
+   "line": 3,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 9.69,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 4,
+   "word": "phone"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 13.58,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 4,
+   "word": "dns"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 15.32,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 5,
+   "word": "number?"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 16.14,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 6,
+   "word": "address"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 18.22,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 6,
+   "word": "knows"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 20.35,
+   "rise": 0.5,
+   "dur": 0.53,
+   "line": 7,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 20.36,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 7,
+   "word": "starts"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 23.16,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 8,
+   "word": "hello"
+  },
+  {
+   "actor": "A",
+   "kind": "count",
+   "t": 26.04,
+   "rise": 0.42,
+   "dur": 0.55,
+   "line": 8,
+   "word": "Three",
+   "marks": [
+    26.04
+   ]
+  },
+  {
+   "actor": "B",
+   "kind": "head_back",
+   "t": 27.84,
+   "rise": 0.22,
+   "dur": 0.45,
+   "line": 9,
+   "word": "Hello?"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 28.72,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 9,
+   "word": "computer?"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 30.32,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 10,
+   "word": "polite."
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 30.32,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 10,
+   "word": "polite."
+  },
+  {
+   "actor": "A",
+   "kind": "hand_lift",
+   "t": 30.38,
+   "rise": 0.3,
+   "dur": 0.45,
+   "line": 10,
+   "word": "polite"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 31.53,
+   "rise": 0.5,
+   "dur": 0.83,
+   "line": 11,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 31.72,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 11,
+   "word": "little"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 33.16,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 12,
+   "word": "agree"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 35.12,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 12,
+   "word": "open"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 37.14,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 12,
+   "word": "worked"
+  },
+  {
+   "actor": "B",
+   "kind": "hands_lift",
+   "t": 39.32,
+   "rise": 0.3,
+   "dur": 0.75,
+   "line": 13,
+   "word": "page"
+  },
+  {
+   "actor": "A",
+   "kind": "flick",
+   "t": 42.5,
+   "rise": 0.3,
+   "dur": 0.3,
+   "line": 14,
+   "word": "give"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 44.74,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 14,
+   "word": "skeleton"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 47.3,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 15,
+   "word": "skeleton?"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 48.58,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 16,
+   "word": "pictures,"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 48.58,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 16,
+   "word": "pictures,"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 48.64,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 16,
+   "word": "pictures"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 52.88,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 16,
+   "word": "paints"
+  },
+  {
+   "actor": "B",
+   "kind": "two_hand_open",
+   "t": 54.88,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 17,
+   "word": "half"
+  },
+  {
+   "actor": "B",
+   "kind": "count",
+   "t": 58.84,
+   "rise": 0.42,
+   "dur": 0.55,
+   "line": 19,
+   "word": "five",
+   "marks": [
+    58.84
+   ]
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 63.46,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 20,
+   "word": "still"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 66.64,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 14.71,
+   "t1": 15.23,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 66.04,
+   "t1": 69.45,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.22,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "I",
+   "s": 0.44,
+   "e": 0.54,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "press",
+   "s": 0.54,
+   "e": 0.74,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "Enter",
+   "s": 0.74,
+   "e": 1,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "and",
+   "s": 1,
+   "e": 1.2,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "the",
+   "s": 1.2,
+   "e": 1.3,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "page",
+   "s": 1.3,
+   "e": 1.54,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "is",
+   "s": 1.54,
+   "e": 1.7,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "there",
+   "s": 1.7,
+   "e": 1.84,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 9,
+   "w": "in",
+   "s": 1.84,
+   "e": 2,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "half",
+   "s": 2,
+   "e": 2.28,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 11,
+   "w": "a",
+   "s": 2.28,
+   "e": 2.38,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 12,
+   "w": "second.",
+   "s": 2.38,
+   "e": 2.6,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 13,
+   "w": "What",
+   "s": 2.9,
+   "e": 3.04,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 14,
+   "w": "happened?",
+   "s": 3.04,
+   "e": 3.36,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 15,
+   "w": "First,",
+   "s": 4,
+   "e": 4.18,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 16,
+   "w": "the",
+   "s": 4.52,
+   "e": 4.66,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 17,
+   "w": "computer",
+   "s": 4.66,
+   "e": 4.92,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 18,
+   "w": "asks",
+   "s": 4.92,
+   "e": 5.3,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 19,
+   "w": "where",
+   "s": 5.3,
+   "e": 5.54,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 20,
+   "w": "that",
+   "s": 5.54,
+   "e": 5.7,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 21,
+   "w": "name",
+   "s": 5.7,
+   "e": 5.94,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 22,
+   "w": "lives.",
+   "s": 5.94,
+   "e": 6.34,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 23,
+   "w": "It",
+   "s": 6.74,
+   "e": 6.9,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 24,
+   "w": "has",
+   "s": 6.9,
+   "e": 7.1,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 25,
+   "w": "no",
+   "s": 7.1,
+   "e": 7.4,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 26,
+   "w": "idea.",
+   "s": 7.4,
+   "e": 7.82,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 27,
+   "w": "Asks",
+   "s": 8.48,
+   "e": 8.82,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 28,
+   "w": "who?",
+   "s": 8.82,
+   "e": 9.06,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 29,
+   "w": "A",
+   "s": 9.46,
+   "e": 9.56,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 30,
+   "w": "phone",
+   "s": 9.56,
+   "e": 9.8,
+   "sp": "A",
+   "line": 4,
+   "stress": true
+  },
+  {
+   "i": 31,
+   "w": "book",
+   "s": 9.8,
+   "e": 10.02,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 32,
+   "w": "for",
+   "s": 10.02,
+   "e": 10.2,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 33,
+   "w": "the",
+   "s": 10.2,
+   "e": 10.3,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 34,
+   "w": "internet.",
+   "s": 10.3,
+   "e": 10.6,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 35,
+   "w": "Name",
+   "s": 11.16,
+   "e": 11.42,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 36,
+   "w": "in,",
+   "s": 11.42,
+   "e": 11.68,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 37,
+   "w": "number",
+   "s": 11.94,
+   "e": 12.26,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 38,
+   "w": "out.",
+   "s": 12.26,
+   "e": 12.54,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 39,
+   "w": "It's",
+   "s": 13.04,
+   "e": 13.22,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 40,
+   "w": "called",
+   "s": 13.22,
+   "e": 13.46,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 41,
+   "w": "DNS.",
+   "s": 13.46,
+   "e": 13.98,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 42,
+   "w": "What",
+   "s": 14.66,
+   "e": 14.88,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 43,
+   "w": "kind",
+   "s": 14.88,
+   "e": 15.12,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 44,
+   "w": "of",
+   "s": 15.12,
+   "e": 15.26,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 45,
+   "w": "number?",
+   "s": 15.26,
+   "e": 15.48,
+   "sp": "B",
+   "line": 5,
+   "stress": true
+  },
+  {
+   "i": 46,
+   "w": "An",
+   "s": 15.88,
+   "e": 16.02,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 47,
+   "w": "address,",
+   "s": 16.02,
+   "e": 16.32,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 48,
+   "w": "like",
+   "s": 16.66,
+   "e": 16.84,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 49,
+   "w": "a",
+   "s": 16.84,
+   "e": 16.94,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 50,
+   "w": "street.",
+   "s": 16.94,
+   "e": 17.2,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 51,
+   "w": "Now",
+   "s": 17.76,
+   "e": 18,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 52,
+   "w": "it",
+   "s": 18,
+   "e": 18.16,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 53,
+   "w": "knows",
+   "s": 18.16,
+   "e": 18.4,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 54,
+   "w": "which",
+   "s": 18.4,
+   "e": 18.72,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 55,
+   "w": "machine",
+   "s": 18.72,
+   "e": 19.14,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 56,
+   "w": "to",
+   "s": 19.14,
+   "e": 19.3,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 57,
+   "w": "call.",
+   "s": 19.3,
+   "e": 19.56,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 58,
+   "w": "So",
+   "s": 20,
+   "e": 20.18,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 59,
+   "w": "it",
+   "s": 20.18,
+   "e": 20.3,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 60,
+   "w": "starts",
+   "s": 20.3,
+   "e": 20.46,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 61,
+   "w": "talking?",
+   "s": 20.46,
+   "e": 20.8,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 62,
+   "w": "First,",
+   "s": 21.38,
+   "e": 21.7,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 63,
+   "w": "a",
+   "s": 22.04,
+   "e": 22.1,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 64,
+   "w": "handshake.",
+   "s": 22.1,
+   "e": 22.54,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 65,
+   "w": "Hello.",
+   "s": 23.04,
+   "e": 23.28,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 66,
+   "w": "Hello",
+   "s": 23.66,
+   "e": 23.86,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 67,
+   "w": "back.",
+   "s": 23.86,
+   "e": 24.08,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 68,
+   "w": "Okay,",
+   "s": 24.62,
+   "e": 24.92,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 69,
+   "w": "go.",
+   "s": 25.26,
+   "e": 25.48,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 70,
+   "w": "Three",
+   "s": 25.98,
+   "e": 26.24,
+   "sp": "A",
+   "line": 8,
+   "stress": true
+  },
+  {
+   "i": 71,
+   "w": "tiny",
+   "s": 26.24,
+   "e": 26.64,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 72,
+   "w": "messages.",
+   "s": 26.64,
+   "e": 27.06,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 73,
+   "w": "Hello?",
+   "s": 27.78,
+   "e": 28.12,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 74,
+   "w": "To",
+   "s": 28.48,
+   "e": 28.54,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 75,
+   "w": "a",
+   "s": 28.54,
+   "e": 28.66,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 76,
+   "w": "computer?",
+   "s": 28.66,
+   "e": 28.96,
+   "sp": "B",
+   "line": 9,
+   "stress": true
+  },
+  {
+   "i": 77,
+   "w": "Computers",
+   "s": 29.56,
+   "e": 30.12,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 78,
+   "w": "are",
+   "s": 30.12,
+   "e": 30.26,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 79,
+   "w": "polite.",
+   "s": 30.26,
+   "e": 30.68,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 80,
+   "w": "And",
+   "s": 31.18,
+   "e": 31.54,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 81,
+   "w": "the",
+   "s": 31.54,
+   "e": 31.66,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 82,
+   "w": "little",
+   "s": 31.66,
+   "e": 31.82,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 83,
+   "w": "padlock?",
+   "s": 31.82,
+   "e": 32.28,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 84,
+   "w": "Then",
+   "s": 32.86,
+   "e": 32.92,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 85,
+   "w": "they",
+   "s": 32.92,
+   "e": 33.1,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 86,
+   "w": "agree",
+   "s": 33.1,
+   "e": 33.38,
+   "sp": "A",
+   "line": 12,
+   "stress": true
+  },
+  {
+   "i": 87,
+   "w": "on",
+   "s": 33.38,
+   "e": 33.6,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 88,
+   "w": "a",
+   "s": 33.6,
+   "e": 33.72,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 89,
+   "w": "secret",
+   "s": 33.72,
+   "e": 33.96,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 90,
+   "w": "code,",
+   "s": 33.96,
+   "e": 34.42,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 91,
+   "w": "out",
+   "s": 34.42,
+   "e": 34.76,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 92,
+   "w": "in",
+   "s": 34.76,
+   "e": 34.9,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 93,
+   "w": "the",
+   "s": 34.9,
+   "e": 35,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 94,
+   "w": "open.",
+   "s": 35,
+   "e": 35.2,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 95,
+   "w": "The",
+   "s": 35.8,
+   "e": 35.96,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 96,
+   "w": "padlock",
+   "s": 35.96,
+   "e": 36.46,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 97,
+   "w": "means",
+   "s": 36.46,
+   "e": 36.82,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 98,
+   "w": "it",
+   "s": 36.82,
+   "e": 37.02,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 99,
+   "w": "worked.",
+   "s": 37.02,
+   "e": 37.26,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 100,
+   "w": "Wait.",
+   "s": 37.76,
+   "e": 37.96,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 101,
+   "w": "I",
+   "s": 38.24,
+   "e": 38.4,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 102,
+   "w": "haven't",
+   "s": 38.4,
+   "e": 38.56,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 103,
+   "w": "even",
+   "s": 38.56,
+   "e": 38.72,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 104,
+   "w": "asked",
+   "s": 38.72,
+   "e": 39.04,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 105,
+   "w": "for",
+   "s": 39.04,
+   "e": 39.16,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 106,
+   "w": "the",
+   "s": 39.16,
+   "e": 39.26,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 107,
+   "w": "page",
+   "s": 39.26,
+   "e": 39.5,
+   "sp": "B",
+   "line": 13,
+   "stress": true
+  },
+  {
+   "i": 108,
+   "w": "yet?",
+   "s": 39.5,
+   "e": 39.76,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 109,
+   "w": "Now",
+   "s": 40.3,
+   "e": 40.5,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 110,
+   "w": "you",
+   "s": 40.5,
+   "e": 40.68,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 111,
+   "w": "ask.",
+   "s": 40.68,
+   "e": 40.98,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 112,
+   "w": "One",
+   "s": 41.34,
+   "e": 41.6,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 113,
+   "w": "line:",
+   "s": 41.6,
+   "e": 41.9,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 114,
+   "w": "give",
+   "s": 42.38,
+   "e": 42.62,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 115,
+   "w": "me",
+   "s": 42.62,
+   "e": 42.8,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 116,
+   "w": "this",
+   "s": 42.8,
+   "e": 43.02,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 117,
+   "w": "page.",
+   "s": 43.02,
+   "e": 43.34,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 118,
+   "w": "Back",
+   "s": 43.92,
+   "e": 44.2,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 119,
+   "w": "comes",
+   "s": 44.2,
+   "e": 44.46,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 120,
+   "w": "the",
+   "s": 44.46,
+   "e": 44.62,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 121,
+   "w": "skeleton,",
+   "s": 44.62,
+   "e": 44.92,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 122,
+   "w": "called",
+   "s": 44.92,
+   "e": 45.42,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 123,
+   "w": "HTML.",
+   "s": 45.42,
+   "e": 45.98,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 124,
+   "w": "Just",
+   "s": 46.68,
+   "e": 47.02,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 125,
+   "w": "a",
+   "s": 47.02,
+   "e": 47.24,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 126,
+   "w": "skeleton?",
+   "s": 47.24,
+   "e": 47.64,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 127,
+   "w": "It",
+   "s": 48.1,
+   "e": 48.26,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 128,
+   "w": "lists",
+   "s": 48.26,
+   "e": 48.52,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 129,
+   "w": "pictures,",
+   "s": 48.52,
+   "e": 48.92,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 130,
+   "w": "styles,",
+   "s": 49.3,
+   "e": 49.66,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 131,
+   "w": "scripts.",
+   "s": 50,
+   "e": 50.22,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 132,
+   "w": "The",
+   "s": 50.82,
+   "e": 50.94,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 133,
+   "w": "browser",
+   "s": 50.94,
+   "e": 51.22,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 134,
+   "w": "fetches",
+   "s": 51.22,
+   "e": 51.66,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 135,
+   "w": "each",
+   "s": 51.66,
+   "e": 52,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 136,
+   "w": "one,",
+   "s": 52,
+   "e": 52.34,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 137,
+   "w": "then",
+   "s": 52.48,
+   "e": 52.76,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 138,
+   "w": "paints",
+   "s": 52.76,
+   "e": 53.08,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 139,
+   "w": "the",
+   "s": 53.08,
+   "e": 53.28,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 140,
+   "w": "page.",
+   "s": 53.28,
+   "e": 53.6,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 141,
+   "w": "All",
+   "s": 54.1,
+   "e": 54.4,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 142,
+   "w": "of",
+   "s": 54.4,
+   "e": 54.52,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 143,
+   "w": "that",
+   "s": 54.52,
+   "e": 54.68,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 144,
+   "w": "in",
+   "s": 54.68,
+   "e": 54.82,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 145,
+   "w": "half",
+   "s": 54.82,
+   "e": 55.1,
+   "sp": "B",
+   "line": 17,
+   "stress": true
+  },
+  {
+   "i": 146,
+   "w": "a",
+   "s": 55.1,
+   "e": 55.24,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 147,
+   "w": "second?",
+   "s": 55.24,
+   "e": 55.54,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 148,
+   "w": "Usually",
+   "s": 55.96,
+   "e": 56.4,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 149,
+   "w": "less.",
+   "s": 56.4,
+   "e": 56.74,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 150,
+   "w": "Then",
+   "s": 57.16,
+   "e": 57.4,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 151,
+   "w": "why",
+   "s": 57.4,
+   "e": 57.68,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 152,
+   "w": "does",
+   "s": 57.68,
+   "e": 57.84,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 153,
+   "w": "my",
+   "s": 57.84,
+   "e": 57.98,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 154,
+   "w": "news",
+   "s": 57.98,
+   "e": 58.26,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 155,
+   "w": "site",
+   "s": 58.26,
+   "e": 58.54,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 156,
+   "w": "take",
+   "s": 58.54,
+   "e": 58.78,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 157,
+   "w": "five",
+   "s": 58.78,
+   "e": 59.14,
+   "sp": "B",
+   "line": 19,
+   "stress": true
+  },
+  {
+   "i": 158,
+   "w": "seconds?",
+   "s": 59.14,
+   "e": 59.58,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 159,
+   "w": "The",
+   "s": 60.64,
+   "e": 60.88,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 160,
+   "w": "page",
+   "s": 60.88,
+   "e": 61.1,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 161,
+   "w": "arrived",
+   "s": 61.1,
+   "e": 61.42,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 162,
+   "w": "in",
+   "s": 61.42,
+   "e": 61.66,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 163,
+   "w": "half",
+   "s": 61.66,
+   "e": 61.9,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 164,
+   "w": "a",
+   "s": 61.9,
+   "e": 62,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 165,
+   "w": "second.",
+   "s": 62,
+   "e": 62.24,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 166,
+   "w": "The",
+   "s": 62.8,
+   "e": 62.9,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 167,
+   "w": "ads",
+   "s": 62.9,
+   "e": 63.2,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 168,
+   "w": "are",
+   "s": 63.2,
+   "e": 63.4,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 169,
+   "w": "still",
+   "s": 63.4,
+   "e": 63.62,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 170,
+   "w": "shaking",
+   "s": 63.62,
+   "e": 63.9,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 171,
+   "w": "hands.",
+   "s": 63.9,
+   "e": 64.24,
+   "sp": "A",
+   "line": 20
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, I press Enter and",
+   "s": 0,
+   "e": 1.14,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "the page is there in",
+   "s": 1.2,
+   "e": 1.94,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "half a second.",
+   "s": 2,
+   "e": 2.84,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "What happened?",
+   "s": 2.9,
+   "e": 3.71,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "First, the computer asks",
+   "s": 4,
+   "e": 5.24,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "where that name lives.",
+   "s": 5.3,
+   "e": 6.68,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "It has no idea.",
+   "s": 6.74,
+   "e": 8.17,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "Asks who?",
+   "s": 8.48,
+   "e": 9.4,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "A phone book for the internet.",
+   "s": 9.46,
+   "e": 10.95,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Name in,",
+   "s": 11.16,
+   "e": 11.88,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "number out.",
+   "s": 11.94,
+   "e": 12.89,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "It's called DNS.",
+   "s": 13.04,
+   "e": 14.33,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "What kind of number?",
+   "s": 14.66,
+   "e": 15.82,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "An address,",
+   "s": 15.88,
+   "e": 16.6,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "like a street.",
+   "s": 16.66,
+   "e": 17.55,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Now it knows which",
+   "s": 17.76,
+   "e": 18.66,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "machine to call.",
+   "s": 18.72,
+   "e": 19.91,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "So it starts talking?",
+   "s": 20,
+   "e": 21.15,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "First, a handshake.",
+   "s": 21.38,
+   "e": 22.89,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Hello. Hello back.",
+   "s": 23.04,
+   "e": 24.43,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Okay, go.",
+   "s": 24.62,
+   "e": 25.83,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Three tiny messages.",
+   "s": 25.98,
+   "e": 27.41,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Hello? To a computer?",
+   "s": 27.78,
+   "e": 29.31,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "Computers are polite.",
+   "s": 29.56,
+   "e": 31.03,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "And the little padlock?",
+   "s": 31.18,
+   "e": 32.63,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "Then they agree on",
+   "s": 32.86,
+   "e": 33.54,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "a secret code,",
+   "s": 33.6,
+   "e": 34.36,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "out in the open.",
+   "s": 34.42,
+   "e": 35.55,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "The padlock means it worked.",
+   "s": 35.8,
+   "e": 37.61,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Wait. I haven't even asked",
+   "s": 37.76,
+   "e": 38.98,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "for the page yet?",
+   "s": 39.04,
+   "e": 40.11,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "Now you ask.",
+   "s": 40.3,
+   "e": 41.28,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "One line: give me this page.",
+   "s": 41.34,
+   "e": 43.69,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "Back comes the skeleton,",
+   "s": 43.92,
+   "e": 44.86,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "called HTML.",
+   "s": 44.92,
+   "e": 46.33,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "Just a skeleton?",
+   "s": 46.68,
+   "e": 47.99,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "It lists pictures,",
+   "s": 48.1,
+   "e": 49.24,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "styles, scripts.",
+   "s": 49.3,
+   "e": 50.57,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "The browser fetches each one,",
+   "s": 50.82,
+   "e": 52.42,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "then paints the page.",
+   "s": 52.48,
+   "e": 53.95,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "All of that in",
+   "s": 54.1,
+   "e": 54.76,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "half a second?",
+   "s": 54.82,
+   "e": 55.89,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "Usually less.",
+   "s": 55.96,
+   "e": 57.09,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "Then why does my news",
+   "s": 57.16,
+   "e": 58.2,
+   "line": 19,
+   "sp": "B"
+  },
+  {
+   "text": "site take five seconds?",
+   "s": 58.26,
+   "e": 59.93,
+   "line": 19,
+   "sp": "B"
+  },
+  {
+   "text": "The page arrived in",
+   "s": 60.64,
+   "e": 61.6,
+   "line": 20,
+   "sp": "A"
+  },
+  {
+   "text": "half a second.",
+   "s": 61.66,
+   "e": 62.59,
+   "line": 20,
+   "sp": "A"
+  },
+  {
+   "text": "The ads are still shaking hands.",
+   "s": 62.8,
+   "e": 64.59,
+   "line": 20,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": [
+  {
+   "t0": 3.9,
+   "t1": 9.3,
+   "name": "ASK A NAME"
+  },
+  {
+   "t0": 9.3,
+   "t1": 14.5,
+   "name": "PHONE BOOK"
+  },
+  {
+   "t0": 14.5,
+   "t1": 20,
+   "name": "THE ADDRESS"
+  },
+  {
+   "t0": 21.3,
+   "t1": 27.5,
+   "name": "HANDSHAKE"
+  },
+  {
+   "t0": 31.1,
+   "t1": 38.1,
+   "name": "SECRET CODE"
+  },
+  {
+   "t0": 40.2,
+   "t1": 46.2,
+   "name": "ASK FOR THE PAGE"
+  },
+  {
+   "t0": 47.9,
+   "t1": 54,
+   "name": "FETCH + PAINT"
+  },
+  {
+   "t0": 57.1,
+   "t1": 64.8,
+   "name": "THE ADS"
+  }
+ ],
+ "warnings": [
+  "line 19: fuzzy align \"news\" ~ ASR \"new\"",
+  "camera variety R4: #6 ms_B -> #8 ms_B (B): 0.0 deg, size x1.00"
+ ]
+}

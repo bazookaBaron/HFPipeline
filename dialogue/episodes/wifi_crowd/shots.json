@@ -1,0 +1,2867 @@
+{
+ "ep": "wifi_crowd",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 65.46,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_wifi_1p3x.wav",
+ "words_src": "dialogue/fish/words_wifi.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "CU",
+   "text": "Grandpa, the wedding Wi-Fi was awful. Full bars, nothing loaded.",
+   "s": 0,
+   "e": 3.42,
+   "w0": 0,
+   "w1": 9
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Bars show how loud the router is. Not how busy.",
+   "s": 4.02,
+   "e": 6.74,
+   "w0": 10,
+   "w1": 19
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "Busy with what?",
+   "s": 7.28,
+   "e": 8.04,
+   "w0": 20,
+   "w1": 22
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "Wi-Fi is one room, one speaker. Only one device talks at a time.",
+   "s": 8.54,
+   "e": 13.52,
+   "w0": 23,
+   "w1": 35
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": "OTS",
+   "text": "One? There were two hundred phones.",
+   "s": 13.92,
+   "e": 15.78,
+   "w0": 36,
+   "w1": 41
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "They take turns. Each listens first. If it's quiet, it talks.",
+   "s": 16.3,
+   "e": 20.1,
+   "w0": 42,
+   "w1": 52
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "And if two talk together?",
+   "s": 20.62,
+   "e": 21.64,
+   "w0": 53,
+   "w1": 57
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "Crash. Both stop, wait a random moment, try again.",
+   "s": 22.24,
+   "e": 25.24,
+   "w0": 58,
+   "w1": 66
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "Why random?",
+   "s": 25.9,
+   "e": 26.48,
+   "w0": 67,
+   "w1": 68
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "2S",
+   "text": "Same wait, same crash. Forever.",
+   "s": 27.08,
+   "e": 29.06,
+   "w0": 69,
+   "w1": 73
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "confused",
+   "cam": "OTS",
+   "text": "So more phones, more crashes?",
+   "s": 29.72,
+   "e": 31.34,
+   "w0": 74,
+   "w1": 78
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "More crashes, more waiting. Everyone's turn gets thinner.",
+   "s": 31.84,
+   "e": 34.76,
+   "w0": 79,
+   "w1": 86
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "shocked",
+   "cam": "CU",
+   "text": "Wait. So one old phone slows everyone?",
+   "s": 35.3,
+   "e": 37.6,
+   "w0": 87,
+   "w1": 93
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": "MS",
+   "text": "A slow phone needs longer to say the same thing. Everyone waits for it.",
+   "s": 38.3,
+   "e": 42.6,
+   "w0": 94,
+   "w1": 107
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "And the neighbor's Wi-Fi?",
+   "s": 43.16,
+   "e": 44.14,
+   "w0": 108,
+   "w1": 111
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Same room. The old band has three clear channels. The street shares them.",
+   "s": 44.72,
+   "e": 49.62,
+   "w0": 112,
+   "w1": 124
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "How do I fix it?",
+   "s": 50,
+   "e": 50.72,
+   "w0": 125,
+   "w1": 129
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "The fast band, or a cable. A cable gets its own room.",
+   "s": 51.18,
+   "e": 54.9,
+   "w0": 130,
+   "w1": 141
+  },
+  {
+   "n": 19,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "CU",
+   "text": "So who was the slow phone at the wedding?",
+   "s": 55.28,
+   "e": 57.06,
+   "w0": 142,
+   "w1": 150
+  },
+  {
+   "n": 20,
+   "sp": "A",
+   "beat": "dry, flat",
+   "cam": "CU",
+   "text": "Mine. Thirty minutes to send one photo of the cake.",
+   "s": 57.98,
+   "e": 61.28,
+   "w0": 151,
+   "w1": 160
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 1.95,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "push",
+    "amt": 0.03
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 2,
+   "t0": 1.95,
+   "t1": 3.87,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "A",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 3,
+   "t0": 3.87,
+   "t1": 7.13,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 7.13,
+   "t1": 8.39,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 8.39,
+   "t1": 13.77,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 6,
+   "t0": 13.77,
+   "t1": 16.15,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 7,
+   "t0": 16.15,
+   "t1": 18.61,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 8,
+   "t0": 18.61,
+   "t1": 20.47,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 9,
+   "t0": 20.47,
+   "t1": 22.09,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 22.09,
+   "t1": 23.69,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 11,
+   "t0": 23.69,
+   "t1": 25.75,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 12,
+   "t0": 25.75,
+   "t1": 26.93,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 13,
+   "t0": 26.93,
+   "t1": 29.57,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 14,
+   "t0": 29.57,
+   "t1": 31.69,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 15,
+   "t0": 31.69,
+   "t1": 33.39,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 16,
+   "t0": 33.39,
+   "t1": 35.15,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 17,
+   "t0": 35.15,
+   "t1": 38.15,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 18,
+   "t0": 38.15,
+   "t1": 43.01,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 19,
+   "t0": 43.01,
+   "t1": 44.57,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 20,
+   "t0": 44.57,
+   "t1": 49.85,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 21,
+   "t0": 49.85,
+   "t1": 51.03,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 22,
+   "t0": 51.03,
+   "t1": 53.25,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 23,
+   "t0": 53.25,
+   "t1": 55.13,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 24,
+   "t0": 55.13,
+   "t1": 57.83,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 19,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 25,
+   "t0": 57.83,
+   "t1": 62.83,
+   "rig": "seat_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 20,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 26,
+   "t0": 62.83,
+   "t1": 65.46,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    3.87,
+    "amused",
+    1
+   ],
+   [
+    7.13,
+    "warm",
+    1
+   ],
+   [
+    13.77,
+    "amused",
+    0.6
+   ],
+   [
+    16.15,
+    "firm_light",
+    1
+   ],
+   [
+    20.47,
+    "warm",
+    1
+   ],
+   [
+    22.09,
+    "firm_light",
+    1
+   ],
+   [
+    25.75,
+    "warm",
+    1
+   ],
+   [
+    29.57,
+    "amused",
+    1
+   ],
+   [
+    30.86,
+    "worried",
+    1
+   ],
+   [
+    31.69,
+    "firm_light",
+    1
+   ],
+   [
+    35.15,
+    "tender",
+    1
+   ],
+   [
+    38.15,
+    "amused",
+    1
+   ],
+   [
+    43.01,
+    "warm",
+    1
+   ],
+   [
+    44.57,
+    "amused",
+    1
+   ],
+   [
+    49.85,
+    "warm",
+    1
+   ],
+   [
+    57.83,
+    "firm_light",
+    1
+   ],
+   [
+    62.83,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    13.77,
+    "surprised",
+    1
+   ],
+   [
+    14.4,
+    "curious",
+    1
+   ],
+   [
+    20.47,
+    "thinking",
+    1
+   ],
+   [
+    22.09,
+    "curious",
+    1
+   ],
+   [
+    22.14,
+    "worried",
+    1
+   ],
+   [
+    25.75,
+    "curious",
+    1
+   ],
+   [
+    28.02,
+    "worried",
+    1
+   ],
+   [
+    29.57,
+    "confused",
+    1
+   ],
+   [
+    31.69,
+    "curious",
+    1
+   ],
+   [
+    31.88,
+    "worried",
+    1
+   ],
+   [
+    35.15,
+    "surprised",
+    1
+   ],
+   [
+    38.15,
+    "curious",
+    1
+   ],
+   [
+    55.13,
+    "grin",
+    1
+   ],
+   [
+    57.83,
+    "curious",
+    1
+   ],
+   [
+    62.83,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 3.02,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 0.64,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 1,
+   "word": "wedding"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 2.16,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 1,
+   "word": "Full"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 4.68,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 2,
+   "word": "how"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 4.68,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "how"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 4.9,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 2,
+   "word": "loud"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 7.63,
+   "rise": 0.5,
+   "dur": 0.41,
+   "line": 3,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 8.77,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 4,
+   "word": "Wi-Fi"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 10.74,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 4,
+   "word": "speaker"
+  },
+  {
+   "actor": "B",
+   "kind": "two_fingers",
+   "t": 14.8,
+   "rise": 0.4,
+   "dur": 0.9,
+   "line": 5,
+   "word": "two"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 15.03,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 5,
+   "word": "hundred"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 16.78,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 6,
+   "word": "turns"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 19.08,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 6,
+   "word": "quiet,"
+  },
+  {
+   "actor": "B",
+   "kind": "two_fingers",
+   "t": 20.96,
+   "rise": 0.4,
+   "dur": 0.9,
+   "line": 7,
+   "word": "two"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 23.9,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 8,
+   "word": "wait"
+  },
+  {
+   "actor": "A",
+   "kind": "flick",
+   "t": 24.22,
+   "rise": 0.3,
+   "dur": 0.3,
+   "line": 8,
+   "word": "random"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 26.25,
+   "rise": 0.5,
+   "dur": 0.33,
+   "line": 9,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 27.31,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 10,
+   "word": "Same"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 30.06,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 11,
+   "word": "more"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 33.6,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 12,
+   "word": "Everyone's"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 34.14,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 12,
+   "word": "turn"
+  },
+  {
+   "actor": "B",
+   "kind": "hands_lift",
+   "t": 36.52,
+   "rise": 0.3,
+   "dur": 0.75,
+   "line": 13,
+   "word": "phone"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 38.82,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 14,
+   "word": "phone"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 38.82,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 14,
+   "word": "phone"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 39.56,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 14,
+   "word": "longer"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 41.96,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 14,
+   "word": "waits"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 43.48,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 15,
+   "word": "neighbor's"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 43.51,
+   "rise": 0.5,
+   "dur": 0.71,
+   "line": 15,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 45.2,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 16,
+   "word": "room"
+  },
+  {
+   "actor": "A",
+   "kind": "count",
+   "t": 46.98,
+   "rise": 0.42,
+   "dur": 0.55,
+   "line": 16,
+   "word": "three",
+   "marks": [
+    46.98
+   ]
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 48.9,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 16,
+   "word": "street"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 50.35,
+   "rise": 0.5,
+   "dur": 0.33,
+   "line": 17,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 51.41,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 18,
+   "word": "fast"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 52.62,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 18,
+   "word": "cable"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 53.62,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 18,
+   "word": "cable"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 54.4,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 18,
+   "word": "own"
+  },
+  {
+   "actor": "B",
+   "kind": "two_hand_open",
+   "t": 56.36,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 19,
+   "word": "phone"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 63.68,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 20.67,
+   "t1": 21.39,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 63.08,
+   "t1": 66.46,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.22,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "the",
+   "s": 0.5,
+   "e": 0.58,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "wedding",
+   "s": 0.58,
+   "e": 0.78,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "Wi-Fi",
+   "s": 0.78,
+   "e": 1.18,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "was",
+   "s": 1.18,
+   "e": 1.34,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "awful.",
+   "s": 1.34,
+   "e": 1.8,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "Full",
+   "s": 2.1,
+   "e": 2.26,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "bars,",
+   "s": 2.26,
+   "e": 2.54,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "nothing",
+   "s": 2.78,
+   "e": 3.08,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 9,
+   "w": "loaded.",
+   "s": 3.08,
+   "e": 3.42,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "Bars",
+   "s": 4.02,
+   "e": 4.36,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 11,
+   "w": "show",
+   "s": 4.36,
+   "e": 4.62,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 12,
+   "w": "how",
+   "s": 4.62,
+   "e": 4.78,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 13,
+   "w": "loud",
+   "s": 4.78,
+   "e": 5.12,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 14,
+   "w": "the",
+   "s": 5.12,
+   "e": 5.28,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 15,
+   "w": "router",
+   "s": 5.28,
+   "e": 5.48,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 16,
+   "w": "is.",
+   "s": 5.48,
+   "e": 5.8,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 17,
+   "w": "Not",
+   "s": 6.06,
+   "e": 6.28,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 18,
+   "w": "how",
+   "s": 6.28,
+   "e": 6.46,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 19,
+   "w": "busy.",
+   "s": 6.46,
+   "e": 6.74,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 20,
+   "w": "Busy",
+   "s": 7.28,
+   "e": 7.62,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 21,
+   "w": "with",
+   "s": 7.62,
+   "e": 7.74,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 22,
+   "w": "what?",
+   "s": 7.74,
+   "e": 8.04,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 23,
+   "w": "Wi-Fi",
+   "s": 8.54,
+   "e": 9,
+   "sp": "A",
+   "line": 4,
+   "stress": true
+  },
+  {
+   "i": 24,
+   "w": "is",
+   "s": 9,
+   "e": 9.28,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 25,
+   "w": "one",
+   "s": 9.28,
+   "e": 9.54,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 26,
+   "w": "room,",
+   "s": 9.54,
+   "e": 9.86,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 27,
+   "w": "one",
+   "s": 10.32,
+   "e": 10.62,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 28,
+   "w": "speaker.",
+   "s": 10.62,
+   "e": 11,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 29,
+   "w": "Only",
+   "s": 11.7,
+   "e": 11.96,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 30,
+   "w": "one",
+   "s": 11.96,
+   "e": 12.26,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 31,
+   "w": "device",
+   "s": 12.26,
+   "e": 12.58,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 32,
+   "w": "talks",
+   "s": 12.58,
+   "e": 12.94,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 33,
+   "w": "at",
+   "s": 12.94,
+   "e": 13.16,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 34,
+   "w": "a",
+   "s": 13.16,
+   "e": 13.24,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 35,
+   "w": "time.",
+   "s": 13.24,
+   "e": 13.52,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 36,
+   "w": "One?",
+   "s": 13.92,
+   "e": 14.22,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 37,
+   "w": "There",
+   "s": 14.5,
+   "e": 14.62,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 38,
+   "w": "were",
+   "s": 14.62,
+   "e": 14.74,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 39,
+   "w": "two",
+   "s": 14.74,
+   "e": 14.914,
+   "sp": "B",
+   "line": 5,
+   "stress": true
+  },
+  {
+   "i": 40,
+   "w": "hundred",
+   "s": 14.914,
+   "e": 15.32,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 41,
+   "w": "phones.",
+   "s": 15.32,
+   "e": 15.78,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 42,
+   "w": "They",
+   "s": 16.3,
+   "e": 16.44,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 43,
+   "w": "take",
+   "s": 16.44,
+   "e": 16.66,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 44,
+   "w": "turns.",
+   "s": 16.66,
+   "e": 17.02,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 45,
+   "w": "Each",
+   "s": 17.3,
+   "e": 17.6,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 46,
+   "w": "listens",
+   "s": 17.6,
+   "e": 17.88,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 47,
+   "w": "first.",
+   "s": 17.88,
+   "e": 18.22,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 48,
+   "w": "If",
+   "s": 18.76,
+   "e": 18.86,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 49,
+   "w": "it's",
+   "s": 18.86,
+   "e": 19.02,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 50,
+   "w": "quiet,",
+   "s": 19.02,
+   "e": 19.28,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 51,
+   "w": "it",
+   "s": 19.64,
+   "e": 19.8,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 52,
+   "w": "talks.",
+   "s": 19.8,
+   "e": 20.1,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 53,
+   "w": "And",
+   "s": 20.62,
+   "e": 20.8,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 54,
+   "w": "if",
+   "s": 20.8,
+   "e": 20.9,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 55,
+   "w": "two",
+   "s": 20.9,
+   "e": 21.12,
+   "sp": "B",
+   "line": 7,
+   "stress": true
+  },
+  {
+   "i": 56,
+   "w": "talk",
+   "s": 21.12,
+   "e": 21.36,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 57,
+   "w": "together?",
+   "s": 21.36,
+   "e": 21.64,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 58,
+   "w": "Crash.",
+   "s": 22.24,
+   "e": 22.54,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 59,
+   "w": "Both",
+   "s": 23.14,
+   "e": 23.28,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 60,
+   "w": "stop,",
+   "s": 23.28,
+   "e": 23.58,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 61,
+   "w": "wait",
+   "s": 23.84,
+   "e": 23.98,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 62,
+   "w": "a",
+   "s": 23.98,
+   "e": 24.1,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 63,
+   "w": "random",
+   "s": 24.1,
+   "e": 24.26,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 64,
+   "w": "moment,",
+   "s": 24.26,
+   "e": 24.6,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 65,
+   "w": "try",
+   "s": 24.78,
+   "e": 24.96,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 66,
+   "w": "again.",
+   "s": 24.96,
+   "e": 25.24,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 67,
+   "w": "Why",
+   "s": 25.9,
+   "e": 26.16,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 68,
+   "w": "random?",
+   "s": 26.16,
+   "e": 26.48,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 69,
+   "w": "Same",
+   "s": 27.08,
+   "e": 27.38,
+   "sp": "A",
+   "line": 10,
+   "stress": true
+  },
+  {
+   "i": 70,
+   "w": "wait,",
+   "s": 27.38,
+   "e": 27.64,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 71,
+   "w": "same",
+   "s": 27.9,
+   "e": 28.12,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 72,
+   "w": "crash.",
+   "s": 28.12,
+   "e": 28.52,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 73,
+   "w": "Forever.",
+   "s": 28.92,
+   "e": 29.06,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 74,
+   "w": "So",
+   "s": 29.72,
+   "e": 30,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 75,
+   "w": "more",
+   "s": 30,
+   "e": 30.24,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 76,
+   "w": "phones,",
+   "s": 30.24,
+   "e": 30.62,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 77,
+   "w": "more",
+   "s": 30.84,
+   "e": 30.96,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 78,
+   "w": "crashes?",
+   "s": 30.96,
+   "e": 31.34,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 79,
+   "w": "More",
+   "s": 31.84,
+   "e": 31.98,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 80,
+   "w": "crashes,",
+   "s": 31.98,
+   "e": 32.34,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 81,
+   "w": "more",
+   "s": 32.72,
+   "e": 32.86,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 82,
+   "w": "waiting.",
+   "s": 32.86,
+   "e": 33.14,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 83,
+   "w": "Everyone's",
+   "s": 33.54,
+   "e": 34.02,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 84,
+   "w": "turn",
+   "s": 34.02,
+   "e": 34.22,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 85,
+   "w": "gets",
+   "s": 34.22,
+   "e": 34.46,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 86,
+   "w": "thinner.",
+   "s": 34.46,
+   "e": 34.76,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 87,
+   "w": "Wait.",
+   "s": 35.3,
+   "e": 35.46,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 88,
+   "w": "So",
+   "s": 35.74,
+   "e": 35.94,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 89,
+   "w": "one",
+   "s": 35.94,
+   "e": 36.26,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 90,
+   "w": "old",
+   "s": 36.26,
+   "e": 36.46,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 91,
+   "w": "phone",
+   "s": 36.46,
+   "e": 36.76,
+   "sp": "B",
+   "line": 13,
+   "stress": true
+  },
+  {
+   "i": 92,
+   "w": "slows",
+   "s": 36.76,
+   "e": 37.1,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 93,
+   "w": "everyone?",
+   "s": 37.1,
+   "e": 37.6,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 94,
+   "w": "A",
+   "s": 38.3,
+   "e": 38.5,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 95,
+   "w": "slow",
+   "s": 38.5,
+   "e": 38.76,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 96,
+   "w": "phone",
+   "s": 38.76,
+   "e": 39.18,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 97,
+   "w": "needs",
+   "s": 39.18,
+   "e": 39.44,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 98,
+   "w": "longer",
+   "s": 39.44,
+   "e": 39.84,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 99,
+   "w": "to",
+   "s": 39.84,
+   "e": 40.02,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 100,
+   "w": "say",
+   "s": 40.02,
+   "e": 40.18,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 101,
+   "w": "the",
+   "s": 40.18,
+   "e": 40.28,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 102,
+   "w": "same",
+   "s": 40.28,
+   "e": 40.54,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 103,
+   "w": "thing.",
+   "s": 40.54,
+   "e": 40.82,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 104,
+   "w": "Everyone",
+   "s": 41.4,
+   "e": 41.84,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 105,
+   "w": "waits",
+   "s": 41.84,
+   "e": 42.16,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 106,
+   "w": "for",
+   "s": 42.16,
+   "e": 42.42,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 107,
+   "w": "it.",
+   "s": 42.42,
+   "e": 42.6,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 108,
+   "w": "And",
+   "s": 43.16,
+   "e": 43.3,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 109,
+   "w": "the",
+   "s": 43.3,
+   "e": 43.42,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 110,
+   "w": "neighbor's",
+   "s": 43.42,
+   "e": 43.78,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 111,
+   "w": "Wi-Fi?",
+   "s": 43.78,
+   "e": 44.14,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 112,
+   "w": "Same",
+   "s": 44.72,
+   "e": 45.08,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 113,
+   "w": "room.",
+   "s": 45.08,
+   "e": 45.36,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 114,
+   "w": "The",
+   "s": 46,
+   "e": 46.1,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 115,
+   "w": "old",
+   "s": 46.1,
+   "e": 46.36,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 116,
+   "w": "band",
+   "s": 46.36,
+   "e": 46.64,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 117,
+   "w": "has",
+   "s": 46.64,
+   "e": 46.92,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 118,
+   "w": "three",
+   "s": 46.92,
+   "e": 47.28,
+   "sp": "A",
+   "line": 16,
+   "stress": true
+  },
+  {
+   "i": 119,
+   "w": "clear",
+   "s": 47.28,
+   "e": 47.66,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 120,
+   "w": "channels.",
+   "s": 47.66,
+   "e": 48.02,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 121,
+   "w": "The",
+   "s": 48.66,
+   "e": 48.78,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 122,
+   "w": "street",
+   "s": 48.78,
+   "e": 49.06,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 123,
+   "w": "shares",
+   "s": 49.06,
+   "e": 49.4,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 124,
+   "w": "them.",
+   "s": 49.4,
+   "e": 49.62,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 125,
+   "w": "How",
+   "s": 50,
+   "e": 50.16,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 126,
+   "w": "do",
+   "s": 50.16,
+   "e": 50.24,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 127,
+   "w": "I",
+   "s": 50.24,
+   "e": 50.34,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 128,
+   "w": "fix",
+   "s": 50.34,
+   "e": 50.52,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 129,
+   "w": "it?",
+   "s": 50.52,
+   "e": 50.72,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 130,
+   "w": "The",
+   "s": 51.18,
+   "e": 51.32,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 131,
+   "w": "fast",
+   "s": 51.32,
+   "e": 51.6,
+   "sp": "A",
+   "line": 18,
+   "stress": true
+  },
+  {
+   "i": 132,
+   "w": "band,",
+   "s": 51.6,
+   "e": 51.92,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 133,
+   "w": "or",
+   "s": 51.92,
+   "e": 52.34,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 134,
+   "w": "a",
+   "s": 52.34,
+   "e": 52.5,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 135,
+   "w": "cable.",
+   "s": 52.5,
+   "e": 52.76,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 136,
+   "w": "A",
+   "s": 53.4,
+   "e": 53.56,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 137,
+   "w": "cable",
+   "s": 53.56,
+   "e": 53.86,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 138,
+   "w": "gets",
+   "s": 53.86,
+   "e": 54.1,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 139,
+   "w": "its",
+   "s": 54.1,
+   "e": 54.28,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 140,
+   "w": "own",
+   "s": 54.28,
+   "e": 54.52,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 141,
+   "w": "room.",
+   "s": 54.52,
+   "e": 54.9,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 142,
+   "w": "So",
+   "s": 55.28,
+   "e": 55.54,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 143,
+   "w": "who",
+   "s": 55.54,
+   "e": 55.74,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 144,
+   "w": "was",
+   "s": 55.74,
+   "e": 55.88,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 145,
+   "w": "the",
+   "s": 55.88,
+   "e": 56,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 146,
+   "w": "slow",
+   "s": 56,
+   "e": 56.3,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 147,
+   "w": "phone",
+   "s": 56.3,
+   "e": 56.62,
+   "sp": "B",
+   "line": 19,
+   "stress": true
+  },
+  {
+   "i": 148,
+   "w": "at",
+   "s": 56.62,
+   "e": 56.74,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 149,
+   "w": "the",
+   "s": 56.74,
+   "e": 56.82,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 150,
+   "w": "wedding?",
+   "s": 56.82,
+   "e": 57.06,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 151,
+   "w": "Mine.",
+   "s": 57.98,
+   "e": 58.48,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 152,
+   "w": "Thirty",
+   "s": 59.1,
+   "e": 59.4,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 153,
+   "w": "minutes",
+   "s": 59.4,
+   "e": 59.64,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 154,
+   "w": "to",
+   "s": 59.64,
+   "e": 59.9,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 155,
+   "w": "send",
+   "s": 59.9,
+   "e": 60.1,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 156,
+   "w": "one",
+   "s": 60.1,
+   "e": 60.38,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 157,
+   "w": "photo",
+   "s": 60.38,
+   "e": 60.78,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 158,
+   "w": "of",
+   "s": 60.78,
+   "e": 60.96,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 159,
+   "w": "the",
+   "s": 60.96,
+   "e": 61.06,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 160,
+   "w": "cake.",
+   "s": 61.06,
+   "e": 61.28,
+   "sp": "A",
+   "line": 20
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, the wedding Wi-Fi was awful.",
+   "s": 0,
+   "e": 2.04,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Full bars,",
+   "s": 2.1,
+   "e": 2.72,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "nothing loaded.",
+   "s": 2.78,
+   "e": 3.77,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Bars show how loud",
+   "s": 4.02,
+   "e": 5.06,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "the router is.",
+   "s": 5.12,
+   "e": 6,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "Not how busy.",
+   "s": 6.06,
+   "e": 7.09,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "Busy with what?",
+   "s": 7.28,
+   "e": 8.39,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "Wi-Fi is one room,",
+   "s": 8.54,
+   "e": 10.21,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "one speaker.",
+   "s": 10.32,
+   "e": 11.35,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Only one device talks",
+   "s": 11.7,
+   "e": 12.88,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "at a time.",
+   "s": 12.94,
+   "e": 13.86,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "One? There were two hundred phones.",
+   "s": 13.92,
+   "e": 16.13,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "They take turns.",
+   "s": 16.3,
+   "e": 17.24,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Each listens first.",
+   "s": 17.3,
+   "e": 18.57,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "If it's quiet,",
+   "s": 18.76,
+   "e": 19.58,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "it talks.",
+   "s": 19.64,
+   "e": 20.45,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "And if two talk together?",
+   "s": 20.62,
+   "e": 21.99,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "Crash. Both stop,",
+   "s": 22.24,
+   "e": 23.78,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "wait a random moment,",
+   "s": 23.84,
+   "e": 24.72,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "try again.",
+   "s": 24.78,
+   "e": 25.59,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Why random?",
+   "s": 25.9,
+   "e": 26.83,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "Same wait,",
+   "s": 27.08,
+   "e": 27.84,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "same crash. Forever.",
+   "s": 27.9,
+   "e": 29.41,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "So more phones,",
+   "s": 29.72,
+   "e": 30.78,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "more crashes?",
+   "s": 30.84,
+   "e": 31.69,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "More crashes,",
+   "s": 31.84,
+   "e": 32.66,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "more waiting.",
+   "s": 32.72,
+   "e": 33.48,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Everyone's turn gets thinner.",
+   "s": 33.54,
+   "e": 35.11,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Wait. So one old",
+   "s": 35.3,
+   "e": 36.4,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "phone slows everyone?",
+   "s": 36.46,
+   "e": 37.95,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "A slow phone needs longer",
+   "s": 38.3,
+   "e": 39.78,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "to say the same thing.",
+   "s": 39.84,
+   "e": 41.17,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "Everyone waits for it.",
+   "s": 41.4,
+   "e": 42.95,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "And the neighbor's Wi-Fi?",
+   "s": 43.16,
+   "e": 44.49,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Same room.",
+   "s": 44.72,
+   "e": 45.71,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "The old band has",
+   "s": 46,
+   "e": 46.86,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "three clear channels.",
+   "s": 46.92,
+   "e": 48.37,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "The street shares them.",
+   "s": 48.66,
+   "e": 49.94,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "How do I fix it?",
+   "s": 50,
+   "e": 51.07,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "The fast band,",
+   "s": 51.18,
+   "e": 51.86,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "or a cable.",
+   "s": 51.92,
+   "e": 53.11,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "A cable gets its own room.",
+   "s": 53.4,
+   "e": 55.22,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "So who was the slow",
+   "s": 55.28,
+   "e": 56.24,
+   "line": 19,
+   "sp": "B"
+  },
+  {
+   "text": "phone at the wedding?",
+   "s": 56.3,
+   "e": 57.41,
+   "line": 19,
+   "sp": "B"
+  },
+  {
+   "text": "Mine. Thirty minutes to send one",
+   "s": 57.98,
+   "e": 60.32,
+   "line": 20,
+   "sp": "A"
+  },
+  {
+   "text": "photo of the cake.",
+   "s": 60.38,
+   "e": 61.63,
+   "line": 20,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": [
+  {
+   "t0": 3.87,
+   "t1": 8.39,
+   "name": "BARS VS BUSY"
+  },
+  {
+   "t0": 8.39,
+   "t1": 16.15,
+   "name": "ONE SPEAKER"
+  },
+  {
+   "t0": 16.15,
+   "t1": 22.09,
+   "name": "TAKING TURNS"
+  },
+  {
+   "t0": 22.09,
+   "t1": 29.57,
+   "name": "CRASH"
+  },
+  {
+   "t0": 29.57,
+   "t1": 35.15,
+   "name": "THE CROWD"
+  },
+  {
+   "t0": 38.15,
+   "t1": 43.01,
+   "name": "SLOW PHONE"
+  },
+  {
+   "t0": 43.01,
+   "t1": 51.03,
+   "name": "THE STREET"
+  },
+  {
+   "t0": 51.03,
+   "t1": 55.13,
+   "name": "THE FIX"
+  }
+ ],
+ "warnings": [
+  "camera variety R4: #12 ots_B -> #14 ots_B (B): 0.0 deg, size x1.00"
+ ]
+}

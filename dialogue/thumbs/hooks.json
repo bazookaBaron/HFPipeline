@@ -1,0 +1,133 @@
+{
+ "gps2": {
+  "hook": [
+   "HOW DOES",
+   "GPS KNOW?"
+  ],
+  "accent": 1,
+  "tag": "SATELLITES",
+  "cardT": 21
+ },
+ "cloud": {
+  "hook": [
+   "WHERE DO",
+   "YOUR PHOTOS",
+   "GO?"
+  ],
+  "accent": 2,
+  "tag": "THE CLOUD",
+  "cardT": 24
+ },
+ "compress": {
+  "hook": [
+   "WHERE DID",
+   "8 GB GO?"
+  ],
+  "accent": 1,
+  "tag": "ZIP Â· MP3 Â· JPEG",
+  "cardT": 12
+ },
+ "qr": {
+  "hook": [
+   "THE GOAT ATE",
+   "THE QR CODE"
+  ],
+  "accent": 1,
+  "tag": "QR CODES",
+  "cardT": 36
+ },
+ "send": {
+  "hook": [
+   "WHAT HAPPENS",
+   "WHEN YOU",
+   "HIT SEND?"
+  ],
+  "accent": 2,
+  "tag": "TEXT MESSAGES",
+  "cardT": 28
+ },
+ "touch": {
+  "hook": [
+   "WORKS WITH",
+   "A HOT DOG"
+  ],
+  "accent": 1,
+  "tag": "TOUCHSCREENS",
+  "cardT": 52
+ },
+ "url_enter": {
+  "hook": [
+   "THE HALF",
+   "SECOND AFTER",
+   "ENTER"
+  ],
+  "accent": 2,
+  "tag": "DNS Â· HTTPS",
+  "cardT": 5
+ },
+ "wifi_crowd": {
+  "hook": [
+   "FULL BARS,",
+   "NOTHING",
+   "LOADS"
+  ],
+  "accent": 2,
+  "tag": "WI-FI IN A CROWD",
+  "cardT": 26
+ },
+ "incognito": {
+  "hook": [
+   "INCOGNITO",
+   "DOESN'T",
+   "HIDE YOU"
+  ],
+  "accent": 2,
+  "tag": "PRIVATE BROWSING",
+  "cardT": 10.9
+ },
+ "faceid": {
+  "hook": [
+   "ME OR",
+   "MY TWIN?"
+  ],
+  "accent": 1,
+  "tag": "FACE ID",
+  "cardT": 16.6
+ },
+ "ytrec": {
+  "hook": [
+   "IT KNEW",
+   "BEFORE I DID"
+  ],
+  "accent": 1,
+  "tag": "YOUTUBE FEED",
+  "cardT": 46.9
+ },
+ "abr": {
+  "hook": [
+   "WHY DOES IT",
+   "GO BLURRY?"
+  ],
+  "accent": 1,
+  "tag": "STREAMING",
+  "cardT": 54.6
+ },
+ "autocorrect": {
+  "hook": [
+   "HELLO TO",
+   "JELLO?"
+  ],
+  "accent": 1,
+  "tag": "AUTOCORRECT",
+  "cardT": 3.3
+ },
+ "load_balancer": {
+  "hook": [
+   "A MILLION",
+   "VISITORS?"
+  ],
+  "accent": 1,
+  "tag": "LOAD BALANCER",
+  "cardT": 9.2
+ }
+}

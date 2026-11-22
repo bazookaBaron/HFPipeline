@@ -1,0 +1,2227 @@
+{
+ "ep": "_blindnh",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 44.47,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_send_1p5x.wav",
+ "words_src": "dialogue/fish/words_send.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": null,
+   "text": "Grandpa, when I text Maya in London, where does it go?",
+   "s": 0,
+   "e": 2.02,
+   "w0": 0,
+   "w1": 10
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "warm",
+   "cam": null,
+   "text": "First, to the nearest phone tower.",
+   "s": 2.66,
+   "e": 4.14,
+   "w0": 11,
+   "w1": 16
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": null,
+   "text": "Through the air?",
+   "s": 4.66,
+   "e": 5.28,
+   "w0": 17,
+   "w1": 19
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "amused",
+   "cam": null,
+   "text": "Radio waves. Your phone shouts, and the tower listens.",
+   "s": 5.82,
+   "e": 8.48,
+   "w0": 20,
+   "w1": 28
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "curious",
+   "cam": null,
+   "text": "Then the tower sends it to her?",
+   "s": 9.2,
+   "e": 10.22,
+   "w0": 29,
+   "w1": 35
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": null,
+   "text": "Not yet. Into cables. Under the street, then under the sea.",
+   "s": 10.6,
+   "e": 13.74,
+   "w0": 36,
+   "w1": 46
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "confused",
+   "cam": null,
+   "text": "Under the sea? I thought texts used satellites.",
+   "s": 14.18,
+   "e": 16.42,
+   "w0": 47,
+   "w1": 54
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": null,
+   "text": "Mostly cables. Ninety-nine percent, between continents.",
+   "s": 17.16,
+   "e": 19.74,
+   "w0": 55,
+   "w1": 60
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "shocked",
+   "cam": null,
+   "text": "So my text goes swimming?",
+   "s": 20.14,
+   "e": 21.18,
+   "w0": 61,
+   "w1": 65
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "amused",
+   "cam": null,
+   "text": "As light, inside glass threads.",
+   "s": 21.8,
+   "e": 23.48,
+   "w0": 66,
+   "w1": 70
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "curious",
+   "cam": null,
+   "text": "Okay. And then?",
+   "s": 24.2,
+   "e": 25.12,
+   "w0": 71,
+   "w1": 73
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "warm",
+   "cam": null,
+   "text": "A company's computers. Like the building with your photos. They find Maya's phone and pass it on.",
+   "s": 25.64,
+   "e": 29.74,
+   "w0": 74,
+   "w1": 90
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": null,
+   "text": "Like passing a note across the classroom?",
+   "s": 30.22,
+   "e": 31.4,
+   "w0": 91,
+   "w1": 97
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": null,
+   "text": "Exactly. Hand to hand, right into her pocket.",
+   "s": 31.92,
+   "e": 33.88,
+   "w0": 98,
+   "w1": 105
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "curious",
+   "cam": null,
+   "text": "How long does all that take? A minute?",
+   "s": 34.42,
+   "e": 35.78,
+   "w0": 106,
+   "w1": 113
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": null,
+   "text": "Less than a second.",
+   "s": 36.2,
+   "e": 36.94,
+   "w0": 114,
+   "w1": 117
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": null,
+   "text": "Then why does Maya take an hour to reply?",
+   "s": 37.44,
+   "e": 39.22,
+   "w0": 118,
+   "w1": 126
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "dry, smiling",
+   "cam": null,
+   "text": "That part's Maya.",
+   "s": 39.64,
+   "e": 40.32,
+   "w0": 127,
+   "w1": 129
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 2.51,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "push",
+    "amt": 0.03
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 2,
+   "t0": 2.51,
+   "t1": 4.51,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 3,
+   "t0": 4.51,
+   "t1": 5.67,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 5.67,
+   "t1": 9.05,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 9.05,
+   "t1": 10.45,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 6,
+   "t0": 10.45,
+   "t1": 11.91,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 7,
+   "t0": 11.91,
+   "t1": 14.03,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 8,
+   "t0": 14.03,
+   "t1": 17.01,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 9,
+   "t0": 17.01,
+   "t1": 19.99,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 19.99,
+   "t1": 21.65,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 11,
+   "t0": 21.65,
+   "t1": 24.05,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 12,
+   "t0": 24.05,
+   "t1": 25.49,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 13,
+   "t0": 25.49,
+   "t1": 30.07,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 14,
+   "t0": 30.07,
+   "t1": 31.77,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 15,
+   "t0": 31.77,
+   "t1": 34.27,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 16,
+   "t0": 34.27,
+   "t1": 36.05,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 17,
+   "t0": 36.05,
+   "t1": 37.29,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 18,
+   "t0": 37.29,
+   "t1": 39.49,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 19,
+   "t0": 39.49,
+   "t1": 41.87,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 20,
+   "t0": 41.87,
+   "t1": 44.47,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    4.51,
+    "amused",
+    0.6
+   ],
+   [
+    5.67,
+    "amused",
+    1
+   ],
+   [
+    9.05,
+    "warm",
+    1
+   ],
+   [
+    10.45,
+    "firm_light",
+    1
+   ],
+   [
+    14.03,
+    "amused",
+    1
+   ],
+   [
+    17.01,
+    "firm_light",
+    1
+   ],
+   [
+    19.99,
+    "tender",
+    1
+   ],
+   [
+    21.65,
+    "amused",
+    1
+   ],
+   [
+    24.05,
+    "warm",
+    1
+   ],
+   [
+    31.77,
+    "amused",
+    1
+   ],
+   [
+    34.27,
+    "warm",
+    1
+   ],
+   [
+    36.05,
+    "firm_light",
+    1
+   ],
+   [
+    37.29,
+    "warm",
+    1
+   ],
+   [
+    39.49,
+    "dry",
+    1
+   ],
+   [
+    41.87,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    4.51,
+    "surprised",
+    1
+   ],
+   [
+    5.67,
+    "curious",
+    1
+   ],
+   [
+    14.03,
+    "confused",
+    1
+   ],
+   [
+    17.01,
+    "curious",
+    1
+   ],
+   [
+    19.99,
+    "surprised",
+    1
+   ],
+   [
+    21.65,
+    "curious",
+    1
+   ],
+   [
+    30.07,
+    "thinking",
+    1
+   ],
+   [
+    31.77,
+    "curious",
+    1
+   ],
+   [
+    37.29,
+    "grin",
+    1
+   ],
+   [
+    39.49,
+    "worried",
+    1
+   ],
+   [
+    41.87,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 1.66,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 0.66,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 1,
+   "word": "text"
+  },
+  {
+   "actor": "A",
+   "kind": "lean_back",
+   "t": 3.01,
+   "rise": 0.5,
+   "dur": 1.15,
+   "line": 2,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 3.38,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 2,
+   "word": "nearest"
+  },
+  {
+   "actor": "B",
+   "kind": "head_back",
+   "t": 4.72,
+   "rise": 0.22,
+   "dur": 0.45,
+   "line": 3,
+   "word": "Through"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 6.9,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 4,
+   "word": "Your"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 6.9,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 4,
+   "word": "Your"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 9.54,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 5,
+   "word": "tower"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 9.55,
+   "rise": 0.5,
+   "dur": 0.55,
+   "line": 5,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 12.12,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 6,
+   "word": "Under"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 14.38,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 7,
+   "word": "Under"
+  },
+  {
+   "actor": "B",
+   "kind": "hands_lift",
+   "t": 20.7,
+   "rise": 0.3,
+   "dur": 0.75,
+   "line": 9,
+   "word": "goes"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 22.28,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 10,
+   "word": "inside"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 22.28,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 10,
+   "word": "inside"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 24.55,
+   "rise": 0.5,
+   "dur": 0.59,
+   "line": 11,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 25.87,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 12,
+   "word": "company's"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 31.18,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 13,
+   "word": "classroom?"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 31.98,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 14,
+   "word": "Exactly."
+  },
+  {
+   "actor": "A",
+   "kind": "flick",
+   "t": 32.07,
+   "rise": 0.3,
+   "dur": 0.3,
+   "line": 14,
+   "word": "Exactly."
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 34.62,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 15,
+   "word": "long"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 34.77,
+   "rise": 0.5,
+   "dur": 0.93,
+   "line": 15,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "two_hand_open",
+   "t": 38.6,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 17,
+   "word": "hour"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 42.72,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 30.27,
+   "t1": 31.15,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 42.12,
+   "t1": 45.47,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.18,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "when",
+   "s": 0.44,
+   "e": 0.5,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "I",
+   "s": 0.5,
+   "e": 0.6,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "text",
+   "s": 0.6,
+   "e": 0.76,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "Maya",
+   "s": 0.76,
+   "e": 0.98,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "in",
+   "s": 0.98,
+   "e": 1.14,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "London,",
+   "s": 1.14,
+   "e": 1.32,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "where",
+   "s": 1.58,
+   "e": 1.66,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "does",
+   "s": 1.66,
+   "e": 1.78,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 9,
+   "w": "it",
+   "s": 1.78,
+   "e": 1.84,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "go?",
+   "s": 1.84,
+   "e": 2.02,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 11,
+   "w": "First,",
+   "s": 2.66,
+   "e": 2.92,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 12,
+   "w": "to",
+   "s": 3.2,
+   "e": 3.24,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 13,
+   "w": "the",
+   "s": 3.24,
+   "e": 3.32,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 14,
+   "w": "nearest",
+   "s": 3.32,
+   "e": 3.56,
+   "sp": "A",
+   "line": 2,
+   "stress": true
+  },
+  {
+   "i": 15,
+   "w": "phone",
+   "s": 3.56,
+   "e": 3.84,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 16,
+   "w": "tower.",
+   "s": 3.84,
+   "e": 4.14,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 17,
+   "w": "Through",
+   "s": 4.66,
+   "e": 4.84,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 18,
+   "w": "the",
+   "s": 4.84,
+   "e": 5,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 19,
+   "w": "air?",
+   "s": 5,
+   "e": 5.28,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 20,
+   "w": "Radio",
+   "s": 5.82,
+   "e": 6.22,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 21,
+   "w": "waves.",
+   "s": 6.22,
+   "e": 6.5,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 22,
+   "w": "Your",
+   "s": 6.84,
+   "e": 6.96,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 23,
+   "w": "phone",
+   "s": 6.96,
+   "e": 7.18,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 24,
+   "w": "shouts,",
+   "s": 7.18,
+   "e": 7.5,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 25,
+   "w": "and",
+   "s": 7.5,
+   "e": 7.8,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 26,
+   "w": "the",
+   "s": 7.8,
+   "e": 7.88,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 27,
+   "w": "tower",
+   "s": 7.88,
+   "e": 8.14,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 28,
+   "w": "listens.",
+   "s": 8.14,
+   "e": 8.48,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 29,
+   "w": "Then",
+   "s": 9.2,
+   "e": 9.38,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 30,
+   "w": "the",
+   "s": 9.38,
+   "e": 9.48,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 31,
+   "w": "tower",
+   "s": 9.48,
+   "e": 9.72,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 32,
+   "w": "sends",
+   "s": 9.72,
+   "e": 9.92,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 33,
+   "w": "it",
+   "s": 9.92,
+   "e": 10.02,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 34,
+   "w": "to",
+   "s": 10.02,
+   "e": 10.12,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 35,
+   "w": "her?",
+   "s": 10.12,
+   "e": 10.22,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 36,
+   "w": "Not",
+   "s": 10.6,
+   "e": 10.8,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 37,
+   "w": "yet.",
+   "s": 10.8,
+   "e": 11.02,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 38,
+   "w": "Into",
+   "s": 11.22,
+   "e": 11.38,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 39,
+   "w": "cables.",
+   "s": 11.38,
+   "e": 11.7,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 40,
+   "w": "Under",
+   "s": 12.06,
+   "e": 12.28,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 41,
+   "w": "the",
+   "s": 12.28,
+   "e": 12.4,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 42,
+   "w": "street,",
+   "s": 12.4,
+   "e": 12.66,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 43,
+   "w": "then",
+   "s": 12.82,
+   "e": 13.04,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 44,
+   "w": "under",
+   "s": 13.04,
+   "e": 13.36,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 45,
+   "w": "the",
+   "s": 13.36,
+   "e": 13.52,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 46,
+   "w": "sea.",
+   "s": 13.52,
+   "e": 13.74,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 47,
+   "w": "Under",
+   "s": 14.18,
+   "e": 14.34,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 48,
+   "w": "the",
+   "s": 14.34,
+   "e": 14.5,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 49,
+   "w": "sea?",
+   "s": 14.5,
+   "e": 14.74,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 50,
+   "w": "I",
+   "s": 15.18,
+   "e": 15.36,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 51,
+   "w": "thought",
+   "s": 15.36,
+   "e": 15.52,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 52,
+   "w": "texts",
+   "s": 15.52,
+   "e": 15.76,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 53,
+   "w": "used",
+   "s": 15.76,
+   "e": 16.04,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 54,
+   "w": "satellites.",
+   "s": 16.04,
+   "e": 16.42,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 55,
+   "w": "Mostly",
+   "s": 17.16,
+   "e": 17.46,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 56,
+   "w": "cables.",
+   "s": 17.46,
+   "e": 17.78,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 57,
+   "w": "Ninety-nine",
+   "s": 18.2,
+   "e": 18.54,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 58,
+   "w": "percent,",
+   "s": 18.54,
+   "e": 18.94,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 59,
+   "w": "between",
+   "s": 18.94,
+   "e": 19.34,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 60,
+   "w": "continents.",
+   "s": 19.34,
+   "e": 19.74,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 61,
+   "w": "So",
+   "s": 20.14,
+   "e": 20.3,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 62,
+   "w": "my",
+   "s": 20.3,
+   "e": 20.42,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 63,
+   "w": "text",
+   "s": 20.42,
+   "e": 20.64,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 64,
+   "w": "goes",
+   "s": 20.64,
+   "e": 20.86,
+   "sp": "B",
+   "line": 9,
+   "stress": true
+  },
+  {
+   "i": 65,
+   "w": "swimming?",
+   "s": 20.86,
+   "e": 21.18,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 66,
+   "w": "As",
+   "s": 21.8,
+   "e": 21.96,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 67,
+   "w": "light,",
+   "s": 21.98,
+   "e": 22.22,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 68,
+   "w": "inside",
+   "s": 22.22,
+   "e": 22.74,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 69,
+   "w": "glass",
+   "s": 22.74,
+   "e": 23.12,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 70,
+   "w": "threads.",
+   "s": 23.12,
+   "e": 23.48,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 71,
+   "w": "Okay.",
+   "s": 24.2,
+   "e": 24.42,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 72,
+   "w": "And",
+   "s": 24.76,
+   "e": 24.92,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 73,
+   "w": "then?",
+   "s": 24.92,
+   "e": 25.12,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 74,
+   "w": "A",
+   "s": 25.64,
+   "e": 25.76,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 75,
+   "w": "company's",
+   "s": 25.76,
+   "e": 26.14,
+   "sp": "A",
+   "line": 12,
+   "stress": true
+  },
+  {
+   "i": 76,
+   "w": "computers.",
+   "s": 26.14,
+   "e": 26.52,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 77,
+   "w": "Like",
+   "s": 26.74,
+   "e": 26.9,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 78,
+   "w": "the",
+   "s": 26.9,
+   "e": 27,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 79,
+   "w": "building",
+   "s": 27,
+   "e": 27.22,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 80,
+   "w": "with",
+   "s": 27.22,
+   "e": 27.4,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 81,
+   "w": "your",
+   "s": 27.4,
+   "e": 27.48,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 82,
+   "w": "photos.",
+   "s": 27.48,
+   "e": 27.78,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 83,
+   "w": "They",
+   "s": 27.78,
+   "e": 28.1,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 84,
+   "w": "find",
+   "s": 28.1,
+   "e": 28.38,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 85,
+   "w": "Maya's",
+   "s": 28.38,
+   "e": 28.76,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 86,
+   "w": "phone",
+   "s": 28.76,
+   "e": 28.98,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 87,
+   "w": "and",
+   "s": 28.98,
+   "e": 29.24,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 88,
+   "w": "pass",
+   "s": 29.24,
+   "e": 29.48,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 89,
+   "w": "it",
+   "s": 29.48,
+   "e": 29.62,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 90,
+   "w": "on.",
+   "s": 29.62,
+   "e": 29.74,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 91,
+   "w": "Like",
+   "s": 30.22,
+   "e": 30.3,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 92,
+   "w": "passing",
+   "s": 30.3,
+   "e": 30.56,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 93,
+   "w": "a",
+   "s": 30.56,
+   "e": 30.68,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 94,
+   "w": "note",
+   "s": 30.68,
+   "e": 30.8,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 95,
+   "w": "across",
+   "s": 30.8,
+   "e": 30.94,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 96,
+   "w": "the",
+   "s": 30.94,
+   "e": 31.12,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 97,
+   "w": "classroom?",
+   "s": 31.12,
+   "e": 31.4,
+   "sp": "B",
+   "line": 13,
+   "stress": true
+  },
+  {
+   "i": 98,
+   "w": "Exactly.",
+   "s": 31.92,
+   "e": 32.32,
+   "sp": "A",
+   "line": 14,
+   "stress": true
+  },
+  {
+   "i": 99,
+   "w": "Hand",
+   "s": 32.64,
+   "e": 32.76,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 100,
+   "w": "to",
+   "s": 32.76,
+   "e": 32.88,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 101,
+   "w": "hand,",
+   "s": 32.88,
+   "e": 33.1,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 102,
+   "w": "right",
+   "s": 33.22,
+   "e": 33.38,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 103,
+   "w": "into",
+   "s": 33.38,
+   "e": 33.56,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 104,
+   "w": "her",
+   "s": 33.56,
+   "e": 33.66,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 105,
+   "w": "pocket.",
+   "s": 33.66,
+   "e": 33.88,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 106,
+   "w": "How",
+   "s": 34.42,
+   "e": 34.56,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 107,
+   "w": "long",
+   "s": 34.56,
+   "e": 34.72,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 108,
+   "w": "does",
+   "s": 34.72,
+   "e": 34.84,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 109,
+   "w": "all",
+   "s": 34.84,
+   "e": 34.92,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 110,
+   "w": "that",
+   "s": 34.92,
+   "e": 35.02,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 111,
+   "w": "take?",
+   "s": 35.02,
+   "e": 35.24,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 112,
+   "w": "A",
+   "s": 35.54,
+   "e": 35.6,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 113,
+   "w": "minute?",
+   "s": 35.6,
+   "e": 35.78,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 114,
+   "w": "Less",
+   "s": 36.2,
+   "e": 36.42,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 115,
+   "w": "than",
+   "s": 36.42,
+   "e": 36.6,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 116,
+   "w": "a",
+   "s": 36.6,
+   "e": 36.7,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 117,
+   "w": "second.",
+   "s": 36.7,
+   "e": 36.94,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 118,
+   "w": "Then",
+   "s": 37.44,
+   "e": 37.6,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 119,
+   "w": "why",
+   "s": 37.6,
+   "e": 37.84,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 120,
+   "w": "does",
+   "s": 37.84,
+   "e": 37.96,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 121,
+   "w": "Maya",
+   "s": 37.96,
+   "e": 38.24,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 122,
+   "w": "take",
+   "s": 38.24,
+   "e": 38.44,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 123,
+   "w": "an",
+   "s": 38.44,
+   "e": 38.54,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 124,
+   "w": "hour",
+   "s": 38.54,
+   "e": 38.78,
+   "sp": "B",
+   "line": 17,
+   "stress": true
+  },
+  {
+   "i": 125,
+   "w": "to",
+   "s": 38.78,
+   "e": 38.92,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 126,
+   "w": "reply?",
+   "s": 38.92,
+   "e": 39.22,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 127,
+   "w": "That",
+   "s": 39.64,
+   "e": 39.82,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 128,
+   "w": "part's",
+   "s": 39.82,
+   "e": 40.02,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 129,
+   "w": "Maya.",
+   "s": 40.02,
+   "e": 40.32,
+   "sp": "A",
+   "line": 18
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, when I text",
+   "s": 0,
+   "e": 0.7,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Maya in London,",
+   "s": 0.76,
+   "e": 1.52,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "where does it go?",
+   "s": 1.58,
+   "e": 2.37,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "First, to the nearest phone tower.",
+   "s": 2.66,
+   "e": 4.49,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "Through the air?",
+   "s": 4.66,
+   "e": 5.63,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "Radio waves.",
+   "s": 5.82,
+   "e": 6.78,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Your phone shouts,",
+   "s": 6.84,
+   "e": 7.44,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "and the tower listens.",
+   "s": 7.5,
+   "e": 8.83,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Then the tower sends",
+   "s": 9.2,
+   "e": 9.86,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "it to her?",
+   "s": 9.92,
+   "e": 10.54,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "Not yet.",
+   "s": 10.6,
+   "e": 11.16,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Into cables.",
+   "s": 11.22,
+   "e": 12,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Under the street,",
+   "s": 12.06,
+   "e": 12.76,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "then under the sea.",
+   "s": 12.82,
+   "e": 14.09,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Under the sea?",
+   "s": 14.18,
+   "e": 15.09,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "I thought texts used satellites.",
+   "s": 15.18,
+   "e": 16.77,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "Mostly cables.",
+   "s": 17.16,
+   "e": 18.13,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Ninety-nine percent,",
+   "s": 18.2,
+   "e": 18.88,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "between continents.",
+   "s": 18.94,
+   "e": 20.08,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "So my text goes swimming?",
+   "s": 20.14,
+   "e": 21.53,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "As light,",
+   "s": 21.8,
+   "e": 22.16,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "inside glass threads.",
+   "s": 22.22,
+   "e": 23.83,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "Okay. And then?",
+   "s": 24.2,
+   "e": 25.47,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "A company's computers.",
+   "s": 25.64,
+   "e": 26.68,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Like the building with your photos.",
+   "s": 26.74,
+   "e": 27.72,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "They find Maya's phone",
+   "s": 27.78,
+   "e": 28.92,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "and pass it on.",
+   "s": 28.98,
+   "e": 30.09,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Like passing a note",
+   "s": 30.22,
+   "e": 30.74,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "across the classroom?",
+   "s": 30.8,
+   "e": 31.75,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "Exactly. Hand to hand,",
+   "s": 31.92,
+   "e": 33.16,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "right into her pocket.",
+   "s": 33.22,
+   "e": 34.23,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "How long does all that take?",
+   "s": 34.42,
+   "e": 35.48,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "A minute?",
+   "s": 35.54,
+   "e": 36.13,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Less than a second.",
+   "s": 36.2,
+   "e": 37.29,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "Then why does Maya take",
+   "s": 37.44,
+   "e": 38.38,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "an hour to reply?",
+   "s": 38.44,
+   "e": 39.57,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "That part's Maya.",
+   "s": 39.64,
+   "e": 40.67,
+   "line": 18,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": null,
+ "warnings": [
+  "line 8: script \"percent,\" vs ASR \"%\" (#58) - forced 1:1"
+ ]
+}

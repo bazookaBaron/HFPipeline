@@ -1,0 +1,194 @@
+{
+ "ref_dadu_A_s1100.wav": {
+  "char": "dadu",
+  "opt": "A",
+  "seed": 1100,
+  "description": "An elderly Indian man with a deep, warm, slightly gravelly voice, speaking slowly and gently, calm and kind, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 33.7
+ },
+ "ref_dadu_A_s1101.wav": {
+  "char": "dadu",
+  "opt": "A",
+  "seed": 1101,
+  "description": "An elderly Indian man with a deep, warm, slightly gravelly voice, speaking slowly and gently, calm and kind, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 30.2
+ },
+ "ref_dadu_B_s1110.wav": {
+  "char": "dadu",
+  "opt": "B",
+  "seed": 1110,
+  "description": "An old Indian man with a low, rough, raspy voice, speaking very slowly with a soft, tender, fatherly tone, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 101.4
+ },
+ "ref_dadu_B_s1111.wav": {
+  "char": "dadu",
+  "opt": "B",
+  "seed": 1111,
+  "description": "An old Indian man with a low, rough, raspy voice, speaking very slowly with a soft, tender, fatherly tone, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 85.9
+ },
+ "ref_dadu_C_s1120.wav": {
+  "char": "dadu",
+  "opt": "C",
+  "seed": 1120,
+  "description": "An elderly Indian man with a mid-low, mellow, slightly breathy voice, speaking slowly and a little wistfully, warm and quiet, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 33.8
+ },
+ "ref_dadu_C_s1121.wav": {
+  "char": "dadu",
+  "opt": "C",
+  "seed": 1121,
+  "description": "An elderly Indian man with a mid-low, mellow, slightly breathy voice, speaking slowly and a little wistfully, warm and quiet, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 31.0
+ },
+ "ref_rohan_A_s1200.wav": {
+  "char": "rohan",
+  "opt": "A",
+  "seed": 1200,
+  "description": "A young Indian man in his early twenties with a light, bright voice, speaking quickly and casually, slightly animated, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 29.9
+ },
+ "ref_rohan_A_s1201.wav": {
+  "char": "rohan",
+  "opt": "A",
+  "seed": 1201,
+  "description": "A young Indian man in his early twenties with a light, bright voice, speaking quickly and casually, slightly animated, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 35.4
+ },
+ "ref_rohan_B_s1210.wav": {
+  "char": "rohan",
+  "opt": "B",
+  "seed": 1210,
+  "description": "A young Indian man with a mid-pitched, relaxed, slightly nasal voice, speaking fast in a casual, playful way, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 50.7
+ },
+ "ref_rohan_B_s1211.wav": {
+  "char": "rohan",
+  "opt": "B",
+  "seed": 1211,
+  "description": "A young Indian man with a mid-pitched, relaxed, slightly nasal voice, speaking fast in a casual, playful way, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 101.1
+ },
+ "ref_rohan_C_s1220.wav": {
+  "char": "rohan",
+  "opt": "C",
+  "seed": 1220,
+  "description": "A young Indian man with a higher-pitched, energetic, clear voice, speaking at a fast pace with a teasing, lively tone, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 51.5
+ },
+ "ref_rohan_C_s1221.wav": {
+  "char": "rohan",
+  "opt": "C",
+  "seed": 1221,
+  "description": "A young Indian man with a higher-pitched, energetic, clear voice, speaking at a fast pace with a teasing, lively tone, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 36.8
+ },
+ "ref_arjun_A_s1300.wav": {
+  "char": "arjun",
+  "opt": "A",
+  "seed": 1300,
+  "description": "An Indian man in his early thirties with a mid-low, even, dry voice, speaking at a moderate pace in a flat, understated, calm tone, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 37.7
+ },
+ "ref_arjun_A_s1301.wav": {
+  "char": "arjun",
+  "opt": "A",
+  "seed": 1301,
+  "description": "An Indian man in his early thirties with a mid-low, even, dry voice, speaking at a moderate pace in a flat, understated, calm tone, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 32.4
+ },
+ "ref_arjun_B_s1310.wav": {
+  "char": "arjun",
+  "opt": "B",
+  "seed": 1310,
+  "description": "An Indian man in his thirties with a low, smooth, slightly husky voice, speaking steadily and quietly, dry and unhurried, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 180.5
+ },
+ "ref_arjun_B_s1311.wav": {
+  "char": "arjun",
+  "opt": "B",
+  "seed": 1311,
+  "description": "An Indian man in his thirties with a low, smooth, slightly husky voice, speaking steadily and quietly, dry and unhurried, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 58.9
+ },
+ "ref_arjun_C_s1320.wav": {
+  "char": "arjun",
+  "opt": "C",
+  "seed": 1320,
+  "description": "An Indian man in his thirties with a mid-pitched, crisp, clear voice, speaking at a measured pace in a controlled, deadpan, professional tone, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 111.4
+ },
+ "ref_arjun_C_s1321.wav": {
+  "char": "arjun",
+  "opt": "C",
+  "seed": 1321,
+  "description": "An Indian man in his thirties with a mid-pitched, crisp, clear voice, speaking at a measured pace in a controlled, deadpan, professional tone, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells only tea and biscuits.",
+  "gen_s": 40.5
+ },
+ "ref_meera_A_s1400.wav": {
+  "char": "meera",
+  "opt": "A",
+  "seed": 1400,
+  "description": "An Indian woman in her early thirties with a clear, warm, confident voice, speaking at a moderate-fast pace, sharp and direct, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 41.5
+ },
+ "ref_meera_A_s1401.wav": {
+  "char": "meera",
+  "opt": "A",
+  "seed": 1401,
+  "description": "An Indian woman in her early thirties with a clear, warm, confident voice, speaking at a moderate-fast pace, sharp and direct, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 36.2
+ },
+ "ref_meera_B_s1410.wav": {
+  "char": "meera",
+  "opt": "B",
+  "seed": 1410,
+  "description": "An Indian woman in her thirties with a low, rich, smooth voice, speaking at a steady pace, warm and assured, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 38.5
+ },
+ "ref_meera_B_s1411.wav": {
+  "char": "meera",
+  "opt": "B",
+  "seed": 1411,
+  "description": "An Indian woman in her thirties with a low, rich, smooth voice, speaking at a steady pace, warm and assured, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 50.4
+ },
+ "ref_meera_C_s1420.wav": {
+  "char": "meera",
+  "opt": "C",
+  "seed": 1420,
+  "description": "An Indian woman in her thirties with a bright, crisp, slightly higher voice, speaking quickly and expressively, friendly and clear, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 52.9
+ },
+ "ref_meera_C_s1421.wav": {
+  "char": "meera",
+  "opt": "C",
+  "seed": 1421,
+  "description": "An Indian woman in her thirties with a bright, crisp, slightly higher voice, speaking quickly and expressively, friendly and clear, Indian English accent. Very close-sounding recording, no background noise, very clear audio.",
+  "text": "The market opens early on Saturday mornings. Most of the stalls sell vegetables, a few sell spices, and one old shop at the corner sells nothing but tea and biscuits to anyone who walks past.",
+  "gen_s": 38.7
+ }
+}

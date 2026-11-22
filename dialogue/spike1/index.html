@@ -1,0 +1,9 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<style>html,body{margin:0;background:#0E1621;overflow:hidden}#root{position:absolute;left:0;top:0;transform-origin:0 0}canvas#stage{position:absolute;left:0;top:0}</style>
+<body><div id="root"><canvas id="stage"></canvas></div>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/"}}</script>
+<script type="module">
+try { await import("/main.js"); window.__ready = true; }
+catch (e) { console.log("ERR " + (e.stack || e)); window.__err = String(e.stack || e); }
+</script>

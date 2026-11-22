@@ -1,0 +1,7 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#0E1621">
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/"}}</script>
+<script type="module">
+const job = new URLSearchParams(location.search).get("job");
+try { const m = await import("/jobs.js"); window.__out = await m.run(job); window.__done = true; }
+catch (e) { console.log("ERR " + (e.stack || e)); window.__err = String(e.stack || e); }
+</script>

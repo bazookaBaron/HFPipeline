@@ -1,0 +1,63 @@
+{
+ "episode": "abr",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "PIECES",
+   "at": 3.28,
+   "end": 8.44,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "QUALITIES",
+   "at": 8.63,
+   "end": 16.12,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "THE PICK",
+   "at": 16.26,
+   "end": 22.92,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "SLOW WIFI",
+   "at": 23.06,
+   "end": 29.68,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "THE RACE",
+   "at": 29.82,
+   "end": 36.84,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "CUSHION",
+   "at": 38.22,
+   "end": 42.7,
+   "beats": []
+  },
+  {
+   "id": 7,
+   "name": "FAT OR THIN",
+   "at": 42.84,
+   "end": 49.62,
+   "beats": []
+  },
+  {
+   "id": 8,
+   "name": "BACK TO SHARP",
+   "at": 49.76,
+   "end": 55.28,
+   "beats": []
+  }
+ ]
+}

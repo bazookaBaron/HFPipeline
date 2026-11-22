@@ -1,0 +1,25 @@
+{
+  "_doc": "Ground truth for every vloombox claim on a carousel. Only claims with verified:true may be printed. Owner: update when the product changes. Competitor notes must stay factual and fair: publicly known behaviour, no invented flaws.",
+  "site": "vloombox.in",
+  "handle": "@vloombox",
+  "features": {
+    "jobs": { "verified": true, "source": "vloombox.in homepage + meta description, read 2026-10-09",
+      "claims": ["14,000+ live tech jobs", "crawled from ~500 companies' own career pages", "refreshed through the day", "only postings from the last 24 hours", "filter by role, seniority, location and source"] },
+    "referrals": { "verified": false, "claims": ["TODO: confirm what the referral feature does before any carousel claims it"] },
+    "dsa": { "verified": false, "claims": [] },
+    "lld": { "verified": false, "claims": [] }
+  },
+  "honestCons": ["newer and smaller than the big portals", "no one-click apply: you apply on the company's own site"],
+  "competitors": {
+    "LinkedIn": { "pros": ["biggest professional network", "referrals through your own connections", "recruiters search profiles"],
+      "cons": ["popular posts hit 100+ applicants fast", "reposted and promoted listings mix with fresh ones"] },
+    "Naukri": { "pros": ["one of India's largest job portals", "huge volume across cities", "recruiters reach out from your profile"],
+      "cons": ["many listings from consultancies and agencies", "lots of non-tech and duplicate posts to wade through"] },
+    "Wellfound": { "pros": ["startup jobs, often with salary and equity shown upfront", "apply straight to founders"],
+      "cons": ["mostly startups", "smaller India volume"] },
+    "Indeed": { "pros": ["aggregates from many sources", "simple search"],
+      "cons": ["duplicates and stale posts", "weak tech-specific filters"] },
+    "Company career pages": { "pros": ["the original, most accurate posting", "first place a job appears"],
+      "cons": ["you'd have to check hundreds of sites every day"] }
+  }
+}

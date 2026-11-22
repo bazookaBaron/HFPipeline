@@ -1,0 +1,5 @@
+{"id":"dadu","pack":"men","head":"King","body":"Farmer",
+ "hide":[{"part":"head","material":"Gold"}],"hideNodes":[],
+ "colors":{"Skin":"#B97F55","Hair_White":"#E9E4D6","Brown":"#6E4B30","Brown2":"#3A2A1C","Beige":"#DCCDA8","LightBlue":"#4D4237","Red":"#6E4B30","Eye":"#17120E","Eyebrows":"#DAD3C2"},
+ "faceParts":{"eyes":"Eye","browsCarve":{"fromMaterial":"Hair_White","x":0.075,"y":[1.69,1.73],"z":0.125}},
+ "recolour":"shawl-brown #6E4B30, cream #DCCDA8, trousers #4D4237"}

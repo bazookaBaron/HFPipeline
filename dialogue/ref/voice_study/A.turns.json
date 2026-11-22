@@ -1,0 +1,1654 @@
+{
+ "speaker_f0_median_hz": {
+  "USER": 131.6,
+  "CLAUDE": 207.4
+ },
+ "turns": [
+  {
+   "turn": 1,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 0.0,
+   "end": 2.92,
+   "text": "Claude, the server's down. Is he okay?",
+   "words": 7,
+   "dur": 2.92,
+   "wpm": 144,
+   "f0_med_hz": 128.8,
+   "f0_raw_med_hz": 128.8,
+   "st_vs_speaker": -0.4,
+   "st_p10_p90": [
+    -4.6,
+    0.1
+   ],
+   "contour_st_thirds": [
+    -0.1,
+    -1.8,
+    -2.4
+   ],
+   "voiced_frames": 104,
+   "db_p50": -16.4,
+   "db_peak": -9.8,
+   "inner_pauses": [
+    {
+     "after": "Claude,",
+     "ms": 459
+    },
+    {
+     "after": "down.",
+     "ms": 479
+    }
+   ],
+   "emphasis_words": [
+    "Claude,",
+    "he"
+   ],
+   "lengthened_words": [
+    "Claude,",
+    "server's"
+   ],
+   "fillers": [
+    "okay?"
+   ],
+   "gap_to_next_ms": 520,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 1320,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.632,
+      4.01
+     ],
+     [
+      "a calm narrator speaking",
+      0.198,
+      3.36
+     ],
+     [
+      "a person speaking sarcastically",
+      0.081,
+      2.93
+     ],
+     [
+      "a sad person speaking",
+      0.075,
+      3.23
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.997
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.999,
+      2.47
+     ],
+     [
+      "people laughing",
+      0.001,
+      0.09
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 2,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 4.24,
+   "end": 8.54,
+   "text": "Servers aren't people. It's overloaded. Requests are queuing the-",
+   "words": 10,
+   "dur": 4.3,
+   "wpm": 140,
+   "f0_med_hz": 232.8,
+   "f0_raw_med_hz": 232.4,
+   "st_vs_speaker": 2.0,
+   "st_p10_p90": [
+    -0.0,
+    5.4
+   ],
+   "contour_st_thirds": [
+    1.2,
+    1.3,
+    3.9
+   ],
+   "voiced_frames": 228,
+   "db_p50": -13.6,
+   "db_peak": -8.3,
+   "inner_pauses": [
+    {
+     "after": "people.",
+     "ms": 580
+    },
+    {
+     "after": "overloaded.",
+     "ms": 700
+    }
+   ],
+   "emphasis_words": [
+    "aren't",
+    "Requests"
+   ],
+   "lengthened_words": [
+    "Servers"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 240,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 0,
+   "earshot_tone": [
+    [
+     [
+      "a calm narrator speaking",
+      0.365,
+      3.17
+     ],
+     [
+      "a sad person speaking",
+      0.258,
+      3.24
+     ],
+     [
+      "a person speaking in a flat deadpan monotone",
+      0.119,
+      3.0
+     ],
+     [
+      "a person speaking sarcastically",
+      0.055,
+      2.34
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.923
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.997,
+      3.44
+     ],
+     [
+      "people laughing",
+      0.003,
+      1.27
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 3,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 8.54,
+   "end": 11.16,
+   "text": "Claude, is he okay?",
+   "words": 4,
+   "dur": 2.62,
+   "wpm": 92,
+   "f0_med_hz": 143.2,
+   "f0_raw_med_hz": 99.9,
+   "st_vs_speaker": 1.5,
+   "st_p10_p90": [
+    -8.4,
+    3.3
+   ],
+   "contour_st_thirds": [
+    2.8,
+    -5.9,
+    1.3
+   ],
+   "voiced_frames": 54,
+   "db_p50": -16.5,
+   "db_peak": -13.7,
+   "inner_pauses": [
+    {
+     "after": "Claude,",
+     "ms": 519
+    }
+   ],
+   "emphasis_words": [
+    "Claude,",
+    "okay?"
+   ],
+   "lengthened_words": [
+    "he",
+    "okay?"
+   ],
+   "fillers": [
+    "okay?"
+   ],
+   "gap_to_next_ms": 620,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 740,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.943,
+      5.02
+     ],
+     [
+      "a person speaking sarcastically",
+      0.042,
+      3.72
+     ],
+     [
+      "a sad person speaking",
+      0.009,
+      3.54
+     ],
+     [
+      "a confused person asking a question",
+      0.004,
+      3.48
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.98
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.938,
+      2.44
+     ],
+     [
+      "people laughing",
+      0.062,
+      1.59
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 4,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 11.9,
+   "end": 13.62,
+   "text": "No, he's not okay.",
+   "words": 4,
+   "dur": 1.72,
+   "wpm": 140,
+   "f0_med_hz": 193.4,
+   "f0_raw_med_hz": 97.7,
+   "st_vs_speaker": -1.2,
+   "st_p10_p90": [
+    -2.2,
+    0.2
+   ],
+   "contour_st_thirds": [
+    -1.1,
+    0.0,
+    -1.8
+   ],
+   "voiced_frames": 76,
+   "db_p50": -17.3,
+   "db_peak": -7.7,
+   "inner_pauses": [
+    {
+     "after": "No,",
+     "ms": 540
+    }
+   ],
+   "emphasis_words": [
+    "No,",
+    "he's"
+   ],
+   "lengthened_words": [],
+   "fillers": [
+    "okay."
+   ],
+   "gap_to_next_ms": 720,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 540,
+   "earshot_tone": [
+    [
+     [
+      "a sad person speaking",
+      0.254,
+      1.76
+     ],
+     [
+      "a person speaking sarcastically",
+      0.235,
+      1.38
+     ],
+     [
+      "a person whispering",
+      0.147,
+      0.74
+     ],
+     [
+      "a confused person asking a question",
+      0.136,
+      1.8
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.979
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.98,
+      1.32
+     ],
+     [
+      "people laughing",
+      0.02,
+      -0.12
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 5,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 14.16,
+   "end": 15.0,
+   "text": "What happened to him?",
+   "words": 4,
+   "dur": 0.84,
+   "wpm": 286,
+   "f0_med_hz": 175.1,
+   "f0_raw_med_hz": 193.8,
+   "st_vs_speaker": 4.9,
+   "st_p10_p90": [
+    3.9,
+    7.7
+   ],
+   "contour_st_thirds": [
+    null,
+    6.8,
+    null
+   ],
+   "voiced_frames": 13,
+   "db_p50": -14.8,
+   "db_peak": -10.8,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "to"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 640,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 400,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.867,
+      3.11
+     ],
+     [
+      "a person speaking sarcastically",
+      0.111,
+      2.15
+     ],
+     [
+      "a person speaking excitedly",
+      0.01,
+      2.17
+     ],
+     [
+      "a person laughing while talking",
+      0.004,
+      2.21
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.94
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "people laughing",
+      0.987,
+      2.18
+     ],
+     [
+      "a person speaking",
+      0.013,
+      0.89
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 6,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 15.4,
+   "end": 17.04,
+   "text": "You posted your app on TikTok.",
+   "words": 6,
+   "dur": 1.64,
+   "wpm": 220,
+   "f0_med_hz": 176.2,
+   "f0_raw_med_hz": 135.0,
+   "st_vs_speaker": -2.8,
+   "st_p10_p90": [
+    -8.1,
+    3.4
+   ],
+   "contour_st_thirds": [
+    2.0,
+    -0.4,
+    -7.9
+   ],
+   "voiced_frames": 97,
+   "db_p50": -16.0,
+   "db_peak": -10.8,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "posted"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 880,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 580,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking in a flat deadpan monotone",
+      0.385,
+      2.79
+     ],
+     [
+      "a calm narrator speaking",
+      0.192,
+      2.28
+     ],
+     [
+      "a person speaking excitedly",
+      0.146,
+      2.98
+     ],
+     [
+      "a sad person speaking",
+      0.095,
+      2.25
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.994
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.996,
+      2.87
+     ],
+     [
+      "people laughing",
+      0.004,
+      0.84
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 7,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 17.62,
+   "end": 18.98,
+   "text": "It got like 12 views!",
+   "words": 5,
+   "dur": 1.36,
+   "wpm": 221,
+   "f0_med_hz": 137.1,
+   "f0_raw_med_hz": 140.4,
+   "st_vs_speaker": 0.7,
+   "st_p10_p90": [
+    -0.5,
+    6.0
+   ],
+   "contour_st_thirds": [
+    0.3,
+    -0.0,
+    2.7
+   ],
+   "voiced_frames": 78,
+   "db_p50": -14.7,
+   "db_peak": -11.8,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "12",
+    "views!"
+   ],
+   "lengthened_words": [
+    "views!"
+   ],
+   "fillers": [
+    "like"
+   ],
+   "gap_to_next_ms": 960,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 960,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.988,
+      4.64
+     ],
+     [
+      "a person speaking excitedly",
+      0.01,
+      3.61
+     ],
+     [
+      "a person shouting",
+      0.001,
+      2.66
+     ],
+     [
+      "a calm narrator speaking",
+      0.001,
+      2.0
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.959
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.986,
+      2.03
+     ],
+     [
+      "people laughing",
+      0.014,
+      0.66
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 8,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 19.94,
+   "end": 20.8,
+   "text": "12 million.",
+   "words": 2,
+   "dur": 0.86,
+   "wpm": 140,
+   "f0_med_hz": 213.9,
+   "f0_raw_med_hz": 131.2,
+   "st_vs_speaker": 0.5,
+   "st_p10_p90": [
+    -9.4,
+    2.2
+   ],
+   "contour_st_thirds": [
+    -9.1,
+    -0.0,
+    1.5
+   ],
+   "voiced_frames": 86,
+   "db_p50": -11.6,
+   "db_peak": -10.1,
+   "inner_pauses": [],
+   "emphasis_words": [],
+   "lengthened_words": [
+    "million."
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 1530,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 1439,
+   "earshot_tone": [
+    [
+     [
+      "a confused person asking a question",
+      0.467,
+      1.75
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.251,
+      1.38
+     ],
+     [
+      "a person shouting",
+      0.088,
+      1.29
+     ],
+     [
+      "a worried anxious person speaking",
+      0.055,
+      0.84
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a child speaking",
+     0.753
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.51,
+      0.34
+     ],
+     [
+      "people laughing",
+      0.49,
+      0.31
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 9,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 22.24,
+   "end": 22.88,
+   "text": "Okay.",
+   "words": 1,
+   "dur": 0.64,
+   "wpm": 94,
+   "f0_med_hz": 131.5,
+   "f0_raw_med_hz": 130.4,
+   "st_vs_speaker": -0.0,
+   "st_p10_p90": [
+    -0.1,
+    11.1
+   ],
+   "contour_st_thirds": [
+    -0.1,
+    10.8,
+    0.8
+   ],
+   "voiced_frames": 29,
+   "db_p50": -17.0,
+   "db_peak": -12.6,
+   "inner_pauses": [],
+   "emphasis_words": [],
+   "lengthened_words": [
+    "Okay."
+   ],
+   "fillers": [
+    "Okay."
+   ],
+   "gap_to_next_ms": 570,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 800,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.941,
+      4.34
+     ],
+     [
+      "a person speaking sarcastically",
+      0.046,
+      3.06
+     ],
+     [
+      "a confused person asking a question",
+      0.009,
+      3.09
+     ],
+     [
+      "a sad person speaking",
+      0.003,
+      2.51
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.975
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.577,
+      1.39
+     ],
+     [
+      "people laughing",
+      0.423,
+      1.27
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 10,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 23.68,
+   "end": 25.32,
+   "text": "And they all showed up at once.",
+   "words": 7,
+   "dur": 1.64,
+   "wpm": 256,
+   "f0_med_hz": 190.8,
+   "f0_raw_med_hz": 175.8,
+   "st_vs_speaker": -1.4,
+   "st_p10_p90": [
+    -3.3,
+    -0.2
+   ],
+   "contour_st_thirds": [
+    -1.4,
+    -1.4,
+    -2.8
+   ],
+   "voiced_frames": 78,
+   "db_p50": -17.0,
+   "db_peak": -11.9,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "And",
+    "they",
+    "showed"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 920,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 620,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking in a flat deadpan monotone",
+      0.203,
+      1.68
+     ],
+     [
+      "a sad person speaking",
+      0.149,
+      1.56
+     ],
+     [
+      "a person speaking excitedly",
+      0.132,
+      2.02
+     ],
+     [
+      "a person speaking sarcastically",
+      0.127,
+      1.18
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.969
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.911,
+      1.75
+     ],
+     [
+      "people laughing",
+      0.089,
+      0.96
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 11,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 25.94,
+   "end": 26.98,
+   "text": "How many is he holding?",
+   "words": 5,
+   "dur": 1.04,
+   "wpm": 288,
+   "f0_med_hz": 116.6,
+   "f0_raw_med_hz": 119.0,
+   "st_vs_speaker": -2.1,
+   "st_p10_p90": [
+    -5.0,
+    7.4
+   ],
+   "contour_st_thirds": [
+    3.1,
+    -2.6,
+    -0.8
+   ],
+   "voiced_frames": 45,
+   "db_p50": -12.9,
+   "db_peak": -10.9,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "How"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 200,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 0,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.666,
+      3.28
+     ],
+     [
+      "a calm narrator speaking",
+      0.172,
+      2.61
+     ],
+     [
+      "a sad person speaking",
+      0.063,
+      2.48
+     ],
+     [
+      "a person speaking in a flat deadpan monotone",
+      0.054,
+      2.46
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.99
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.999,
+      2.59
+     ],
+     [
+      "people laughing",
+      0.001,
+      0.33
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 12,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 26.98,
+   "end": 30.36,
+   "text": "90,000. He was built for 40.",
+   "words": 7,
+   "dur": 3.38,
+   "wpm": 124,
+   "f0_med_hz": 201.4,
+   "f0_raw_med_hz": 101.0,
+   "st_vs_speaker": -0.5,
+   "st_p10_p90": [
+    -1.5,
+    1.8
+   ],
+   "contour_st_thirds": [
+    0.6,
+    -0.9,
+    -0.5
+   ],
+   "voiced_frames": 159,
+   "db_p50": -19.0,
+   "db_peak": -9.4,
+   "inner_pauses": [
+    {
+     "after": ",000.",
+     "ms": 440
+    }
+   ],
+   "emphasis_words": [
+    "90",
+    "He"
+   ],
+   "lengthened_words": [
+    "90",
+    ",000."
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 860,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 839,
+   "earshot_tone": [
+    [
+     [
+      "a calm narrator speaking",
+      0.393,
+      3.24
+     ],
+     [
+      "a sad person speaking",
+      0.378,
+      3.45
+     ],
+     [
+      "a person speaking in a flat deadpan monotone",
+      0.074,
+      2.86
+     ],
+     [
+      "a person speaking sarcastically",
+      0.033,
+      2.14
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.845
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.997,
+      3.17
+     ],
+     [
+      "people laughing",
+      0.003,
+      0.88
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 13,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 31.2,
+   "end": 32.08,
+   "text": "40,000?",
+   "words": 2,
+   "dur": 0.88,
+   "wpm": 136,
+   "f0_med_hz": 142.9,
+   "f0_raw_med_hz": 253.9,
+   "st_vs_speaker": 1.4,
+   "st_p10_p90": [
+    -2.4,
+    8.6
+   ],
+   "contour_st_thirds": [
+    1.4,
+    null,
+    2.9
+   ],
+   "voiced_frames": 45,
+   "db_p50": -14.0,
+   "db_peak": -12.1,
+   "inner_pauses": [],
+   "emphasis_words": [],
+   "lengthened_words": [
+    ",000?"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 670,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 600,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.92,
+      3.99
+     ],
+     [
+      "a person speaking excitedly",
+      0.056,
+      3.52
+     ],
+     [
+      "a person shouting",
+      0.008,
+      2.71
+     ],
+     [
+      "a calm narrator speaking",
+      0.006,
+      2.09
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.972
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.992,
+      1.84
+     ],
+     [
+      "people laughing",
+      0.008,
+      0.23
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 14,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 32.68,
+   "end": 33.08,
+   "text": "40.",
+   "words": 1,
+   "dur": 0.4,
+   "wpm": 150,
+   "f0_med_hz": 210.6,
+   "f0_raw_med_hz": 183.1,
+   "st_vs_speaker": 0.3,
+   "st_p10_p90": [
+    -2.6,
+    1.1
+   ],
+   "contour_st_thirds": [
+    0.8,
+    1.0,
+    -1.9
+   ],
+   "voiced_frames": 26,
+   "db_p50": -14.9,
+   "db_peak": -9.3,
+   "inner_pauses": [],
+   "emphasis_words": [],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 70,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 940,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking sarcastically",
+      0.564,
+      1.33
+     ],
+     [
+      "a confused person asking a question",
+      0.214,
+      1.55
+     ],
+     [
+      "a sad person speaking",
+      0.088,
+      1.06
+     ],
+     [
+      "a person speaking in a flat deadpan monotone",
+      0.06,
+      0.97
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.693
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.984,
+      1.17
+     ],
+     [
+      "people laughing",
+      0.016,
+      -0.12
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 15,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 34.02,
+   "end": 35.16,
+   "text": "Then get him a friend!",
+   "words": 5,
+   "dur": 1.14,
+   "wpm": 263,
+   "f0_med_hz": 156.7,
+   "f0_raw_med_hz": 311.5,
+   "st_vs_speaker": 3.0,
+   "st_p10_p90": [
+    -3.0,
+    5.5
+   ],
+   "contour_st_thirds": [
+    null,
+    3.2,
+    2.9
+   ],
+   "voiced_frames": 30,
+   "db_p50": -13.4,
+   "db_peak": -9.9,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "get"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 0,
+   "gap_method": "no dip (latched/overlap)",
+   "asr_gap_to_next_ms": 620,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.756,
+      3.47
+     ],
+     [
+      "a person speaking excitedly",
+      0.219,
+      3.51
+     ],
+     [
+      "a calm narrator speaking",
+      0.011,
+      1.92
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.006,
+      2.23
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.99
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.993,
+      2.17
+     ],
+     [
+      "people laughing",
+      0.007,
+      0.64
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 16,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 35.78,
+   "end": 37.16,
+   "text": "That's literally the fix.",
+   "words": 4,
+   "dur": 1.38,
+   "wpm": 174,
+   "f0_med_hz": 210.5,
+   "f0_raw_med_hz": 196.4,
+   "st_vs_speaker": 0.3,
+   "st_p10_p90": [
+    -1.8,
+    1.6
+   ],
+   "contour_st_thirds": [
+    0.5,
+    0.6,
+    -1.6
+   ],
+   "voiced_frames": 87,
+   "db_p50": -13.4,
+   "db_peak": -6.9,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "That's",
+    "literally"
+   ],
+   "lengthened_words": [],
+   "fillers": [
+    "literally"
+   ],
+   "gap_to_next_ms": 840,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 720,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking in a flat deadpan monotone",
+      0.23,
+      1.68
+     ],
+     [
+      "a person speaking excitedly",
+      0.175,
+      2.09
+     ],
+     [
+      "a calm narrator speaking",
+      0.134,
+      1.28
+     ],
+     [
+      "a person whispering",
+      0.129,
+      0.69
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.99
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.974,
+      2.03
+     ],
+     [
+      "people laughing",
+      0.026,
+      0.78
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 17,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 37.88,
+   "end": 38.58,
+   "text": "Can we call him Kevin?",
+   "words": 5,
+   "dur": 0.7,
+   "wpm": 429,
+   "f0_med_hz": 136.0,
+   "f0_raw_med_hz": 205.5,
+   "st_vs_speaker": 0.6,
+   "st_p10_p90": [
+    -3.2,
+    7.6
+   ],
+   "contour_st_thirds": [
+    2.4,
+    0.5,
+    null
+   ],
+   "voiced_frames": 32,
+   "db_p50": -15.0,
+   "db_peak": -12.9,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "him",
+    "Kevin?"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 630,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 600,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking excitedly",
+      0.486,
+      3.5
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.4,
+      2.99
+     ],
+     [
+      "a calm narrator speaking",
+      0.051,
+      2.09
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.03,
+      2.43
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.968
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.994,
+      2.25
+     ],
+     [
+      "people laughing",
+      0.006,
+      0.61
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 18,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 39.18,
+   "end": 39.92,
+   "text": "Kevin's online.",
+   "words": 2,
+   "dur": 0.74,
+   "wpm": 162,
+   "f0_med_hz": 265.6,
+   "f0_raw_med_hz": 265.6,
+   "st_vs_speaker": 4.3,
+   "st_p10_p90": [
+    1.1,
+    7.0
+   ],
+   "contour_st_thirds": [
+    3.5,
+    6.0,
+    3.6
+   ],
+   "voiced_frames": 59,
+   "db_p50": -13.0,
+   "db_peak": -10.4,
+   "inner_pauses": [],
+   "emphasis_words": [],
+   "lengthened_words": [
+    "Kevin's"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 710,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 519,
+   "earshot_tone": [
+    [
+     [
+      "a confused person asking a question",
+      0.652,
+      3.01
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.138,
+      2.59
+     ],
+     [
+      "a person speaking excitedly",
+      0.102,
+      2.66
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.051,
+      1.97
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.926
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "people laughing",
+      0.548,
+      1.66
+     ],
+     [
+      "a person speaking",
+      0.452,
+      1.61
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 19,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 40.44,
+   "end": 41.16,
+   "text": "Is he okay?",
+   "words": 3,
+   "dur": 0.72,
+   "wpm": 250,
+   "f0_med_hz": 131.6,
+   "f0_raw_med_hz": null,
+   "st_vs_speaker": 0.0,
+   "st_p10_p90": [
+    0.0,
+    0.0
+   ],
+   "contour_st_thirds": [
+    null,
+    null,
+    null
+   ],
+   "voiced_frames": 0,
+   "db_p50": -17.6,
+   "db_peak": -12.1,
+   "inner_pauses": [],
+   "emphasis_words": [],
+   "lengthened_words": [],
+   "fillers": [
+    "okay?"
+   ],
+   "gap_to_next_ms": 650,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 640,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.851,
+      3.95
+     ],
+     [
+      "a confused person asking a question",
+      0.09,
+      3.35
+     ],
+     [
+      "a person speaking excitedly",
+      0.029,
+      3.26
+     ],
+     [
+      "a person shouting",
+      0.018,
+      2.89
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.663
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.982,
+      2.19
+     ],
+     [
+      "people laughing",
+      0.018,
+      0.8
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 20,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 41.8,
+   "end": 42.48,
+   "text": "Kevin's down.",
+   "words": 2,
+   "dur": 0.68,
+   "wpm": 176,
+   "f0_med_hz": 187.8,
+   "f0_raw_med_hz": 93.9,
+   "st_vs_speaker": -1.7,
+   "st_p10_p90": [
+    -3.4,
+    0.4
+   ],
+   "contour_st_thirds": [
+    0.3,
+    -1.3,
+    -3.2
+   ],
+   "voiced_frames": 43,
+   "db_p50": -15.1,
+   "db_peak": -9.7,
+   "inner_pauses": [],
+   "emphasis_words": [],
+   "lengthened_words": [
+    "Kevin's"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": null,
+   "gap_method": null,
+   "asr_gap_to_next_ms": null,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking sarcastically",
+      0.226,
+      1.41
+     ],
+     [
+      "a person speaking excitedly",
+      0.186,
+      2.23
+     ],
+     [
+      "a person speaking in a flat deadpan monotone",
+      0.154,
+      1.64
+     ],
+     [
+      "a confused person asking a question",
+      0.137,
+      1.83
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.993
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.977,
+      1.88
+     ],
+     [
+      "people laughing",
+      0.023,
+      0.54
+     ]
+    ]
+   ]
+  }
+ ]
+}

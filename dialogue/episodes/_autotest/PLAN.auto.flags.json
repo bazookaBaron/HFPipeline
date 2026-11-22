@@ -1,0 +1,38 @@
+{
+ "shotsToLook": [
+  6,
+  7,
+  9,
+  10,
+  11,
+  12,
+  16,
+  17,
+  18,
+  21,
+  22
+ ],
+ "byLine": {
+  "6": [
+   "split into a cut-in at 11.21 (pause 320 ms)"
+  ],
+  "8": [
+   "split into a cut-in at 17.05 (pause 520 ms)"
+  ],
+  "9": [
+   "mcu_B choice (shocked)"
+  ],
+  "10": [
+   "wide2 choice (tender)"
+  ],
+  "14": [
+   "split into a cut-in at 33.35 (pause 320 ms)"
+  ],
+  "15": [
+   "mcu_B choice (grin)"
+  ],
+  "18": [
+   "mcu_A choice (dry)"
+  ]
+ }
+}

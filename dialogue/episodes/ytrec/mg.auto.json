@@ -1,0 +1,49 @@
+{
+ "episode": "ytrec",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "SIGNALS",
+   "at": 7.13,
+   "end": 14.03,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "CANDIDATES",
+   "at": 14.03,
+   "end": 20.75,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "RANKER",
+   "at": 22.55,
+   "end": 29.11,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "CLICK VS WATCH",
+   "at": 29.11,
+   "end": 36.41,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "LEFT EARLY",
+   "at": 36.41,
+   "end": 41.59,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "THE LOOP",
+   "at": 41.59,
+   "end": 48.25,
+   "beats": []
+  }
+ ]
+}

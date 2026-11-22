@@ -1,0 +1,63 @@
+{
+ "episode": "qr",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "THE BITE",
+   "at": 0.55,
+   "end": 4.75,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "BUILT FOR DIRT",
+   "at": 9.41,
+   "end": 16.45,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "SQUARE = BIT",
+   "at": 18.95,
+   "end": 25.87,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "THE ZIGZAG",
+   "at": 25.87,
+   "end": 31.69,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "THREE EYES",
+   "at": 31.69,
+   "end": 39.55,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "WHICH WAY UP",
+   "at": 39.55,
+   "end": 45.13,
+   "beats": []
+  },
+  {
+   "id": 7,
+   "name": "SPARE SQUARES",
+   "at": 48.29,
+   "end": 55.49,
+   "beats": []
+  },
+  {
+   "id": 8,
+   "name": "UP TO 30%",
+   "at": 55.49,
+   "end": 60.33,
+   "beats": []
+  }
+ ]
+}

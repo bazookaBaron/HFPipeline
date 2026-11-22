@@ -1,0 +1,8 @@
+{"cues":[
+{"name":"INSIDE THE BATTERY","at":10.0,"end":16.4,"beats":[]},
+{"name":"FREEZE","at":18.5,"end":22.0,"beats":[]},
+{"name":"TOO SLOW","at":23.0,"end":29.3,"beats":[]},
+{"name":"STUCK","at":29.6,"end":34.1,"beats":[]},
+{"name":"VOLTAGE SAGS","at":35.7,"end":42.75,"beats":[]},
+{"name":"WARM IT UP","at":43.15,"end":49.4,"beats":[]}
+]}

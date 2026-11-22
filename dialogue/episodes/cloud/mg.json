@@ -1,0 +1,262 @@
+{
+ "episode": "cloud",
+ "ratio": "9x16",
+ "layout": "stack",
+ "camEase": "power2.inOut",
+ "camTravel": 0.7,
+ "cam0": {
+  "x": 4,
+  "y": 2.5,
+  "z": 4.6,
+  "zoom": 1.45
+ },
+ "cues": [
+  {
+   "id": 1,
+   "name": "THE CLOUD",
+   "at": 5.81,
+   "end": 8.81,
+   "cam": [
+    {
+     "at": 6.82,
+     "d": 0.7,
+     "to": {
+      "x": 4,
+      "y": 2.5,
+      "z": 2.2,
+      "zoom": 0.95
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 6.1,
+     "word": "cloud",
+     "verb": "cloud rises, tag CLOUD"
+    },
+    {
+     "t": 6.82,
+     "word": "building",
+     "verb": "cloud -> dashed ghost, building rises, camera pulls back"
+    }
+   ],
+   "tags": [
+    {
+     "t": 6.1,
+     "text": "CLOUD"
+    },
+    {
+     "t": 7.15,
+     "text": "= A BUILDING OF COMPUTERS"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "name": "DATA CENTRE",
+   "at": 10,
+   "end": 13.39,
+   "cam": [
+    {
+     "at": 10,
+     "d": 0.7,
+     "to": {
+      "x": 4,
+      "y": 2.6,
+      "z": 1,
+      "zoom": 1.3
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 10.04,
+     "word": "huge room",
+     "verb": "roof lifts"
+    },
+    {
+     "t": 10.7,
+     "word": "computers",
+     "verb": "rack rows rise"
+    },
+    {
+     "t": 12,
+     "word": "fans",
+     "verb": "fan discs spin + airflow lines, tag COOLING FANS"
+    }
+   ],
+   "tags": [
+    {
+     "t": 12,
+     "text": "COOLING FANS"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "name": "WHO OWNS IT",
+   "at": 14.4,
+   "end": 18.4,
+   "cam": [
+    {
+     "at": 14.4,
+     "d": 0.7,
+     "to": {
+      "x": 4,
+      "y": 2.6,
+      "z": 1,
+      "zoom": 0.95
+     }
+    },
+    {
+     "at": 17,
+     "d": 0.6,
+     "to": {
+      "x": 4.2,
+      "y": 3.5,
+      "z": 1,
+      "zoom": 1.9
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 15.38,
+     "word": "Google",
+     "verb": "tag"
+    },
+    {
+     "t": 15.94,
+     "word": "Apple",
+     "verb": "tag"
+    },
+    {
+     "t": 16.46,
+     "word": "Amazon",
+     "verb": "tag"
+    },
+    {
+     "t": 17.86,
+     "word": "little space",
+     "verb": "one slot lit accent, tag YOUR SPACE"
+    }
+   ],
+   "tags": [
+    {
+     "t": 15.38,
+     "text": "GOOGLE"
+    },
+    {
+     "t": 15.94,
+     "text": "APPLE"
+    },
+    {
+     "t": 16.46,
+     "text": "AMAZON"
+    },
+    {
+     "t": 17.86,
+     "text": "YOUR SPACE"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "name": "SPARE COPIES",
+   "at": 21.76,
+   "end": 26.2,
+   "cam": [
+    {
+     "at": 21.76,
+     "d": 0.7,
+     "to": {
+      "x": 13.8,
+      "y": 3.2,
+      "z": 1,
+      "zoom": 1.2
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 22,
+     "word": "photo",
+     "verb": "photo tile appears"
+    },
+    {
+     "t": 22.3,
+     "word": "spare copies",
+     "verb": "copies fly onto racks 1-3"
+    },
+    {
+     "t": 24.06,
+     "word": "breaks",
+     "verb": "rack 1 ember, OFFLINE"
+    },
+    {
+     "t": 25.44,
+     "word": "safe",
+     "verb": "checks on racks 2-3"
+    }
+   ],
+   "tags": [
+    {
+     "t": 22.05,
+     "text": "PHOTO"
+    },
+    {
+     "t": 23,
+     "text": "COPY 1"
+    },
+    {
+     "t": 23.25,
+     "text": "COPY 2"
+    },
+    {
+     "t": 23.5,
+     "text": "COPY 3"
+    },
+    {
+     "t": 24.06,
+     "text": "OFFLINE"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "name": "SELFIES",
+   "at": 39.56,
+   "end": 42.6,
+   "cam": [
+    {
+     "at": 39.56,
+     "d": 0.7,
+     "to": {
+      "x": 21.2,
+      "y": 1.5,
+      "z": 1.7,
+      "zoom": 1.7
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 39.7,
+     "word": "selfies",
+     "verb": "slab stack drops on, counter 0 -> 40"
+    },
+    {
+     "t": 40.68,
+     "word": "41",
+     "verb": "one more slab drops, counter 41 accent"
+    }
+   ],
+   "tags": [
+    {
+     "t": 39.8,
+     "text": "40 PHOTOS"
+    }
+   ]
+  }
+ ]
+}

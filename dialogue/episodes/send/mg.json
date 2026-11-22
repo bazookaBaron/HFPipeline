@@ -1,0 +1,317 @@
+{
+ "episode": "send",
+ "ratio": "9x16",
+ "layout": "stack",
+ "duration": 44.45,
+ "camEase": "power2.inOut",
+ "camTravel": 0.6,
+ "cam0": {
+  "x": 0.3,
+  "y": 1.4,
+  "z": 0.6,
+  "zoom": 2.8
+ },
+ "cues": [
+  {
+   "id": 1,
+   "name": "PHONE TO TOWER",
+   "at": 2.6,
+   "end": 9,
+   "cam": [
+    {
+     "at": 3.5,
+     "d": 0.6,
+     "to": {
+      "x": 2.5,
+      "y": 1.9,
+      "z": 1.7,
+      "zoom": 1.9
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 2.66,
+     "word": "First",
+     "verb": "phone rises"
+    },
+    {
+     "t": 3.56,
+     "word": "phone tower",
+     "verb": "tower rises"
+    },
+    {
+     "t": 5.82,
+     "word": "Radio",
+     "verb": "radio rings from the phone"
+    },
+    {
+     "t": 7.18,
+     "word": "shouts",
+     "verb": "message jumps to the tower head"
+    },
+    {
+     "t": 8.14,
+     "word": "listens",
+     "verb": "tower head lit"
+    }
+   ],
+   "tags": [
+    {
+     "t": 2.75,
+     "text": "PHONE"
+    },
+    {
+     "t": 3.6,
+     "text": "TOWER"
+    },
+    {
+     "t": 5.82,
+     "text": "RADIO WAVES"
+    }
+   ]
+  },
+  {
+   "id": 2,
+   "name": "UNDER STREET AND SEA",
+   "at": 11,
+   "end": 16.6,
+   "cam": [
+    {
+     "at": 11.3,
+     "d": 0.6,
+     "to": {
+      "x": 8,
+      "y": 2.6,
+      "z": -0.6,
+      "zoom": 1.25
+     }
+    },
+    {
+     "at": 13.45,
+     "d": 0.7,
+     "to": {
+      "x": 16.5,
+      "y": 2.6,
+      "z": -1.2,
+      "zoom": 1.25
+     }
+    },
+    {
+     "at": 15.9,
+     "d": 0.6,
+     "to": {
+      "x": 16.5,
+      "y": 2.2,
+      "z": 1.8,
+      "zoom": 0.9
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 11.38,
+     "word": "cables",
+     "verb": "message drops into the street cable"
+    },
+    {
+     "t": 12.4,
+     "word": "street",
+     "verb": "tag, message runs to the coast"
+    },
+    {
+     "t": 13.52,
+     "word": "sea",
+     "verb": "camera pans, sea-floor cable, tag"
+    },
+    {
+     "t": 16.04,
+     "word": "satellites",
+     "verb": "dashed ghost satellite above"
+    }
+   ],
+   "tags": [
+    {
+     "t": 12.4,
+     "text": "UNDER THE STREET"
+    },
+    {
+     "t": 13.52,
+     "text": "UNDER THE SEA"
+    },
+    {
+     "t": 16.04,
+     "text": "SATELLITE?"
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "name": "BETWEEN CONTINENTS",
+   "at": 16.6,
+   "end": 24.1,
+   "cam": [
+    {
+     "at": 17.2,
+     "d": 0.7,
+     "to": {
+      "x": 17,
+      "y": 2.4,
+      "z": -0.6,
+      "zoom": 0.62
+     }
+    },
+    {
+     "at": 21.8,
+     "d": 0.6,
+     "to": {
+      "x": 17,
+      "y": 3,
+      "z": -1.75,
+      "zoom": 1.7
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 17.16,
+     "word": "Mostly cables",
+     "verb": "ghost satellite fades, pull back over both coasts"
+    },
+    {
+     "t": 18.2,
+     "word": "99",
+     "verb": "tag 99 %"
+    },
+    {
+     "t": 21.98,
+     "word": "light",
+     "verb": "push in on the sea cable, light pulses run along it"
+    }
+   ],
+   "tags": [
+    {
+     "t": 18.2,
+     "text": "99 % BETWEEN CONTINENTS"
+    },
+    {
+     "t": 22,
+     "text": "LIGHT IN GLASS"
+    }
+   ]
+  },
+  {
+   "id": 4,
+   "name": "COMPANY COMPUTERS",
+   "at": 25.6,
+   "end": 30.2,
+   "cam": [
+    {
+     "at": 25.6,
+     "d": 0.6,
+     "to": {
+      "x": 27.6,
+      "y": 2.4,
+      "z": 0.9,
+      "zoom": 1.05
+     }
+    },
+    {
+     "at": 28.7,
+     "d": 0.6,
+     "to": {
+      "x": 32,
+      "y": 1.9,
+      "z": 0.9,
+      "zoom": 1.05
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 26.14,
+     "word": "computers",
+     "verb": "rack rows rise, message lands on a rack"
+    },
+    {
+     "t": 27.48,
+     "word": "photos",
+     "verb": "tag (nod to the cloud episode)"
+    },
+    {
+     "t": 28.76,
+     "word": "Maya's phone",
+     "verb": "pan, Maya phone rises"
+    },
+    {
+     "t": 29.24,
+     "word": "pass",
+     "verb": "message flies to her phone, check"
+    }
+   ],
+   "tags": [
+    {
+     "t": 26.14,
+     "text": "COMPANY COMPUTERS"
+    },
+    {
+     "t": 27.48,
+     "text": "SAME AS YOUR PHOTOS"
+    },
+    {
+     "t": 28.76,
+     "text": "MAYA'S PHONE"
+    }
+   ]
+  },
+  {
+   "id": 5,
+   "name": "HOW LONG",
+   "at": 31.9,
+   "end": 37.4,
+   "cam": [
+    {
+     "at": 31.9,
+     "d": 0.7,
+     "to": {
+      "x": 17.2,
+      "y": 1.6,
+      "z": 0.2,
+      "zoom": 0.6
+     }
+    }
+   ],
+   "beats": [
+    {
+     "t": 32.64,
+     "word": "hand to hand",
+     "verb": "every hop lights in turn"
+    },
+    {
+     "t": 35.6,
+     "word": "minute",
+     "verb": "tag 1 MINUTE? (dashed)"
+    },
+    {
+     "t": 36.2,
+     "word": "Less",
+     "verb": "message zips phone to phone, timer 0.0 -> 0.2 S, check"
+    }
+   ],
+   "tags": [
+    {
+     "t": 35.6,
+     "text": "1 MINUTE?"
+    },
+    {
+     "t": 36.2,
+     "text": "0.2 S"
+    },
+    {
+     "t": 36.8,
+     "text": "UNDER A SECOND"
+    }
+   ]
+  }
+ ]
+}

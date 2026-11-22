@@ -1,0 +1,40 @@
+{
+ "shotsToLook": [
+  4,
+  6,
+  8,
+  10,
+  12,
+  13,
+  16,
+  17,
+  18,
+  22
+ ],
+ "byLine": {
+  "4": [
+   "wide2 choice (firm_light)"
+  ],
+  "6": [
+   "wide2 choice (warm)"
+  ],
+  "8": [
+   "wide2 choice (amused)"
+  ],
+  "10": [
+   "wide2 choice (firm_light)"
+  ],
+  "12": [
+   "wide2 choice (warm)"
+  ],
+  "13": [
+   "mcu_B choice (shocked)"
+  ],
+  "16": [
+   "split into a cut-in at 47.91 (pause 400 ms)"
+  ],
+  "17": [
+   "mcu_B choice (grin)"
+  ]
+ }
+}

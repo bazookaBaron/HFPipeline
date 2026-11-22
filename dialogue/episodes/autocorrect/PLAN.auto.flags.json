@@ -1,0 +1,43 @@
+{
+ "shotsToLook": [
+  1,
+  2,
+  3,
+  4,
+  10,
+  11,
+  13,
+  17,
+  19,
+  20,
+  21,
+  22,
+  23
+ ],
+ "byLine": {
+  "1": [
+   "split into a cut-in at 2.05 (pause 440 ms)"
+  ],
+  "2": [
+   "split into a cut-in at 5.45 (pause 380 ms)"
+  ],
+  "8": [
+   "split into a cut-in at 17.07 (pause 420 ms)"
+  ],
+  "10": [
+   "wide2 choice (amused)"
+  ],
+  "14": [
+   "wide2 choice (warm)"
+  ],
+  "16": [
+   "split into a cut-in at 38.41 (pause 680 ms)"
+  ],
+  "17": [
+   "mcu_B choice (grin)"
+  ],
+  "18": [
+   "wide2 choice (firm_light)"
+  ]
+ }
+}

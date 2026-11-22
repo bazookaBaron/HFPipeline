@@ -1,0 +1,111 @@
+# dependencies
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+
+# secrets
+.env
+.env.*
+!.env.example
+control-panel/data/oauth/
+
+# generated media / render outputs (large, reproducible)
+*.mp4
+*.mov
+*.webm
+*.wav
+video-engine/renders/
+video-engine/snapshots/
+video-engine/generated/
+video-engine/assets/generated/
+control-panel/data/renders/
+control-panel/data/uploads/
+orchestrator/output/
+voice-pipeline/test_out/
+voice-pipeline/.cache/
+analysis/**/sheets/
+analysis/**/dense/
+analysis/**/design/crops/
+.hyperframes/
+*.log
+
+# stage dev preview project (junctions into compositions/assets)
+video-engine/.stage-dev/
+video-engine/.orchestrator-snap-*/
+
+# --- added for snapshot: large/generated/private local data ---
+/out/
+/orchestrator/test-out/
+/voice-pipeline/voices/
+/video-engine/.layout-audit-*.html
+/analysis/**/*.mp4
+/analysis/**/*.wav
+/analysis/**/*.mov
+/analysis/**/*.png
+/analysis/**/*.jpg
+/analysis/**/*.jpeg
+/analysis/**/node_modules/
+/analysis/**/frames/
+/docs/theme/ref/
+
+/archive/spike-sketch/frames/
+/archive/spike-sketch/comp/board/layers/
+/runtime/audio/cache/
+.venvs/
+
+# local vendored TTS models/sources (git-lfs .gitattributes inside; never add)
+/.vendor-tts/
+
+# local vendored voice/SFX engines + uv cache (nested git-lfs .gitattributes; never add)
+/.vendor/
+
+# --- 2026-11-22 cleanup: only the puppet + dialogue pipelines remain ---
+/.vendor-assets/
+/samples/
+/output/
+/node_modules/
+# dialogue: generated media / working output (source only is tracked)
+/dialogue/**/*.png
+/dialogue/**/*.jpg
+/dialogue/**/*.jpeg
+/dialogue/**/*.mp3
+/dialogue/**/*.flac
+/dialogue/**/*.npy
+/dialogue/**/*.log
+/dialogue/**/__pycache__/
+/dialogue/sfx/_work/
+/dialogue/out_share/
+/dialogue/engine/out/
+
+# --- recipe only: no generated content, media, assets or vendored libs ---
+*.png
+*.jpg
+*.jpeg
+*.webp
+*.gif
+*.mp3
+*.flac
+*.ogg
+*.woff
+*.woff2
+*.ttf
+*.otf
+*.wasm
+*.glb
+*.npy
+*.done
+*.out
+*.err
+/agent/
+/.agents/
+/runtime/vendor/*/
+/runtime/geo/relief/
+/dialogue/mg/vendor/
+/dialogue/**/out/
+/dialogue/voice/clone_bakeoff/
+/dialogue/fish/analysis*.json
+/video-engine/assets/
+/video-engine/generated/
+**/*.svg
+!/runtime/lf-outro/**/*.svg

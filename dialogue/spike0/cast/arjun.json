@@ -1,0 +1,4 @@
+{"id":"arjun","pack":"men","head":"Suit","body":"Suit","hide":[{"part":"body","material":"Tie"}],"hideNodes":["Pistol"],
+ "colors":{"Skin":"#B9805A","Suit":"#3A3F47","White":"#D8D2C4","Hair":"#1B140F","Eyebrows":"#1B140F","Eye":"#17120E","Black":"#23272D","Grey":"#23272D","DarkBrown":"#23272D"},
+ "faceParts":{"eyes":"Eye","brows":"Eyebrows"},
+ "recolour":"charcoal suit #3A3F47, tie hidden, pistol node hidden"}

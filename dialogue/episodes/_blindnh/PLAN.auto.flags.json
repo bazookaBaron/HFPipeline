@@ -1,0 +1,32 @@
+{
+ "shotsToLook": [
+  6,
+  7,
+  9,
+  10,
+  13,
+  18,
+  19,
+  20
+ ],
+ "byLine": {
+  "6": [
+   "split into a cut-in at 11.91 (pause 360 ms)"
+  ],
+  "8": [
+   "word alignment forced"
+  ],
+  "9": [
+   "mcu_B choice (shocked)"
+  ],
+  "12": [
+   "wide2 choice (warm)"
+  ],
+  "17": [
+   "mcu_B choice (grin)"
+  ],
+  "18": [
+   "mcu_A choice (dry)"
+  ]
+ }
+}

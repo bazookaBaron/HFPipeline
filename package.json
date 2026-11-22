@@ -1,0 +1,8 @@
+{
+  "name": "hfpipeline",
+  "private": true,
+  "description": "Puppet + Dialogue video pipelines on HyperFrames",
+  "dependencies": {
+    "puppeteer-core": "^25.16.0"
+  }
+}

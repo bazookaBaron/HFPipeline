@@ -1,0 +1,36 @@
+{
+ "shotsToLook": [
+  8,
+  9,
+  10,
+  11,
+  12,
+  17,
+  18,
+  19
+ ],
+ "byLine": {
+  "8": [
+   "wide2 choice (firm_light)",
+   "gesture count dropped (hand clash)"
+  ],
+  "9": [
+   "gesture count dropped (hand clash)"
+  ],
+  "10": [
+   "wide2 choice (warm)"
+  ],
+  "11": [
+   "mcu_B choice (shocked)"
+  ],
+  "12": [
+   "wide2 choice (firm_light)"
+  ],
+  "17": [
+   "mcu_B choice (grin)"
+  ],
+  "18": [
+   "mcu_A choice (dry)"
+  ]
+ }
+}

@@ -1,0 +1,2857 @@
+{
+ "ep": "abr",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 65.86,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_abr_1p3x.wav",
+ "words_src": "dialogue/fish/words_abr.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "CU",
+   "text": "Grandpa, why does my movie go blurry, then sharp again?",
+   "s": 0,
+   "e": 2.66,
+   "w0": 0,
+   "w1": 9
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Because it isn't one movie. It's a pile of little pieces.",
+   "s": 3.38,
+   "e": 6.6,
+   "w0": 10,
+   "w1": 20
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": "OTS",
+   "text": "Pieces of a movie?",
+   "s": 7.28,
+   "e": 8.06,
+   "w0": 21,
+   "w1": 24
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "A few seconds each. And every piece is stored in several qualities. Small and blurry. Big and sharp.",
+   "s": 8.64,
+   "e": 15.66,
+   "w0": 25,
+   "w1": 42
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "So who decides which one I get?",
+   "s": 16.32,
+   "e": 17.74,
+   "w0": 43,
+   "w1": 49
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Your player. Before each piece, it checks how fast the last one arrived.",
+   "s": 18.29,
+   "e": 22.62,
+   "w0": 50,
+   "w1": 62
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "And if the wifi is slow?",
+   "s": 23.12,
+   "e": 24.24,
+   "w0": 63,
+   "w1": 68
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "It asks for the small piece. Less to carry, so it arrives on time.",
+   "s": 25,
+   "e": 29.18,
+   "w0": 69,
+   "w1": 82
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "Why not wait for the sharp one?",
+   "s": 29.88,
+   "e": 31.14,
+   "w0": 83,
+   "w1": 89
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Then the picture freezes. A blur you forgive. A spinning circle, never.",
+   "s": 31.84,
+   "e": 36.62,
+   "w0": 90,
+   "w1": 101
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "So it just guesses?",
+   "s": 37.04,
+   "e": 37.9,
+   "w0": 102,
+   "w1": 105
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "CU",
+   "text": "It keeps a cushion. Seconds of movie, downloaded ahead of what you're watching.",
+   "s": 38.32,
+   "e": 42.38,
+   "w0": 106,
+   "w1": 118
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "And a fat cushion means sharp?",
+   "s": 42.9,
+   "e": 44.3,
+   "w0": 119,
+   "w1": 124
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "2S",
+   "text": "Fat cushion, it risks the big piece. Thin cushion, it plays safe.",
+   "s": 44.72,
+   "e": 49.34,
+   "w0": 125,
+   "w1": 136
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "Then the wifi comes back, and it's sharp again.",
+   "s": 49.82,
+   "e": 51.98,
+   "w0": 137,
+   "w1": 145
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Piece by piece. Nobody has to tell you.",
+   "s": 52.62,
+   "e": 55.14,
+   "w0": 146,
+   "w1": 153
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "CU",
+   "text": "So the blur is it looking after me?",
+   "s": 55.48,
+   "e": 57.46,
+   "w0": 154,
+   "w1": 161
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "dry, flat",
+   "cam": "CU",
+   "text": "It's looking after your patience. Which was never great.",
+   "s": 58.52,
+   "e": 61.68,
+   "w0": 162,
+   "w1": 170
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 3.23,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "push",
+    "amt": 0.03
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 2,
+   "t0": 3.23,
+   "t1": 5.04,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 3,
+   "t0": 5.04,
+   "t1": 7.13,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 7.13,
+   "t1": 8.49,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 8.49,
+   "t1": 16.17,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 6,
+   "t0": 16.17,
+   "t1": 18.14,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 7,
+   "t0": 18.14,
+   "t1": 22.97,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 8,
+   "t0": 22.97,
+   "t1": 24.85,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 9,
+   "t0": 24.85,
+   "t1": 29.73,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 29.73,
+   "t1": 31.69,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 11,
+   "t0": 31.69,
+   "t1": 36.89,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 12,
+   "t0": 36.89,
+   "t1": 38.17,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 13,
+   "t0": 38.17,
+   "t1": 42.75,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 14,
+   "t0": 42.75,
+   "t1": 44.57,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 15,
+   "t0": 44.57,
+   "t1": 49.67,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 16,
+   "t0": 49.67,
+   "t1": 52.47,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 17,
+   "t0": 52.47,
+   "t1": 53.83,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 18,
+   "t0": 53.83,
+   "t1": 55.33,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 19,
+   "t0": 55.33,
+   "t1": 58.37,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 20,
+   "t0": 58.37,
+   "t1": 63.23,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 21,
+   "t0": 63.23,
+   "t1": 65.86,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    3.23,
+    "amused",
+    1
+   ],
+   [
+    7.13,
+    "amused",
+    0.6
+   ],
+   [
+    8.49,
+    "warm",
+    1
+   ],
+   [
+    18.14,
+    "firm_light",
+    1
+   ],
+   [
+    22.97,
+    "warm",
+    1
+   ],
+   [
+    24.85,
+    "firm_light",
+    1
+   ],
+   [
+    29.73,
+    "warm",
+    1
+   ],
+   [
+    31.69,
+    "amused",
+    1
+   ],
+   [
+    36.89,
+    "warm",
+    1
+   ],
+   [
+    38.17,
+    "firm_light",
+    1
+   ],
+   [
+    42.75,
+    "warm",
+    1
+   ],
+   [
+    52.47,
+    "firm_light",
+    1
+   ],
+   [
+    55.33,
+    "warm",
+    1
+   ],
+   [
+    58.37,
+    "firm_light",
+    1
+   ],
+   [
+    63.23,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    7.13,
+    "surprised",
+    1
+   ],
+   [
+    8.49,
+    "curious",
+    1
+   ],
+   [
+    16.17,
+    "thinking",
+    1
+   ],
+   [
+    18.14,
+    "curious",
+    1
+   ],
+   [
+    42.75,
+    "thinking",
+    1
+   ],
+   [
+    44.57,
+    "curious",
+    1
+   ],
+   [
+    55.33,
+    "grin",
+    1
+   ],
+   [
+    58.37,
+    "curious",
+    1
+   ],
+   [
+    63.23,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 2.38,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 1.1,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 1,
+   "word": "movie"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 3.86,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 2,
+   "word": "isn't"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 3.86,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "isn't"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 4.5,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 2,
+   "word": "movie"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 5.46,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "pile"
+  },
+  {
+   "actor": "B",
+   "kind": "head_back",
+   "t": 7.34,
+   "rise": 0.22,
+   "dur": 0.45,
+   "line": 3,
+   "word": "Pieces"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 7.94,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 3,
+   "word": "movie?"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 9,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 4,
+   "word": "seconds"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 11.8,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 4,
+   "word": "several"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 13.36,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 4,
+   "word": "small"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 14.94,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 4,
+   "word": "big"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 16.74,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 5,
+   "word": "decides"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 18.56,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 6,
+   "word": "player"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 21.22,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 6,
+   "word": "fast"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 23.46,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 7,
+   "word": "wifi"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 23.47,
+   "rise": 0.5,
+   "dur": 1.03,
+   "line": 7,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 25.86,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 8,
+   "word": "small"
+  },
+  {
+   "actor": "A",
+   "kind": "hand_lift",
+   "t": 27.52,
+   "rise": 0.3,
+   "dur": 0.45,
+   "line": 8,
+   "word": "carry"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 29.02,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 8,
+   "word": "time"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 30.23,
+   "rise": 0.5,
+   "dur": 1.11,
+   "line": 9,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 30.3,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 9,
+   "word": "wait"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 30.8,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 9,
+   "word": "sharp"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 32.42,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 10,
+   "word": "freezes"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 34.16,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 10,
+   "word": "forgive"
+  },
+  {
+   "actor": "A",
+   "kind": "head_shake",
+   "t": 36.38,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 10,
+   "word": "never."
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 37.39,
+   "rise": 0.5,
+   "dur": 0.43,
+   "line": 11,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 37.56,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 11,
+   "word": "guesses?"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 37.62,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 11,
+   "word": "guesses"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 38.94,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 12,
+   "word": "cushion"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 41.42,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 12,
+   "word": "ahead"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 43.96,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 13,
+   "word": "sharp?"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 44.84,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 14,
+   "word": "fat"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 46,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 14,
+   "word": "risks"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 47.76,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 14,
+   "word": "thin"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 48.98,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 14,
+   "word": "safe."
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 50.17,
+   "rise": 0.5,
+   "dur": 1.95,
+   "line": 15,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 50.2,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 15,
+   "word": "wifi"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_lift",
+   "t": 51.58,
+   "rise": 0.3,
+   "dur": 0.45,
+   "line": 15,
+   "word": "sharp"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 52.74,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 16,
+   "word": "piece"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 54.04,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 16,
+   "word": "Nobody"
+  },
+  {
+   "actor": "B",
+   "kind": "two_hand_open",
+   "t": 56.82,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 17,
+   "word": "looking"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 59.58,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 18,
+   "word": "patience"
+  },
+  {
+   "actor": "A",
+   "kind": "head_shake",
+   "t": 61.1,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 18,
+   "word": "never"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 61.1,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 18,
+   "word": "never"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 64.08,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 16.37,
+   "t1": 17.49,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 42.95,
+   "t1": 44.05,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 63.48,
+   "t1": 66.86,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.2,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "why",
+   "s": 0.67,
+   "e": 0.8,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "does",
+   "s": 0.8,
+   "e": 0.92,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "my",
+   "s": 0.92,
+   "e": 1.04,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "movie",
+   "s": 1.04,
+   "e": 1.28,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "go",
+   "s": 1.28,
+   "e": 1.44,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "blurry,",
+   "s": 1.44,
+   "e": 1.8,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "then",
+   "s": 1.8,
+   "e": 2.16,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "sharp",
+   "s": 2.16,
+   "e": 2.42,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 9,
+   "w": "again?",
+   "s": 2.42,
+   "e": 2.66,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "Because",
+   "s": 3.38,
+   "e": 3.6,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 11,
+   "w": "it",
+   "s": 3.6,
+   "e": 3.8,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 12,
+   "w": "isn't",
+   "s": 3.8,
+   "e": 4.14,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 13,
+   "w": "one",
+   "s": 4.14,
+   "e": 4.38,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 14,
+   "w": "movie.",
+   "s": 4.38,
+   "e": 4.74,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 15,
+   "w": "It's",
+   "s": 5.19,
+   "e": 5.38,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 16,
+   "w": "a",
+   "s": 5.38,
+   "e": 5.4,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 17,
+   "w": "pile",
+   "s": 5.4,
+   "e": 5.74,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 18,
+   "w": "of",
+   "s": 5.74,
+   "e": 5.94,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 19,
+   "w": "little",
+   "s": 5.94,
+   "e": 6.2,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 20,
+   "w": "pieces.",
+   "s": 6.2,
+   "e": 6.6,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 21,
+   "w": "Pieces",
+   "s": 7.28,
+   "e": 7.64,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 22,
+   "w": "of",
+   "s": 7.64,
+   "e": 7.78,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 23,
+   "w": "a",
+   "s": 7.78,
+   "e": 7.88,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 24,
+   "w": "movie?",
+   "s": 7.88,
+   "e": 8.06,
+   "sp": "B",
+   "line": 3,
+   "stress": true
+  },
+  {
+   "i": 25,
+   "w": "A",
+   "s": 8.64,
+   "e": 8.76,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 26,
+   "w": "few",
+   "s": 8.76,
+   "e": 8.94,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 27,
+   "w": "seconds",
+   "s": 8.94,
+   "e": 9.24,
+   "sp": "A",
+   "line": 4,
+   "stress": true
+  },
+  {
+   "i": 28,
+   "w": "each.",
+   "s": 9.24,
+   "e": 9.6,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 29,
+   "w": "And",
+   "s": 10.17,
+   "e": 10.28,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 30,
+   "w": "every",
+   "s": 10.28,
+   "e": 10.6,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 31,
+   "w": "piece",
+   "s": 10.6,
+   "e": 10.9,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 32,
+   "w": "is",
+   "s": 10.9,
+   "e": 11.16,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 33,
+   "w": "stored",
+   "s": 11.16,
+   "e": 11.46,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 34,
+   "w": "in",
+   "s": 11.46,
+   "e": 11.68,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 35,
+   "w": "several",
+   "s": 11.68,
+   "e": 12.02,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 36,
+   "w": "qualities.",
+   "s": 12.02,
+   "e": 12.54,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 37,
+   "w": "Small",
+   "s": 13.24,
+   "e": 13.56,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 38,
+   "w": "and",
+   "s": 13.56,
+   "e": 13.82,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 39,
+   "w": "blurry.",
+   "s": 13.82,
+   "e": 14.14,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 40,
+   "w": "Big",
+   "s": 14.82,
+   "e": 15.08,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 41,
+   "w": "and",
+   "s": 15.08,
+   "e": 15.34,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 42,
+   "w": "sharp.",
+   "s": 15.34,
+   "e": 15.66,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 43,
+   "w": "So",
+   "s": 16.32,
+   "e": 16.46,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 44,
+   "w": "who",
+   "s": 16.46,
+   "e": 16.62,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 45,
+   "w": "decides",
+   "s": 16.62,
+   "e": 16.94,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 46,
+   "w": "which",
+   "s": 16.94,
+   "e": 17.2,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 47,
+   "w": "one",
+   "s": 17.2,
+   "e": 17.4,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 48,
+   "w": "I",
+   "s": 17.4,
+   "e": 17.52,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 49,
+   "w": "get?",
+   "s": 17.52,
+   "e": 17.74,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 50,
+   "w": "Your",
+   "s": 18.29,
+   "e": 18.44,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 51,
+   "w": "player.",
+   "s": 18.44,
+   "e": 18.76,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 52,
+   "w": "Before",
+   "s": 19.3,
+   "e": 19.46,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 53,
+   "w": "each",
+   "s": 19.46,
+   "e": 19.82,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 54,
+   "w": "piece,",
+   "s": 19.82,
+   "e": 20.16,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 55,
+   "w": "it",
+   "s": 20.48,
+   "e": 20.6,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 56,
+   "w": "checks",
+   "s": 20.6,
+   "e": 20.88,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 57,
+   "w": "how",
+   "s": 20.88,
+   "e": 21.1,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 58,
+   "w": "fast",
+   "s": 21.1,
+   "e": 21.48,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 59,
+   "w": "the",
+   "s": 21.48,
+   "e": 21.74,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 60,
+   "w": "last",
+   "s": 21.74,
+   "e": 22.02,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 61,
+   "w": "one",
+   "s": 22.02,
+   "e": 22.2,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 62,
+   "w": "arrived.",
+   "s": 22.2,
+   "e": 22.62,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 63,
+   "w": "And",
+   "s": 23.12,
+   "e": 23.2,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 64,
+   "w": "if",
+   "s": 23.2,
+   "e": 23.3,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 65,
+   "w": "the",
+   "s": 23.3,
+   "e": 23.4,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 66,
+   "w": "wifi",
+   "s": 23.4,
+   "e": 23.76,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 67,
+   "w": "is",
+   "s": 23.76,
+   "e": 23.94,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 68,
+   "w": "slow?",
+   "s": 23.94,
+   "e": 24.24,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 69,
+   "w": "It",
+   "s": 25,
+   "e": 25.1,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 70,
+   "w": "asks",
+   "s": 25.1,
+   "e": 25.42,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 71,
+   "w": "for",
+   "s": 25.42,
+   "e": 25.64,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 72,
+   "w": "the",
+   "s": 25.64,
+   "e": 25.74,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 73,
+   "w": "small",
+   "s": 25.74,
+   "e": 26.02,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 74,
+   "w": "piece.",
+   "s": 26.02,
+   "e": 26.36,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 75,
+   "w": "Less",
+   "s": 27.06,
+   "e": 27.22,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 76,
+   "w": "to",
+   "s": 27.22,
+   "e": 27.4,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 77,
+   "w": "carry,",
+   "s": 27.4,
+   "e": 27.68,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 78,
+   "w": "so",
+   "s": 28.13,
+   "e": 28.28,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 79,
+   "w": "it",
+   "s": 28.28,
+   "e": 28.38,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 80,
+   "w": "arrives",
+   "s": 28.38,
+   "e": 28.68,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 81,
+   "w": "on",
+   "s": 28.68,
+   "e": 28.9,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 82,
+   "w": "time.",
+   "s": 28.9,
+   "e": 29.18,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 83,
+   "w": "Why",
+   "s": 29.88,
+   "e": 30.02,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 84,
+   "w": "not",
+   "s": 30.02,
+   "e": 30.24,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 85,
+   "w": "wait",
+   "s": 30.24,
+   "e": 30.42,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 86,
+   "w": "for",
+   "s": 30.42,
+   "e": 30.58,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 87,
+   "w": "the",
+   "s": 30.58,
+   "e": 30.68,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 88,
+   "w": "sharp",
+   "s": 30.68,
+   "e": 30.88,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 89,
+   "w": "one?",
+   "s": 30.88,
+   "e": 31.14,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 90,
+   "w": "Then",
+   "s": 31.84,
+   "e": 31.94,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 91,
+   "w": "the",
+   "s": 31.94,
+   "e": 32.08,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 92,
+   "w": "picture",
+   "s": 32.08,
+   "e": 32.3,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 93,
+   "w": "freezes.",
+   "s": 32.3,
+   "e": 32.88,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 94,
+   "w": "A",
+   "s": 33.44,
+   "e": 33.52,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 95,
+   "w": "blur",
+   "s": 33.52,
+   "e": 33.8,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 96,
+   "w": "you",
+   "s": 33.8,
+   "e": 34.04,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 97,
+   "w": "forgive.",
+   "s": 34.04,
+   "e": 34.44,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 98,
+   "w": "A",
+   "s": 35.04,
+   "e": 35.12,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 99,
+   "w": "spinning",
+   "s": 35.12,
+   "e": 35.4,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 100,
+   "w": "circle,",
+   "s": 35.4,
+   "e": 35.8,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 101,
+   "w": "never.",
+   "s": 36.32,
+   "e": 36.62,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 102,
+   "w": "So",
+   "s": 37.04,
+   "e": 37.22,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 103,
+   "w": "it",
+   "s": 37.22,
+   "e": 37.34,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 104,
+   "w": "just",
+   "s": 37.34,
+   "e": 37.5,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 105,
+   "w": "guesses?",
+   "s": 37.5,
+   "e": 37.9,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 106,
+   "w": "It",
+   "s": 38.32,
+   "e": 38.42,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 107,
+   "w": "keeps",
+   "s": 38.42,
+   "e": 38.66,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 108,
+   "w": "a",
+   "s": 38.66,
+   "e": 38.82,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 109,
+   "w": "cushion.",
+   "s": 38.82,
+   "e": 39.02,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 110,
+   "w": "Seconds",
+   "s": 39.79,
+   "e": 40.22,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 111,
+   "w": "of",
+   "s": 40.22,
+   "e": 40.28,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 112,
+   "w": "movie,",
+   "s": 40.28,
+   "e": 40.54,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 113,
+   "w": "downloaded",
+   "s": 40.97,
+   "e": 41.3,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 114,
+   "w": "ahead",
+   "s": 41.3,
+   "e": 41.66,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 115,
+   "w": "of",
+   "s": 41.66,
+   "e": 41.8,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 116,
+   "w": "what",
+   "s": 41.8,
+   "e": 41.94,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 117,
+   "w": "you're",
+   "s": 41.94,
+   "e": 42.08,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 118,
+   "w": "watching.",
+   "s": 42.08,
+   "e": 42.38,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 119,
+   "w": "And",
+   "s": 42.9,
+   "e": 43,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 120,
+   "w": "a",
+   "s": 43,
+   "e": 43.12,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 121,
+   "w": "fat",
+   "s": 43.12,
+   "e": 43.34,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 122,
+   "w": "cushion",
+   "s": 43.34,
+   "e": 43.62,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 123,
+   "w": "means",
+   "s": 43.62,
+   "e": 43.9,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 124,
+   "w": "sharp?",
+   "s": 43.9,
+   "e": 44.3,
+   "sp": "B",
+   "line": 13,
+   "stress": true
+  },
+  {
+   "i": 125,
+   "w": "Fat",
+   "s": 44.72,
+   "e": 44.94,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 126,
+   "w": "cushion,",
+   "s": 44.94,
+   "e": 45.32,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 127,
+   "w": "it",
+   "s": 45.78,
+   "e": 45.88,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 128,
+   "w": "risks",
+   "s": 45.88,
+   "e": 46.2,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 129,
+   "w": "the",
+   "s": 46.2,
+   "e": 46.44,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 130,
+   "w": "big",
+   "s": 46.44,
+   "e": 46.64,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 131,
+   "w": "piece.",
+   "s": 46.64,
+   "e": 46.9,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 132,
+   "w": "Thin",
+   "s": 47.64,
+   "e": 47.78,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 133,
+   "w": "cushion,",
+   "s": 47.78,
+   "e": 48.04,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 134,
+   "w": "it",
+   "s": 48.58,
+   "e": 48.66,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 135,
+   "w": "plays",
+   "s": 48.66,
+   "e": 48.92,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 136,
+   "w": "safe.",
+   "s": 48.92,
+   "e": 49.34,
+   "sp": "A",
+   "line": 14,
+   "stress": true
+  },
+  {
+   "i": 137,
+   "w": "Then",
+   "s": 49.82,
+   "e": 50,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 138,
+   "w": "the",
+   "s": 50,
+   "e": 50.14,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 139,
+   "w": "wifi",
+   "s": 50.14,
+   "e": 50.48,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 140,
+   "w": "comes",
+   "s": 50.48,
+   "e": 50.72,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 141,
+   "w": "back,",
+   "s": 50.72,
+   "e": 50.96,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 142,
+   "w": "and",
+   "s": 50.96,
+   "e": 51.26,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 143,
+   "w": "it's",
+   "s": 51.26,
+   "e": 51.46,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 144,
+   "w": "sharp",
+   "s": 51.46,
+   "e": 51.7,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 145,
+   "w": "again.",
+   "s": 51.7,
+   "e": 51.98,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 146,
+   "w": "Piece",
+   "s": 52.62,
+   "e": 52.78,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 147,
+   "w": "by",
+   "s": 52.78,
+   "e": 53.06,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 148,
+   "w": "piece.",
+   "s": 53.06,
+   "e": 53.4,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 149,
+   "w": "Nobody",
+   "s": 53.98,
+   "e": 54.22,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 150,
+   "w": "has",
+   "s": 54.22,
+   "e": 54.58,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 151,
+   "w": "to",
+   "s": 54.58,
+   "e": 54.74,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 152,
+   "w": "tell",
+   "s": 54.74,
+   "e": 54.94,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 153,
+   "w": "you.",
+   "s": 54.94,
+   "e": 55.14,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 154,
+   "w": "So",
+   "s": 55.48,
+   "e": 56,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 155,
+   "w": "the",
+   "s": 56,
+   "e": 56.16,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 156,
+   "w": "blur",
+   "s": 56.16,
+   "e": 56.44,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 157,
+   "w": "is",
+   "s": 56.58,
+   "e": 56.66,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 158,
+   "w": "it",
+   "s": 56.66,
+   "e": 56.76,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 159,
+   "w": "looking",
+   "s": 56.76,
+   "e": 56.98,
+   "sp": "B",
+   "line": 17,
+   "stress": true
+  },
+  {
+   "i": 160,
+   "w": "after",
+   "s": 56.98,
+   "e": 57.3,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 161,
+   "w": "me?",
+   "s": 57.3,
+   "e": 57.46,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 162,
+   "w": "It's",
+   "s": 58.52,
+   "e": 58.68,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 163,
+   "w": "looking",
+   "s": 58.68,
+   "e": 58.88,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 164,
+   "w": "after",
+   "s": 58.88,
+   "e": 59.28,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 165,
+   "w": "your",
+   "s": 59.28,
+   "e": 59.46,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 166,
+   "w": "patience.",
+   "s": 59.46,
+   "e": 59.94,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 167,
+   "w": "Which",
+   "s": 60.73,
+   "e": 60.84,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 168,
+   "w": "was",
+   "s": 60.84,
+   "e": 61.04,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 169,
+   "w": "never",
+   "s": 61.04,
+   "e": 61.36,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 170,
+   "w": "great.",
+   "s": 61.36,
+   "e": 61.68,
+   "sp": "A",
+   "line": 18
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, why does my",
+   "s": 0,
+   "e": 0.98,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "movie go blurry,",
+   "s": 1.04,
+   "e": 1.74,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "then sharp again?",
+   "s": 1.8,
+   "e": 3.01,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Because it isn't one movie.",
+   "s": 3.38,
+   "e": 5.09,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "It's a pile of little pieces.",
+   "s": 5.19,
+   "e": 6.95,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "Pieces of a movie?",
+   "s": 7.28,
+   "e": 8.41,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "A few seconds each.",
+   "s": 8.64,
+   "e": 9.95,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "And every piece is",
+   "s": 10.17,
+   "e": 11.1,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "stored in several qualities.",
+   "s": 11.16,
+   "e": 12.89,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Small and blurry.",
+   "s": 13.24,
+   "e": 14.49,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Big and sharp.",
+   "s": 14.82,
+   "e": 16.01,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "So who decides which",
+   "s": 16.32,
+   "e": 17.14,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "one I get?",
+   "s": 17.2,
+   "e": 18.09,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "Your player.",
+   "s": 18.29,
+   "e": 19.11,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Before each piece,",
+   "s": 19.3,
+   "e": 20.42,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "it checks how fast",
+   "s": 20.48,
+   "e": 21.42,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "the last one arrived.",
+   "s": 21.48,
+   "e": 22.97,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "And if the wifi is slow?",
+   "s": 23.12,
+   "e": 24.59,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "It asks for the small piece.",
+   "s": 25,
+   "e": 26.71,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Less to carry,",
+   "s": 27.06,
+   "e": 28.03,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "so it arrives on time.",
+   "s": 28.13,
+   "e": 29.53,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Why not wait for",
+   "s": 29.88,
+   "e": 30.52,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "the sharp one?",
+   "s": 30.58,
+   "e": 31.49,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "Then the picture freezes.",
+   "s": 31.84,
+   "e": 33.23,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "A blur you forgive.",
+   "s": 33.44,
+   "e": 34.79,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "A spinning circle, never.",
+   "s": 35.04,
+   "e": 36.97,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "So it just guesses?",
+   "s": 37.04,
+   "e": 38.25,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "It keeps a cushion.",
+   "s": 38.32,
+   "e": 39.37,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Seconds of movie,",
+   "s": 39.79,
+   "e": 40.89,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "downloaded ahead of what you're watching.",
+   "s": 40.97,
+   "e": 42.73,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "And a fat cushion means sharp?",
+   "s": 42.9,
+   "e": 44.65,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "Fat cushion,",
+   "s": 44.72,
+   "e": 45.67,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "it risks the big piece.",
+   "s": 45.78,
+   "e": 47.25,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "Thin cushion,",
+   "s": 47.64,
+   "e": 48.39,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "it plays safe.",
+   "s": 48.58,
+   "e": 49.69,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "Then the wifi comes back,",
+   "s": 49.82,
+   "e": 50.9,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "and it's sharp again.",
+   "s": 50.96,
+   "e": 52.33,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Piece by piece.",
+   "s": 52.62,
+   "e": 53.75,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "Nobody has to tell you.",
+   "s": 53.98,
+   "e": 55.42,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "So the blur is",
+   "s": 55.48,
+   "e": 56.6,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "it looking after me?",
+   "s": 56.66,
+   "e": 57.81,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "It's looking after your patience.",
+   "s": 58.52,
+   "e": 60.29,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "Which was never great.",
+   "s": 60.73,
+   "e": 62.03,
+   "line": 18,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": [
+  {
+   "t0": 3.28,
+   "t1": 8.44,
+   "name": "PIECES"
+  },
+  {
+   "t0": 8.63,
+   "t1": 16.12,
+   "name": "QUALITIES"
+  },
+  {
+   "t0": 16.26,
+   "t1": 22.92,
+   "name": "THE PICK"
+  },
+  {
+   "t0": 23.06,
+   "t1": 29.68,
+   "name": "SLOW WIFI"
+  },
+  {
+   "t0": 29.82,
+   "t1": 36.84,
+   "name": "THE RACE"
+  },
+  {
+   "t0": 38.22,
+   "t1": 42.7,
+   "name": "CUSHION"
+  },
+  {
+   "t0": 42.84,
+   "t1": 49.62,
+   "name": "FAT OR THIN"
+  },
+  {
+   "t0": 49.76,
+   "t1": 55.28,
+   "name": "BACK TO SHARP"
+  }
+ ],
+ "warnings": [
+  "line 1: fuzzy align \"then\" ~ ASR \"than\"",
+  "camera variety R4: #2 ms_A -> #5 ms_A (A): 0.0 deg, size x1.00"
+ ]
+}

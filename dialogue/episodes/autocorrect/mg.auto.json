@@ -1,0 +1,63 @@
+{
+ "episode": "autocorrect",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "BETWEEN TWO KEYS",
+   "at": 0.4,
+   "end": 7.1,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "CLUE 1",
+   "at": 10.4,
+   "end": 14.6,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "CLUE 2",
+   "at": 14.7,
+   "end": 20.1,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "SCORES",
+   "at": 20.2,
+   "end": 27,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "THOUSANDS",
+   "at": 28.3,
+   "end": 30.4,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "YOUR LIST",
+   "at": 31.6,
+   "end": 35.3,
+   "beats": []
+  },
+  {
+   "id": 7,
+   "name": "UNDO",
+   "at": 35.4,
+   "end": 41,
+   "beats": []
+  },
+  {
+   "id": 8,
+   "name": "COMMON WINS",
+   "at": 41.4,
+   "end": 50.4,
+   "beats": []
+  }
+ ]
+}

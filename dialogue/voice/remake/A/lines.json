@@ -1,0 +1,27 @@
+{
+ "ref_turns": "C:/Repos/HFPipleine/dialogue/ref/voice_study/A.turns.json",
+ "voices": {"USER": "Young-Man", "CLAUDE": "Women"},
+ "note": "text variants per turn: v0 = transcript as spoken, v1 = punctuation/tag direction toward the ref contour. Duration forced to the ref turn length.",
+ "lines": [
+  {"turn": 1,  "v": ["Claude, the server's down. Is he okay?", "Claude... the server's down. Is he okay?"]},
+  {"turn": 2,  "v": ["Servers aren't people. It's overloaded. Requests are queuing the", "Servers aren't people. It's overloaded. Requests are queuing, the"], "cut_tail": true},
+  {"turn": 3,  "v": ["Claude, is he okay?", "Claude... is he okay?"]},
+  {"turn": 4,  "v": ["No, he's not okay.", "No. He's not okay."]},
+  {"turn": 5,  "v": ["What happened to him?", "What happened to him?!"]},
+  {"turn": 6,  "v": ["You posted your app on TikTok.", "You posted your app. On TikTok."]},
+  {"turn": 7,  "v": ["It got like twelve views!", "It got, like, twelve views!"]},
+  {"turn": 8,  "v": ["Twelve million.", "Twelve. Million."]},
+  {"turn": 9,  "v": ["Okay.", "[surprise-oh] Okay."]},
+  {"turn": 10, "v": ["And they all showed up at once.", "And they all showed up. At once."]},
+  {"turn": 11, "v": ["How many is he holding?", "How many is he holding?!"]},
+  {"turn": 12, "v": ["Ninety thousand. He was built for forty.", "Ninety thousand... He was built for forty."]},
+  {"turn": 13, "v": ["Forty thousand?", "[question-ah] Forty thousand?"]},
+  {"turn": 14, "v": ["Forty.", "Forty."], "min_dur": 0.55},
+  {"turn": 15, "v": ["Then get him a friend!", "Then get him a friend!!"]},
+  {"turn": 16, "v": ["That's literally the fix.", "That's... literally the fix."]},
+  {"turn": 17, "v": ["Can we call him Kevin?", "Can we call him Kevin?!"]},
+  {"turn": 18, "v": ["Kevin's online.", "Kevin's online."]},
+  {"turn": 19, "v": ["Is he okay?", "Is he okay?!"]},
+  {"turn": 20, "v": ["Kevin's down.", "Kevin's down."]}
+ ]
+}

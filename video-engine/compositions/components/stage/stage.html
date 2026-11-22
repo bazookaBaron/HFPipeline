@@ -1,0 +1,64 @@
+<!doctype html>
+<!--
+  stage -- HyperFrames sub-composition (v3 reference-parity renderer)
+
+  Full-frame host (spec.frame; 1080x1920 unless the spec says otherwise, core.js resizes #root)
+  for a whole video's visuals: background plate, chrome (HUD),
+  mascot and a sequence of scaffolds of measured modules, mutated by word-timed events.
+  All logic lives in lib/stage/core.js + lib/stage/modules-<profile>.js (loaded by the root
+  composition); this file only resolves props and registers the timeline.
+  Spec contract: see lib/stage/core.js. Geometry/motion source: analysis/.../design/SPEC.md.
+-->
+<html
+  lang="en"
+  data-composition-id="stage"
+  data-composition-duration="10"
+  data-composition-variables='[
+    { "id": "spec", "type": "string", "role": "content", "label": "Stage spec", "description": "Compiled stage spec JSON (scaffolds, modules, events, mascot).", "default": "{}" },
+    { "id": "duration", "type": "number", "role": "timing", "label": "Duration", "description": "Total seconds this instance plays.", "default": 10, "min": 1, "max": 600, "step": 0.001 }
+  ]'
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Stage</title>
+  </head>
+  <body>
+    <template>
+      <div id="root" data-composition-id="stage" data-duration="10" data-fps="30">
+        <style>
+          #root {
+            position: relative;
+            width: 1080px;
+            height: 1920px;
+            overflow: hidden;
+            background: #000;
+          }
+        </style>
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+        <script>
+          (function () {
+            "use strict";
+            var root = document.getElementById("root");
+            var vars = window.__hyperframes && window.__hyperframes.getVariables ? window.__hyperframes.getVariables() : {};
+            var duration = Number(vars.duration) > 0 ? Number(vars.duration) : 10;
+            var spec = {};
+            try {
+              spec = typeof vars.spec === "string" ? JSON.parse(vars.spec || "{}") : vars.spec || {};
+            } catch (err) {
+              root.setAttribute("data-stage-problems", "spec is not valid JSON: " + err.message);
+            }
+            var tl = gsap.timeline({ paused: true });
+            if (!window.HFStage || !window.HFStage.build) {
+              root.setAttribute("data-stage-problems", "HFStage not loaded: the root must load lib/stage/core.js + modules");
+            } else {
+              window.HFStage.build({ root: root, tl: tl, spec: spec, duration: duration });
+            }
+            tl.set({}, {}, duration);
+            tl.seek(0, false);
+            window.__timelines["stage"] = tl;
+          })();
+        </script>
+      </div>
+    </template>
+  </body>
+</html>

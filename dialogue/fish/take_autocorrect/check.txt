@@ -1,0 +1,30 @@
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] start p5 light (below RAM floor after 10 min wait): python dialogue/fish/voice_ep.py autocorrect check
+L 1 LEO    f0=  174 wpm= 153 B0    cos L+0.13 W-0.46 | Grandpa, I typed hello to my teacher. My phone sent jello.
+L 2 WALTER f0=  123 wpm= 154 B0   <<< SWAP? cos L-0.02 W-0.30 | Your thumb landed between two keys. H and J are neighbors.
+L 3 LEO    f0=  163 wpm= 238 B0    cos L-0.17 W-0.27 | So it just picked one?
+L 4 WALTER f0=  124 wpm= 139 B0    cos L-0.29 W-0.18 | It guessed. It always guesses.
+L 5 LEO    f0=    0 wpm= 154 B0    cos L-0.13 W-0.44 | Guesses how.
+L 6 WALTER f0=  100 wpm= 150 B0   <<< SWAP? cos L+0.12 W-0.40 | First clue, where your thumb landed. That much it knows.
+L 7 LEO    f0=  225 wpm= 245 B0    cos L-0.07 W-0.36 | What's the other clue?
+L 8 WALTER f0=  119 wpm= 144 B1    cos L-0.45 W+0.18 | The words before it. You just typed putting.
+L 9 LEO    f0=    0 wpm= 107 B1   <<< SWAP? cos L-0.26 W-0.19 | Okay, that's fair.
+L10 WALTER f0=  112 wpm= 113 B1    cos L-0.47 W+0.20 | Then it scores every word it knows. Thumb spot. Word before. How common. Top score wins.
+L11 LEO    f0=  173 wpm= 108 B1   <<< SWAP? cos L-0.35 W-0.05 | Every word? How many?
+L12 WALTER f0=   97 wpm= 138 B1    cos L-0.39 W+0.05 | Thousands. In a blink.
+L13 LEO    f0=  114 wpm= 254 B1    cos L+0.06 W-0.39 | So how does it know me?
+L14 WALTER f0=  100 wpm= 167 B1    cos L-0.53 W+0.17 | You teach it. A word you keep goes in your own list.
+L15 LEO    f0=  123 wpm= 257 B2   <<< SWAP? cos L-0.50 W+0.22 | And if I undo a fix,
+L16 WALTER f0=  123 wpm= 142 B2    cos L-0.42 W+0.09 | then it learns it was wrong. Do that enough, and it stops.
+L17 LEO    f0=  135 wpm= 136 B2    cos L-0.11 W-0.35 | So why does it still turn moe into more?
+L18 WALTER f0=  105 wpm=  92 B3    cos L-0.51 W+0.24 | Everyone types more, almost nobody types mo, nothing personal.
+Leo/Walter median f0: 135 116 | suspects: [2, 6, 9, 11, 15]

@@ -1,0 +1,2529 @@
+{
+ "ep": "faceid",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 58.34,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_faceid_1p3x.wav",
+ "words_src": "dialogue/fish/words_faceid.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "CU",
+   "text": "Grandpa, how does my phone know it's me and not my twin?",
+   "s": 0,
+   "e": 2.6,
+   "w0": 0,
+   "w1": 11
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "You have a twin?",
+   "s": 2.94,
+   "e": 3.72,
+   "w0": 12,
+   "w1": 15
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "playful",
+   "cam": "OTS",
+   "text": "Hypothetically.",
+   "s": 4.38,
+   "e": 4.9,
+   "w0": 16,
+   "w1": 16
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "It throws over thirty thousand invisible dots at your face.",
+   "s": 5.24,
+   "e": 8.36,
+   "w0": 17,
+   "w1": 26
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": "OTS",
+   "text": "Dots? Like a photo?",
+   "s": 8.92,
+   "e": 9.96,
+   "w0": 27,
+   "w1": 30
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "No. A camera watches how the dots bend over your nose, your cheeks, your chin.",
+   "s": 10.44,
+   "e": 15,
+   "w0": 31,
+   "w1": 45
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "So it draws a map of my face.",
+   "s": 15.48,
+   "e": 17.08,
+   "w0": 46,
+   "w1": 53
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "A map of its depth. Hills and valleys. The phone stored yours once, and checks it every unlock.",
+   "s": 17.86,
+   "e": 24.3,
+   "w0": 54,
+   "w1": 71
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "So a photo of me wouldn't work?",
+   "s": 24.92,
+   "e": 26.56,
+   "w0": 72,
+   "w1": 78
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "A photo is flat. No hills, no map.",
+   "s": 27.16,
+   "e": 30.28,
+   "w0": 79,
+   "w1": 86
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "What about a mask?",
+   "s": 30.84,
+   "e": 31.48,
+   "w0": 87,
+   "w1": 90
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "A good one is hard to make. And it wants your eyes open, looking at it.",
+   "s": 32.04,
+   "e": 36.18,
+   "w0": 91,
+   "w1": 106
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "And my twin? Same face, same map.",
+   "s": 36.54,
+   "e": 38.98,
+   "w0": 107,
+   "w1": 113
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "2S",
+   "text": "Strangers get in about one time in a million.",
+   "s": 39.58,
+   "e": 41.86,
+   "w0": 114,
+   "w1": 122
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "And twins?",
+   "s": 42.62,
+   "e": 42.94,
+   "w0": 123,
+   "w1": 124
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Identical ones can fool it. Apple says so itself.",
+   "s": 43.72,
+   "e": 46.42,
+   "w0": 125,
+   "w1": 133
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "CU",
+   "text": "So hypothetically, my twin reads my messages?",
+   "s": 47.02,
+   "e": 49.62,
+   "w0": 134,
+   "w1": 140
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "dry, flat",
+   "cam": "CU",
+   "text": "Hypothetically, get a better passcode. And a better twin.",
+   "s": 50.74,
+   "e": 54.18,
+   "w0": 141,
+   "w1": 149
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 2.79,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 2,
+   "t0": 2.79,
+   "t1": 4.23,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 3,
+   "t0": 4.23,
+   "t1": 5.09,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 5.09,
+   "t1": 8.77,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 8.77,
+   "t1": 10.29,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 6,
+   "t0": 10.29,
+   "t1": 15.33,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 7,
+   "t0": 15.33,
+   "t1": 17.71,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 8,
+   "t0": 17.71,
+   "t1": 24.77,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 9,
+   "t0": 24.77,
+   "t1": 27.01,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 27.01,
+   "t1": 30.69,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 11,
+   "t0": 30.69,
+   "t1": 31.89,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 12,
+   "t0": 31.89,
+   "t1": 36.39,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 13,
+   "t0": 36.39,
+   "t1": 39.43,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 14,
+   "t0": 39.43,
+   "t1": 42.47,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 15,
+   "t0": 42.47,
+   "t1": 43.57,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 16,
+   "t0": 43.57,
+   "t1": 45.31,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 17,
+   "t0": 45.31,
+   "t1": 46.87,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 18,
+   "t0": 46.87,
+   "t1": 50.59,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 19,
+   "t0": 50.59,
+   "t1": 55.73,
+   "rig": "ms_A",
+   "plan": "ms_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 20,
+   "t0": 55.73,
+   "t1": 58.34,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    2.79,
+    "amused",
+    1
+   ],
+   [
+    4.23,
+    "curious",
+    1
+   ],
+   [
+    5.09,
+    "warm",
+    1
+   ],
+   [
+    8.77,
+    "amused",
+    0.6
+   ],
+   [
+    10.29,
+    "firm_light",
+    1
+   ],
+   [
+    15.33,
+    "warm",
+    1
+   ],
+   [
+    17.71,
+    "firm_light",
+    1
+   ],
+   [
+    24.77,
+    "warm",
+    1
+   ],
+   [
+    27.01,
+    "amused",
+    1
+   ],
+   [
+    30.69,
+    "warm",
+    1
+   ],
+   [
+    31.89,
+    "firm_light",
+    1
+   ],
+   [
+    36.39,
+    "warm",
+    1
+   ],
+   [
+    43.57,
+    "firm_light",
+    1
+   ],
+   [
+    46.87,
+    "warm",
+    1
+   ],
+   [
+    50.59,
+    "firm_light",
+    1
+   ],
+   [
+    55.73,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    4.23,
+    "amused",
+    1
+   ],
+   [
+    5.09,
+    "curious",
+    1
+   ],
+   [
+    8.77,
+    "surprised",
+    1
+   ],
+   [
+    9.4,
+    "curious",
+    1
+   ],
+   [
+    15.33,
+    "thinking",
+    1
+   ],
+   [
+    17.71,
+    "curious",
+    1
+   ],
+   [
+    46.87,
+    "grin",
+    1
+   ],
+   [
+    50.59,
+    "curious",
+    1
+   ],
+   [
+    55.73,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 1.94,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 1.02,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 1,
+   "word": "phone"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 3.36,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 2,
+   "word": "a"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 3.36,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "a"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 5.47,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 4,
+   "word": "throws"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 7.46,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 4,
+   "word": "dots"
+  },
+  {
+   "actor": "B",
+   "kind": "head_back",
+   "t": 8.98,
+   "rise": 0.22,
+   "dur": 0.45,
+   "line": 5,
+   "word": "Dots?"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 9.8,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 5,
+   "word": "photo?"
+  },
+  {
+   "actor": "A",
+   "kind": "head_shake",
+   "t": 10.5,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 6,
+   "word": "No."
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 12.7,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 6,
+   "word": "bend"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 16.8,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 7,
+   "word": "face."
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 20.3,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 8,
+   "word": "valleys"
+  },
+  {
+   "actor": "A",
+   "kind": "hand_chest",
+   "t": 22.02,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 8,
+   "word": "yours"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 25.27,
+   "rise": 0.5,
+   "dur": 1.39,
+   "line": 9,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 25.5,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 9,
+   "word": "photo"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 25.56,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 9,
+   "word": "photo"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 27.74,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 10,
+   "word": "is"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 27.74,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 10,
+   "word": "is"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 28.06,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 10,
+   "word": "flat"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 31.19,
+   "rise": 0.5,
+   "dur": 0.35,
+   "line": 11,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 31.24,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 11,
+   "word": "mask?"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 32.76,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 12,
+   "word": "hard"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 36.84,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 13,
+   "word": "twin?"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 36.89,
+   "rise": 0.5,
+   "dur": 2.19,
+   "line": 13,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 36.9,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 13,
+   "word": "twin"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 39.81,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 14,
+   "word": "Strangers"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 41.72,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 14,
+   "word": "million"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 42.97,
+   "rise": 0.5,
+   "dur": 0.3,
+   "line": 15,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 44.7,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 16,
+   "word": "fool"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 45.52,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 16,
+   "word": "Apple"
+  },
+  {
+   "actor": "B",
+   "kind": "two_hand_open",
+   "t": 48.78,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 17,
+   "word": "reads"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 52.28,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 18,
+   "word": "passcode"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 56.58,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 15.53,
+   "t1": 16.83,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 55.98,
+   "t1": 59.34,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.22,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "how",
+   "s": 0.58,
+   "e": 0.72,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "does",
+   "s": 0.72,
+   "e": 0.84,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "my",
+   "s": 0.84,
+   "e": 0.96,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "phone",
+   "s": 0.96,
+   "e": 1.22,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "know",
+   "s": 1.22,
+   "e": 1.4,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "it's",
+   "s": 1.4,
+   "e": 1.56,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "me",
+   "s": 1.56,
+   "e": 1.82,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "and",
+   "s": 1.82,
+   "e": 2.04,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 9,
+   "w": "not",
+   "s": 2.04,
+   "e": 2.2,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "my",
+   "s": 2.2,
+   "e": 2.36,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 11,
+   "w": "twin?",
+   "s": 2.36,
+   "e": 2.6,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 12,
+   "w": "You",
+   "s": 2.94,
+   "e": 3.12,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 13,
+   "w": "have",
+   "s": 3.12,
+   "e": 3.3,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 14,
+   "w": "a",
+   "s": 3.3,
+   "e": 3.4,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 15,
+   "w": "twin?",
+   "s": 3.4,
+   "e": 3.72,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 16,
+   "w": "Hypothetically.",
+   "s": 4.38,
+   "e": 4.9,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 17,
+   "w": "It",
+   "s": 5.24,
+   "e": 5.34,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 18,
+   "w": "throws",
+   "s": 5.34,
+   "e": 5.66,
+   "sp": "A",
+   "line": 4,
+   "stress": true
+  },
+  {
+   "i": 19,
+   "w": "over",
+   "s": 5.66,
+   "e": 6,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 20,
+   "w": "thirty",
+   "s": 6,
+   "e": 6.4,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 21,
+   "w": "thousand",
+   "s": 6.4,
+   "e": 6.98,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 22,
+   "w": "invisible",
+   "s": 6.98,
+   "e": 7.34,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 23,
+   "w": "dots",
+   "s": 7.34,
+   "e": 7.78,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 24,
+   "w": "at",
+   "s": 7.78,
+   "e": 7.98,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 25,
+   "w": "your",
+   "s": 7.98,
+   "e": 8.08,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 26,
+   "w": "face.",
+   "s": 8.08,
+   "e": 8.36,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 27,
+   "w": "Dots?",
+   "s": 8.92,
+   "e": 9.26,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 28,
+   "w": "Like",
+   "s": 9.5,
+   "e": 9.64,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 29,
+   "w": "a",
+   "s": 9.64,
+   "e": 9.74,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 30,
+   "w": "photo?",
+   "s": 9.74,
+   "e": 9.96,
+   "sp": "B",
+   "line": 5,
+   "stress": true
+  },
+  {
+   "i": 31,
+   "w": "No.",
+   "s": 10.44,
+   "e": 10.72,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 32,
+   "w": "A",
+   "s": 11,
+   "e": 11.2,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 33,
+   "w": "camera",
+   "s": 11.2,
+   "e": 11.52,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 34,
+   "w": "watches",
+   "s": 11.52,
+   "e": 11.92,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 35,
+   "w": "how",
+   "s": 11.92,
+   "e": 12.14,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 36,
+   "w": "the",
+   "s": 12.14,
+   "e": 12.26,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 37,
+   "w": "dots",
+   "s": 12.26,
+   "e": 12.58,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 38,
+   "w": "bend",
+   "s": 12.58,
+   "e": 12.86,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 39,
+   "w": "over",
+   "s": 12.86,
+   "e": 13.14,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 40,
+   "w": "your",
+   "s": 13.14,
+   "e": 13.28,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 41,
+   "w": "nose,",
+   "s": 13.28,
+   "e": 13.64,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 42,
+   "w": "your",
+   "s": 13.88,
+   "e": 13.98,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 43,
+   "w": "cheeks,",
+   "s": 13.98,
+   "e": 14.3,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 44,
+   "w": "your",
+   "s": 14.58,
+   "e": 14.68,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 45,
+   "w": "chin.",
+   "s": 14.68,
+   "e": 15,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 46,
+   "w": "So",
+   "s": 15.48,
+   "e": 15.7,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 47,
+   "w": "it",
+   "s": 15.7,
+   "e": 15.8,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 48,
+   "w": "draws",
+   "s": 15.8,
+   "e": 16.04,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 49,
+   "w": "a",
+   "s": 16.04,
+   "e": 16.24,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 50,
+   "w": "map",
+   "s": 16.24,
+   "e": 16.44,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 51,
+   "w": "of",
+   "s": 16.44,
+   "e": 16.6,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 52,
+   "w": "my",
+   "s": 16.6,
+   "e": 16.74,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 53,
+   "w": "face.",
+   "s": 16.74,
+   "e": 17.08,
+   "sp": "B",
+   "line": 7,
+   "stress": true
+  },
+  {
+   "i": 54,
+   "w": "A",
+   "s": 17.86,
+   "e": 18,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 55,
+   "w": "map",
+   "s": 18,
+   "e": 18.26,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 56,
+   "w": "of",
+   "s": 18.26,
+   "e": 18.5,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 57,
+   "w": "its",
+   "s": 18.5,
+   "e": 18.64,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 58,
+   "w": "depth.",
+   "s": 18.64,
+   "e": 19,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 59,
+   "w": "Hills",
+   "s": 19.48,
+   "e": 19.9,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 60,
+   "w": "and",
+   "s": 19.9,
+   "e": 20.18,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 61,
+   "w": "valleys.",
+   "s": 20.18,
+   "e": 20.48,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 62,
+   "w": "The",
+   "s": 21.24,
+   "e": 21.36,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 63,
+   "w": "phone",
+   "s": 21.36,
+   "e": 21.62,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 64,
+   "w": "stored",
+   "s": 21.62,
+   "e": 21.9,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 65,
+   "w": "yours",
+   "s": 21.9,
+   "e": 22.2,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 66,
+   "w": "once,",
+   "s": 22.2,
+   "e": 22.58,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 67,
+   "w": "and",
+   "s": 22.58,
+   "e": 23.04,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 68,
+   "w": "checks",
+   "s": 23.04,
+   "e": 23.34,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 69,
+   "w": "it",
+   "s": 23.34,
+   "e": 23.52,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 70,
+   "w": "every",
+   "s": 23.52,
+   "e": 23.86,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 71,
+   "w": "unlock.",
+   "s": 23.86,
+   "e": 24.3,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 72,
+   "w": "So",
+   "s": 24.92,
+   "e": 25.24,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 73,
+   "w": "a",
+   "s": 25.24,
+   "e": 25.44,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 74,
+   "w": "photo",
+   "s": 25.44,
+   "e": 25.72,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 75,
+   "w": "of",
+   "s": 25.72,
+   "e": 25.9,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 76,
+   "w": "me",
+   "s": 25.9,
+   "e": 26.06,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 77,
+   "w": "wouldn't",
+   "s": 26.06,
+   "e": 26.32,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 78,
+   "w": "work?",
+   "s": 26.32,
+   "e": 26.56,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 79,
+   "w": "A",
+   "s": 27.16,
+   "e": 27.42,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 80,
+   "w": "photo",
+   "s": 27.42,
+   "e": 27.68,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 81,
+   "w": "is",
+   "s": 27.68,
+   "e": 27.94,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 82,
+   "w": "flat.",
+   "s": 27.94,
+   "e": 28.24,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 83,
+   "w": "No",
+   "s": 28.24,
+   "e": 28.96,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 84,
+   "w": "hills,",
+   "s": 28.96,
+   "e": 29.32,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 85,
+   "w": "no",
+   "s": 29.82,
+   "e": 29.96,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 86,
+   "w": "map.",
+   "s": 29.96,
+   "e": 30.28,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 87,
+   "w": "What",
+   "s": 30.84,
+   "e": 30.88,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 88,
+   "w": "about",
+   "s": 30.88,
+   "e": 31.06,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 89,
+   "w": "a",
+   "s": 31.06,
+   "e": 31.18,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 90,
+   "w": "mask?",
+   "s": 31.18,
+   "e": 31.48,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 91,
+   "w": "A",
+   "s": 32.04,
+   "e": 32.1,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 92,
+   "w": "good",
+   "s": 32.1,
+   "e": 32.3,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 93,
+   "w": "one",
+   "s": 32.3,
+   "e": 32.48,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 94,
+   "w": "is",
+   "s": 32.48,
+   "e": 32.64,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 95,
+   "w": "hard",
+   "s": 32.64,
+   "e": 32.86,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 96,
+   "w": "to",
+   "s": 32.86,
+   "e": 33.06,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 97,
+   "w": "make.",
+   "s": 33.06,
+   "e": 33.34,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 98,
+   "w": "And",
+   "s": 33.34,
+   "e": 33.88,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 99,
+   "w": "it",
+   "s": 33.88,
+   "e": 33.96,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 100,
+   "w": "wants",
+   "s": 33.96,
+   "e": 34.2,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 101,
+   "w": "your",
+   "s": 34.2,
+   "e": 34.44,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 102,
+   "w": "eyes",
+   "s": 34.44,
+   "e": 34.72,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 103,
+   "w": "open,",
+   "s": 34.72,
+   "e": 35.18,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 104,
+   "w": "looking",
+   "s": 35.18,
+   "e": 35.72,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 105,
+   "w": "at",
+   "s": 35.72,
+   "e": 36,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 106,
+   "w": "it.",
+   "s": 36,
+   "e": 36.18,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 107,
+   "w": "And",
+   "s": 36.54,
+   "e": 36.64,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 108,
+   "w": "my",
+   "s": 36.64,
+   "e": 36.78,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 109,
+   "w": "twin?",
+   "s": 36.78,
+   "e": 36.98,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 110,
+   "w": "Same",
+   "s": 37.52,
+   "e": 37.76,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 111,
+   "w": "face,",
+   "s": 37.76,
+   "e": 38.08,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 112,
+   "w": "same",
+   "s": 38.52,
+   "e": 38.68,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 113,
+   "w": "map.",
+   "s": 38.68,
+   "e": 38.98,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 114,
+   "w": "Strangers",
+   "s": 39.58,
+   "e": 40.06,
+   "sp": "A",
+   "line": 14,
+   "stress": true
+  },
+  {
+   "i": 115,
+   "w": "get",
+   "s": 40.06,
+   "e": 40.34,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 116,
+   "w": "in",
+   "s": 40.34,
+   "e": 40.48,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 117,
+   "w": "about",
+   "s": 40.48,
+   "e": 40.66,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 118,
+   "w": "one",
+   "s": 40.66,
+   "e": 41,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 119,
+   "w": "time",
+   "s": 41,
+   "e": 41.3,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 120,
+   "w": "in",
+   "s": 41.3,
+   "e": 41.5,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 121,
+   "w": "a",
+   "s": 41.5,
+   "e": 41.6,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 122,
+   "w": "million.",
+   "s": 41.6,
+   "e": 41.86,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 123,
+   "w": "And",
+   "s": 42.62,
+   "e": 42.68,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 124,
+   "w": "twins?",
+   "s": 42.68,
+   "e": 42.94,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 125,
+   "w": "Identical",
+   "s": 43.72,
+   "e": 44.2,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 126,
+   "w": "ones",
+   "s": 44.2,
+   "e": 44.4,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 127,
+   "w": "can",
+   "s": 44.4,
+   "e": 44.58,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 128,
+   "w": "fool",
+   "s": 44.58,
+   "e": 44.82,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 129,
+   "w": "it.",
+   "s": 44.82,
+   "e": 44.98,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 130,
+   "w": "Apple",
+   "s": 45.46,
+   "e": 45.72,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 131,
+   "w": "says",
+   "s": 45.72,
+   "e": 45.94,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 132,
+   "w": "so",
+   "s": 45.94,
+   "e": 46.16,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 133,
+   "w": "itself.",
+   "s": 46.16,
+   "e": 46.42,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 134,
+   "w": "So",
+   "s": 47.02,
+   "e": 47.3,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 135,
+   "w": "hypothetically,",
+   "s": 47.3,
+   "e": 47.94,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 136,
+   "w": "my",
+   "s": 48.24,
+   "e": 48.44,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 137,
+   "w": "twin",
+   "s": 48.44,
+   "e": 48.72,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 138,
+   "w": "reads",
+   "s": 48.72,
+   "e": 49.08,
+   "sp": "B",
+   "line": 17,
+   "stress": true
+  },
+  {
+   "i": 139,
+   "w": "my",
+   "s": 49.08,
+   "e": 49.26,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 140,
+   "w": "messages?",
+   "s": 49.26,
+   "e": 49.62,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 141,
+   "w": "Hypothetically,",
+   "s": 50.74,
+   "e": 51.26,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 142,
+   "w": "get",
+   "s": 51.76,
+   "e": 51.9,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 143,
+   "w": "a",
+   "s": 51.9,
+   "e": 52.02,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 144,
+   "w": "better",
+   "s": 52.02,
+   "e": 52.16,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 145,
+   "w": "passcode.",
+   "s": 52.16,
+   "e": 52.76,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 146,
+   "w": "And",
+   "s": 52.76,
+   "e": 53.52,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 147,
+   "w": "a",
+   "s": 53.52,
+   "e": 53.68,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 148,
+   "w": "better",
+   "s": 53.68,
+   "e": 53.84,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 149,
+   "w": "twin.",
+   "s": 53.84,
+   "e": 54.18,
+   "sp": "A",
+   "line": 18
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, how does my",
+   "s": 0,
+   "e": 0.9,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "phone know it's me",
+   "s": 0.96,
+   "e": 1.76,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "and not my twin?",
+   "s": 1.82,
+   "e": 2.88,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "You have a twin?",
+   "s": 2.94,
+   "e": 4.07,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "Hypothetically.",
+   "s": 4.38,
+   "e": 5.18,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "It throws over thirty thousand",
+   "s": 5.24,
+   "e": 6.92,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "invisible dots at your face.",
+   "s": 6.98,
+   "e": 8.71,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Dots? Like a photo?",
+   "s": 8.92,
+   "e": 10.31,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "No. A camera watches how the",
+   "s": 10.44,
+   "e": 12.2,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "dots bend over your nose,",
+   "s": 12.26,
+   "e": 13.82,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "your cheeks,",
+   "s": 13.88,
+   "e": 14.52,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "your chin.",
+   "s": 14.58,
+   "e": 15.35,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "So it draws a",
+   "s": 15.48,
+   "e": 16.18,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "map of my face.",
+   "s": 16.24,
+   "e": 17.43,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "A map of its depth.",
+   "s": 17.86,
+   "e": 19.35,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Hills and valleys.",
+   "s": 19.48,
+   "e": 20.83,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "The phone stored yours once,",
+   "s": 21.24,
+   "e": 22.52,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "and checks it every unlock.",
+   "s": 22.58,
+   "e": 24.65,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "So a photo of",
+   "s": 24.92,
+   "e": 25.84,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "me wouldn't work?",
+   "s": 25.9,
+   "e": 26.91,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "A photo is flat.",
+   "s": 27.16,
+   "e": 28.18,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "No hills,",
+   "s": 28.24,
+   "e": 29.67,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "no map.",
+   "s": 29.82,
+   "e": 30.63,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "What about a mask?",
+   "s": 30.84,
+   "e": 31.83,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "A good one is",
+   "s": 32.04,
+   "e": 32.58,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "hard to make.",
+   "s": 32.64,
+   "e": 33.28,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "And it wants your eyes open,",
+   "s": 33.34,
+   "e": 35.12,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "looking at it.",
+   "s": 35.18,
+   "e": 36.48,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "And my twin?",
+   "s": 36.54,
+   "e": 37.33,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "Same face,",
+   "s": 37.52,
+   "e": 38.43,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "same map.",
+   "s": 38.52,
+   "e": 39.33,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "Strangers get in about one",
+   "s": 39.58,
+   "e": 40.94,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "time in a million.",
+   "s": 41,
+   "e": 42.21,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "And twins?",
+   "s": 42.62,
+   "e": 43.29,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Identical ones can fool it.",
+   "s": 43.72,
+   "e": 45.33,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "Apple says so itself.",
+   "s": 45.46,
+   "e": 46.77,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "So hypothetically,",
+   "s": 47.02,
+   "e": 48.18,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "my twin reads my messages?",
+   "s": 48.24,
+   "e": 49.97,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "Hypothetically, get a better passcode.",
+   "s": 50.74,
+   "e": 52.7,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "And a better twin.",
+   "s": 52.76,
+   "e": 54.53,
+   "line": 18,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": [
+  {
+   "t0": 5.14,
+   "t1": 10.3,
+   "name": "THE DOTS"
+  },
+  {
+   "t0": 10.44,
+   "t1": 17.7,
+   "name": "THE BEND"
+  },
+  {
+   "t0": 17.84,
+   "t1": 24.5,
+   "name": "THE MAP"
+  },
+  {
+   "t0": 24.9,
+   "t1": 30.7,
+   "name": "NO DEPTH"
+  },
+  {
+   "t0": 30.82,
+   "t1": 36.3,
+   "name": "THE MASK"
+  },
+  {
+   "t0": 36.5,
+   "t1": 42.3,
+   "name": "STRANGERS"
+  },
+  {
+   "t0": 42.6,
+   "t1": 46.7,
+   "name": "TWINS"
+  }
+ ],
+ "warnings": [
+  "line 4: script \"thousand\" vs ASR \",000\" (#21) - forced 1:1",
+  "camera variety R4: #14 ms_A -> #16 ms_A (A): 0.0 deg, size x1.00"
+ ]
+}

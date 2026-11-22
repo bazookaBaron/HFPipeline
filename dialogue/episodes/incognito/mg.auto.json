@@ -1,0 +1,56 @@
+{
+ "episode": "incognito",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "THE ROUTE",
+   "at": 3.11,
+   "end": 7.89,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "THE WEBSITE",
+   "at": 7.89,
+   "end": 11.97,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "THE POSTMAN",
+   "at": 11.97,
+   "end": 19.41,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "FORGETS",
+   "at": 19.41,
+   "end": 26.11,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "THE TABLE",
+   "at": 26.11,
+   "end": 32.87,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "LOGGED IN",
+   "at": 34.87,
+   "end": 38.13,
+   "beats": []
+  },
+  {
+   "id": 7,
+   "name": "THE NETWORK",
+   "at": 38.13,
+   "end": 43.75,
+   "beats": []
+  }
+ ]
+}

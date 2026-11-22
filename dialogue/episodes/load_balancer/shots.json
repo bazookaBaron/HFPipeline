@@ -1,0 +1,2581 @@
+{
+ "ep": "load_balancer",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 53.28,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_load_balancer_1p3x.wav",
+ "words_src": "dialogue/fish/words_load_balancer.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "CU",
+   "text": "Grandpa, a million people open the same website at once. Why doesn't it die?",
+   "s": 0,
+   "e": 3.68,
+   "w0": 0,
+   "w1": 13
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "One computer would. Instantly.",
+   "s": 4.02,
+   "e": 5.76,
+   "w0": 14,
+   "w1": 17
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": "OTS",
+   "text": "So it's not one computer?",
+   "s": 6.14,
+   "e": 7.3,
+   "w0": 18,
+   "w1": 22
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Hundreds. All running the same copy of the site.",
+   "s": 7.58,
+   "e": 10.3,
+   "w0": 23,
+   "w1": 31
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "confused",
+   "cam": "OTS",
+   "text": "But my phone only knocks on one door.",
+   "s": 10.48,
+   "e": 12.2,
+   "w0": 32,
+   "w1": 39
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "Yes. A man stands at that door. Like the host at a busy restaurant.",
+   "s": 12.52,
+   "e": 16.8,
+   "w0": 40,
+   "w1": 53
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "What does he do?",
+   "s": 17.24,
+   "e": 17.82,
+   "w0": 54,
+   "w1": 57
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "He points. You, table one. You, table two. Round and round.",
+   "s": 18.12,
+   "e": 21.8,
+   "w0": 58,
+   "w1": 68
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "And if table two is slow?",
+   "s": 22.04,
+   "e": 23.38,
+   "w0": 69,
+   "w1": 74
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": "MS",
+   "text": "Then the next guest goes to the emptiest table. He keeps count.",
+   "s": 23.58,
+   "e": 26.4,
+   "w0": 75,
+   "w1": 86
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "What if a table just breaks?",
+   "s": 26.68,
+   "e": 27.8,
+   "w0": 87,
+   "w1": 92
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "2S",
+   "text": "He checks every few seconds. A broken one gets no guests. Nobody notices.",
+   "s": 28.12,
+   "e": 32.76,
+   "w0": 93,
+   "w1": 105
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "shocked",
+   "cam": "CU",
+   "text": "Wait. So the host is the one thing that can't break?",
+   "s": 33.3,
+   "e": 36.12,
+   "w0": 106,
+   "w1": 116
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": "MS",
+   "text": "Good catch. So there are two of them.",
+   "s": 36.4,
+   "e": 38.74,
+   "w0": 117,
+   "w1": 124
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "confused",
+   "cam": "OTS",
+   "text": "Two hosts. Then who points people to the hosts?",
+   "s": 38.92,
+   "e": 41.6,
+   "w0": 125,
+   "w1": 133
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "Another list. That one is public.",
+   "s": 41.9,
+   "e": 44.08,
+   "w0": 134,
+   "w1": 139
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "CU",
+   "text": "And who checks that one?",
+   "s": 44.38,
+   "e": 45.54,
+   "w0": 140,
+   "w1": 144
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "dry, flat",
+   "cam": "CU",
+   "text": "Don't. It's hosts all the way up.",
+   "s": 46.84,
+   "e": 49.2,
+   "w0": 145,
+   "w1": 151
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 3.87,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 2,
+   "t0": 3.87,
+   "t1": 5.99,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 3,
+   "t0": 5.99,
+   "t1": 7.43,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 7.43,
+   "t1": 10.33,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 10.33,
+   "t1": 12.37,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 6,
+   "t0": 12.37,
+   "t1": 17.09,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 7,
+   "t0": 17.09,
+   "t1": 17.97,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 8,
+   "t0": 17.97,
+   "t1": 19.77,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 9,
+   "t0": 19.77,
+   "t1": 21.89,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 21.89,
+   "t1": 23.43,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 11,
+   "t0": 23.43,
+   "t1": 26.53,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 12,
+   "t0": 26.53,
+   "t1": 27.97,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 13,
+   "t0": 27.97,
+   "t1": 33.15,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 14,
+   "t0": 33.15,
+   "t1": 36.25,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 15,
+   "t0": 36.25,
+   "t1": 38.77,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 16,
+   "t0": 38.77,
+   "t1": 41.75,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 17,
+   "t0": 41.75,
+   "t1": 44.23,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 18,
+   "t0": 44.23,
+   "t1": 46.69,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 19,
+   "t0": 46.69,
+   "t1": 50.75,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 20,
+   "t0": 50.75,
+   "t1": 53.28,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    3.87,
+    "amused",
+    1
+   ],
+   [
+    5.99,
+    "amused",
+    0.6
+   ],
+   [
+    7.43,
+    "firm_light",
+    1
+   ],
+   [
+    10.33,
+    "amused",
+    1
+   ],
+   [
+    12.37,
+    "warm",
+    1
+   ],
+   [
+    17.97,
+    "firm_light",
+    1
+   ],
+   [
+    21.89,
+    "warm",
+    1
+   ],
+   [
+    23.43,
+    "amused",
+    1
+   ],
+   [
+    26.53,
+    "warm",
+    1
+   ],
+   [
+    27.32,
+    "worried",
+    1
+   ],
+   [
+    27.97,
+    "firm_light",
+    1
+   ],
+   [
+    33.15,
+    "tender",
+    1
+   ],
+   [
+    35.78,
+    "worried",
+    1
+   ],
+   [
+    36.25,
+    "amused",
+    1
+   ],
+   [
+    41.75,
+    "firm_light",
+    1
+   ],
+   [
+    44.23,
+    "warm",
+    1
+   ],
+   [
+    46.69,
+    "firm_light",
+    1
+   ],
+   [
+    50.75,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    5.99,
+    "surprised",
+    1
+   ],
+   [
+    7.43,
+    "curious",
+    1
+   ],
+   [
+    10.33,
+    "confused",
+    1
+   ],
+   [
+    12.37,
+    "curious",
+    1
+   ],
+   [
+    21.89,
+    "thinking",
+    1
+   ],
+   [
+    23.43,
+    "curious",
+    1
+   ],
+   [
+    29.9,
+    "worried",
+    1
+   ],
+   [
+    33.15,
+    "surprised",
+    1
+   ],
+   [
+    36.25,
+    "curious",
+    1
+   ],
+   [
+    38.77,
+    "confused",
+    1
+   ],
+   [
+    41.75,
+    "curious",
+    1
+   ],
+   [
+    44.23,
+    "grin",
+    1
+   ],
+   [
+    46.69,
+    "curious",
+    1
+   ],
+   [
+    50.75,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 3.02,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "hand_lift",
+   "t": 0.74,
+   "rise": 0.3,
+   "dur": 0.45,
+   "line": 1,
+   "word": "million"
+  },
+  {
+   "actor": "B",
+   "kind": "head_shake",
+   "t": 3.16,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 1,
+   "word": "doesn't"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 4.6,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 2,
+   "word": "would."
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 4.6,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "would."
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 5.26,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 2,
+   "word": "instantly"
+  },
+  {
+   "actor": "B",
+   "kind": "head_back",
+   "t": 6.94,
+   "rise": 0.22,
+   "dur": 0.45,
+   "line": 3,
+   "word": "computer?"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 7.7,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 4,
+   "word": "hundreds"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 10.76,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 5,
+   "word": "phone"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_lift",
+   "t": 11.38,
+   "rise": 0.3,
+   "dur": 0.45,
+   "line": 5,
+   "word": "knocks"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 12.58,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 6,
+   "word": "Yes."
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 15.66,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 6,
+   "word": "host"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 17.59,
+   "rise": 0.5,
+   "dur": 0.3,
+   "line": 7,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 18.32,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 8,
+   "word": "points"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 20.44,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 8,
+   "word": "table"
+  },
+  {
+   "actor": "A",
+   "kind": "two_fingers",
+   "t": 20.56,
+   "rise": 0.4,
+   "dur": 0.9,
+   "line": 8,
+   "word": "two."
+  },
+  {
+   "actor": "B",
+   "kind": "two_fingers",
+   "t": 22.58,
+   "rise": 0.4,
+   "dur": 0.9,
+   "line": 9,
+   "word": "two"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 23.94,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 10,
+   "word": "next"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 23.94,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 10,
+   "word": "next"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 24.96,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 10,
+   "word": "emptiest"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 27.03,
+   "rise": 0.5,
+   "dur": 0.59,
+   "line": 11,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 27.08,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 11,
+   "word": "table"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 27.54,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 11,
+   "word": "breaks"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 32.46,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 12,
+   "word": "notices"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 34.48,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 13,
+   "word": "host"
+  },
+  {
+   "actor": "B",
+   "kind": "head_shake",
+   "t": 35.62,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 13,
+   "word": "can't"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 36.76,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 14,
+   "word": "catch"
+  },
+  {
+   "actor": "A",
+   "kind": "two_fingers",
+   "t": 38.14,
+   "rise": 0.4,
+   "dur": 0.9,
+   "line": 14,
+   "word": "two"
+  },
+  {
+   "actor": "B",
+   "kind": "two_fingers",
+   "t": 39.17,
+   "rise": 0.4,
+   "dur": 0.9,
+   "line": 15,
+   "word": "Two"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 43.84,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 16,
+   "word": "public"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 44.92,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 17,
+   "word": "checks"
+  },
+  {
+   "actor": "A",
+   "kind": "head_shake",
+   "t": 46.9,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 18,
+   "word": "Don't."
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 48.18,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 18,
+   "word": "hosts"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 51.6,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 22.09,
+   "t1": 23.13,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 51,
+   "t1": 54.28,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.2,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "a",
+   "s": 0.52,
+   "e": 0.62,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "million",
+   "s": 0.62,
+   "e": 0.86,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "people",
+   "s": 0.86,
+   "e": 1.18,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "open",
+   "s": 1.18,
+   "e": 1.48,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "the",
+   "s": 1.48,
+   "e": 1.66,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "same",
+   "s": 1.66,
+   "e": 1.88,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "website",
+   "s": 1.88,
+   "e": 2.22,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "at",
+   "s": 2.22,
+   "e": 2.34,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 9,
+   "w": "once.",
+   "s": 2.34,
+   "e": 2.6,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "Why",
+   "s": 2.88,
+   "e": 3.1,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 11,
+   "w": "doesn't",
+   "s": 3.1,
+   "e": 3.32,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 12,
+   "w": "it",
+   "s": 3.32,
+   "e": 3.4,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 13,
+   "w": "die?",
+   "s": 3.4,
+   "e": 3.68,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 14,
+   "w": "One",
+   "s": 4.02,
+   "e": 4.18,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 15,
+   "w": "computer",
+   "s": 4.18,
+   "e": 4.54,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 16,
+   "w": "would.",
+   "s": 4.54,
+   "e": 4.88,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 17,
+   "w": "Instantly.",
+   "s": 5.14,
+   "e": 5.76,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 18,
+   "w": "So",
+   "s": 6.14,
+   "e": 6.28,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 19,
+   "w": "it's",
+   "s": 6.28,
+   "e": 6.42,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 20,
+   "w": "not",
+   "s": 6.42,
+   "e": 6.58,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 21,
+   "w": "one",
+   "s": 6.58,
+   "e": 6.88,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 22,
+   "w": "computer?",
+   "s": 6.88,
+   "e": 7.3,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 23,
+   "w": "Hundreds.",
+   "s": 7.58,
+   "e": 7.92,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 24,
+   "w": "All",
+   "s": 8.44,
+   "e": 8.66,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 25,
+   "w": "running",
+   "s": 8.66,
+   "e": 8.92,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 26,
+   "w": "the",
+   "s": 8.92,
+   "e": 9.12,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 27,
+   "w": "same",
+   "s": 9.12,
+   "e": 9.42,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 28,
+   "w": "copy",
+   "s": 9.42,
+   "e": 9.74,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 29,
+   "w": "of",
+   "s": 9.74,
+   "e": 9.9,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 30,
+   "w": "the",
+   "s": 9.9,
+   "e": 10,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 31,
+   "w": "site.",
+   "s": 10,
+   "e": 10.3,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 32,
+   "w": "But",
+   "s": 10.48,
+   "e": 10.58,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 33,
+   "w": "my",
+   "s": 10.58,
+   "e": 10.7,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 34,
+   "w": "phone",
+   "s": 10.7,
+   "e": 10.98,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 35,
+   "w": "only",
+   "s": 10.98,
+   "e": 11.26,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 36,
+   "w": "knocks",
+   "s": 11.26,
+   "e": 11.5,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 37,
+   "w": "on",
+   "s": 11.5,
+   "e": 11.66,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 38,
+   "w": "one",
+   "s": 11.66,
+   "e": 11.92,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 39,
+   "w": "door.",
+   "s": 11.92,
+   "e": 12.2,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 40,
+   "w": "Yes.",
+   "s": 12.52,
+   "e": 12.8,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 41,
+   "w": "A",
+   "s": 13.34,
+   "e": 13.48,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 42,
+   "w": "man",
+   "s": 13.48,
+   "e": 13.7,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 43,
+   "w": "stands",
+   "s": 13.7,
+   "e": 14.08,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 44,
+   "w": "at",
+   "s": 14.08,
+   "e": 14.36,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 45,
+   "w": "that",
+   "s": 14.36,
+   "e": 14.5,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 46,
+   "w": "door.",
+   "s": 14.5,
+   "e": 14.8,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 47,
+   "w": "Like",
+   "s": 15.12,
+   "e": 15.38,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 48,
+   "w": "the",
+   "s": 15.38,
+   "e": 15.54,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 49,
+   "w": "host",
+   "s": 15.54,
+   "e": 15.84,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 50,
+   "w": "at",
+   "s": 15.84,
+   "e": 16.02,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 51,
+   "w": "a",
+   "s": 16.02,
+   "e": 16.1,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 52,
+   "w": "busy",
+   "s": 16.1,
+   "e": 16.3,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 53,
+   "w": "restaurant.",
+   "s": 16.3,
+   "e": 16.8,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 54,
+   "w": "What",
+   "s": 17.24,
+   "e": 17.4,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 55,
+   "w": "does",
+   "s": 17.4,
+   "e": 17.54,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 56,
+   "w": "he",
+   "s": 17.54,
+   "e": 17.64,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 57,
+   "w": "do?",
+   "s": 17.64,
+   "e": 17.82,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 58,
+   "w": "He",
+   "s": 18.12,
+   "e": 18.2,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 59,
+   "w": "points.",
+   "s": 18.2,
+   "e": 18.46,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 60,
+   "w": "You,",
+   "s": 18.82,
+   "e": 18.98,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 61,
+   "w": "table",
+   "s": 19.24,
+   "e": 19.36,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 62,
+   "w": "one.",
+   "s": 19.36,
+   "e": 19.62,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 63,
+   "w": "You,",
+   "s": 19.92,
+   "e": 20.1,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 64,
+   "w": "table",
+   "s": 20.38,
+   "e": 20.5,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 65,
+   "w": "two.",
+   "s": 20.5,
+   "e": 20.76,
+   "sp": "A",
+   "line": 8,
+   "stress": true
+  },
+  {
+   "i": 66,
+   "w": "Round",
+   "s": 21.06,
+   "e": 21.28,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 67,
+   "w": "and",
+   "s": 21.28,
+   "e": 21.52,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 68,
+   "w": "round.",
+   "s": 21.52,
+   "e": 21.8,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 69,
+   "w": "And",
+   "s": 22.04,
+   "e": 22.16,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 70,
+   "w": "if",
+   "s": 22.16,
+   "e": 22.26,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 71,
+   "w": "table",
+   "s": 22.26,
+   "e": 22.52,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 72,
+   "w": "two",
+   "s": 22.52,
+   "e": 22.8,
+   "sp": "B",
+   "line": 9,
+   "stress": true
+  },
+  {
+   "i": 73,
+   "w": "is",
+   "s": 22.8,
+   "e": 23.04,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 74,
+   "w": "slow?",
+   "s": 23.04,
+   "e": 23.38,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 75,
+   "w": "Then",
+   "s": 23.58,
+   "e": 23.76,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 76,
+   "w": "the",
+   "s": 23.76,
+   "e": 23.88,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 77,
+   "w": "next",
+   "s": 23.88,
+   "e": 24.1,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 78,
+   "w": "guest",
+   "s": 24.1,
+   "e": 24.34,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 79,
+   "w": "goes",
+   "s": 24.34,
+   "e": 24.58,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 80,
+   "w": "to",
+   "s": 24.58,
+   "e": 24.74,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 81,
+   "w": "the",
+   "s": 24.74,
+   "e": 24.84,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 82,
+   "w": "emptiest",
+   "s": 24.84,
+   "e": 25.22,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 83,
+   "w": "table.",
+   "s": 25.22,
+   "e": 25.5,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 84,
+   "w": "He",
+   "s": 25.78,
+   "e": 25.92,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 85,
+   "w": "keeps",
+   "s": 25.92,
+   "e": 26.14,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 86,
+   "w": "count.",
+   "s": 26.14,
+   "e": 26.4,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 87,
+   "w": "What",
+   "s": 26.68,
+   "e": 26.84,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 88,
+   "w": "if",
+   "s": 26.84,
+   "e": 26.92,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 89,
+   "w": "a",
+   "s": 26.92,
+   "e": 27.02,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 90,
+   "w": "table",
+   "s": 27.02,
+   "e": 27.24,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 91,
+   "w": "just",
+   "s": 27.24,
+   "e": 27.42,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 92,
+   "w": "breaks?",
+   "s": 27.42,
+   "e": 27.8,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 93,
+   "w": "He",
+   "s": 28.12,
+   "e": 28.26,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 94,
+   "w": "checks",
+   "s": 28.26,
+   "e": 28.5,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 95,
+   "w": "every",
+   "s": 28.5,
+   "e": 28.78,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 96,
+   "w": "few",
+   "s": 28.78,
+   "e": 28.96,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 97,
+   "w": "seconds.",
+   "s": 28.96,
+   "e": 29.26,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 98,
+   "w": "A",
+   "s": 29.74,
+   "e": 30,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 99,
+   "w": "broken",
+   "s": 30,
+   "e": 30.3,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 100,
+   "w": "one",
+   "s": 30.3,
+   "e": 30.56,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 101,
+   "w": "gets",
+   "s": 30.56,
+   "e": 30.8,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 102,
+   "w": "no",
+   "s": 30.8,
+   "e": 31.1,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 103,
+   "w": "guests.",
+   "s": 31.1,
+   "e": 31.46,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 104,
+   "w": "Nobody",
+   "s": 32.04,
+   "e": 32.34,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 105,
+   "w": "notices.",
+   "s": 32.34,
+   "e": 32.76,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 106,
+   "w": "Wait.",
+   "s": 33.3,
+   "e": 33.52,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 107,
+   "w": "So",
+   "s": 33.96,
+   "e": 34.22,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 108,
+   "w": "the",
+   "s": 34.22,
+   "e": 34.36,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 109,
+   "w": "host",
+   "s": 34.36,
+   "e": 34.58,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 110,
+   "w": "is",
+   "s": 34.58,
+   "e": 34.74,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 111,
+   "w": "the",
+   "s": 34.74,
+   "e": 34.86,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 112,
+   "w": "one",
+   "s": 34.86,
+   "e": 35.1,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 113,
+   "w": "thing",
+   "s": 35.1,
+   "e": 35.38,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 114,
+   "w": "that",
+   "s": 35.38,
+   "e": 35.56,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 115,
+   "w": "can't",
+   "s": 35.56,
+   "e": 35.88,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 116,
+   "w": "break?",
+   "s": 35.88,
+   "e": 36.12,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 117,
+   "w": "Good",
+   "s": 36.4,
+   "e": 36.64,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 118,
+   "w": "catch.",
+   "s": 36.64,
+   "e": 36.96,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 119,
+   "w": "So",
+   "s": 37.56,
+   "e": 37.82,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 120,
+   "w": "there",
+   "s": 37.82,
+   "e": 37.98,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 121,
+   "w": "are",
+   "s": 37.98,
+   "e": 38.08,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 122,
+   "w": "two",
+   "s": 38.08,
+   "e": 38.38,
+   "sp": "A",
+   "line": 14,
+   "stress": true
+  },
+  {
+   "i": 123,
+   "w": "of",
+   "s": 38.38,
+   "e": 38.56,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 124,
+   "w": "them.",
+   "s": 38.56,
+   "e": 38.74,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 125,
+   "w": "Two",
+   "s": 38.92,
+   "e": 39.1,
+   "sp": "B",
+   "line": 15,
+   "stress": true
+  },
+  {
+   "i": 126,
+   "w": "hosts.",
+   "s": 39.1,
+   "e": 39.48,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 127,
+   "w": "Then",
+   "s": 40.08,
+   "e": 40.26,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 128,
+   "w": "who",
+   "s": 40.26,
+   "e": 40.46,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 129,
+   "w": "points",
+   "s": 40.46,
+   "e": 40.74,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 130,
+   "w": "people",
+   "s": 40.74,
+   "e": 41,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 131,
+   "w": "to",
+   "s": 41,
+   "e": 41.16,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 132,
+   "w": "the",
+   "s": 41.16,
+   "e": 41.28,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 133,
+   "w": "hosts?",
+   "s": 41.28,
+   "e": 41.6,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 134,
+   "w": "Another",
+   "s": 41.9,
+   "e": 42.18,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 135,
+   "w": "list.",
+   "s": 42.18,
+   "e": 42.58,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 136,
+   "w": "That",
+   "s": 43.14,
+   "e": 43.3,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 137,
+   "w": "one",
+   "s": 43.3,
+   "e": 43.52,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 138,
+   "w": "is",
+   "s": 43.52,
+   "e": 43.72,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 139,
+   "w": "public.",
+   "s": 43.72,
+   "e": 44.08,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 140,
+   "w": "And",
+   "s": 44.38,
+   "e": 44.6,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 141,
+   "w": "who",
+   "s": 44.6,
+   "e": 44.8,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 142,
+   "w": "checks",
+   "s": 44.8,
+   "e": 45.04,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 143,
+   "w": "that",
+   "s": 45.04,
+   "e": 45.32,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 144,
+   "w": "one?",
+   "s": 45.32,
+   "e": 45.54,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 145,
+   "w": "Don't.",
+   "s": 46.84,
+   "e": 47.36,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 146,
+   "w": "It's",
+   "s": 47.78,
+   "e": 48.06,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 147,
+   "w": "hosts",
+   "s": 48.06,
+   "e": 48.34,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 148,
+   "w": "all",
+   "s": 48.34,
+   "e": 48.72,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 149,
+   "w": "the",
+   "s": 48.72,
+   "e": 48.88,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 150,
+   "w": "way",
+   "s": 48.88,
+   "e": 49.02,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 151,
+   "w": "up.",
+   "s": 49.02,
+   "e": 49.2,
+   "sp": "A",
+   "line": 18
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, a million people open",
+   "s": 0,
+   "e": 1.42,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "the same website at once.",
+   "s": 1.48,
+   "e": 2.82,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Why doesn't it die?",
+   "s": 2.88,
+   "e": 3.96,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "One computer would. Instantly.",
+   "s": 4.02,
+   "e": 6.08,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "So it's not one computer?",
+   "s": 6.14,
+   "e": 7.52,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "Hundreds. All running the same",
+   "s": 7.58,
+   "e": 9.36,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "copy of the site.",
+   "s": 9.42,
+   "e": 10.42,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "But my phone only",
+   "s": 10.48,
+   "e": 11.2,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "knocks on one door.",
+   "s": 11.26,
+   "e": 12.46,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "Yes. A man stands",
+   "s": 12.52,
+   "e": 14.02,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "at that door.",
+   "s": 14.08,
+   "e": 15.06,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Like the host at",
+   "s": 15.12,
+   "e": 15.96,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "a busy restaurant.",
+   "s": 16.02,
+   "e": 17.15,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "What does he do?",
+   "s": 17.24,
+   "e": 18.06,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "He points.",
+   "s": 18.12,
+   "e": 18.76,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "You, table one.",
+   "s": 18.82,
+   "e": 19.86,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "You, table two.",
+   "s": 19.92,
+   "e": 21,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Round and round.",
+   "s": 21.06,
+   "e": 21.98,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "And if table two is slow?",
+   "s": 22.04,
+   "e": 23.52,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "Then the next guest goes",
+   "s": 23.58,
+   "e": 24.52,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "to the emptiest table.",
+   "s": 24.58,
+   "e": 25.72,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "He keeps count.",
+   "s": 25.78,
+   "e": 26.62,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "What if a table just breaks?",
+   "s": 26.68,
+   "e": 28.06,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "He checks every few seconds.",
+   "s": 28.12,
+   "e": 29.61,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "A broken one gets no guests.",
+   "s": 29.74,
+   "e": 31.81,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Nobody notices.",
+   "s": 32.04,
+   "e": 33.11,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Wait. So the host is the",
+   "s": 33.3,
+   "e": 34.8,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "one thing that can't break?",
+   "s": 34.86,
+   "e": 36.34,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "Good catch.",
+   "s": 36.4,
+   "e": 37.31,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "So there are two of them.",
+   "s": 37.56,
+   "e": 38.86,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "Two hosts.",
+   "s": 38.92,
+   "e": 39.83,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Then who points people",
+   "s": 40.08,
+   "e": 40.94,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "to the hosts?",
+   "s": 41,
+   "e": 41.84,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Another list.",
+   "s": 41.9,
+   "e": 42.93,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "That one is public.",
+   "s": 43.14,
+   "e": 44.32,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "And who checks that one?",
+   "s": 44.38,
+   "e": 45.89,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "Don't. It's hosts all",
+   "s": 46.84,
+   "e": 48.66,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "the way up.",
+   "s": 48.72,
+   "e": 49.55,
+   "line": 18,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": [
+  {
+   "t0": 0.4,
+   "t1": 6,
+   "name": "A MILLION"
+  },
+  {
+   "t0": 6.3,
+   "t1": 10.4,
+   "name": "HUNDREDS"
+  },
+  {
+   "t0": 10.5,
+   "t1": 17.1,
+   "name": "ONE DOOR"
+  },
+  {
+   "t0": 18,
+   "t1": 22,
+   "name": "POINTS"
+  },
+  {
+   "t0": 22.1,
+   "t1": 26.5,
+   "name": "EMPTIEST"
+  },
+  {
+   "t0": 26.7,
+   "t1": 33,
+   "name": "BROKEN"
+  },
+  {
+   "t0": 33.3,
+   "t1": 39,
+   "name": "TWO HOSTS"
+  },
+  {
+   "t0": 39.5,
+   "t1": 44.3,
+   "name": "PUBLIC LIST"
+  },
+  {
+   "t0": 44.4,
+   "t1": 50.4,
+   "name": "ALL THE WAY UP"
+  }
+ ],
+ "warnings": []
+}

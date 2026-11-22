@@ -1,0 +1,3493 @@
+{
+ "speaker_f0_median_hz": {
+  "CLAUDE": 124.1,
+  "USER": 311.8
+ },
+ "turns": [
+  {
+   "turn": 1,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 0.0,
+   "end": 5.84,
+   "text": "God, if anyone can build an app in a weekend now, what's actually becoming valuable?",
+   "words": 15,
+   "dur": 5.84,
+   "wpm": 154,
+   "f0_med_hz": 238.4,
+   "f0_raw_med_hz": 230.1,
+   "st_vs_speaker": -4.6,
+   "st_p10_p90": [
+    -10.8,
+    1.5
+   ],
+   "contour_st_thirds": [
+    -4.9,
+    -5.3,
+    -2.7
+   ],
+   "voiced_frames": 304,
+   "db_p50": -17.3,
+   "db_peak": -6.7,
+   "inner_pauses": [
+    {
+     "after": "God,",
+     "ms": 480
+    }
+   ],
+   "emphasis_words": [
+    "anyone",
+    "can",
+    "becoming"
+   ],
+   "lengthened_words": [
+    "God,",
+    "anyone",
+    "what's"
+   ],
+   "fillers": [
+    "God,",
+    "actually"
+   ],
+   "gap_to_next_ms": 540,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 520,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.525,
+      4.39
+     ],
+     [
+      "a sad person speaking",
+      0.305,
+      4.13
+     ],
+     [
+      "a person speaking excitedly",
+      0.082,
+      4.21
+     ],
+     [
+      "a worried anxious person speaking",
+      0.028,
+      3.22
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.887
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.898,
+      2.51
+     ],
+     [
+      "people laughing",
+      0.102,
+      1.66
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 2,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 6.36,
+   "end": 9.6,
+   "text": "Not the app. The people waiting for it.",
+   "words": 8,
+   "dur": 3.24,
+   "wpm": 148,
+   "f0_med_hz": 137.7,
+   "f0_raw_med_hz": 138.4,
+   "st_vs_speaker": 1.8,
+   "st_p10_p90": [
+    -5.3,
+    9.1
+   ],
+   "contour_st_thirds": [
+    null,
+    2.0,
+    -1.1
+   ],
+   "voiced_frames": 80,
+   "db_p50": -17.5,
+   "db_peak": -9.9,
+   "inner_pauses": [
+    {
+     "after": "app.",
+     "ms": 580
+    }
+   ],
+   "emphasis_words": [
+    "Not",
+    "the",
+    "for"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 440,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 280,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.897,
+      3.32
+     ],
+     [
+      "a person speaking sarcastically",
+      0.075,
+      2.27
+     ],
+     [
+      "a sad person speaking",
+      0.014,
+      2.05
+     ],
+     [
+      "a confused person asking a question",
+      0.007,
+      2.07
+     ]
+    ],
+    [
+     [
+      "a sad person speaking",
+      0.33,
+      2.76
+     ],
+     [
+      "a person speaking sarcastically",
+      0.251,
+      2.35
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.192,
+      2.64
+     ],
+     [
+      "a calm narrator speaking",
+      0.192,
+      2.38
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.962
+    ],
+    [
+     "a man speaking",
+     0.935
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "people laughing",
+      0.614,
+      1.24
+     ],
+     [
+      "a person speaking",
+      0.386,
+      1.12
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.961,
+      1.92
+     ],
+     [
+      "people laughing",
+      0.039,
+      0.84
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 3,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 9.88,
+   "end": 12.48,
+   "text": "Wait, the app isn't the valuable part?",
+   "words": 7,
+   "dur": 2.6,
+   "wpm": 162,
+   "f0_med_hz": 326.2,
+   "f0_raw_med_hz": 325.4,
+   "st_vs_speaker": 0.8,
+   "st_p10_p90": [
+    -7.7,
+    3.1
+   ],
+   "contour_st_thirds": [
+    -2.2,
+    0.7,
+    1.8
+   ],
+   "voiced_frames": 161,
+   "db_p50": -17.2,
+   "db_peak": -10.0,
+   "inner_pauses": [
+    {
+     "after": "Wait,",
+     "ms": 519
+    }
+   ],
+   "emphasis_words": [
+    "isn't",
+    "valuable",
+    "part?"
+   ],
+   "lengthened_words": [
+    "isn't"
+   ],
+   "fillers": [
+    "Wait,"
+   ],
+   "gap_to_next_ms": 380,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 279,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.535,
+      4.52
+     ],
+     [
+      "a person speaking excitedly",
+      0.266,
+      4.76
+     ],
+     [
+      "a sad person speaking",
+      0.074,
+      3.73
+     ],
+     [
+      "a calm narrator speaking",
+      0.061,
+      3.46
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.629
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.982,
+      2.76
+     ],
+     [
+      "people laughing",
+      0.018,
+      1.29
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 4,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 12.76,
+   "end": 22.82,
+   "text": "Over half a million new apps hit the App Store in just six months this year. That's almost as many as all of last year, but downloads only went up 2%.",
+   "words": 31,
+   "dur": 10.06,
+   "wpm": 185,
+   "f0_med_hz": 113.3,
+   "f0_raw_med_hz": 112.2,
+   "st_vs_speaker": -1.6,
+   "st_p10_p90": [
+    -4.7,
+    3.8
+   ],
+   "contour_st_thirds": [
+    -0.7,
+    -1.6,
+    -2.6
+   ],
+   "voiced_frames": 393,
+   "db_p50": -16.8,
+   "db_peak": -9.5,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "Over",
+    "million",
+    "new",
+    "Store",
+    "That's",
+    "almost",
+    "as",
+    "many",
+    "all",
+    "but",
+    "downloads"
+   ],
+   "lengthened_words": [
+    "2%."
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 390,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 0,
+   "earshot_tone": [
+    [
+     [
+      "a calm narrator speaking",
+      0.336,
+      2.92
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.288,
+      3.17
+     ],
+     [
+      "a person speaking excitedly",
+      0.22,
+      3.61
+     ],
+     [
+      "a sad person speaking",
+      0.094,
+      2.63
+     ]
+    ],
+    [
+     [
+      "a calm narrator speaking",
+      0.443,
+      3.2
+     ],
+     [
+      "a person speaking excitedly",
+      0.289,
+      3.87
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.175,
+      3.14
+     ],
+     [
+      "a sad person speaking",
+      0.037,
+      2.46
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.816
+    ],
+    [
+     "a man speaking",
+     0.96
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.979,
+      2.15
+     ],
+     [
+      "people laughing",
+      0.021,
+      0.56
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.976,
+      2.22
+     ],
+     [
+      "people laughing",
+      0.024,
+      0.73
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 5,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 22.82,
+   "end": 26.52,
+   "text": "So everybody's building and nobody's downloading?",
+   "words": 6,
+   "dur": 3.7,
+   "wpm": 97,
+   "f0_med_hz": 322.2,
+   "f0_raw_med_hz": 321.8,
+   "st_vs_speaker": 0.6,
+   "st_p10_p90": [
+    -2.7,
+    4.2
+   ],
+   "contour_st_thirds": [
+    0.6,
+    0.4,
+    0.7
+   ],
+   "voiced_frames": 178,
+   "db_p50": -16.3,
+   "db_peak": -10.6,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "and",
+    "downloading?"
+   ],
+   "lengthened_words": [
+    "So",
+    "building",
+    "and",
+    "nobody's"
+   ],
+   "fillers": [
+    "So"
+   ],
+   "gap_to_next_ms": 340,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 380,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking excitedly",
+      0.675,
+      5.17
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.195,
+      4.08
+     ],
+     [
+      "a calm narrator speaking",
+      0.05,
+      3.17
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.034,
+      3.68
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.824
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.931,
+      2.64
+     ],
+     [
+      "people laughing",
+      0.069,
+      1.51
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 6,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 26.9,
+   "end": 36.28,
+   "text": "Picture two taco trucks. Same tacos. One has a line of people down the street. Anyone can make tacos now. The line is the valuable part.",
+   "words": 26,
+   "dur": 9.38,
+   "wpm": 166,
+   "f0_med_hz": 119.9,
+   "f0_raw_med_hz": 111.1,
+   "st_vs_speaker": -0.6,
+   "st_p10_p90": [
+    -6.3,
+    4.9
+   ],
+   "contour_st_thirds": [
+    4.6,
+    -2.6,
+    -2.7
+   ],
+   "voiced_frames": 250,
+   "db_p50": -16.9,
+   "db_peak": -9.1,
+   "inner_pauses": [
+    {
+     "after": "trucks.",
+     "ms": 500
+    },
+    {
+     "after": "tacos.",
+     "ms": 620
+    },
+    {
+     "after": "now.",
+     "ms": 500
+    }
+   ],
+   "emphasis_words": [
+    "Picture",
+    "tacos.",
+    "One",
+    "a",
+    "Anyone",
+    "now.",
+    "The"
+   ],
+   "lengthened_words": [
+    "two",
+    "trucks.",
+    "part."
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 370,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 500,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.633,
+      3.2
+     ],
+     [
+      "a person speaking excitedly",
+      0.24,
+      3.32
+     ],
+     [
+      "a person speaking sarcastically",
+      0.049,
+      2.02
+     ],
+     [
+      "a confused person asking a question",
+      0.031,
+      2.41
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.801,
+      3.19
+     ],
+     [
+      "a person speaking sarcastically",
+      0.157,
+      2.3
+     ],
+     [
+      "a person speaking excitedly",
+      0.017,
+      2.41
+     ],
+     [
+      "a confused person asking a question",
+      0.006,
+      1.81
+     ]
+    ],
+    [
+     [
+      "a person speaking excitedly",
+      0.415,
+      3.11
+     ],
+     [
+      "a calm narrator speaking",
+      0.384,
+      2.3
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.116,
+      2.14
+     ],
+     [
+      "a person speaking in a flat deadpan monotone",
+      0.044,
+      1.75
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.553,
+      2.99
+     ],
+     [
+      "a calm narrator speaking",
+      0.202,
+      2.41
+     ],
+     [
+      "a person speaking excitedly",
+      0.097,
+      2.87
+     ],
+     [
+      "a person speaking sarcastically",
+      0.048,
+      1.8
+     ]
+    ],
+    [
+     [
+      "a calm narrator speaking",
+      0.495,
+      2.39
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.174,
+      2.28
+     ],
+     [
+      "a person speaking excitedly",
+      0.149,
+      2.73
+     ],
+     [
+      "a person speaking sarcastically",
+      0.077,
+      1.54
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.924
+    ],
+    [
+     "a man speaking",
+     0.986
+    ],
+    [
+     "a man speaking",
+     0.968
+    ],
+    [
+     "a man speaking",
+     0.97
+    ],
+    [
+     "a man speaking",
+     0.97
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.717,
+      1.79
+     ],
+     [
+      "people laughing",
+      0.283,
+      1.49
+     ]
+    ],
+    [
+     [
+      "people laughing",
+      0.685,
+      1.69
+     ],
+     [
+      "a person speaking",
+      0.315,
+      1.46
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.998,
+      2.0
+     ],
+     [
+      "people laughing",
+      0.002,
+      -0.27
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.994,
+      2.09
+     ],
+     [
+      "people laughing",
+      0.006,
+      0.38
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.99,
+      1.81
+     ],
+     [
+      "people laughing",
+      0.01,
+      0.09
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 7,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 36.78,
+   "end": 41.18,
+   "text": "Okay, but how do I get a line? I have like nine followers.",
+   "words": 13,
+   "dur": 4.4,
+   "wpm": 177,
+   "f0_med_hz": 366.8,
+   "f0_raw_med_hz": 366.8,
+   "st_vs_speaker": 2.8,
+   "st_p10_p90": [
+    -5.0,
+    6.0
+   ],
+   "contour_st_thirds": [
+    4.0,
+    5.2,
+    0.1
+   ],
+   "voiced_frames": 213,
+   "db_p50": -16.9,
+   "db_peak": -9.5,
+   "inner_pauses": [
+    {
+     "after": "line?",
+     "ms": 519
+    }
+   ],
+   "emphasis_words": [
+    "I",
+    "followers."
+   ],
+   "lengthened_words": [
+    "nine"
+   ],
+   "fillers": [
+    "Okay,",
+    "like"
+   ],
+   "gap_to_next_ms": 590,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 1320,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.9,
+      4.74
+     ],
+     [
+      "a person speaking excitedly",
+      0.062,
+      4.26
+     ],
+     [
+      "a confused person asking a question",
+      0.013,
+      3.33
+     ],
+     [
+      "a sad person speaking",
+      0.01,
+      2.96
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.71,
+      5.11
+     ],
+     [
+      "a person speaking excitedly",
+      0.269,
+      5.27
+     ],
+     [
+      "a confused person asking a question",
+      0.008,
+      3.52
+     ],
+     [
+      "a person shouting",
+      0.004,
+      3.39
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.913
+    ],
+    [
+     "a woman speaking",
+     0.939
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.948,
+      2.38
+     ],
+     [
+      "people laughing",
+      0.052,
+      1.26
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.978,
+      2.85
+     ],
+     [
+      "people laughing",
+      0.022,
+      1.32
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 8,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 42.5,
+   "end": 53.08,
+   "text": "You don't need millions. You need a few hundred people with the same problem. Step one, pick one kind of person and one problem you know well, like parents with picky eaters.",
+   "words": 32,
+   "dur": 10.58,
+   "wpm": 181,
+   "f0_med_hz": 110.4,
+   "f0_raw_med_hz": 109.6,
+   "st_vs_speaker": -2.0,
+   "st_p10_p90": [
+    -7.8,
+    4.4
+   ],
+   "contour_st_thirds": [
+    -0.3,
+    0.6,
+    -4.9
+   ],
+   "voiced_frames": 406,
+   "db_p50": -17.0,
+   "db_peak": -8.3,
+   "inner_pauses": [
+    {
+     "after": "millions.",
+     "ms": 600
+    },
+    {
+     "after": "problem.",
+     "ms": 539
+    },
+    {
+     "after": "one,",
+     "ms": 560
+    },
+    {
+     "after": "well,",
+     "ms": 420
+    }
+   ],
+   "emphasis_words": [
+    "You",
+    "don't",
+    "You",
+    "need",
+    "a",
+    "few",
+    "hundred",
+    "Step",
+    "pick",
+    "kind",
+    "of",
+    "like",
+    "parents"
+   ],
+   "lengthened_words": [
+    "problem."
+   ],
+   "fillers": [
+    "well,",
+    "like"
+   ],
+   "gap_to_next_ms": 330,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 359,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.817,
+      3.01
+     ],
+     [
+      "a person speaking excitedly",
+      0.093,
+      2.76
+     ],
+     [
+      "a confused person asking a question",
+      0.028,
+      2.09
+     ],
+     [
+      "a person speaking sarcastically",
+      0.021,
+      1.46
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.635,
+      3.09
+     ],
+     [
+      "a person speaking excitedly",
+      0.191,
+      3.14
+     ],
+     [
+      "a calm narrator speaking",
+      0.103,
+      2.27
+     ],
+     [
+      "a person speaking sarcastically",
+      0.025,
+      1.71
+     ]
+    ],
+    [
+     [
+      "a calm narrator speaking",
+      0.734,
+      3.29
+     ],
+     [
+      "a person speaking excitedly",
+      0.119,
+      3.44
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.045,
+      2.74
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.036,
+      2.26
+     ]
+    ],
+    [
+     [
+      "a confused person asking a question",
+      0.416,
+      2.98
+     ],
+     [
+      "a person speaking sarcastically",
+      0.305,
+      2.3
+     ],
+     [
+      "a calm narrator speaking",
+      0.107,
+      2.08
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.085,
+      2.26
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.958
+    ],
+    [
+     "a man speaking",
+     0.98
+    ],
+    [
+     "a man speaking",
+     0.96
+    ],
+    [
+     "a man speaking",
+     0.936
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.807,
+      1.11
+     ],
+     [
+      "people laughing",
+      0.193,
+      0.63
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.99,
+      1.82
+     ],
+     [
+      "people laughing",
+      0.01,
+      0.35
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.988,
+      2.72
+     ],
+     [
+      "people laughing",
+      0.012,
+      0.64
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.548,
+      1.77
+     ],
+     [
+      "people laughing",
+      0.452,
+      1.68
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 9,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 53.44,
+   "end": 55.04,
+   "text": "How do I find out what they need?",
+   "words": 8,
+   "dur": 1.6,
+   "wpm": 300,
+   "f0_med_hz": 290.2,
+   "f0_raw_med_hz": 290.2,
+   "st_vs_speaker": -1.2,
+   "st_p10_p90": [
+    -4.6,
+    4.2
+   ],
+   "contour_st_thirds": [
+    3.8,
+    -1.2,
+    -3.1
+   ],
+   "voiced_frames": 104,
+   "db_p50": -14.7,
+   "db_peak": -12.6,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "do",
+    "I",
+    "find"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 430,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 300,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking excitedly",
+      0.583,
+      3.58
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.352,
+      2.97
+     ],
+     [
+      "a confused person asking a question",
+      0.023,
+      2.27
+     ],
+     [
+      "a worried anxious person speaking",
+      0.011,
+      1.79
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.973
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.931,
+      2.07
+     ],
+     [
+      "people laughing",
+      0.069,
+      1.2
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 10,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 55.34,
+   "end": 66.12,
+   "text": "Step two, in the Claude app, ask me to find what parents of picky eaters complain about most online. I search and hand you their top 10 problems in their own words.",
+   "words": 32,
+   "dur": 10.78,
+   "wpm": 178,
+   "f0_med_hz": 133.4,
+   "f0_raw_med_hz": 138.3,
+   "st_vs_speaker": 1.2,
+   "st_p10_p90": [
+    -3.9,
+    7.5
+   ],
+   "contour_st_thirds": [
+    2.0,
+    -2.3,
+    2.8
+   ],
+   "voiced_frames": 331,
+   "db_p50": -16.7,
+   "db_peak": -8.9,
+   "inner_pauses": [
+    {
+     "after": "two,",
+     "ms": 580
+    },
+    {
+     "after": "app,",
+     "ms": 439
+    },
+    {
+     "after": "online.",
+     "ms": 539
+    }
+   ],
+   "emphasis_words": [
+    "Step",
+    "Claude",
+    "me",
+    "to",
+    "what",
+    "I",
+    "search"
+   ],
+   "lengthened_words": [
+    "most",
+    "online.",
+    "and",
+    "problems",
+    "words."
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 800,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 879,
+   "earshot_tone": [
+    [
+     [
+      "a calm narrator speaking",
+      0.651,
+      3.39
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.128,
+      2.97
+     ],
+     [
+      "a person speaking excitedly",
+      0.074,
+      3.38
+     ],
+     [
+      "a sad person speaking",
+      0.036,
+      2.25
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.907,
+      3.46
+     ],
+     [
+      "a person speaking sarcastically",
+      0.056,
+      2.18
+     ],
+     [
+      "a confused person asking a question",
+      0.012,
+      2.24
+     ],
+     [
+      "a sad person speaking",
+      0.011,
+      1.99
+     ]
+    ],
+    [
+     [
+      "a person speaking excitedly",
+      0.412,
+      4.34
+     ],
+     [
+      "a calm narrator speaking",
+      0.382,
+      3.31
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.102,
+      3.05
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.047,
+      3.09
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.905
+    ],
+    [
+     "a man speaking",
+     0.997
+    ],
+    [
+     "a man speaking",
+     0.877
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.992,
+      2.87
+     ],
+     [
+      "people laughing",
+      0.008,
+      0.5
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.685,
+      1.16
+     ],
+     [
+      "people laughing",
+      0.315,
+      0.89
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.996,
+      3.26
+     ],
+     [
+      "people laughing",
+      0.004,
+      0.7
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 11,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 67.0,
+   "end": 68.1,
+   "text": "Then I build the app.",
+   "words": 5,
+   "dur": 1.1,
+   "wpm": 273,
+   "f0_med_hz": 339.3,
+   "f0_raw_med_hz": 339.3,
+   "st_vs_speaker": 1.5,
+   "st_p10_p90": [
+    -3.1,
+    4.4
+   ],
+   "contour_st_thirds": [
+    3.2,
+    0.8,
+    1.5
+   ],
+   "voiced_frames": 48,
+   "db_p50": -16.4,
+   "db_peak": -11.1,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "the",
+    "app."
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 500,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 460,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.862,
+      3.95
+     ],
+     [
+      "a person speaking excitedly",
+      0.111,
+      3.74
+     ],
+     [
+      "a confused person asking a question",
+      0.017,
+      2.9
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.002,
+      2.41
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.824
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "people laughing",
+      0.65,
+      1.76
+     ],
+     [
+      "a person speaking",
+      0.35,
+      1.59
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 12,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 68.56,
+   "end": 80.6,
+   "text": "That's the mistake everybody makes. They build for months, then launch to nobody. Step three, post one free tip for them every day. I can turn each problem into a short video script.",
+   "words": 33,
+   "dur": 12.04,
+   "wpm": 164,
+   "f0_med_hz": 122.6,
+   "f0_raw_med_hz": 123.3,
+   "st_vs_speaker": -0.2,
+   "st_p10_p90": [
+    -6.5,
+    8.3
+   ],
+   "contour_st_thirds": [
+    0.7,
+    0.1,
+    -2.3
+   ],
+   "voiced_frames": 403,
+   "db_p50": -17.3,
+   "db_peak": -8.0,
+   "inner_pauses": [
+    {
+     "after": "makes.",
+     "ms": 520
+    },
+    {
+     "after": "nobody.",
+     "ms": 520
+    },
+    {
+     "after": "three,",
+     "ms": 700
+    },
+    {
+     "after": "day.",
+     "ms": 539
+    }
+   ],
+   "emphasis_words": [
+    "makes.",
+    "build",
+    "months,",
+    "Step",
+    "post",
+    "free",
+    "tip",
+    "for",
+    "script."
+   ],
+   "lengthened_words": [
+    "makes.",
+    "months,",
+    "problem",
+    "script."
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 510,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 320,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.863,
+      3.33
+     ],
+     [
+      "a person speaking excitedly",
+      0.064,
+      2.92
+     ],
+     [
+      "a confused person asking a question",
+      0.022,
+      2.28
+     ],
+     [
+      "a sad person speaking",
+      0.017,
+      1.95
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.484,
+      2.68
+     ],
+     [
+      "a confused person asking a question",
+      0.431,
+      2.79
+     ],
+     [
+      "a person speaking excitedly",
+      0.041,
+      2.36
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.015,
+      1.93
+     ]
+    ],
+    [
+     [
+      "a person speaking excitedly",
+      0.433,
+      3.61
+     ],
+     [
+      "a calm narrator speaking",
+      0.224,
+      2.42
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.13,
+      2.52
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.082,
+      2.66
+     ]
+    ],
+    [
+     [
+      "a person speaking excitedly",
+      0.388,
+      2.87
+     ],
+     [
+      "a calm narrator speaking",
+      0.308,
+      2.02
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.147,
+      2.04
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.043,
+      1.89
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.863
+    ],
+    [
+     "a man speaking",
+     0.935
+    ],
+    [
+     "a man speaking",
+     0.851
+    ],
+    [
+     "a man speaking",
+     0.888
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.865,
+      2.21
+     ],
+     [
+      "people laughing",
+      0.135,
+      1.57
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.98,
+      1.39
+     ],
+     [
+      "people laughing",
+      0.02,
+      0.28
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.983,
+      2.91
+     ],
+     [
+      "people laughing",
+      0.017,
+      1.14
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.991,
+      2.24
+     ],
+     [
+      "people laughing",
+      0.009,
+      0.56
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 13,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 80.92,
+   "end": 82.44,
+   "text": "Why give it away for free?",
+   "words": 6,
+   "dur": 1.52,
+   "wpm": 237,
+   "f0_med_hz": 282.6,
+   "f0_raw_med_hz": 279.6,
+   "st_vs_speaker": -1.7,
+   "st_p10_p90": [
+    -4.4,
+    3.6
+   ],
+   "contour_st_thirds": [
+    2.1,
+    -1.8,
+    -3.2
+   ],
+   "voiced_frames": 87,
+   "db_p50": -15.5,
+   "db_peak": -10.2,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "give",
+    "it",
+    "away"
+   ],
+   "lengthened_words": [
+    "free?"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 410,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 700,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.579,
+      3.99
+     ],
+     [
+      "a sad person speaking",
+      0.288,
+      3.68
+     ],
+     [
+      "a calm narrator speaking",
+      0.071,
+      2.97
+     ],
+     [
+      "a person speaking sarcastically",
+      0.022,
+      2.42
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.877
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.95,
+      2.43
+     ],
+     [
+      "people laughing",
+      0.05,
+      1.36
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 14,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 83.14,
+   "end": 94.4,
+   "text": "Free help is how strangers start to trust you. Trust is what builds the line at your taco truck. Step four, get them on an email list. Kit is free for your first 10,000 people.",
+   "words": 36,
+   "dur": 11.26,
+   "wpm": 192,
+   "f0_med_hz": 121.0,
+   "f0_raw_med_hz": 120.4,
+   "st_vs_speaker": -0.4,
+   "st_p10_p90": [
+    -6.0,
+    7.1
+   ],
+   "contour_st_thirds": [
+    -0.6,
+    1.5,
+    -0.9
+   ],
+   "voiced_frames": 370,
+   "db_p50": -17.4,
+   "db_peak": -8.1,
+   "inner_pauses": [
+    {
+     "after": "you.",
+     "ms": 559
+    },
+    {
+     "after": "truck.",
+     "ms": 400
+    },
+    {
+     "after": "four,",
+     "ms": 519
+    },
+    {
+     "after": "list.",
+     "ms": 620
+    }
+   ],
+   "emphasis_words": [
+    "Free",
+    "help",
+    "what",
+    "builds",
+    "the",
+    "truck.",
+    "four,",
+    "get",
+    "them",
+    "Kit",
+    "free",
+    "first",
+    ",000"
+   ],
+   "lengthened_words": [
+    "you.",
+    "truck.",
+    ",000"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 80,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 219,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking excitedly",
+      0.35,
+      3.1
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.288,
+      2.45
+     ],
+     [
+      "a calm narrator speaking",
+      0.247,
+      2.08
+     ],
+     [
+      "a confused person asking a question",
+      0.034,
+      1.8
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.68,
+      2.78
+     ],
+     [
+      "a person speaking excitedly",
+      0.213,
+      2.85
+     ],
+     [
+      "a calm narrator speaking",
+      0.045,
+      1.62
+     ],
+     [
+      "a sad person speaking",
+      0.016,
+      1.48
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.487,
+      2.7
+     ],
+     [
+      "a calm narrator speaking",
+      0.262,
+      2.24
+     ],
+     [
+      "a sad person speaking",
+      0.079,
+      2.03
+     ],
+     [
+      "a person speaking sarcastically",
+      0.073,
+      1.69
+     ]
+    ],
+    [
+     [
+      "a person speaking excitedly",
+      0.349,
+      3.42
+     ],
+     [
+      "a calm narrator speaking",
+      0.266,
+      2.48
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.256,
+      2.77
+     ],
+     [
+      "a person speaking sarcastically",
+      0.038,
+      1.57
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.849
+    ],
+    [
+     "a man speaking",
+     0.952
+    ],
+    [
+     "a man speaking",
+     0.991
+    ],
+    [
+     "a man speaking",
+     0.956
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.997,
+      2.24
+     ],
+     [
+      "people laughing",
+      0.003,
+      -0.13
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.968,
+      1.6
+     ],
+     [
+      "people laughing",
+      0.032,
+      0.44
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.995,
+      2.04
+     ],
+     [
+      "people laughing",
+      0.005,
+      0.24
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.968,
+      1.71
+     ],
+     [
+      "people laughing",
+      0.032,
+      0.37
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 15,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 94.62,
+   "end": 97.32,
+   "text": "Why email? I already have followers.",
+   "words": 6,
+   "dur": 2.7,
+   "wpm": 133,
+   "f0_med_hz": 356.3,
+   "f0_raw_med_hz": 356.3,
+   "st_vs_speaker": 2.3,
+   "st_p10_p90": [
+    -10.3,
+    4.4
+   ],
+   "contour_st_thirds": [
+    3.2,
+    2.9,
+    -9.2
+   ],
+   "voiced_frames": 85,
+   "db_p50": -17.2,
+   "db_peak": -10.6,
+   "inner_pauses": [
+    {
+     "after": "email?",
+     "ms": 719
+    }
+   ],
+   "emphasis_words": [],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 710,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 540,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.889,
+      3.19
+     ],
+     [
+      "a confused person asking a question",
+      0.069,
+      2.55
+     ],
+     [
+      "a person speaking excitedly",
+      0.022,
+      2.46
+     ],
+     [
+      "a person speaking sarcastically",
+      0.012,
+      1.45
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.569,
+      2.6
+     ],
+     [
+      "a person speaking excitedly",
+      0.2,
+      2.72
+     ],
+     [
+      "a confused person asking a question",
+      0.152,
+      2.34
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.017,
+      1.67
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.566
+    ],
+    [
+     "a woman speaking",
+     0.732
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "people laughing",
+      0.901,
+      0.86
+     ],
+     [
+      "a person speaking",
+      0.099,
+      0.19
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.995,
+      1.79
+     ],
+     [
+      "people laughing",
+      0.005,
+      -0.11
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 16,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 97.86,
+   "end": 107.82,
+   "text": "Followers are rented. Instagram can change its rules any day. Your email list is yours. Kit gives you a free sign up page. Put its link in your Instagram bio.",
+   "words": 30,
+   "dur": 9.96,
+   "wpm": 181,
+   "f0_med_hz": 121.1,
+   "f0_raw_med_hz": 121.7,
+   "st_vs_speaker": -0.4,
+   "st_p10_p90": [
+    -7.3,
+    5.7
+   ],
+   "contour_st_thirds": [
+    -4.7,
+    -0.6,
+    1.6
+   ],
+   "voiced_frames": 344,
+   "db_p50": -17.8,
+   "db_peak": -8.1,
+   "inner_pauses": [
+    {
+     "after": "rented.",
+     "ms": 1019
+    },
+    {
+     "after": "day.",
+     "ms": 700
+    },
+    {
+     "after": "yours.",
+     "ms": 600
+    },
+    {
+     "after": "page.",
+     "ms": 420
+    }
+   ],
+   "emphasis_words": [
+    "Your",
+    "email",
+    "Kit",
+    "gives",
+    "a",
+    "up",
+    "Put"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": 460,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 360,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.258,
+      2.05
+     ],
+     [
+      "a calm narrator speaking",
+      0.258,
+      1.8
+     ],
+     [
+      "a person speaking sarcastically",
+      0.189,
+      1.57
+     ],
+     [
+      "a confused person asking a question",
+      0.087,
+      1.88
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.502,
+      3.65
+     ],
+     [
+      "a person speaking excitedly",
+      0.43,
+      4.07
+     ],
+     [
+      "a calm narrator speaking",
+      0.029,
+      2.42
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.01,
+      2.61
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.888,
+      2.8
+     ],
+     [
+      "a sad person speaking",
+      0.043,
+      1.86
+     ],
+     [
+      "a person speaking excitedly",
+      0.027,
+      2.17
+     ],
+     [
+      "a person speaking sarcastically",
+      0.015,
+      1.27
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.662,
+      3.4
+     ],
+     [
+      "a person speaking excitedly",
+      0.293,
+      3.57
+     ],
+     [
+      "a calm narrator speaking",
+      0.01,
+      1.85
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.009,
+      2.31
+     ]
+    ],
+    [
+     [
+      "a person speaking excitedly",
+      0.366,
+      3.67
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.339,
+      3.2
+     ],
+     [
+      "a calm narrator speaking",
+      0.205,
+      2.76
+     ],
+     [
+      "a person speaking sarcastically",
+      0.033,
+      2.02
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.988
+    ],
+    [
+     "a man speaking",
+     0.948
+    ],
+    [
+     "a man speaking",
+     0.969
+    ],
+    [
+     "a man speaking",
+     0.783
+    ],
+    [
+     "a man speaking",
+     0.972
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.819,
+      1.7
+     ],
+     [
+      "people laughing",
+      0.181,
+      1.19
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.782,
+      1.81
+     ],
+     [
+      "people laughing",
+      0.218,
+      1.36
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.861,
+      0.82
+     ],
+     [
+      "people laughing",
+      0.139,
+      0.27
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.807,
+      1.42
+     ],
+     [
+      "people laughing",
+      0.193,
+      0.95
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.974,
+      2.22
+     ],
+     [
+      "people laughing",
+      0.026,
+      0.97
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 17,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 108.18,
+   "end": 110.0,
+   "text": "Okay, now do I build the app?",
+   "words": 7,
+   "dur": 1.82,
+   "wpm": 231,
+   "f0_med_hz": 359.2,
+   "f0_raw_med_hz": 359.2,
+   "st_vs_speaker": 2.4,
+   "st_p10_p90": [
+    -11.8,
+    4.5
+   ],
+   "contour_st_thirds": [
+    -11.8,
+    1.7,
+    2.6
+   ],
+   "voiced_frames": 86,
+   "db_p50": -16.0,
+   "db_peak": -11.4,
+   "inner_pauses": [
+    {
+     "after": "Okay,",
+     "ms": 439
+    }
+   ],
+   "emphasis_words": [
+    "Okay,",
+    "the"
+   ],
+   "lengthened_words": [],
+   "fillers": [
+    "Okay,"
+   ],
+   "gap_to_next_ms": 350,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 1219,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.872,
+      4.93
+     ],
+     [
+      "a person speaking excitedly",
+      0.082,
+      4.59
+     ],
+     [
+      "a confused person asking a question",
+      0.017,
+      3.76
+     ],
+     [
+      "a sad person speaking",
+      0.014,
+      3.46
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.88
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.961,
+      2.32
+     ],
+     [
+      "people laughing",
+      0.039,
+      1.2
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 18,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 111.22,
+   "end": 116.76,
+   "text": "Almost. Here's the tip most people skip. Sell it before you build it.",
+   "words": 13,
+   "dur": 5.54,
+   "wpm": 141,
+   "f0_med_hz": 104.7,
+   "f0_raw_med_hz": 102.8,
+   "st_vs_speaker": -3.0,
+   "st_p10_p90": [
+    -6.3,
+    11.0
+   ],
+   "contour_st_thirds": [
+    10.9,
+    -2.0,
+    -3.9
+   ],
+   "voiced_frames": 92,
+   "db_p50": -19.1,
+   "db_peak": -9.1,
+   "inner_pauses": [
+    {
+     "after": "Almost.",
+     "ms": 959
+    },
+    {
+     "after": "skip.",
+     "ms": 740
+    }
+   ],
+   "emphasis_words": [
+    "before",
+    "build"
+   ],
+   "lengthened_words": [
+    "Almost.",
+    "before"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 650,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 359,
+   "earshot_tone": [
+    [
+     [
+      "a person speaking sarcastically",
+      0.399,
+      2.42
+     ],
+     [
+      "a confused person asking a question",
+      0.369,
+      2.96
+     ],
+     [
+      "a sad person speaking",
+      0.164,
+      2.45
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.049,
+      2.11
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.773,
+      2.71
+     ],
+     [
+      "a person speaking excitedly",
+      0.065,
+      2.36
+     ],
+     [
+      "a sad person speaking",
+      0.051,
+      1.81
+     ],
+     [
+      "a person speaking sarcastically",
+      0.047,
+      1.49
+     ]
+    ],
+    [
+     [
+      "a calm narrator speaking",
+      0.563,
+      2.29
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.19,
+      2.18
+     ],
+     [
+      "a person speaking sarcastically",
+      0.084,
+      1.46
+     ],
+     [
+      "a sad person speaking",
+      0.057,
+      1.67
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.854
+    ],
+    [
+     "a man speaking",
+     0.975
+    ],
+    [
+     "a man speaking",
+     0.985
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.94,
+      1.58
+     ],
+     [
+      "people laughing",
+      0.06,
+      0.64
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.632,
+      1.27
+     ],
+     [
+      "people laughing",
+      0.368,
+      1.08
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.995,
+      1.84
+     ],
+     [
+      "people laughing",
+      0.005,
+      -0.11
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 19,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 117.12,
+   "end": 119.3,
+   "text": "Sell an app that doesn't even exist yet?",
+   "words": 8,
+   "dur": 2.18,
+   "wpm": 220,
+   "f0_med_hz": 354.6,
+   "f0_raw_med_hz": 354.6,
+   "st_vs_speaker": 2.2,
+   "st_p10_p90": [
+    -1.5,
+    6.2
+   ],
+   "contour_st_thirds": [
+    2.3,
+    2.1,
+    5.3
+   ],
+   "voiced_frames": 91,
+   "db_p50": -17.2,
+   "db_peak": -8.5,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "even",
+    "yet?"
+   ],
+   "lengthened_words": [
+    "exist"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 360,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 380,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.946,
+      4.77
+     ],
+     [
+      "a person speaking excitedly",
+      0.015,
+      3.77
+     ],
+     [
+      "a sad person speaking",
+      0.014,
+      3.19
+     ],
+     [
+      "a confused person asking a question",
+      0.009,
+      3.28
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.88
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.878,
+      2.38
+     ],
+     [
+      "people laughing",
+      0.122,
+      1.65
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 20,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 119.68,
+   "end": 134.66,
+   "text": "Ask me for one screen of it. Email a screenshot to your list. Sell early access in Kit for $5. They pay now and get it first. If 10 people pay, we build the rest this weekend. If nobody pays, you just saved a month.",
+   "words": 45,
+   "dur": 14.98,
+   "wpm": 180,
+   "f0_med_hz": 126.1,
+   "f0_raw_med_hz": 129.1,
+   "st_vs_speaker": 0.3,
+   "st_p10_p90": [
+    -5.8,
+    5.2
+   ],
+   "contour_st_thirds": [
+    1.0,
+    0.6,
+    -0.7
+   ],
+   "voiced_frames": 394,
+   "db_p50": -17.9,
+   "db_peak": -8.1,
+   "inner_pauses": [
+    {
+     "after": "list.",
+     "ms": 599
+    },
+    {
+     "after": "$5.",
+     "ms": 599
+    },
+    {
+     "after": "first.",
+     "ms": 659
+    },
+    {
+     "after": "weekend.",
+     "ms": 439
+    }
+   ],
+   "emphasis_words": [
+    "Ask",
+    "Email",
+    "a",
+    "list.",
+    "Sell",
+    "Kit",
+    "for",
+    "people",
+    "we",
+    "build",
+    "rest",
+    "saved"
+   ],
+   "lengthened_words": [
+    "and",
+    "pays,"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 570,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 439,
+   "earshot_tone": [
+    [
+     [
+      "a calm narrator speaking",
+      0.49,
+      2.36
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.308,
+      2.46
+     ],
+     [
+      "a sad person speaking",
+      0.058,
+      1.82
+     ],
+     [
+      "a person speaking sarcastically",
+      0.05,
+      1.42
+     ]
+    ],
+    [
+     [
+      "a person speaking excitedly",
+      0.526,
+      2.84
+     ],
+     [
+      "a calm narrator speaking",
+      0.318,
+      1.89
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.067,
+      1.6
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.031,
+      1.62
+     ]
+    ],
+    [
+     [
+      "a person speaking excitedly",
+      0.63,
+      3.45
+     ],
+     [
+      "a frustrated angry person speaking",
+      0.175,
+      2.46
+     ],
+     [
+      "a calm narrator speaking",
+      0.139,
+      2.09
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.019,
+      1.94
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.525,
+      2.89
+     ],
+     [
+      "a calm narrator speaking",
+      0.283,
+      2.4
+     ],
+     [
+      "a person speaking excitedly",
+      0.135,
+      2.89
+     ],
+     [
+      "a person speaking sarcastically",
+      0.019,
+      1.33
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.459,
+      2.33
+     ],
+     [
+      "a person speaking excitedly",
+      0.379,
+      2.7
+     ],
+     [
+      "a calm narrator speaking",
+      0.118,
+      1.64
+     ],
+     [
+      "a person speaking sarcastically",
+      0.013,
+      0.78
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.524,
+      3.21
+     ],
+     [
+      "a person speaking excitedly",
+      0.305,
+      3.5
+     ],
+     [
+      "a calm narrator speaking",
+      0.13,
+      2.44
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.015,
+      2.24
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.983
+    ],
+    [
+     "a man speaking",
+     0.899
+    ],
+    [
+     "a man speaking",
+     0.91
+    ],
+    [
+     "a man speaking",
+     0.991
+    ],
+    [
+     "a man speaking",
+     0.927
+    ],
+    [
+     "a man speaking",
+     0.981
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.976,
+      1.52
+     ],
+     [
+      "people laughing",
+      0.024,
+      0.2
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.987,
+      1.42
+     ],
+     [
+      "people laughing",
+      0.013,
+      -0.17
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.991,
+      2.01
+     ],
+     [
+      "people laughing",
+      0.009,
+      0.23
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.992,
+      1.67
+     ],
+     [
+      "people laughing",
+      0.008,
+      0.01
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.994,
+      1.24
+     ],
+     [
+      "people laughing",
+      0.006,
+      -0.47
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.983,
+      1.83
+     ],
+     [
+      "people laughing",
+      0.017,
+      0.37
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 21,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 135.1,
+   "end": 137.9,
+   "text": "So the app is the easy part now?",
+   "words": 8,
+   "dur": 2.8,
+   "wpm": 171,
+   "f0_med_hz": 284.7,
+   "f0_raw_med_hz": 264.0,
+   "st_vs_speaker": -1.6,
+   "st_p10_p90": [
+    -9.1,
+    3.2
+   ],
+   "contour_st_thirds": [
+    -7.4,
+    -0.4,
+    -2.9
+   ],
+   "voiced_frames": 108,
+   "db_p50": -18.5,
+   "db_peak": -8.1,
+   "inner_pauses": [],
+   "emphasis_words": [
+    "app",
+    "easy",
+    "part"
+   ],
+   "lengthened_words": [
+    "easy",
+    "part"
+   ],
+   "fillers": [
+    "So"
+   ],
+   "gap_to_next_ms": 290,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 0,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.805,
+      4.75
+     ],
+     [
+      "a person speaking excitedly",
+      0.082,
+      4.36
+     ],
+     [
+      "a worried anxious person speaking",
+      0.035,
+      3.39
+     ],
+     [
+      "a sad person speaking",
+      0.034,
+      3.36
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.897
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.942,
+      2.69
+     ],
+     [
+      "people laughing",
+      0.058,
+      1.53
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 22,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 137.9,
+   "end": 141.42,
+   "text": "Anyone can make the tacos. Not everyone has the line.",
+   "words": 10,
+   "dur": 3.52,
+   "wpm": 170,
+   "f0_med_hz": 124.6,
+   "f0_raw_med_hz": 124.6,
+   "st_vs_speaker": 0.1,
+   "st_p10_p90": [
+    -6.6,
+    10.2
+   ],
+   "contour_st_thirds": [
+    6.0,
+    10.1,
+    -2.8
+   ],
+   "voiced_frames": 91,
+   "db_p50": -16.0,
+   "db_peak": -9.8,
+   "inner_pauses": [
+    {
+     "after": "tacos.",
+     "ms": 760
+    }
+   ],
+   "emphasis_words": [
+    "Anyone",
+    "can",
+    "the",
+    "tacos.",
+    "everyone",
+    "has"
+   ],
+   "lengthened_words": [
+    "Anyone"
+   ],
+   "fillers": [],
+   "gap_to_next_ms": 470,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 500,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.683,
+      2.96
+     ],
+     [
+      "a person speaking excitedly",
+      0.095,
+      2.75
+     ],
+     [
+      "a person speaking sarcastically",
+      0.084,
+      1.86
+     ],
+     [
+      "a sad person speaking",
+      0.045,
+      1.97
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.381,
+      2.1
+     ],
+     [
+      "a person speaking excitedly",
+      0.291,
+      2.44
+     ],
+     [
+      "a calm narrator speaking",
+      0.156,
+      1.6
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.064,
+      1.82
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.588
+    ],
+    [
+     "a man speaking",
+     0.96
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.923,
+      1.57
+     ],
+     [
+      "people laughing",
+      0.077,
+      0.7
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.946,
+      1.72
+     ],
+     [
+      "people laughing",
+      0.054,
+      0.84
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 23,
+   "speaker": "SPEAKER 1",
+   "role": "USER",
+   "start": 141.92,
+   "end": 146.24,
+   "text": "Okay, one free tip every day. I'm starting next Monday.",
+   "words": 10,
+   "dur": 4.32,
+   "wpm": 139,
+   "f0_med_hz": 278.2,
+   "f0_raw_med_hz": 278.2,
+   "st_vs_speaker": -2.0,
+   "st_p10_p90": [
+    -6.7,
+    3.1
+   ],
+   "contour_st_thirds": [
+    2.1,
+    -2.5,
+    -1.8
+   ],
+   "voiced_frames": 186,
+   "db_p50": -18.4,
+   "db_peak": -8.6,
+   "inner_pauses": [
+    {
+     "after": "Okay,",
+     "ms": 559
+    },
+    {
+     "after": "day.",
+     "ms": 459
+    }
+   ],
+   "emphasis_words": [
+    "free"
+   ],
+   "lengthened_words": [
+    "every",
+    "next"
+   ],
+   "fillers": [
+    "Okay,"
+   ],
+   "gap_to_next_ms": 510,
+   "gap_method": "energy",
+   "asr_gap_to_next_ms": 539,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.691,
+      4.01
+     ],
+     [
+      "a person speaking excitedly",
+      0.273,
+      4.15
+     ],
+     [
+      "a confused person asking a question",
+      0.02,
+      3.05
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.007,
+      2.81
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.633,
+      4.45
+     ],
+     [
+      "a person speaking excitedly",
+      0.354,
+      4.73
+     ],
+     [
+      "a confused person asking a question",
+      0.005,
+      2.91
+     ],
+     [
+      "a cheerful happy person speaking",
+      0.002,
+      2.64
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a woman speaking",
+     0.887
+    ],
+    [
+     "a woman speaking",
+     0.979
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.894,
+      1.81
+     ],
+     [
+      "people laughing",
+      0.106,
+      1.12
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.988,
+      2.26
+     ],
+     [
+      "people laughing",
+      0.012,
+      0.65
+     ]
+    ]
+   ]
+  },
+  {
+   "turn": 24,
+   "speaker": "SPEAKER 2",
+   "role": "CLAUDE",
+   "start": 146.78,
+   "end": 149.62,
+   "text": "You said that last Monday. Ask me anything.",
+   "words": 8,
+   "dur": 2.84,
+   "wpm": 169,
+   "f0_med_hz": 97.7,
+   "f0_raw_med_hz": 97.7,
+   "st_vs_speaker": -4.1,
+   "st_p10_p90": [
+    -7.3,
+    12.1
+   ],
+   "contour_st_thirds": [
+    12.1,
+    -3.0,
+    -6.5
+   ],
+   "voiced_frames": 88,
+   "db_p50": -17.3,
+   "db_peak": -10.2,
+   "inner_pauses": [
+    {
+     "after": "Monday.",
+     "ms": 539
+    }
+   ],
+   "emphasis_words": [
+    "said",
+    "Ask"
+   ],
+   "lengthened_words": [],
+   "fillers": [],
+   "gap_to_next_ms": null,
+   "gap_method": null,
+   "asr_gap_to_next_ms": null,
+   "earshot_tone": [
+    [
+     [
+      "a frustrated angry person speaking",
+      0.858,
+      3.08
+     ],
+     [
+      "a person speaking excitedly",
+      0.047,
+      2.57
+     ],
+     [
+      "a calm narrator speaking",
+      0.031,
+      1.73
+     ],
+     [
+      "a person speaking sarcastically",
+      0.019,
+      1.45
+     ]
+    ],
+    [
+     [
+      "a frustrated angry person speaking",
+      0.246,
+      2.06
+     ],
+     [
+      "a calm narrator speaking",
+      0.236,
+      1.77
+     ],
+     [
+      "a sad person speaking",
+      0.202,
+      1.93
+     ],
+     [
+      "a person speaking sarcastically",
+      0.148,
+      1.47
+     ]
+    ]
+   ],
+   "earshot_gender": [
+    [
+     "a man speaking",
+     0.988
+    ],
+    [
+     "a man speaking",
+     0.989
+    ]
+   ],
+   "earshot_laugh": [
+    [
+     [
+      "a person speaking",
+      0.632,
+      1.53
+     ],
+     [
+      "people laughing",
+      0.368,
+      1.34
+     ]
+    ],
+    [
+     [
+      "a person speaking",
+      0.935,
+      2.05
+     ],
+     [
+      "people laughing",
+      0.065,
+      1.08
+     ]
+    ]
+   ]
+  }
+ ]
+}

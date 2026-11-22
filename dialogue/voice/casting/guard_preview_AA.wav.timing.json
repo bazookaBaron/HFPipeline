@@ -1,0 +1,114 @@
+[
+ {
+  "line": 0,
+  "char": "rohan",
+  "start": 0.0,
+  "seed": 7000,
+  "wer": 0.0,
+  "gen_s": 16.64
+ },
+ {
+  "line": 1,
+  "char": "dadu",
+  "start": 5.35,
+  "seed": 7011,
+  "wer": 0.0,
+  "gen_s": 9.25
+ },
+ {
+  "line": 2,
+  "char": "rohan",
+  "start": 8.3,
+  "seed": 7020,
+  "wer": 1.0,
+  "gen_s": 7.8
+ },
+ {
+  "line": 3,
+  "char": "dadu",
+  "start": 10.14,
+  "seed": 7030,
+  "wer": 0.0,
+  "gen_s": 20.42
+ },
+ {
+  "line": 4,
+  "char": "rohan",
+  "start": 19.57,
+  "seed": 7040,
+  "wer": 0.0,
+  "gen_s": 6.75
+ },
+ {
+  "line": 5,
+  "char": "dadu",
+  "start": 20.72,
+  "seed": 7050,
+  "wer": 0.0,
+  "gen_s": 6.97
+ },
+ {
+  "line": 6,
+  "char": "rohan",
+  "start": 22.63,
+  "seed": 7060,
+  "wer": 0.0,
+  "gen_s": 6.6
+ },
+ {
+  "line": 7,
+  "char": "dadu",
+  "start": 23.74,
+  "seed": 7070,
+  "wer": 0.0,
+  "gen_s": 12.43
+ },
+ {
+  "line": 8,
+  "char": "rohan",
+  "start": 29.29,
+  "seed": 7081,
+  "wer": 0.0,
+  "gen_s": 9.14
+ },
+ {
+  "line": 9,
+  "char": "dadu",
+  "start": 32.49,
+  "seed": 7091,
+  "wer": 0.0,
+  "gen_s": 14.63
+ },
+ {
+  "line": 10,
+  "char": "rohan",
+  "start": 38.76,
+  "seed": 7101,
+  "wer": 0.0,
+  "gen_s": 8.09
+ },
+ {
+  "line": 11,
+  "char": "dadu",
+  "start": 40.87,
+  "seed": 7110,
+  "wer": 0.0,
+  "gen_s": 14.01
+ },
+ {
+  "line": 12,
+  "char": "rohan",
+  "start": 47.47,
+  "seed": 7120,
+  "wer": 0.0,
+  "gen_s": 8.47
+ },
+ {
+  "line": 13,
+  "char": "dadu",
+  "start": 49.86,
+  "seed": 7130,
+  "wer": 0.0,
+  "gen_s": 15.29
+ }
+]

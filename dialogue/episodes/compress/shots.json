@@ -1,0 +1,2804 @@
+{
+ "ep": "compress",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 72.05,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_compress_1p3x.wav",
+ "words_src": "dialogue/fish/words_compress.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "CU",
+   "text": "Grandpa, my folder was ten gigabytes. Zipped, it's two. Where did the other eight go?",
+   "s": 0,
+   "e": 4.64,
+   "w0": 0,
+   "w1": 14
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Nowhere. It was mostly repeating itself.",
+   "s": 5.32,
+   "e": 7.4,
+   "w0": 15,
+   "w1": 20
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "Repeating how?",
+   "s": 8.02,
+   "e": 8.72,
+   "w0": 21,
+   "w1": 22
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Take la, la, la, la, la. Or just write: la, six times.",
+   "s": 9.32,
+   "e": 13.98,
+   "w0": 23,
+   "w1": 34
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "Same song, fewer letters.",
+   "s": 14.34,
+   "e": 15.54,
+   "w0": 35,
+   "w1": 38
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": "MS",
+   "text": "And nothing lost. Unzip it, and every la comes back.",
+   "s": 16.2,
+   "e": 19.98,
+   "w0": 39,
+   "w1": 48
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "confused",
+   "cam": "OTS",
+   "text": "But my photos aren't la, la, la.",
+   "s": 20.4,
+   "e": 22.1,
+   "w0": 49,
+   "w1": 55
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "No. So photos get something sneakier. They throw things away.",
+   "s": 22.86,
+   "e": 27.28,
+   "w0": 56,
+   "w1": 65
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "shocked",
+   "cam": "CU",
+   "text": "Throw away? Parts of my picture?",
+   "s": 27.96,
+   "e": 30.3,
+   "w0": 66,
+   "w1": 71
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Only what your eyes miss. You see brightness sharply, color blurrily. So it keeps the sharp part, and blurs the color.",
+   "s": 30.82,
+   "e": 38.68,
+   "w0": 72,
+   "w1": 92
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "And songs?",
+   "s": 39.28,
+   "e": 39.86,
+   "w0": 93,
+   "w1": 94
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "A loud drum hides the quiet sounds beside it. You never hear them. MP3 deletes them.",
+   "s": 40.38,
+   "e": 46.66,
+   "w0": 95,
+   "w1": 110
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": "OTS",
+   "text": "It deletes what I can't hear?",
+   "s": 47.08,
+   "e": 48.54,
+   "w0": 111,
+   "w1": 116
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": "2S",
+   "text": "Ten times smaller, and you don't notice.",
+   "s": 49.08,
+   "e": 51.18,
+   "w0": 117,
+   "w1": 123
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "shocked",
+   "cam": "CU",
+   "text": "Wait. So it's never the real song?",
+   "s": 51.86,
+   "e": 53.88,
+   "w0": 124,
+   "w1": 130
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Close enough. Save it again and again, and you get a photocopy of a photocopy.",
+   "s": 54.48,
+   "e": 59.56,
+   "w0": 131,
+   "w1": 145
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "OTS",
+   "text": "So I zip the zip, till the whole movie is one byte!",
+   "s": 59.94,
+   "e": 63.42,
+   "w0": 146,
+   "w1": 157
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "dry, flat",
+   "cam": "CU",
+   "text": "Try it. A packed suitcase doesn't shrink when you sit on it.",
+   "s": 64.22,
+   "e": 68.02,
+   "w0": 158,
+   "w1": 169
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 5.17,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 2,
+   "t0": 5.17,
+   "t1": 7.87,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 3,
+   "t0": 7.87,
+   "t1": 9.17,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 9.17,
+   "t1": 14.19,
+   "rig": "ms_A",
+   "plan": "ms_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 14.19,
+   "t1": 16.05,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 6,
+   "t0": 16.05,
+   "t1": 17.61,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 7,
+   "t0": 17.61,
+   "t1": 20.25,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 8,
+   "t0": 20.25,
+   "t1": 22.71,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 9,
+   "t0": 22.71,
+   "t1": 27.81,
+   "rig": "ms_A",
+   "plan": "ms_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 27.81,
+   "t1": 30.67,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 11,
+   "t0": 30.67,
+   "t1": 35.85,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 12,
+   "t0": 35.85,
+   "t1": 39.13,
+   "rig": "ms_B",
+   "plan": "ms_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 13,
+   "t0": 39.13,
+   "t1": 40.23,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 14,
+   "t0": 40.23,
+   "t1": 46.93,
+   "rig": "ms_A",
+   "plan": "ms_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 15,
+   "t0": 46.93,
+   "t1": 48.93,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 16,
+   "t0": 48.93,
+   "t1": 51.71,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 17,
+   "t0": 51.71,
+   "t1": 54.33,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 18,
+   "t0": 54.33,
+   "t1": 59.79,
+   "rig": "ms_A",
+   "plan": "ms_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 19,
+   "t0": 59.79,
+   "t1": 64.07,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 20,
+   "t0": 64.07,
+   "t1": 67.4,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 21,
+   "t0": 67.4,
+   "t1": 69.57,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 22,
+   "t0": 69.57,
+   "t1": 72.05,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    5.17,
+    "amused",
+    1
+   ],
+   [
+    7.87,
+    "warm",
+    1
+   ],
+   [
+    9.17,
+    "firm_light",
+    1
+   ],
+   [
+    14.19,
+    "warm",
+    1
+   ],
+   [
+    16.05,
+    "amused",
+    1
+   ],
+   [
+    22.71,
+    "warm",
+    1
+   ],
+   [
+    27.81,
+    "tender",
+    1
+   ],
+   [
+    30.67,
+    "firm_light",
+    1
+   ],
+   [
+    39.13,
+    "warm",
+    1
+   ],
+   [
+    40.23,
+    "firm_light",
+    1
+   ],
+   [
+    46.93,
+    "amused",
+    0.6
+   ],
+   [
+    48.93,
+    "amused",
+    1
+   ],
+   [
+    51.71,
+    "tender",
+    1
+   ],
+   [
+    54.33,
+    "firm_light",
+    1
+   ],
+   [
+    59.79,
+    "warm",
+    1
+   ],
+   [
+    64.07,
+    "firm_light",
+    1
+   ],
+   [
+    69.57,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    14.19,
+    "thinking",
+    1
+   ],
+   [
+    16.05,
+    "curious",
+    1
+   ],
+   [
+    16.58,
+    "worried",
+    1
+   ],
+   [
+    20.25,
+    "confused",
+    1
+   ],
+   [
+    22.71,
+    "curious",
+    1
+   ],
+   [
+    27.81,
+    "surprised",
+    1
+   ],
+   [
+    30.67,
+    "curious",
+    1
+   ],
+   [
+    46.93,
+    "surprised",
+    1
+   ],
+   [
+    48.93,
+    "curious",
+    1
+   ],
+   [
+    51.71,
+    "surprised",
+    1
+   ],
+   [
+    54.33,
+    "curious",
+    1
+   ],
+   [
+    59.79,
+    "grin",
+    1
+   ],
+   [
+    64.07,
+    "curious",
+    1
+   ],
+   [
+    69.57,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 4.32,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "two_fingers",
+   "t": 2.94,
+   "rise": 0.4,
+   "dur": 0.9,
+   "line": 1,
+   "word": "two."
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 4.26,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 1,
+   "word": "eight"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 5.44,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 2,
+   "word": "nowhere"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 6.3,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 2,
+   "word": "was"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 6.3,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "was"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 8.37,
+   "rise": 0.5,
+   "dur": 0.45,
+   "line": 3,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 9.44,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 4,
+   "word": "take"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 13.44,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 4,
+   "word": "six"
+  },
+  {
+   "actor": "B",
+   "kind": "palm_up",
+   "t": 15.3,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 5,
+   "word": "letters."
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 16.74,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 6,
+   "word": "lost."
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 16.74,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 6,
+   "word": "lost."
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 17.82,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 6,
+   "word": "Unzip"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 17.88,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 6,
+   "word": "unzip"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 20.76,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 7,
+   "word": "photos"
+  },
+  {
+   "actor": "A",
+   "kind": "head_shake",
+   "t": 22.92,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 8,
+   "word": "No."
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 27.06,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 8,
+   "word": "away"
+  },
+  {
+   "actor": "B",
+   "kind": "hands_lift",
+   "t": 29.96,
+   "rise": 0.3,
+   "dur": 0.75,
+   "line": 9,
+   "word": "picture?"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 31.54,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 10,
+   "word": "eyes"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 39.63,
+   "rise": 0.5,
+   "dur": 0.3,
+   "line": 11,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 40.9,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 12,
+   "word": "drum"
+  },
+  {
+   "actor": "A",
+   "kind": "head_shake",
+   "t": 44.04,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 12,
+   "word": "never"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 44.1,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 12,
+   "word": "never"
+  },
+  {
+   "actor": "B",
+   "kind": "head_shake",
+   "t": 47.94,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 13,
+   "word": "can't"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 49.8,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 14,
+   "word": "smaller"
+  },
+  {
+   "actor": "A",
+   "kind": "head_shake",
+   "t": 50.64,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 14,
+   "word": "don't"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 51.98,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 15,
+   "word": "wait"
+  },
+  {
+   "actor": "B",
+   "kind": "head_shake",
+   "t": 52.86,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 15,
+   "word": "never"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 54.88,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 16,
+   "word": "enough"
+  },
+  {
+   "actor": "B",
+   "kind": "two_hand_open",
+   "t": 62,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 17,
+   "word": "whole"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 65.72,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 18,
+   "word": "packed"
+  },
+  {
+   "actor": "A",
+   "kind": "head_shake",
+   "t": 66.48,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 18,
+   "word": "doesn't"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 70.42,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 14.39,
+   "t1": 15.29,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 69.82,
+   "t1": 73.05,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.16,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "my",
+   "s": 0.5,
+   "e": 0.68,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "folder",
+   "s": 0.68,
+   "e": 0.96,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "was",
+   "s": 0.96,
+   "e": 1.14,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "ten",
+   "s": 1.14,
+   "e": 1.48,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "gigabytes.",
+   "s": 1.48,
+   "e": 1.8,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "Zipped,",
+   "s": 2.18,
+   "e": 2.56,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "it's",
+   "s": 2.76,
+   "e": 2.88,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "two.",
+   "s": 2.88,
+   "e": 3.2,
+   "sp": "B",
+   "line": 1,
+   "stress": true
+  },
+  {
+   "i": 9,
+   "w": "Where",
+   "s": 3.54,
+   "e": 3.74,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "did",
+   "s": 3.74,
+   "e": 3.84,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 11,
+   "w": "the",
+   "s": 3.84,
+   "e": 4,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 12,
+   "w": "other",
+   "s": 4,
+   "e": 4.14,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 13,
+   "w": "eight",
+   "s": 4.14,
+   "e": 4.4,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 14,
+   "w": "go?",
+   "s": 4.4,
+   "e": 4.64,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 15,
+   "w": "Nowhere.",
+   "s": 5.32,
+   "e": 5.84,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 16,
+   "w": "It",
+   "s": 6.12,
+   "e": 6.24,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 17,
+   "w": "was",
+   "s": 6.24,
+   "e": 6.34,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 18,
+   "w": "mostly",
+   "s": 6.34,
+   "e": 6.68,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 19,
+   "w": "repeating",
+   "s": 6.68,
+   "e": 7.02,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 20,
+   "w": "itself.",
+   "s": 7.02,
+   "e": 7.4,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 21,
+   "w": "Repeating",
+   "s": 8.02,
+   "e": 8.38,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 22,
+   "w": "how?",
+   "s": 8.38,
+   "e": 8.72,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 23,
+   "w": "Take",
+   "s": 9.32,
+   "e": 9.58,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 24,
+   "w": "la,",
+   "s": 9.58,
+   "e": 10.18,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 25,
+   "w": "la,",
+   "s": 10.32,
+   "e": 10.42,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 26,
+   "w": "la,",
+   "s": 10.44,
+   "e": 10.7,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 27,
+   "w": "la,",
+   "s": 10.7,
+   "e": 10.86,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 28,
+   "w": "la.",
+   "s": 10.86,
+   "e": 11.04,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 29,
+   "w": "Or",
+   "s": 11.6,
+   "e": 11.88,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 30,
+   "w": "just",
+   "s": 11.88,
+   "e": 12.1,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 31,
+   "w": "write:",
+   "s": 12.1,
+   "e": 12.32,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 32,
+   "w": "la,",
+   "s": 12.7,
+   "e": 12.96,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 33,
+   "w": "six",
+   "s": 13.32,
+   "e": 13.58,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 34,
+   "w": "times.",
+   "s": 13.58,
+   "e": 13.98,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 35,
+   "w": "Same",
+   "s": 14.34,
+   "e": 14.58,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 36,
+   "w": "song,",
+   "s": 14.58,
+   "e": 14.84,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 37,
+   "w": "fewer",
+   "s": 15.02,
+   "e": 15.24,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 38,
+   "w": "letters.",
+   "s": 15.24,
+   "e": 15.54,
+   "sp": "B",
+   "line": 5,
+   "stress": true
+  },
+  {
+   "i": 39,
+   "w": "And",
+   "s": 16.2,
+   "e": 16.38,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 40,
+   "w": "nothing",
+   "s": 16.38,
+   "e": 16.68,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 41,
+   "w": "lost.",
+   "s": 16.68,
+   "e": 17.08,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 42,
+   "w": "Unzip",
+   "s": 17.76,
+   "e": 18.14,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 43,
+   "w": "it,",
+   "s": 18.14,
+   "e": 18.34,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 44,
+   "w": "and",
+   "s": 18.34,
+   "e": 18.58,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 45,
+   "w": "every",
+   "s": 18.58,
+   "e": 18.94,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 46,
+   "w": "la",
+   "s": 18.94,
+   "e": 19.26,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 47,
+   "w": "comes",
+   "s": 19.26,
+   "e": 19.64,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 48,
+   "w": "back.",
+   "s": 19.64,
+   "e": 19.98,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 49,
+   "w": "But",
+   "s": 20.4,
+   "e": 20.56,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 50,
+   "w": "my",
+   "s": 20.56,
+   "e": 20.7,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 51,
+   "w": "photos",
+   "s": 20.7,
+   "e": 21,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 52,
+   "w": "aren't",
+   "s": 21,
+   "e": 21.38,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 53,
+   "w": "la,",
+   "s": 21.38,
+   "e": 21.7,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 54,
+   "w": "la,",
+   "s": 21.82,
+   "e": 21.88,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 55,
+   "w": "la.",
+   "s": 21.96,
+   "e": 22.1,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 56,
+   "w": "No.",
+   "s": 22.86,
+   "e": 23.22,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 57,
+   "w": "So",
+   "s": 23.8,
+   "e": 24.08,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 58,
+   "w": "photos",
+   "s": 24.08,
+   "e": 24.36,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 59,
+   "w": "get",
+   "s": 24.36,
+   "e": 24.64,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 60,
+   "w": "something",
+   "s": 24.64,
+   "e": 24.92,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 61,
+   "w": "sneakier.",
+   "s": 24.92,
+   "e": 25.58,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 62,
+   "w": "They",
+   "s": 26.16,
+   "e": 26.32,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 63,
+   "w": "throw",
+   "s": 26.32,
+   "e": 26.62,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 64,
+   "w": "things",
+   "s": 26.62,
+   "e": 26.94,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 65,
+   "w": "away.",
+   "s": 26.94,
+   "e": 27.28,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 66,
+   "w": "Throw",
+   "s": 27.96,
+   "e": 28.3,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 67,
+   "w": "away?",
+   "s": 28.3,
+   "e": 28.7,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 68,
+   "w": "Parts",
+   "s": 29.38,
+   "e": 29.72,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 69,
+   "w": "of",
+   "s": 29.72,
+   "e": 29.78,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 70,
+   "w": "my",
+   "s": 29.78,
+   "e": 29.9,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 71,
+   "w": "picture?",
+   "s": 29.9,
+   "e": 30.3,
+   "sp": "B",
+   "line": 9,
+   "stress": true
+  },
+  {
+   "i": 72,
+   "w": "Only",
+   "s": 30.82,
+   "e": 31.04,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 73,
+   "w": "what",
+   "s": 31.04,
+   "e": 31.24,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 74,
+   "w": "your",
+   "s": 31.24,
+   "e": 31.42,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 75,
+   "w": "eyes",
+   "s": 31.42,
+   "e": 31.72,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 76,
+   "w": "miss.",
+   "s": 31.72,
+   "e": 32.1,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 77,
+   "w": "You",
+   "s": 32.92,
+   "e": 32.96,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 78,
+   "w": "see",
+   "s": 32.96,
+   "e": 33.16,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 79,
+   "w": "brightness",
+   "s": 33.16,
+   "e": 33.5,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 80,
+   "w": "sharply,",
+   "s": 33.5,
+   "e": 34.06,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 81,
+   "w": "color",
+   "s": 34.52,
+   "e": 34.96,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 82,
+   "w": "blurrily.",
+   "s": 34.96,
+   "e": 35.54,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 83,
+   "w": "So",
+   "s": 36.2,
+   "e": 36.28,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 84,
+   "w": "it",
+   "s": 36.28,
+   "e": 36.42,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 85,
+   "w": "keeps",
+   "s": 36.42,
+   "e": 36.62,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 86,
+   "w": "the",
+   "s": 36.62,
+   "e": 36.8,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 87,
+   "w": "sharp",
+   "s": 36.8,
+   "e": 37.06,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 88,
+   "w": "part,",
+   "s": 37.06,
+   "e": 37.36,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 89,
+   "w": "and",
+   "s": 37.36,
+   "e": 37.84,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 90,
+   "w": "blurs",
+   "s": 37.84,
+   "e": 38.18,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 91,
+   "w": "the",
+   "s": 38.18,
+   "e": 38.4,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 92,
+   "w": "color.",
+   "s": 38.4,
+   "e": 38.68,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 93,
+   "w": "And",
+   "s": 39.28,
+   "e": 39.48,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 94,
+   "w": "songs?",
+   "s": 39.48,
+   "e": 39.86,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 95,
+   "w": "A",
+   "s": 40.38,
+   "e": 40.54,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 96,
+   "w": "loud",
+   "s": 40.54,
+   "e": 40.78,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 97,
+   "w": "drum",
+   "s": 40.78,
+   "e": 41.26,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 98,
+   "w": "hides",
+   "s": 41.26,
+   "e": 41.74,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 99,
+   "w": "the",
+   "s": 41.74,
+   "e": 41.98,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 100,
+   "w": "quiet",
+   "s": 41.98,
+   "e": 42.28,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 101,
+   "w": "sounds",
+   "s": 42.28,
+   "e": 42.7,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 102,
+   "w": "beside",
+   "s": 42.7,
+   "e": 43.06,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 103,
+   "w": "it.",
+   "s": 43.06,
+   "e": 43.3,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 104,
+   "w": "You",
+   "s": 43.86,
+   "e": 43.98,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 105,
+   "w": "never",
+   "s": 43.98,
+   "e": 44.24,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 106,
+   "w": "hear",
+   "s": 44.24,
+   "e": 44.5,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 107,
+   "w": "them.",
+   "s": 44.5,
+   "e": 44.7,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 108,
+   "w": "MP3",
+   "s": 45.36,
+   "e": 45.96,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 109,
+   "w": "deletes",
+   "s": 45.96,
+   "e": 46.44,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 110,
+   "w": "them.",
+   "s": 46.44,
+   "e": 46.66,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 111,
+   "w": "It",
+   "s": 47.08,
+   "e": 47.22,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 112,
+   "w": "deletes",
+   "s": 47.22,
+   "e": 47.62,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 113,
+   "w": "what",
+   "s": 47.62,
+   "e": 47.78,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 114,
+   "w": "I",
+   "s": 47.78,
+   "e": 47.88,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 115,
+   "w": "can't",
+   "s": 47.88,
+   "e": 48.26,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 116,
+   "w": "hear?",
+   "s": 48.26,
+   "e": 48.54,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 117,
+   "w": "Ten",
+   "s": 49.08,
+   "e": 49.42,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 118,
+   "w": "times",
+   "s": 49.42,
+   "e": 49.68,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 119,
+   "w": "smaller,",
+   "s": 49.68,
+   "e": 50.08,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 120,
+   "w": "and",
+   "s": 50.08,
+   "e": 50.46,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 121,
+   "w": "you",
+   "s": 50.46,
+   "e": 50.58,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 122,
+   "w": "don't",
+   "s": 50.58,
+   "e": 50.86,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 123,
+   "w": "notice.",
+   "s": 50.86,
+   "e": 51.18,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 124,
+   "w": "Wait.",
+   "s": 51.86,
+   "e": 52.12,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 125,
+   "w": "So",
+   "s": 52.42,
+   "e": 52.64,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 126,
+   "w": "it's",
+   "s": 52.64,
+   "e": 52.8,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 127,
+   "w": "never",
+   "s": 52.8,
+   "e": 53.08,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 128,
+   "w": "the",
+   "s": 53.08,
+   "e": 53.26,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 129,
+   "w": "real",
+   "s": 53.26,
+   "e": 53.54,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 130,
+   "w": "song?",
+   "s": 53.54,
+   "e": 53.88,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 131,
+   "w": "Close",
+   "s": 54.48,
+   "e": 54.76,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 132,
+   "w": "enough.",
+   "s": 54.76,
+   "e": 55.06,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 133,
+   "w": "Save",
+   "s": 55.72,
+   "e": 55.96,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 134,
+   "w": "it",
+   "s": 55.96,
+   "e": 56.08,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 135,
+   "w": "again",
+   "s": 56.08,
+   "e": 56.44,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 136,
+   "w": "and",
+   "s": 56.44,
+   "e": 56.7,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 137,
+   "w": "again,",
+   "s": 56.7,
+   "e": 57.02,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 138,
+   "w": "and",
+   "s": 57.02,
+   "e": 57.58,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 139,
+   "w": "you",
+   "s": 57.58,
+   "e": 57.68,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 140,
+   "w": "get",
+   "s": 57.68,
+   "e": 57.8,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 141,
+   "w": "a",
+   "s": 57.8,
+   "e": 57.9,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 142,
+   "w": "photocopy",
+   "s": 57.9,
+   "e": 58.5,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 143,
+   "w": "of",
+   "s": 58.5,
+   "e": 58.84,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 144,
+   "w": "a",
+   "s": 58.84,
+   "e": 58.92,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 145,
+   "w": "photocopy.",
+   "s": 58.92,
+   "e": 59.56,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 146,
+   "w": "So",
+   "s": 59.94,
+   "e": 60.24,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 147,
+   "w": "I",
+   "s": 60.24,
+   "e": 60.86,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 148,
+   "w": "zip",
+   "s": 60.86,
+   "e": 61.12,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 149,
+   "w": "the",
+   "s": 61.12,
+   "e": 61.28,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 150,
+   "w": "zip,",
+   "s": 61.28,
+   "e": 61.5,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 151,
+   "w": "till",
+   "s": 61.5,
+   "e": 61.82,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 152,
+   "w": "the",
+   "s": 61.82,
+   "e": 61.94,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 153,
+   "w": "whole",
+   "s": 61.94,
+   "e": 62.2,
+   "sp": "B",
+   "line": 17,
+   "stress": true
+  },
+  {
+   "i": 154,
+   "w": "movie",
+   "s": 62.2,
+   "e": 62.52,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 155,
+   "w": "is",
+   "s": 62.52,
+   "e": 62.74,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 156,
+   "w": "one",
+   "s": 62.74,
+   "e": 63.12,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 157,
+   "w": "byte!",
+   "s": 63.12,
+   "e": 63.42,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 158,
+   "w": "Try",
+   "s": 64.22,
+   "e": 64.82,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 159,
+   "w": "it.",
+   "s": 64.82,
+   "e": 65.02,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 160,
+   "w": "A",
+   "s": 65.58,
+   "e": 65.66,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 161,
+   "w": "packed",
+   "s": 65.66,
+   "e": 65.96,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 162,
+   "w": "suitcase",
+   "s": 65.96,
+   "e": 66.42,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 163,
+   "w": "doesn't",
+   "s": 66.42,
+   "e": 66.86,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 164,
+   "w": "shrink",
+   "s": 66.86,
+   "e": 67.16,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 165,
+   "w": "when",
+   "s": 67.16,
+   "e": 67.4,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 166,
+   "w": "you",
+   "s": 67.4,
+   "e": 67.5,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 167,
+   "w": "sit",
+   "s": 67.5,
+   "e": 67.72,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 168,
+   "w": "on",
+   "s": 67.72,
+   "e": 67.9,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 169,
+   "w": "it.",
+   "s": 67.9,
+   "e": 68.02,
+   "sp": "A",
+   "line": 18
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, my folder was ten gigabytes.",
+   "s": 0,
+   "e": 2.12,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Zipped, it's two.",
+   "s": 2.18,
+   "e": 3.48,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Where did the other eight go?",
+   "s": 3.54,
+   "e": 4.99,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Nowhere. It was mostly repeating itself.",
+   "s": 5.32,
+   "e": 7.75,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "Repeating how?",
+   "s": 8.02,
+   "e": 9.07,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "Take la,",
+   "s": 9.32,
+   "e": 10.26,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "la, la,",
+   "s": 10.32,
+   "e": 10.64,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "la, la.",
+   "s": 10.7,
+   "e": 11.39,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Or just write: la,",
+   "s": 11.6,
+   "e": 13.26,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "six times.",
+   "s": 13.32,
+   "e": 14.28,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Same song,",
+   "s": 14.34,
+   "e": 14.96,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "fewer letters.",
+   "s": 15.02,
+   "e": 15.89,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "And nothing lost.",
+   "s": 16.2,
+   "e": 17.43,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Unzip it,",
+   "s": 17.76,
+   "e": 18.28,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "and every la comes back.",
+   "s": 18.34,
+   "e": 20.33,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "But my photos aren't la,",
+   "s": 20.4,
+   "e": 21.76,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "la, la.",
+   "s": 21.82,
+   "e": 22.45,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "No. So photos get something sneakier.",
+   "s": 22.86,
+   "e": 25.93,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "They throw things away.",
+   "s": 26.16,
+   "e": 27.63,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "Throw away?",
+   "s": 27.96,
+   "e": 29.05,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "Parts of my picture?",
+   "s": 29.38,
+   "e": 30.65,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "Only what your eyes miss.",
+   "s": 30.82,
+   "e": 32.45,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "You see brightness sharply,",
+   "s": 32.92,
+   "e": 34.41,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "color blurrily.",
+   "s": 34.52,
+   "e": 35.89,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "So it keeps the sharp part,",
+   "s": 36.2,
+   "e": 37.3,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "and blurs the color.",
+   "s": 37.36,
+   "e": 39.03,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "And songs?",
+   "s": 39.28,
+   "e": 40.21,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "A loud drum hides the",
+   "s": 40.38,
+   "e": 41.92,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "quiet sounds beside it.",
+   "s": 41.98,
+   "e": 43.65,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "You never hear them.",
+   "s": 43.86,
+   "e": 45.05,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "MP3 deletes them.",
+   "s": 45.36,
+   "e": 47.01,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "It deletes what I can't hear?",
+   "s": 47.08,
+   "e": 48.89,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "Ten times smaller,",
+   "s": 49.08,
+   "e": 50.02,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "and you don't notice.",
+   "s": 50.08,
+   "e": 51.53,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "Wait. So it's never",
+   "s": 51.86,
+   "e": 53.02,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "the real song?",
+   "s": 53.08,
+   "e": 54.23,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Close enough.",
+   "s": 54.48,
+   "e": 55.41,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "Save it again and again,",
+   "s": 55.72,
+   "e": 56.96,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "and you get a",
+   "s": 57.02,
+   "e": 57.84,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "photocopy of a photocopy.",
+   "s": 57.9,
+   "e": 59.88,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "So I zip the zip,",
+   "s": 59.94,
+   "e": 61.44,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "till the whole movie",
+   "s": 61.5,
+   "e": 62.46,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "is one byte!",
+   "s": 62.52,
+   "e": 63.77,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "Try it.",
+   "s": 64.22,
+   "e": 65.37,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "A packed suitcase doesn't shrink",
+   "s": 65.58,
+   "e": 67.1,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "when you sit on it.",
+   "s": 67.16,
+   "e": 68.37,
+   "line": 18,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": [
+  {
+   "t0": 2.2,
+   "t1": 8,
+   "name": "TEN TO TWO"
+  },
+  {
+   "t0": 9.25,
+   "t1": 15.95,
+   "name": "WRITE IT ONCE"
+  },
+  {
+   "t0": 17,
+   "t1": 20.3,
+   "name": "UNZIP"
+  },
+  {
+   "t0": 23.4,
+   "t1": 27.6,
+   "name": "THROW IT AWAY"
+  },
+  {
+   "t0": 30.7,
+   "t1": 38.8,
+   "name": "BRIGHT VS COLOR"
+  },
+  {
+   "t0": 40.2,
+   "t1": 46.9,
+   "name": "HIDDEN SOUNDS"
+  },
+  {
+   "t0": 48.9,
+   "t1": 51.4,
+   "name": "TEN TIMES"
+  },
+  {
+   "t0": 54.4,
+   "t1": 59.7,
+   "name": "COPY OF A COPY"
+  },
+  {
+   "t0": 60.3,
+   "t1": 68,
+   "name": "ZIP THE ZIP"
+  }
+ ],
+ "warnings": [
+  "camera variety R3: 28.0-38.0 s: 2 distinct angles (shots #10 #11)",
+  "camera variety R3: 28.5-38.5 s: 2 distinct angles (shots #10 #11)",
+  "camera variety R3: 29.0-39.0 s: 2 distinct angles (shots #10 #11)",
+  "camera variety R3: 30.5-40.5 s: 2 distinct angles (shots #11 #12)"
+ ]
+}

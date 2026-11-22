@@ -1,0 +1,1 @@
+<|speaker:0|>[curious] Grandpa, when I text Maya in London, where does it go?<|speaker:1|>[warm] First, to the nearest phone tower.<|speaker:0|>[surprised] Through the air?<|speaker:1|>[amused] Radio waves. Your phone shouts, and the tower listens.<|speaker:0|>Then the tower sends it to her?<|speaker:1|>Not yet. Into cables. Under the street, then under the sea.

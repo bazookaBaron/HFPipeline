@@ -1,0 +1,2760 @@
+{
+ "ep": "touch",
+ "generated": "dialogue/compiler/autoplan.mjs (do not hand-edit)",
+ "ratio": "9x16",
+ "duration": 61.74,
+ "set": "campfire",
+ "pair": [
+  "dadu",
+  "rohan"
+ ],
+ "audio": "dialogue/fish/campfire_touch_1p3x.wav",
+ "words_src": "dialogue/fish/words_touch.json",
+ "cast": {
+  "A": {
+   "id": "dadu",
+   "name": "Walter"
+  },
+  "B": {
+   "id": "rohan",
+   "name": "Leo"
+  }
+ },
+ "lines": [
+  {
+   "n": 1,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "CU",
+   "text": "Grandpa, my screen ignores my gloves. But it works with a hot dog.",
+   "s": 0,
+   "e": 2.92,
+   "w0": 0,
+   "w1": 12
+  },
+  {
+   "n": 2,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "Because the hot dog is more like you than the glove is.",
+   "s": 3.5,
+   "e": 5.96,
+   "w0": 13,
+   "w1": 24
+  },
+  {
+   "n": 3,
+   "sp": "B",
+   "beat": "surprised",
+   "cam": "OTS",
+   "text": "I'm a hot dog?",
+   "s": 6.64,
+   "e": 7.36,
+   "w0": 25,
+   "w1": 28
+  },
+  {
+   "n": 4,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Mostly salty water. So is a hot dog. Salty water carries electricity.",
+   "s": 7.82,
+   "e": 12.46,
+   "w0": 29,
+   "w1": 40
+  },
+  {
+   "n": 5,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "The screen is electric?",
+   "s": 13.16,
+   "e": 14.08,
+   "w0": 41,
+   "w1": 44
+  },
+  {
+   "n": 6,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "MS",
+   "text": "Under the glass, invisible wires. Rows one way, columns the other.",
+   "s": 14.64,
+   "e": 19.58,
+   "w0": 45,
+   "w1": 55
+  },
+  {
+   "n": 7,
+   "sp": "B",
+   "beat": "thinking",
+   "cam": "OTS",
+   "text": "Like graph paper.",
+   "s": 20.04,
+   "e": 20.74,
+   "w0": 56,
+   "w1": 58
+  },
+  {
+   "n": 8,
+   "sp": "A",
+   "beat": "pleased",
+   "cam": "MS",
+   "text": "Hundreds of crossings. The phone charges each one and checks it, over a hundred times a second.",
+   "s": 21.46,
+   "e": 26.98,
+   "w0": 59,
+   "w1": 75
+  },
+  {
+   "n": 9,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "And my finger?",
+   "s": 27.74,
+   "e": 28.36,
+   "w0": 76,
+   "w1": 78
+  },
+  {
+   "n": 10,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "It steals a little charge from the crossings under it. The phone sees the dip. That's you.",
+   "s": 28.6,
+   "e": 33.76,
+   "w0": 79,
+   "w1": 95
+  },
+  {
+   "n": 11,
+   "sp": "B",
+   "beat": "confused",
+   "cam": "OTS",
+   "text": "But my finger's bigger than one crossing.",
+   "s": 34.16,
+   "e": 36.02,
+   "w0": 96,
+   "w1": 102
+  },
+  {
+   "n": 12,
+   "sp": "A",
+   "beat": "warm",
+   "cam": "2S",
+   "text": "So it covers a few, and the phone picks the middle.",
+   "s": 36.38,
+   "e": 39.54,
+   "w0": 103,
+   "w1": 113
+  },
+  {
+   "n": 13,
+   "sp": "B",
+   "beat": "shocked",
+   "cam": "CU",
+   "text": "Wait. So it never feels me pressing?",
+   "s": 39.98,
+   "e": 41.76,
+   "w0": 114,
+   "w1": 120
+  },
+  {
+   "n": 14,
+   "sp": "A",
+   "beat": "matter-of-fact",
+   "cam": "MS",
+   "text": "Not at all. It feels the water in you.",
+   "s": 42.3,
+   "e": 44.64,
+   "w0": 121,
+   "w1": 129
+  },
+  {
+   "n": 15,
+   "sp": "B",
+   "beat": "curious",
+   "cam": "OTS",
+   "text": "And my gloves?",
+   "s": 45.18,
+   "e": 45.72,
+   "w0": 130,
+   "w1": 132
+  },
+  {
+   "n": 16,
+   "sp": "A",
+   "beat": "firm, light",
+   "cam": "MS",
+   "text": "Wool doesn't carry charge. To the phone, a glove is nobody.",
+   "s": 46.52,
+   "e": 49.92,
+   "w0": 133,
+   "w1": 143
+  },
+  {
+   "n": 17,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "CU",
+   "text": "So in winter, I text with a hot dog.",
+   "s": 50.36,
+   "e": 52.14,
+   "w0": 144,
+   "w1": 152
+  },
+  {
+   "n": 18,
+   "sp": "A",
+   "beat": "amused",
+   "cam": "MS",
+   "text": "People in Korea did, one cold winter.",
+   "s": 52.6,
+   "e": 54.5,
+   "w0": 153,
+   "w1": 159
+  },
+  {
+   "n": 19,
+   "sp": "B",
+   "beat": "grinning",
+   "cam": "OTS",
+   "text": "Genius.",
+   "s": 55.14,
+   "e": 55.85,
+   "w0": 160,
+   "w1": 160
+  },
+  {
+   "n": 20,
+   "sp": "A",
+   "beat": "dry, flat",
+   "cam": "CU",
+   "text": "Until lunch.",
+   "s": 56.9,
+   "e": 57.75,
+   "w0": 161,
+   "w1": 162
+  }
+ ],
+ "shots": [
+  {
+   "n": 1,
+   "t0": 0,
+   "t1": 3.35,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 1,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 2,
+   "t0": 3.35,
+   "t1": 6.49,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 2,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 3,
+   "t0": 6.49,
+   "t1": 7.67,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 3,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 4,
+   "t0": 7.67,
+   "t1": 13.01,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 4,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 5,
+   "t0": 13.01,
+   "t1": 14.49,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 5,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 6,
+   "t0": 14.49,
+   "t1": 19.89,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 6,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 7,
+   "t0": 19.89,
+   "t1": 21.31,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 7,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 8,
+   "t0": 21.31,
+   "t1": 27.59,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 8,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 9,
+   "t0": 27.59,
+   "t1": 28.45,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 9,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 10,
+   "t0": 28.45,
+   "t1": 34.01,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 10,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 11,
+   "t0": 34.01,
+   "t1": 36.23,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 11,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 12,
+   "t0": 36.23,
+   "t1": 39.83,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 12,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 13,
+   "t0": 39.83,
+   "t1": 42.15,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 13,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 14,
+   "t0": 42.15,
+   "t1": 45.03,
+   "rig": "arc_A",
+   "plan": "arc_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 14,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 15,
+   "t0": 45.03,
+   "t1": 46.37,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 15,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 16,
+   "t0": 46.37,
+   "t1": 47.91,
+   "rig": "ms_A",
+   "plan": "seat_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 17,
+   "t0": 47.91,
+   "t1": 50.21,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 16,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "cutin",
+   "cu": false
+  },
+  {
+   "n": 18,
+   "t0": 50.21,
+   "t1": 52.45,
+   "rig": "mcu_B",
+   "plan": "mcu_B",
+   "move": {
+    "type": "push",
+    "amt": 0.04
+   },
+   "line": 17,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 19,
+   "t0": 52.45,
+   "t1": 54.99,
+   "rig": "ms_B",
+   "plan": "seat_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 18,
+   "speaker": "A",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 20,
+   "t0": 54.99,
+   "t1": 56.75,
+   "rig": "ots_B",
+   "plan": "ots_B",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 19,
+   "speaker": "B",
+   "subject": "B",
+   "cut": "speaker",
+   "cu": false
+  },
+  {
+   "n": 21,
+   "t0": 56.75,
+   "t1": 59.3,
+   "rig": "mcu_A",
+   "plan": "mcu_A",
+   "move": {
+    "type": "hold",
+    "amt": 0
+   },
+   "line": 20,
+   "speaker": "A",
+   "subject": "A",
+   "cut": "speaker",
+   "cu": true
+  },
+  {
+   "n": 22,
+   "t0": 59.3,
+   "t1": 61.74,
+   "rig": "wide2",
+   "plan": "wide2",
+   "move": {
+    "type": "push",
+    "amt": 0.02
+   },
+   "line": 0,
+   "speaker": null,
+   "subject": null,
+   "cut": "tail",
+   "cu": false
+  }
+ ],
+ "emotion": {
+  "A": [
+   [
+    0,
+    "warm",
+    1
+   ],
+   [
+    3.35,
+    "amused",
+    1
+   ],
+   [
+    6.49,
+    "amused",
+    0.6
+   ],
+   [
+    7.67,
+    "firm_light",
+    1
+   ],
+   [
+    13.01,
+    "warm",
+    1
+   ],
+   [
+    21.31,
+    "amused",
+    1
+   ],
+   [
+    27.59,
+    "warm",
+    1
+   ],
+   [
+    28.45,
+    "firm_light",
+    1
+   ],
+   [
+    34.01,
+    "amused",
+    1
+   ],
+   [
+    36.23,
+    "warm",
+    1
+   ],
+   [
+    39.83,
+    "tender",
+    1
+   ],
+   [
+    42.15,
+    "firm_light",
+    1
+   ],
+   [
+    45.03,
+    "warm",
+    1
+   ],
+   [
+    46.37,
+    "firm_light",
+    1
+   ],
+   [
+    50.21,
+    "warm",
+    1
+   ],
+   [
+    52.45,
+    "amused",
+    1
+   ],
+   [
+    54.99,
+    "warm",
+    1
+   ],
+   [
+    56.75,
+    "firm_light",
+    1
+   ],
+   [
+    59.3,
+    "amused",
+    0.7
+   ]
+  ],
+  "B": [
+   [
+    0,
+    "curious",
+    1
+   ],
+   [
+    6.49,
+    "surprised",
+    1
+   ],
+   [
+    7.67,
+    "curious",
+    1
+   ],
+   [
+    19.89,
+    "thinking",
+    1
+   ],
+   [
+    21.31,
+    "curious",
+    1
+   ],
+   [
+    34.01,
+    "confused",
+    1
+   ],
+   [
+    36.23,
+    "curious",
+    1
+   ],
+   [
+    39.83,
+    "surprised",
+    1
+   ],
+   [
+    42.15,
+    "curious",
+    1
+   ],
+   [
+    50.21,
+    "grin",
+    1
+   ],
+   [
+    52.45,
+    "curious",
+    1
+   ],
+   [
+    54.99,
+    "grin",
+    1
+   ],
+   [
+    56.75,
+    "curious",
+    1
+   ],
+   [
+    59.3,
+    "worried",
+    0.8
+   ]
+  ]
+ },
+ "gestures": [
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 0.5,
+   "rise": 0.5,
+   "dur": 2.5,
+   "line": 1,
+   "word": null
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 0.56,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 1,
+   "word": "my"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 0.58,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 1,
+   "word": "screen"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 4.02,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 2,
+   "word": "hot"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 4.02,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 2,
+   "word": "hot"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 5.6,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 2,
+   "word": "glove"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 8.56,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 4,
+   "word": "water"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 12.04,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 4,
+   "word": "electricity"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 13.36,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 5,
+   "word": "screen"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 13.51,
+   "rise": 0.5,
+   "dur": 0.63,
+   "line": 5,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 14.87,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 6,
+   "word": "Under"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 17.56,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 6,
+   "word": "rows"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 18.92,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 6,
+   "word": "columns"
+  },
+  {
+   "actor": "A",
+   "kind": "two_hand_open",
+   "t": 21.58,
+   "rise": 0.4,
+   "dur": 0.75,
+   "line": 8,
+   "word": "hundreds"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 22.08,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 8,
+   "word": "crossings."
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 22.08,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 8,
+   "word": "crossings."
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 26.8,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 8,
+   "word": "second"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 28.09,
+   "rise": 0.5,
+   "dur": 0.3,
+   "line": 9,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "hand_lift",
+   "t": 28.84,
+   "rise": 0.3,
+   "dur": 0.45,
+   "line": 10,
+   "word": "steals"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 33.66,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 10,
+   "word": "you"
+  },
+  {
+   "actor": "B",
+   "kind": "tilt",
+   "t": 34.72,
+   "rise": 0.35,
+   "dur": 0.8,
+   "line": 11,
+   "word": "finger's"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 34.78,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 11,
+   "word": "finger's"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 36.84,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 12,
+   "word": "covers"
+  },
+  {
+   "actor": "A",
+   "kind": "open_palm",
+   "t": 39.44,
+   "rise": 0.38,
+   "dur": 0.6,
+   "line": 12,
+   "word": "middle"
+  },
+  {
+   "actor": "B",
+   "kind": "head_shake",
+   "t": 40.8,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 13,
+   "word": "never"
+  },
+  {
+   "actor": "A",
+   "kind": "flick",
+   "t": 42.42,
+   "rise": 0.3,
+   "dur": 0.3,
+   "line": 14,
+   "word": "not"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_up",
+   "t": 44.14,
+   "rise": 0.34,
+   "dur": 0.5,
+   "line": 14,
+   "word": "water"
+  },
+  {
+   "actor": "B",
+   "kind": "lean_in",
+   "t": 45.53,
+   "rise": 0.5,
+   "dur": 0.49,
+   "line": 15,
+   "word": null
+  },
+  {
+   "actor": "A",
+   "kind": "head_shake",
+   "t": 46.84,
+   "rise": 0.08,
+   "dur": 0.75,
+   "line": 16,
+   "word": "doesn't"
+  },
+  {
+   "actor": "B",
+   "kind": "nod",
+   "t": 48.38,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 16,
+   "word": "phone,"
+  },
+  {
+   "actor": "A",
+   "kind": "palm_down",
+   "t": 49.68,
+   "rise": 0.36,
+   "dur": 0.55,
+   "line": 16,
+   "word": "nobody"
+  },
+  {
+   "actor": "B",
+   "kind": "hand_chest",
+   "t": 51.26,
+   "rise": 0.4,
+   "dur": 0.8,
+   "line": 17,
+   "word": "i"
+  },
+  {
+   "actor": "A",
+   "kind": "shoulder_bounce",
+   "t": 53.06,
+   "rise": 0.1,
+   "dur": 0.85,
+   "line": 18,
+   "word": "Korea"
+  },
+  {
+   "actor": "A",
+   "kind": "nod",
+   "t": 53.06,
+   "rise": 0.12,
+   "dur": 0.3,
+   "line": 18,
+   "word": "Korea"
+  },
+  {
+   "actor": "B",
+   "kind": "deflate",
+   "t": 60.15,
+   "rise": 0.6,
+   "dur": 9,
+   "line": 0,
+   "word": null
+  }
+ ],
+ "gaze": [
+  {
+   "actor": "B",
+   "t0": 20.09,
+   "t1": 20.49,
+   "target": "fire"
+  },
+  {
+   "actor": "B",
+   "t0": 59.55,
+   "t1": 62.74,
+   "target": "fire"
+  }
+ ],
+ "words": [
+  {
+   "i": 0,
+   "w": "Grandpa,",
+   "s": 0,
+   "e": 0.18,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 1,
+   "w": "my",
+   "s": 0.44,
+   "e": 0.52,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 2,
+   "w": "screen",
+   "s": 0.52,
+   "e": 0.8,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 3,
+   "w": "ignores",
+   "s": 0.8,
+   "e": 1.16,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 4,
+   "w": "my",
+   "s": 1.16,
+   "e": 1.32,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 5,
+   "w": "gloves.",
+   "s": 1.32,
+   "e": 1.64,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 6,
+   "w": "But",
+   "s": 1.84,
+   "e": 1.98,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 7,
+   "w": "it",
+   "s": 1.98,
+   "e": 2.08,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 8,
+   "w": "works",
+   "s": 2.08,
+   "e": 2.28,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 9,
+   "w": "with",
+   "s": 2.28,
+   "e": 2.42,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 10,
+   "w": "a",
+   "s": 2.42,
+   "e": 2.52,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 11,
+   "w": "hot",
+   "s": 2.52,
+   "e": 2.7,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 12,
+   "w": "dog.",
+   "s": 2.7,
+   "e": 2.92,
+   "sp": "B",
+   "line": 1
+  },
+  {
+   "i": 13,
+   "w": "Because",
+   "s": 3.5,
+   "e": 3.8,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 14,
+   "w": "the",
+   "s": 3.8,
+   "e": 3.96,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 15,
+   "w": "hot",
+   "s": 3.96,
+   "e": 4.16,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 16,
+   "w": "dog",
+   "s": 4.16,
+   "e": 4.36,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 17,
+   "w": "is",
+   "s": 4.36,
+   "e": 4.5,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 18,
+   "w": "more",
+   "s": 4.5,
+   "e": 4.68,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 19,
+   "w": "like",
+   "s": 4.68,
+   "e": 4.92,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 20,
+   "w": "you",
+   "s": 4.92,
+   "e": 5.2,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 21,
+   "w": "than",
+   "s": 5.2,
+   "e": 5.38,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 22,
+   "w": "the",
+   "s": 5.38,
+   "e": 5.48,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 23,
+   "w": "glove",
+   "s": 5.48,
+   "e": 5.7,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 24,
+   "w": "is.",
+   "s": 5.7,
+   "e": 5.96,
+   "sp": "A",
+   "line": 2
+  },
+  {
+   "i": 25,
+   "w": "I'm",
+   "s": 6.64,
+   "e": 6.78,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 26,
+   "w": "a",
+   "s": 6.78,
+   "e": 6.86,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 27,
+   "w": "hot",
+   "s": 6.86,
+   "e": 7.1,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 28,
+   "w": "dog?",
+   "s": 7.1,
+   "e": 7.36,
+   "sp": "B",
+   "line": 3
+  },
+  {
+   "i": 29,
+   "w": "Mostly",
+   "s": 7.82,
+   "e": 8.06,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 30,
+   "w": "salty",
+   "s": 8.06,
+   "e": 8.44,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 31,
+   "w": "water.",
+   "s": 8.44,
+   "e": 8.8,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 32,
+   "w": "So",
+   "s": 9.44,
+   "e": 9.62,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 33,
+   "w": "is",
+   "s": 9.62,
+   "e": 9.76,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 34,
+   "w": "a",
+   "s": 9.76,
+   "e": 9.82,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 35,
+   "w": "hot",
+   "s": 9.82,
+   "e": 10,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 36,
+   "w": "dog.",
+   "s": 10,
+   "e": 10.26,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 37,
+   "w": "Salty",
+   "s": 10.92,
+   "e": 11.24,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 38,
+   "w": "water",
+   "s": 11.24,
+   "e": 11.5,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 39,
+   "w": "carries",
+   "s": 11.5,
+   "e": 11.92,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 40,
+   "w": "electricity.",
+   "s": 11.92,
+   "e": 12.46,
+   "sp": "A",
+   "line": 4
+  },
+  {
+   "i": 41,
+   "w": "The",
+   "s": 13.16,
+   "e": 13.26,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 42,
+   "w": "screen",
+   "s": 13.26,
+   "e": 13.56,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 43,
+   "w": "is",
+   "s": 13.56,
+   "e": 13.7,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 44,
+   "w": "electric?",
+   "s": 13.7,
+   "e": 14.08,
+   "sp": "B",
+   "line": 5
+  },
+  {
+   "i": 45,
+   "w": "Under",
+   "s": 14.64,
+   "e": 14.8,
+   "sp": "A",
+   "line": 6,
+   "stress": true
+  },
+  {
+   "i": 46,
+   "w": "the",
+   "s": 14.8,
+   "e": 14.96,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 47,
+   "w": "glass,",
+   "s": 14.96,
+   "e": 15.3,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 48,
+   "w": "invisible",
+   "s": 15.72,
+   "e": 16.16,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 49,
+   "w": "wires.",
+   "s": 16.16,
+   "e": 16.74,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 50,
+   "w": "Rows",
+   "s": 17.44,
+   "e": 17.78,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 51,
+   "w": "one",
+   "s": 17.78,
+   "e": 18.08,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 52,
+   "w": "way,",
+   "s": 18.08,
+   "e": 18.34,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 53,
+   "w": "columns",
+   "s": 18.8,
+   "e": 19.1,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 54,
+   "w": "the",
+   "s": 19.1,
+   "e": 19.4,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 55,
+   "w": "other.",
+   "s": 19.4,
+   "e": 19.58,
+   "sp": "A",
+   "line": 6
+  },
+  {
+   "i": 56,
+   "w": "Like",
+   "s": 20.04,
+   "e": 20.2,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 57,
+   "w": "graph",
+   "s": 20.2,
+   "e": 20.44,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 58,
+   "w": "paper.",
+   "s": 20.44,
+   "e": 20.74,
+   "sp": "B",
+   "line": 7
+  },
+  {
+   "i": 59,
+   "w": "Hundreds",
+   "s": 21.46,
+   "e": 21.82,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 60,
+   "w": "of",
+   "s": 21.82,
+   "e": 22.02,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 61,
+   "w": "crossings.",
+   "s": 22.02,
+   "e": 22.46,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 62,
+   "w": "The",
+   "s": 22.92,
+   "e": 23.02,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 63,
+   "w": "phone",
+   "s": 23.02,
+   "e": 23.28,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 64,
+   "w": "charges",
+   "s": 23.28,
+   "e": 23.6,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 65,
+   "w": "each",
+   "s": 23.6,
+   "e": 23.98,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 66,
+   "w": "one",
+   "s": 23.98,
+   "e": 24.34,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 67,
+   "w": "and",
+   "s": 24.34,
+   "e": 24.64,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 68,
+   "w": "checks",
+   "s": 24.64,
+   "e": 24.94,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 69,
+   "w": "it,",
+   "s": 24.94,
+   "e": 25.16,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 70,
+   "w": "over",
+   "s": 25.16,
+   "e": 25.58,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 71,
+   "w": "a",
+   "s": 25.58,
+   "e": 25.8,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 72,
+   "w": "hundred",
+   "s": 25.8,
+   "e": 26.1,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 73,
+   "w": "times",
+   "s": 26.1,
+   "e": 26.5,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 74,
+   "w": "a",
+   "s": 26.5,
+   "e": 26.68,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 75,
+   "w": "second.",
+   "s": 26.68,
+   "e": 26.98,
+   "sp": "A",
+   "line": 8
+  },
+  {
+   "i": 76,
+   "w": "And",
+   "s": 27.74,
+   "e": 27.98,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 77,
+   "w": "my",
+   "s": 27.98,
+   "e": 28.1,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 78,
+   "w": "finger?",
+   "s": 28.1,
+   "e": 28.36,
+   "sp": "B",
+   "line": 9
+  },
+  {
+   "i": 79,
+   "w": "It",
+   "s": 28.6,
+   "e": 28.72,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 80,
+   "w": "steals",
+   "s": 28.72,
+   "e": 29.02,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 81,
+   "w": "a",
+   "s": 29.02,
+   "e": 29.2,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 82,
+   "w": "little",
+   "s": 29.2,
+   "e": 29.32,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 83,
+   "w": "charge",
+   "s": 29.32,
+   "e": 29.66,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 84,
+   "w": "from",
+   "s": 29.66,
+   "e": 29.88,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 85,
+   "w": "the",
+   "s": 29.88,
+   "e": 30.02,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 86,
+   "w": "crossings",
+   "s": 30.02,
+   "e": 30.42,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 87,
+   "w": "under",
+   "s": 30.42,
+   "e": 30.68,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 88,
+   "w": "it.",
+   "s": 30.68,
+   "e": 30.86,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 89,
+   "w": "The",
+   "s": 31.34,
+   "e": 31.5,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 90,
+   "w": "phone",
+   "s": 31.5,
+   "e": 31.8,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 91,
+   "w": "sees",
+   "s": 31.8,
+   "e": 32.06,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 92,
+   "w": "the",
+   "s": 32.06,
+   "e": 32.3,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 93,
+   "w": "dip.",
+   "s": 32.3,
+   "e": 32.5,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 94,
+   "w": "That's",
+   "s": 33.06,
+   "e": 33.54,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 95,
+   "w": "you.",
+   "s": 33.54,
+   "e": 33.76,
+   "sp": "A",
+   "line": 10
+  },
+  {
+   "i": 96,
+   "w": "But",
+   "s": 34.16,
+   "e": 34.52,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 97,
+   "w": "my",
+   "s": 34.52,
+   "e": 34.66,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 98,
+   "w": "finger's",
+   "s": 34.66,
+   "e": 35.08,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 99,
+   "w": "bigger",
+   "s": 35.08,
+   "e": 35.28,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 100,
+   "w": "than",
+   "s": 35.28,
+   "e": 35.5,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 101,
+   "w": "one",
+   "s": 35.5,
+   "e": 35.66,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 102,
+   "w": "crossing.",
+   "s": 35.66,
+   "e": 36.02,
+   "sp": "B",
+   "line": 11
+  },
+  {
+   "i": 103,
+   "w": "So",
+   "s": 36.38,
+   "e": 36.66,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 104,
+   "w": "it",
+   "s": 36.66,
+   "e": 36.78,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 105,
+   "w": "covers",
+   "s": 36.78,
+   "e": 37.04,
+   "sp": "A",
+   "line": 12,
+   "stress": true
+  },
+  {
+   "i": 106,
+   "w": "a",
+   "s": 37.04,
+   "e": 37.24,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 107,
+   "w": "few,",
+   "s": 37.24,
+   "e": 37.42,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 108,
+   "w": "and",
+   "s": 37.72,
+   "e": 38.28,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 109,
+   "w": "the",
+   "s": 38.28,
+   "e": 38.38,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 110,
+   "w": "phone",
+   "s": 38.38,
+   "e": 38.74,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 111,
+   "w": "picks",
+   "s": 38.74,
+   "e": 39.1,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 112,
+   "w": "the",
+   "s": 39.1,
+   "e": 39.32,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 113,
+   "w": "middle.",
+   "s": 39.32,
+   "e": 39.54,
+   "sp": "A",
+   "line": 12
+  },
+  {
+   "i": 114,
+   "w": "Wait.",
+   "s": 39.98,
+   "e": 40.2,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 115,
+   "w": "So",
+   "s": 40.46,
+   "e": 40.66,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 116,
+   "w": "it",
+   "s": 40.66,
+   "e": 40.74,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 117,
+   "w": "never",
+   "s": 40.74,
+   "e": 40.98,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 118,
+   "w": "feels",
+   "s": 40.98,
+   "e": 41.28,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 119,
+   "w": "me",
+   "s": 41.28,
+   "e": 41.44,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 120,
+   "w": "pressing?",
+   "s": 41.44,
+   "e": 41.76,
+   "sp": "B",
+   "line": 13
+  },
+  {
+   "i": 121,
+   "w": "Not",
+   "s": 42.3,
+   "e": 42.74,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 122,
+   "w": "at",
+   "s": 42.74,
+   "e": 42.84,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 123,
+   "w": "all.",
+   "s": 42.84,
+   "e": 43.04,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 124,
+   "w": "It",
+   "s": 43.46,
+   "e": 43.58,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 125,
+   "w": "feels",
+   "s": 43.58,
+   "e": 43.84,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 126,
+   "w": "the",
+   "s": 43.84,
+   "e": 44.02,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 127,
+   "w": "water",
+   "s": 44.02,
+   "e": 44.28,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 128,
+   "w": "in",
+   "s": 44.28,
+   "e": 44.48,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 129,
+   "w": "you.",
+   "s": 44.48,
+   "e": 44.64,
+   "sp": "A",
+   "line": 14
+  },
+  {
+   "i": 130,
+   "w": "And",
+   "s": 45.18,
+   "e": 45.36,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 131,
+   "w": "my",
+   "s": 45.36,
+   "e": 45.48,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 132,
+   "w": "gloves?",
+   "s": 45.48,
+   "e": 45.72,
+   "sp": "B",
+   "line": 15
+  },
+  {
+   "i": 133,
+   "w": "Wool",
+   "s": 46.52,
+   "e": 46.78,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 134,
+   "w": "doesn't",
+   "s": 46.78,
+   "e": 47.08,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 135,
+   "w": "carry",
+   "s": 47.08,
+   "e": 47.3,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 136,
+   "w": "charge.",
+   "s": 47.3,
+   "e": 47.66,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 137,
+   "w": "To",
+   "s": 48.06,
+   "e": 48.22,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 138,
+   "w": "the",
+   "s": 48.22,
+   "e": 48.32,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 139,
+   "w": "phone,",
+   "s": 48.32,
+   "e": 48.64,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 140,
+   "w": "a",
+   "s": 48.88,
+   "e": 49,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 141,
+   "w": "glove",
+   "s": 49,
+   "e": 49.24,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 142,
+   "w": "is",
+   "s": 49.24,
+   "e": 49.56,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 143,
+   "w": "nobody.",
+   "s": 49.56,
+   "e": 49.92,
+   "sp": "A",
+   "line": 16
+  },
+  {
+   "i": 144,
+   "w": "So",
+   "s": 50.36,
+   "e": 50.54,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 145,
+   "w": "in",
+   "s": 50.54,
+   "e": 50.66,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 146,
+   "w": "winter,",
+   "s": 50.66,
+   "e": 50.88,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 147,
+   "w": "I",
+   "s": 51.14,
+   "e": 51.28,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 148,
+   "w": "text",
+   "s": 51.28,
+   "e": 51.52,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 149,
+   "w": "with",
+   "s": 51.52,
+   "e": 51.68,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 150,
+   "w": "a",
+   "s": 51.68,
+   "e": 51.76,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 151,
+   "w": "hot",
+   "s": 51.76,
+   "e": 51.94,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 152,
+   "w": "dog.",
+   "s": 51.94,
+   "e": 52.14,
+   "sp": "B",
+   "line": 17
+  },
+  {
+   "i": 153,
+   "w": "People",
+   "s": 52.6,
+   "e": 52.84,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 154,
+   "w": "in",
+   "s": 52.84,
+   "e": 53,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 155,
+   "w": "Korea",
+   "s": 53,
+   "e": 53.26,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 156,
+   "w": "did,",
+   "s": 53.26,
+   "e": 53.56,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 157,
+   "w": "one",
+   "s": 53.56,
+   "e": 53.92,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 158,
+   "w": "cold",
+   "s": 53.92,
+   "e": 54.18,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 159,
+   "w": "winter.",
+   "s": 54.18,
+   "e": 54.5,
+   "sp": "A",
+   "line": 18
+  },
+  {
+   "i": 160,
+   "w": "Genius.",
+   "s": 55.14,
+   "e": 55.85,
+   "sp": "B",
+   "line": 19
+  },
+  {
+   "i": 161,
+   "w": "Until",
+   "s": 56.9,
+   "e": 57.22,
+   "sp": "A",
+   "line": 20
+  },
+  {
+   "i": 162,
+   "w": "lunch.",
+   "s": 57.22,
+   "e": 57.75,
+   "sp": "A",
+   "line": 20
+  }
+ ],
+ "captions": [
+  {
+   "text": "Grandpa, my screen ignores my gloves.",
+   "s": 0,
+   "e": 1.78,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "But it works with",
+   "s": 1.84,
+   "e": 2.36,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "a hot dog.",
+   "s": 2.42,
+   "e": 3.27,
+   "line": 1,
+   "sp": "B"
+  },
+  {
+   "text": "Because the hot dog",
+   "s": 3.5,
+   "e": 4.3,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "is more like you",
+   "s": 4.36,
+   "e": 5.14,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "than the glove is.",
+   "s": 5.2,
+   "e": 6.31,
+   "line": 2,
+   "sp": "A"
+  },
+  {
+   "text": "I'm a hot dog?",
+   "s": 6.64,
+   "e": 7.71,
+   "line": 3,
+   "sp": "B"
+  },
+  {
+   "text": "Mostly salty water.",
+   "s": 7.82,
+   "e": 9.15,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "So is a hot dog.",
+   "s": 9.44,
+   "e": 10.61,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "Salty water carries electricity.",
+   "s": 10.92,
+   "e": 12.81,
+   "line": 4,
+   "sp": "A"
+  },
+  {
+   "text": "The screen is electric?",
+   "s": 13.16,
+   "e": 14.43,
+   "line": 5,
+   "sp": "B"
+  },
+  {
+   "text": "Under the glass,",
+   "s": 14.64,
+   "e": 15.65,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "invisible wires.",
+   "s": 15.72,
+   "e": 17.09,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Rows one way,",
+   "s": 17.44,
+   "e": 18.69,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "columns the other.",
+   "s": 18.8,
+   "e": 19.93,
+   "line": 6,
+   "sp": "A"
+  },
+  {
+   "text": "Like graph paper.",
+   "s": 20.04,
+   "e": 21.09,
+   "line": 7,
+   "sp": "B"
+  },
+  {
+   "text": "Hundreds of crossings.",
+   "s": 21.46,
+   "e": 22.81,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "The phone charges each",
+   "s": 22.92,
+   "e": 23.92,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "one and checks it,",
+   "s": 23.98,
+   "e": 25.1,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "over a hundred times a second.",
+   "s": 25.16,
+   "e": 27.33,
+   "line": 8,
+   "sp": "A"
+  },
+  {
+   "text": "And my finger?",
+   "s": 27.74,
+   "e": 28.54,
+   "line": 9,
+   "sp": "B"
+  },
+  {
+   "text": "It steals a little charge",
+   "s": 28.6,
+   "e": 29.6,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "from the crossings under it.",
+   "s": 29.66,
+   "e": 31.21,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "The phone sees the dip.",
+   "s": 31.34,
+   "e": 32.85,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "That's you.",
+   "s": 33.06,
+   "e": 34.1,
+   "line": 10,
+   "sp": "A"
+  },
+  {
+   "text": "But my finger's bigger",
+   "s": 34.16,
+   "e": 35.22,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "than one crossing.",
+   "s": 35.28,
+   "e": 36.32,
+   "line": 11,
+   "sp": "B"
+  },
+  {
+   "text": "So it covers a few,",
+   "s": 36.38,
+   "e": 37.66,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "and the phone picks the middle.",
+   "s": 37.72,
+   "e": 39.89,
+   "line": 12,
+   "sp": "A"
+  },
+  {
+   "text": "Wait. So it never",
+   "s": 39.98,
+   "e": 40.92,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "feels me pressing?",
+   "s": 40.98,
+   "e": 42.11,
+   "line": 13,
+   "sp": "B"
+  },
+  {
+   "text": "Not at all.",
+   "s": 42.3,
+   "e": 43.39,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "It feels the water in you.",
+   "s": 43.46,
+   "e": 44.99,
+   "line": 14,
+   "sp": "A"
+  },
+  {
+   "text": "And my gloves?",
+   "s": 45.18,
+   "e": 46.07,
+   "line": 15,
+   "sp": "B"
+  },
+  {
+   "text": "Wool doesn't carry charge.",
+   "s": 46.52,
+   "e": 48,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "To the phone,",
+   "s": 48.06,
+   "e": 48.82,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "a glove is nobody.",
+   "s": 48.88,
+   "e": 50.27,
+   "line": 16,
+   "sp": "A"
+  },
+  {
+   "text": "So in winter,",
+   "s": 50.36,
+   "e": 51.08,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "I text with a hot dog.",
+   "s": 51.14,
+   "e": 52.49,
+   "line": 17,
+   "sp": "B"
+  },
+  {
+   "text": "People in Korea did,",
+   "s": 52.6,
+   "e": 53.5,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "one cold winter.",
+   "s": 53.56,
+   "e": 54.85,
+   "line": 18,
+   "sp": "A"
+  },
+  {
+   "text": "Genius.",
+   "s": 55.14,
+   "e": 56.2,
+   "line": 19,
+   "sp": "B"
+  },
+  {
+   "text": "Until lunch.",
+   "s": 56.9,
+   "e": 58.1,
+   "line": 20,
+   "sp": "A"
+  }
+ ],
+ "mgWindows": [
+  {
+   "t0": 0.35,
+   "t1": 3.4,
+   "name": "GLOVE vs HOT DOG"
+  },
+  {
+   "t0": 7.7,
+   "t1": 12.9,
+   "name": "SALTY WATER"
+  },
+  {
+   "t0": 14.5,
+   "t1": 20.95,
+   "name": "UNDER THE GLASS"
+  },
+  {
+   "t0": 21.3,
+   "t1": 27.45,
+   "name": "CHARGE + CHECK"
+  },
+  {
+   "t0": 27.45,
+   "t1": 34.05,
+   "name": "THE DIP"
+  },
+  {
+   "t0": 34.05,
+   "t1": 39.85,
+   "name": "THE MIDDLE"
+  },
+  {
+   "t0": 42.15,
+   "t1": 45.05,
+   "name": "NO PRESS"
+  },
+  {
+   "t0": 45.05,
+   "t1": 50.2,
+   "name": "WOOL = NOBODY"
+  },
+  {
+   "t0": 50.2,
+   "t1": 54.9,
+   "name": "WINTER"
+  }
+ ],
+ "warnings": []
+}

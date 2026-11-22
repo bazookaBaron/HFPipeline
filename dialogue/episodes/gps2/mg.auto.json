@@ -1,0 +1,35 @@
+{
+ "episode": "gps2",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "THE SIGNAL",
+   "at": 2.17,
+   "end": 10.31,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "HOW FAR / FOUR BALLS",
+   "at": 10.31,
+   "end": 24.67,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "ONE MICROSECOND / SKIP EINSTEIN",
+   "at": 27.57,
+   "end": 37.74,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "IN THE CITY",
+   "at": 37.74,
+   "end": 40.89,
+   "beats": []
+  }
+ ]
+}

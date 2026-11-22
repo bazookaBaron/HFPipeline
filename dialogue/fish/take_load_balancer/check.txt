@@ -1,0 +1,27 @@
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] waiting (p5 light) — run 'node runtime/jobq.js status'
+[jobq] start p5 light: python dialogue/fish/voice_ep.py load_balancer check
+L 1 LEO    f0=  151 wpm= 174 B0    cos L+0.15 W-0.36 | Grandpa, a million people open the same website at once. Why doesn't it die?
+L 2 WALTER f0=  145 wpm= 115 B0    cos L-0.21 W-0.06 | One computer would instantly.
+L 3 LEO    f0=  138 wpm= 195 B0    cos L-0.00 W-0.30 | So it's not one computer?
+L 4 WALTER f0=  128 wpm= 154 B0    cos L-0.54 W+0.23 | Hundreds, all running the same copy of the site.
+L 5 LEO    f0=  148 wpm= 214 B0    cos L+0.14 W-0.44 | But my phone only knocks on one door.
+L 6 WALTER f0=  118 wpm= 152 B0    cos L-0.43 W+0.20 | Yes, a man stands at that door, like the host at a busy restaurant.
+L 7 LEO    f0=  240 wpm= 308 B1    cos L+0.05 W-0.46 | What does he do?
+L 8 WALTER f0=  123 wpm= 138 B1    cos L-0.44 W+0.12 | He points. You, table one. You, table two. Round and round.
+L 9 LEO    f0=  142 wpm= 214 B1    cos L-0.15 W-0.18 | And if table two is slow,
+L10 WALTER f0=  126 wpm= 197 B1    cos L-0.31 W+0.04 | then the next guest goes to the emptiest table. He keeps count.
+L11 LEO    f0=  162 wpm= 257 B1    cos L+0.04 W-0.41 | What if a table just breaks?
+L12 WALTER f0=  101 wpm= 132 B1    cos L-0.61 W+0.42 | He checks every few seconds. A broken one gets no guests. Nobody notices.
+L13 LEO    f0=  209 wpm= 179 B2    cos L+0.36 W-0.58 | Wait. So the host is the one thing that can't break?
+L14 WALTER f0=  172 wpm= 167 B2    cos L-0.35 W+0.07 | Good catch. So there are two of them.
+L15 LEO    f0=  216 wpm= 153 B2    cos L+0.03 W-0.32 | Two hosts. Then who points people to the hosts?
+L16 WALTER f0=  135 wpm= 128 B2    cos L-0.29 W+0.07 | Another list. That one is public.
+L17 LEO    f0=  163 wpm= 205 B2   <<< SWAP? cos L-0.27 W-0.07 | And who checks that one?
+L18 WALTER f0=  110 wpm= 144 B3    cos L-0.32 W+0.01 | Don't. It's hosts all the way up.
+Leo/Walter median f0: 162 127 | suspects: [17]

@@ -1,0 +1,46 @@
+[  0.00-  2.92] SPEAKER 1 (USER, 7 w, 144 wpm): Claude, the server's down. Is he okay?
+      pause 459 ms after "Claude,"
+      pause 479 ms after "down."
+      -> gap 520 ms (energy)
+[  4.24-  8.54] SPEAKER 2 (CLAUDE, 10 w, 140 wpm): Servers aren't people. It's overloaded. Requests are queuing the-
+      pause 580 ms after "people."
+      pause 700 ms after "overloaded."
+      -> gap 240 ms (energy)
+[  8.54- 11.16] SPEAKER 1 (USER, 4 w, 92 wpm): Claude, is he okay?
+      pause 519 ms after "Claude,"
+      -> gap 620 ms (energy)
+[ 11.90- 13.62] SPEAKER 2 (CLAUDE, 4 w, 140 wpm): No, he's not okay.
+      pause 540 ms after "No,"
+      -> gap 720 ms (energy)
+[ 14.16- 15.00] SPEAKER 1 (USER, 4 w, 286 wpm): What happened to him?
+      -> gap 640 ms (energy)
+[ 15.40- 17.04] SPEAKER 2 (CLAUDE, 6 w, 220 wpm): You posted your app on TikTok.
+      -> gap 880 ms (energy)
+[ 17.62- 18.98] SPEAKER 1 (USER, 5 w, 221 wpm): It got like 12 views!
+      -> gap 960 ms (energy)
+[ 19.94- 20.80] SPEAKER 2 (CLAUDE, 2 w, 140 wpm): 12 million.
+      -> gap 1530 ms (energy)
+[ 22.24- 22.88] SPEAKER 1 (USER, 1 w, 94 wpm): Okay.
+      -> gap 570 ms (energy)
+[ 23.68- 25.32] SPEAKER 2 (CLAUDE, 7 w, 256 wpm): And they all showed up at once.
+      -> gap 920 ms (energy)
+[ 25.94- 26.98] SPEAKER 1 (USER, 5 w, 288 wpm): How many is he holding?
+      -> gap 200 ms (energy)
+[ 26.98- 30.36] SPEAKER 2 (CLAUDE, 7 w, 124 wpm): 90,000. He was built for 40.
+      pause 440 ms after ",000."
+      -> gap 860 ms (energy)
+[ 31.20- 32.08] SPEAKER 1 (USER, 2 w, 136 wpm): 40,000?
+      -> gap 670 ms (energy)
+[ 32.68- 33.08] SPEAKER 2 (CLAUDE, 1 w, 150 wpm): 40.
+      -> gap 70 ms (energy)
+[ 34.02- 35.16] SPEAKER 1 (USER, 5 w, 263 wpm): Then get him a friend!
+      -> gap 0 ms (no dip (latched/overlap))
+[ 35.78- 37.16] SPEAKER 2 (CLAUDE, 4 w, 174 wpm): That's literally the fix.
+      -> gap 840 ms (energy)
+[ 37.88- 38.58] SPEAKER 1 (USER, 5 w, 429 wpm): Can we call him Kevin?
+      -> gap 630 ms (energy)
+[ 39.18- 39.92] SPEAKER 2 (CLAUDE, 2 w, 162 wpm): Kevin's online.
+      -> gap 710 ms (energy)
+[ 40.44- 41.16] SPEAKER 1 (USER, 3 w, 250 wpm): Is he okay?
+      -> gap 650 ms (energy)
+[ 41.80- 42.48] SPEAKER 2 (CLAUDE, 2 w, 176 wpm): Kevin's down.

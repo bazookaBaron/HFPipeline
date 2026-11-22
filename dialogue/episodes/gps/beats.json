@@ -1,0 +1,10 @@
+[
+  { "id": "s", "t": 2.32, "tpl": "flow", "nodes": ["SATELLITE", "PHONE"], "step": 0.9, "title": "THE SIGNAL" },
+  { "id": "d", "t": 11.54, "tpl": "tags", "items": ["SIGNAL DELAY", "X SPEED OF LIGHT", "= DISTANCE"], "step": 0.8, "title": "THE SUM" },
+  { "id": "q", "t": 16.96, "tpl": "tags", "items": ["SATELLITE 1", "SATELLITE 2", "SATELLITE 3", "SATELLITE 4"], "step": 0.55, "title": "FOUR BALLS" },
+  { "id": "k", "t": 20.36, "tpl": "check", "target": "YOU ARE HERE", "on": "q_i3" },
+  { "id": "m", "t": 28.68, "tpl": "counter", "from": 300, "label": "METRES PER MILLIONTH SEC", "title": "ONE TICK" },
+  { "id": "u", "t": 32.8, "tpl": "counter", "from": 38, "label": "MICROSECONDS A DAY", "title": "EINSTEIN" },
+  { "id": "x", "t": 36.84, "tpl": "counter", "from": 10, "label": "KM OFF PER DAY", "title": "WITHOUT HIM" },
+  { "id": "c", "t": 39.2, "tpl": "tags", "items": ["GPS", "MAPS", "WIFI NAMES"], "step": 0.5, "dur": 2.4, "title": "IN THE CITY" }
+]

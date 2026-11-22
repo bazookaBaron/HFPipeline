@@ -1,0 +1,49 @@
+{
+ "episode": "cold_battery",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "INSIDE THE BATTERY",
+   "at": 10,
+   "end": 16.4,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "FREEZE",
+   "at": 18.5,
+   "end": 22,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "TOO SLOW",
+   "at": 23,
+   "end": 29.3,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "STUCK",
+   "at": 29.6,
+   "end": 34.1,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "VOLTAGE SAGS",
+   "at": 35.7,
+   "end": 42.75,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "WARM IT UP",
+   "at": 43.15,
+   "end": 49.4,
+   "beats": []
+  }
+ ]
+}

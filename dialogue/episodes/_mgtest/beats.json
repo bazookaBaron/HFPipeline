@@ -1,0 +1,9 @@
+[
+  { "id": "f1", "t": 6.1,  "tpl": "flow", "nodes": ["PHONE", "TOWER", "CABLE", "DATA CENTRE", "FRIEND"], "step": 0.8 },
+  { "id": "m1", "t": 13.0, "tpl": "map", "from": "INDIA", "to": "USA", "route": "undersea" },
+  { "id": "t1", "t": 18.5, "tpl": "tags", "items": ["GOOGLE", "APPLE", "AMAZON", "YOUR SPACE"] },
+  { "id": "k1", "t": 23.5, "tpl": "check", "target": "SAFE", "on": "t1_i3" },
+  { "id": "br", "t": 27.0, "tpl": "broken", "target": "OFFLINE" },
+  { "id": "im", "t": 31.5, "tpl": "image", "src": "/mg/examples/gg_cc0.jpg", "caption": "A REAL PLACE, STILL", "credit": "CC0 Goldrock95 (mg/examples/CREDITS.md)" },
+  { "id": "c1", "t": 35.5, "tpl": "counter", "from": 40, "to": 41, "label": "PHOTOS" }
+]

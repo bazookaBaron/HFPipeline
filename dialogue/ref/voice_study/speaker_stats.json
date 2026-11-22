@@ -1,0 +1,144 @@
+{
+ "A": {
+  "USER": {
+   "turns": 10,
+   "words": 41,
+   "speech_s": 12.9,
+   "wpm_articulation": 191,
+   "f0_med_hz": 132.5,
+   "st_p5_p95": [
+    -5.7,
+    7.9
+   ],
+   "st_range_p5_p95": 13.6,
+   "per_turn_median_st_spread": 1.8,
+   "db_p10_p95": [
+    -19.2,
+    -11.5
+   ],
+   "turn_words_median": 4.5,
+   "turn_words_min_max": [
+    1,
+    7
+   ],
+   "inner_pauses_n": 3,
+   "inner_pause_ms_median": 479,
+   "pauses_per_min_speech": 14.0
+  },
+  "CLAUDE": {
+   "turns": 10,
+   "words": 45,
+   "speech_s": 16.7,
+   "wpm_articulation": 161,
+   "f0_med_hz": 210.8,
+   "st_p5_p95": [
+    -8.1,
+    5.1
+   ],
+   "st_range_p5_p95": 13.2,
+   "per_turn_median_st_spread": 1.9,
+   "db_p10_p95": [
+    -21.2,
+    -9.8
+   ],
+   "turn_words_median": 4.0,
+   "turn_words_min_max": [
+    1,
+    10
+   ],
+   "inner_pauses_n": 4,
+   "inner_pause_ms_median": 560,
+   "pauses_per_min_speech": 14.3
+  },
+  "turn_gaps_energy_ms": {
+   "n": 19,
+   "median": 650,
+   "p10": 174,
+   "p90": 928,
+   "min": 0,
+   "max": 1530
+  },
+  "turn_gaps_asr_ms": {
+   "median": 620,
+   "p10": 320,
+   "p90": 1031
+  },
+  "total_words": 86,
+  "overall_wpm_incl_gaps": 121,
+  "share_of_words": {
+   "USER": 0.48,
+   "CLAUDE": 0.52
+  }
+ },
+ "B": {
+  "USER": {
+   "turns": 12,
+   "words": 99,
+   "speech_s": 34.6,
+   "wpm_articulation": 172,
+   "f0_med_hz": 302.2,
+   "st_p5_p95": [
+    -9.8,
+    5.4
+   ],
+   "st_range_p5_p95": 15.2,
+   "per_turn_median_st_spread": 2.2,
+   "db_p10_p95": [
+    -22.0,
+    -11.2
+   ],
+   "turn_words_median": 7.5,
+   "turn_words_min_max": [
+    5,
+    15
+   ],
+   "inner_pauses_n": 7,
+   "inner_pause_ms_median": 519,
+   "pauses_per_min_speech": 12.1
+  },
+  "CLAUDE": {
+   "turns": 12,
+   "words": 304,
+   "speech_s": 104.2,
+   "wpm_articulation": 175,
+   "f0_med_hz": 120.5,
+   "st_p5_p95": [
+    -7.7,
+    10.4
+   ],
+   "st_range_p5_p95": 18.1,
+   "per_turn_median_st_spread": 1.6,
+   "db_p10_p95": [
+    -23.0,
+    -10.9
+   ],
+   "turn_words_median": 30.5,
+   "turn_words_min_max": [
+    8,
+    45
+   ],
+   "inner_pauses_n": 31,
+   "inner_pause_ms_median": 560,
+   "pauses_per_min_speech": 17.9
+  },
+  "turn_gaps_energy_ms": {
+   "n": 23,
+   "median": 440,
+   "p10": 332,
+   "p90": 638,
+   "min": 80,
+   "max": 800
+  },
+  "turn_gaps_asr_ms": {
+   "median": 380,
+   "p10": 231,
+   "p90": 843
+  },
+  "total_words": 403,
+  "overall_wpm_incl_gaps": 162,
+  "share_of_words": {
+   "USER": 0.25,
+   "CLAUDE": 0.75
+  }
+ }
+}

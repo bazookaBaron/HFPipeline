@@ -1,0 +1,1898 @@
+{
+ "amb.campfire.close": {
+  "kind": "amb",
+  "dir": "amb/campfire",
+  "min_s": 30,
+  "queries": [
+   "campfire crackle",
+   "campfire crackling",
+   "fire crackling close"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "people",
+   "rain"
+  ],
+  "brief": "a crackling fire",
+  "alts": [
+   "rain on a roof",
+   "frying food in a pan",
+   "radio static",
+   "applause"
+  ]
+ },
+ "amb.campfire.distant": {
+  "kind": "amb",
+  "dir": "amb/campfire",
+  "min_s": 30,
+  "queries": [
+   "campfire night crickets",
+   "campfire distant",
+   "bonfire night ambience"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "people",
+   "rain",
+   "guitar"
+  ],
+  "brief": "a crackling fire outdoors at night with crickets",
+  "alts": [
+   "rain falling",
+   "traffic noise",
+   "frying food in a pan",
+   "a crowd talking"
+  ]
+ },
+ "amb.forest.crickets": {
+  "kind": "amb",
+  "dir": "amb/forest",
+  "min_s": 30,
+  "queries": [
+   "crickets night",
+   "night forest insects",
+   "night ambience crickets"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "people",
+   "rain",
+   "traffic",
+   "city"
+  ],
+  "brief": "crickets at night",
+  "alts": [
+   "birds singing in the morning",
+   "an electrical hum",
+   "rain falling",
+   "traffic noise"
+  ]
+ },
+ "amb.wind.pines": {
+  "kind": "amb",
+  "dir": "amb/wind",
+  "min_s": 30,
+  "queries": [
+   "wind pine trees",
+   "wind through pine trees",
+   "wind in trees forest"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "people",
+   "rain",
+   "storm",
+   "traffic"
+  ],
+  "brief": "wind in pine trees",
+  "alts": [
+   "ocean waves",
+   "traffic noise",
+   "rain falling",
+   "an air conditioner hum"
+  ]
+ },
+ "amb.lake.lapping": {
+  "kind": "amb",
+  "dir": "amb/lake",
+  "min_s": 30,
+  "queries": [
+   "lake water lapping",
+   "water lapping shore",
+   "gentle waves lake shore"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "people",
+   "rain",
+   "storm",
+   "motor"
+  ],
+  "brief": "gentle water lapping on a lake shore",
+  "alts": [
+   "a stream flowing",
+   "rain falling",
+   "ocean surf crashing",
+   "a toilet flushing"
+  ]
+ },
+ "amb.city.distant": {
+  "kind": "amb",
+  "dir": "amb/city",
+  "min_s": 30,
+  "queries": [
+   "city night distant traffic",
+   "distant city hum",
+   "city ambience night far"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "siren",
+   "rain",
+   "horn"
+  ],
+  "brief": "distant city traffic at night",
+  "alts": [
+   "ocean waves",
+   "wind blowing",
+   "an air conditioner hum",
+   "a crowd talking",
+   "a city street with traffic"
+  ]
+ },
+ "amb.breeze.night": {
+  "kind": "amb",
+  "dir": "amb/wind",
+  "min_s": 30,
+  "queries": [
+   "light breeze",
+   "gentle wind",
+   "soft wind ambience"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "people",
+   "rain",
+   "storm",
+   "traffic"
+  ],
+  "brief": "a light breeze outdoors",
+  "alts": [
+   "a gust of wind rushing past",
+   "traffic noise",
+   "ocean waves",
+   "an air conditioner hum"
+  ]
+ },
+ "amb.birds.owl": {
+  "kind": "sparse",
+  "dir": "amb/birds",
+  "min_s": 3,
+  "max_s": 400,
+  "queries": [
+   "owl hooting",
+   "owl night",
+   "tawny owl"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "people"
+  ],
+  "brief": "an owl hooting at night",
+  "alts": [
+   "a dove cooing",
+   "a person whistling",
+   "a dog barking",
+   "a crow cawing"
+  ]
+ },
+ "foley.fire.log_shift": {
+  "kind": "foley",
+  "dir": "foley",
+  "min_s": 0.5,
+  "max_s": 240,
+  "queries": [
+   "fireplace logs",
+   "wood fire burning",
+   "fire log"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk"
+  ],
+  "brief": "a burning log shifting in a crackling fire",
+  "alts": [
+   "a door creaking",
+   "footsteps on wood",
+   "a cardboard box falling"
+  ]
+ },
+ "foley.fire.ember_pop": {
+  "kind": "foley",
+  "dir": "foley",
+  "min_s": 0.5,
+  "max_s": 240,
+  "queries": [
+   "fire pop",
+   "ember pop",
+   "wood fire crack pop"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "gun",
+   "firework"
+  ],
+  "brief": "a single crackle pop from a wood fire",
+  "alts": [
+   "a finger snap",
+   "a gunshot",
+   "a cork pop"
+  ]
+ },
+ "foley.cloth.rustle": {
+  "kind": "foley",
+  "dir": "foley",
+  "min_s": 0.5,
+  "max_s": 60,
+  "queries": [
+   "cloth rustle",
+   "clothes rustling",
+   "jacket rustle"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "paper",
+   "bag",
+   "plastic"
+  ],
+  "brief": "cloth rustling",
+  "alts": [
+   "paper crumpling",
+   "a plastic bag rustling",
+   "wind blowing"
+  ]
+ },
+ "foley.mug.set_wood": {
+  "kind": "foley",
+  "dir": "foley",
+  "min_s": 0.3,
+  "max_s": 60,
+  "queries": [
+   "mug put down table",
+   "cup on wooden table",
+   "ceramic mug set down"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "pour",
+   "stir",
+   "break"
+  ],
+  "brief": "a ceramic mug set down on a wooden table",
+  "alts": [
+   "a glass breaking",
+   "a knock on a door",
+   "a coin dropping"
+  ]
+ },
+ "foley.step.gravel": {
+  "kind": "foley",
+  "dir": "foley",
+  "min_s": 1,
+  "max_s": 90,
+  "queries": [
+   "footsteps gravel",
+   "walking on gravel",
+   "gravel steps"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "car",
+   "running"
+  ],
+  "brief": "footsteps on gravel",
+  "alts": [
+   "footsteps on snow",
+   "crunching chips",
+   "footsteps on a wooden floor"
+  ]
+ },
+ "foley.step.leaves": {
+  "kind": "foley",
+  "dir": "foley",
+  "min_s": 1,
+  "max_s": 90,
+  "queries": [
+   "footsteps dry leaves",
+   "walking leaves",
+   "footsteps forest leaves"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "running"
+  ],
+  "brief": "walking through dry leaves",
+  "alts": [
+   "paper crumpling",
+   "footsteps on gravel",
+   "fire crackling"
+  ]
+ },
+ "foley.paper.slide": {
+  "kind": "foley",
+  "dir": "foley",
+  "min_s": 0.3,
+  "max_s": 60,
+  "queries": [
+   "paper slide table",
+   "sliding paper",
+   "card slide"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "tear",
+   "crumple"
+  ],
+  "brief": "paper sliding on a table",
+  "alts": [
+   "a quick swipe",
+   "cloth rustling",
+   "a gust of wind rushing past"
+  ]
+ },
+ "foley.pencil.write": {
+  "kind": "foley",
+  "dir": "foley",
+  "min_s": 0.5,
+  "max_s": 90,
+  "queries": [
+   "pencil writing",
+   "pencil on paper",
+   "pencil drawing"
+  ],
+  "exclude": [
+   "music",
+   "voice",
+   "talk",
+   "sharpen"
+  ],
+  "brief": "a pencil writing on paper",
+  "alts": [
+   "paper rustling",
+   "a keyboard typing fast",
+   "a ratchet clicking"
+  ]
+ },
+ "amb.room.office": {
+  "kind": "amb",
+  "dir": "amb/room",
+  "min_s": 30,
+  "queries": [
+   "office room tone",
+   "office ambience quiet",
+   "empty office ambience"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast",
+   "phone ring"
+  ],
+  "brief": "a quiet office with air conditioning",
+  "alts": [
+   "traffic noise",
+   "rain falling",
+   "a crowd talking",
+   "an electrical hum"
+  ],
+  "section": "world"
+ },
+ "amb.room.boardroom": {
+  "kind": "amb",
+  "dir": "amb/room",
+  "min_s": 30,
+  "queries": [
+   "room tone meeting room",
+   "conference room ambience",
+   "quiet room tone"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a quiet room tone indoors",
+  "alts": [
+   "traffic noise",
+   "wind blowing",
+   "an electrical hum",
+   "rain falling"
+  ],
+  "section": "world"
+ },
+ "amb.crowd.courtroom": {
+  "kind": "amb",
+  "dir": "amb/crowd",
+  "min_s": 30,
+  "queries": [
+   "courtroom ambience",
+   "court room murmur",
+   "hall murmur indoor crowd"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "a murmuring crowd in a large indoor hall",
+  "alts": [
+   "applause",
+   "rain falling",
+   "traffic noise",
+   "a restaurant with dishes clattering"
+  ],
+  "section": "world",
+  "crowd": true
+ },
+ "amb.crowd.hearing": {
+  "kind": "amb",
+  "dir": "amb/crowd",
+  "min_s": 30,
+  "queries": [
+   "auditorium murmur",
+   "audience murmur before",
+   "conference hall crowd murmur"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "an audience murmuring in an auditorium",
+  "alts": [
+   "applause",
+   "rain falling",
+   "traffic noise",
+   "a busy restaurant"
+  ],
+  "section": "world",
+  "crowd": true
+ },
+ "amb.work.newsroom": {
+  "kind": "amb",
+  "dir": "amb/work",
+  "min_s": 30,
+  "queries": [
+   "busy office ambience",
+   "office typing phones ambience",
+   "newsroom ambience"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "a busy office with typing and phones",
+  "alts": [
+   "a restaurant with dishes clattering",
+   "rain falling",
+   "traffic noise",
+   "a crowd cheering"
+  ],
+  "section": "world",
+  "crowd": true
+ },
+ "amb.work.trading": {
+  "kind": "amb",
+  "dir": "amb/work",
+  "min_s": 30,
+  "queries": [
+   "stock exchange floor",
+   "trading floor ambience",
+   "busy call center ambience"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "a busy trading floor with many people",
+  "alts": [
+   "a stadium crowd cheering",
+   "rain falling",
+   "a restaurant with dishes clattering",
+   "traffic noise"
+  ],
+  "section": "world",
+  "crowd": true
+ },
+ "amb.work.factory": {
+  "kind": "amb",
+  "dir": "amb/work",
+  "min_s": 30,
+  "queries": [
+   "factory machinery ambience",
+   "industrial machines loop",
+   "factory hall ambience"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "machinery running in a factory",
+  "alts": [
+   "traffic noise",
+   "a train passing",
+   "rain falling",
+   "an air conditioner hum"
+  ],
+  "section": "world"
+ },
+ "amb.work.assembly": {
+  "kind": "amb",
+  "dir": "amb/work",
+  "min_s": 30,
+  "queries": [
+   "assembly line ambience",
+   "production line machines",
+   "conveyor belt factory"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a conveyor belt and machines on an assembly line",
+  "alts": [
+   "traffic noise",
+   "a train passing",
+   "rain falling",
+   "a printer printing"
+  ],
+  "section": "world"
+ },
+ "amb.work.mill": {
+  "kind": "amb",
+  "dir": "amb/work",
+  "min_s": 30,
+  "queries": [
+   "weaving loom",
+   "textile mill looms",
+   "loom machine weaving"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a weaving loom clattering",
+  "alts": [
+   "a train on tracks",
+   "a sewing machine",
+   "a typewriter",
+   "a helicopter"
+  ],
+  "section": "world"
+ },
+ "amb.room.server": {
+  "kind": "amb",
+  "dir": "amb/room",
+  "min_s": 30,
+  "queries": [
+   "server room hum",
+   "data center ambience",
+   "computer room fans"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "computer fans humming in a server room",
+  "alts": [
+   "an air conditioner hum",
+   "a refrigerator hum",
+   "wind blowing",
+   "traffic noise"
+  ],
+  "section": "world"
+ },
+ "amb.room.diner": {
+  "kind": "amb",
+  "dir": "amb/room",
+  "min_s": 30,
+  "queries": [
+   "diner ambience",
+   "restaurant ambience cutlery",
+   "cafe ambience"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "a busy restaurant with cutlery and dishes",
+  "alts": [
+   "a crowd cheering",
+   "rain falling",
+   "traffic noise",
+   "an office with typing"
+  ],
+  "section": "world",
+  "crowd": true
+ },
+ "amb.room.hotel": {
+  "kind": "amb",
+  "dir": "amb/room",
+  "min_s": 30,
+  "queries": [
+   "hotel room ambience",
+   "hotel room tone",
+   "quiet room air conditioner"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a quiet room tone indoors",
+  "alts": [
+   "traffic noise",
+   "rain falling",
+   "wind blowing",
+   "a refrigerator hum"
+  ],
+  "section": "world"
+ },
+ "amb.street.traffic": {
+  "kind": "amb",
+  "dir": "amb/street",
+  "min_s": 30,
+  "queries": [
+   "city traffic street ambience",
+   "street traffic",
+   "busy road ambience"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast",
+   "siren",
+   "horn"
+  ],
+  "brief": "city street traffic",
+  "alts": [
+   "rain falling",
+   "ocean waves",
+   "a crowd talking",
+   "wind blowing"
+  ],
+  "section": "world"
+ },
+ "amb.street.plaza": {
+  "kind": "amb",
+  "dir": "amb/street",
+  "min_s": 30,
+  "queries": [
+   "city square ambience",
+   "pedestrian plaza ambience",
+   "town square people"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "people walking in a city square",
+  "alts": [
+   "a stadium crowd cheering",
+   "rain falling",
+   "traffic noise",
+   "a restaurant with dishes clattering"
+  ],
+  "section": "world",
+  "crowd": true
+ },
+ "amb.crowd.rally": {
+  "kind": "amb",
+  "dir": "amb/crowd",
+  "min_s": 30,
+  "queries": [
+   "crowd rally",
+   "protest crowd chanting",
+   "large crowd outdoor"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture",
+   "megaphone"
+  ],
+  "brief": "a large crowd outdoors cheering and chanting",
+  "alts": [
+   "rain falling",
+   "applause",
+   "ocean waves",
+   "traffic noise"
+  ],
+  "section": "world",
+  "crowd": true
+ },
+ "amb.travel.airport": {
+  "kind": "amb",
+  "dir": "amb/travel",
+  "min_s": 30,
+  "queries": [
+   "airport terminal ambience",
+   "airport hall ambience",
+   "airport interior"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "an airport terminal with people and announcements far away",
+  "alts": [
+   "a train station",
+   "a shopping mall",
+   "rain falling",
+   "traffic noise"
+  ],
+  "section": "world",
+  "crowd": true
+ },
+ "amb.travel.harbour": {
+  "kind": "amb",
+  "dir": "amb/travel",
+  "min_s": 30,
+  "queries": [
+   "harbour ambience",
+   "port ambience seagulls",
+   "harbor boats water"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a harbour with water, boats and seagulls",
+  "alts": [
+   "ocean surf crashing",
+   "rain falling",
+   "traffic noise",
+   "a stream flowing"
+  ],
+  "section": "world"
+ },
+ "amb.travel.station": {
+  "kind": "amb",
+  "dir": "amb/travel",
+  "min_s": 30,
+  "queries": [
+   "train station ambience",
+   "railway station hall",
+   "station platform ambience"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "a train station with people and trains",
+  "alts": [
+   "an airport terminal",
+   "a shopping mall",
+   "traffic noise",
+   "rain falling"
+  ],
+  "section": "world",
+  "crowd": true
+ },
+ "amb.weather.rain_window": {
+  "kind": "amb",
+  "dir": "amb/weather",
+  "min_s": 30,
+  "queries": [
+   "rain on window",
+   "rain window indoor",
+   "rain against glass"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast",
+   "thunder"
+  ],
+  "brief": "rain on a window",
+  "alts": [
+   "frying food in a pan",
+   "a crackling fire",
+   "a shower running",
+   "radio static"
+  ],
+  "section": "world"
+ },
+ "world.gavel.hit": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "gavel",
+   "judge gavel",
+   "gavel strike"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a judge's gavel striking",
+  "alts": [
+   "a knock on a door",
+   "a hammer hitting wood",
+   "a wooden block hit"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.stamp.press": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "rubber stamp",
+   "stamp paper office",
+   "stamping document"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a rubber stamp pressed on paper",
+  "alts": [
+   "a stapler",
+   "a knock on a door",
+   "a book closing"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.typing.burst": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 180,
+  "queries": [
+   "typing keyboard",
+   "keyboard typing fast",
+   "typing on computer"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a keyboard typing fast",
+  "alts": [
+   "a typewriter",
+   "rain falling",
+   "a ratchet clicking"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 2.5
+ },
+ "world.mouse.click": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "mouse click",
+   "computer mouse click",
+   "mouse clicks"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a computer mouse clicking",
+  "alts": [
+   "a pen clicking",
+   "a light switch",
+   "a clock ticking"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.phone.ring": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "office phone ringing",
+   "telephone ring",
+   "old phone ring"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a telephone ringing",
+  "alts": [
+   "an alarm clock beeping",
+   "a doorbell",
+   "a bicycle bell"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 3
+ },
+ "world.phone.buzz": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "phone vibrate",
+   "mobile phone vibration",
+   "cell phone buzz"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a mobile phone vibrating on a table",
+  "alts": [
+   "an electric razor",
+   "a bee buzzing",
+   "a drill"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 1.5
+ },
+ "world.camera.shutter_burst": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "camera shutter burst",
+   "camera shutter continuous",
+   "dslr shutter"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a camera shutter clicking rapidly",
+  "alts": [
+   "a mouse click",
+   "a ratchet clicking",
+   "a stapler"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 1.5
+ },
+ "world.crowd.applause": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 180,
+  "queries": [
+   "applause short",
+   "audience applause",
+   "clapping crowd"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "an audience applauding",
+  "alts": [
+   "rain falling",
+   "frying food in a pan",
+   "a crowd cheering"
+  ],
+  "section": "world",
+  "variants": 4,
+  "crowd": true,
+  "len_s": 4
+ },
+ "world.crowd.cheer": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 180,
+  "queries": [
+   "crowd cheer",
+   "crowd cheering",
+   "audience cheer"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "a crowd cheering",
+  "alts": [
+   "applause",
+   "a stadium horn",
+   "ocean waves"
+  ],
+  "section": "world",
+  "variants": 4,
+  "crowd": true,
+  "len_s": 4
+ },
+ "world.crowd.gasp": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "crowd gasp",
+   "audience gasp",
+   "crowd reaction ooh"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "vocal",
+   "singing",
+   "narrat",
+   "podcast",
+   "sermon",
+   "lecture"
+  ],
+  "brief": "a crowd gasping in surprise",
+  "alts": [
+   "a crowd cheering",
+   "applause",
+   "a crowd laughing"
+  ],
+  "section": "world",
+  "variants": 4,
+  "crowd": true,
+  "len_s": 2.5
+ },
+ "world.door.close": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "door close",
+   "door closing",
+   "door shut"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a door closing",
+  "alts": [
+   "a car door closing",
+   "a drawer closing",
+   "a knock on a door"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.chair.scrape": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "chair scrape",
+   "chair drag floor",
+   "chair moving"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a chair scraping on a floor",
+  "alts": [
+   "a door creaking",
+   "furniture being dragged",
+   "a squeaky hinge"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 1.2
+ },
+ "world.paper.shuffle": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "paper shuffle",
+   "papers rustling",
+   "shuffling documents"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "papers shuffling",
+  "alts": [
+   "cloth rustling",
+   "a plastic bag",
+   "leaves rustling"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 1.5
+ },
+ "world.briefcase.latch": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "briefcase latch",
+   "briefcase open",
+   "suitcase latch click"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a briefcase latch snapping open",
+  "alts": [
+   "a stapler",
+   "a door lock",
+   "a light switch"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.step.hard": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 1,
+  "max_s": 180,
+  "queries": [
+   "footsteps hard floor",
+   "footsteps shoes tile",
+   "footsteps marble"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "footsteps of shoes on a hard floor",
+  "alts": [
+   "a clock ticking",
+   "a knock on a door",
+   "high heels walking"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 3
+ },
+ "world.car.pass": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 2,
+  "max_s": 180,
+  "queries": [
+   "car pass by",
+   "car passing",
+   "car drive by"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast",
+   "horn",
+   "siren",
+   "race"
+  ],
+  "brief": "a car passing by",
+  "alts": [
+   "a truck passing",
+   "wind blowing",
+   "a jet passing overhead"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 4
+ },
+ "world.truck.pass": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 2,
+  "max_s": 180,
+  "queries": [
+   "truck pass by",
+   "truck passing",
+   "lorry passing"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast",
+   "horn",
+   "siren"
+  ],
+  "brief": "a truck passing by",
+  "alts": [
+   "a car passing",
+   "a train passing",
+   "a jet passing overhead"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 5
+ },
+ "world.train.pass": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 3,
+  "max_s": 240,
+  "queries": [
+   "train pass by",
+   "train passing",
+   "train passing station"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a train passing by",
+  "alts": [
+   "a truck passing",
+   "thunder",
+   "a jet passing overhead"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 7
+ },
+ "world.jet.pass": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 3,
+  "max_s": 240,
+  "queries": [
+   "jet flyby",
+   "airplane flyover",
+   "plane passing overhead"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a jet airplane flying overhead",
+  "alts": [
+   "a car passing",
+   "wind blowing",
+   "a train passing"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 7
+ },
+ "world.ship.horn": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 1,
+  "max_s": 120,
+  "queries": [
+   "ship horn",
+   "boat horn",
+   "foghorn"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a ship's horn blowing",
+  "alts": [
+   "a car horn",
+   "a train horn",
+   "a tuba note"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 4
+ },
+ "world.heli.pass": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 3,
+  "max_s": 240,
+  "queries": [
+   "helicopter flyby",
+   "helicopter passing",
+   "helicopter overhead"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a helicopter flying overhead",
+  "alts": [
+   "a jet passing overhead",
+   "a motorcycle passing",
+   "a lawnmower"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 6
+ },
+ "world.register.cash": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "cash register",
+   "cash register drawer",
+   "till ching"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a cash register opening with a ching",
+  "alts": [
+   "a bell ringing",
+   "a drawer closing",
+   "coins dropping"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.machine.clunk": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "machine clunk",
+   "industrial machine clank",
+   "mechanical clunk"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a heavy machine clunking",
+  "alts": [
+   "a door closing",
+   "a hammer hitting metal",
+   "a car door closing"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.press.stamp": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 180,
+  "queries": [
+   "metal press",
+   "stamping press machine",
+   "hydraulic press"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a heavy metal stamping press slamming",
+  "alts": [
+   "a hammer hitting metal",
+   "a door slamming",
+   "a drum hit"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.keyboard.keys": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "keyboard keys",
+   "keyboard key press",
+   "keyboard single keystroke"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "keys pressed on a keyboard",
+  "alts": [
+   "a mouse click",
+   "a typewriter",
+   "a clock ticking"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.cup.set": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "cup set down",
+   "coffee cup table",
+   "mug put down"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a cup set down on a table",
+  "alts": [
+   "a glass clinking",
+   "a knock on wood",
+   "a plate set down"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.glass.clink": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "glass clink",
+   "glasses toast",
+   "wine glasses cheers"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "glasses clinking together",
+  "alts": [
+   "a bell ringing",
+   "a spoon on a cup",
+   "a wind chime"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.flash.pop": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 120,
+  "queries": [
+   "camera flash",
+   "flash bulb",
+   "camera flash charge"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a camera flash firing",
+  "alts": [
+   "a camera shutter",
+   "a light switch",
+   "a balloon pop"
+  ],
+  "section": "world",
+  "variants": 4
+ },
+ "world.siren.distant": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 2,
+  "max_s": 240,
+  "queries": [
+   "distant siren",
+   "police siren far",
+   "ambulance siren distant"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a siren wailing in the distance",
+  "alts": [
+   "a car alarm",
+   "a whistle",
+   "a dog howling"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 5
+ },
+ "world.typewriter.type": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 180,
+  "queries": [
+   "typewriter typing",
+   "old typewriter",
+   "typewriter"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a mechanical typewriter typing",
+  "alts": [
+   "a keyboard typing fast",
+   "a sewing machine",
+   "a ratchet clicking"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 2.5
+ },
+ "world.telegraph.key": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 180,
+  "queries": [
+   "telegraph",
+   "morse code key",
+   "telegraph sounder"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast",
+   "beep"
+  ],
+  "brief": "a telegraph key clicking morse code",
+  "alts": [
+   "a typewriter",
+   "a clock ticking",
+   "a mouse click"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 2.5
+ },
+ "world.loom.clack": {
+  "kind": "foley",
+  "dir": "world",
+  "min_s": 0.3,
+  "max_s": 240,
+  "queries": [
+   "loom",
+   "weaving loom shuttle",
+   "handloom"
+  ],
+  "exclude": [
+   "music",
+   "song",
+   "voice",
+   "talk",
+   "speech",
+   "vocal",
+   "narrat",
+   "podcast"
+  ],
+  "brief": "a weaving loom clacking",
+  "alts": [
+   "a typewriter",
+   "a train on tracks",
+   "a sewing machine"
+  ],
+  "section": "world",
+  "variants": 4,
+  "len_s": 2
+ }
+}

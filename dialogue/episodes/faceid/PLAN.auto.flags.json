@@ -1,0 +1,36 @@
+{
+ "shotsToLook": [
+  4,
+  6,
+  8,
+  12,
+  14,
+  16,
+  17,
+  18,
+  20
+ ],
+ "byLine": {
+  "4": [
+   "word alignment forced"
+  ],
+  "6": [
+   "wide2 choice (firm_light)"
+  ],
+  "8": [
+   "wide2 choice (firm_light)"
+  ],
+  "12": [
+   "wide2 choice (firm_light)"
+  ],
+  "14": [
+   "wide2 choice (warm)"
+  ],
+  "16": [
+   "split into a cut-in at 45.31 (pause 480 ms)"
+  ],
+  "17": [
+   "mcu_B choice (grin)"
+  ]
+ }
+}

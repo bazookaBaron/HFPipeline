@@ -1,0 +1,56 @@
+{
+ "episode": "gps",
+ "ratio": "9x16",
+ "generated": "autoplan.mjs (timings only)",
+ "cues": [
+  {
+   "id": 1,
+   "name": "THE SIGNAL",
+   "at": 2.02,
+   "end": 5.52,
+   "beats": []
+  },
+  {
+   "id": 2,
+   "name": "THE SUM",
+   "at": 11.24,
+   "end": 15.54,
+   "beats": []
+  },
+  {
+   "id": 3,
+   "name": "FOUR BALLS",
+   "at": 16.66,
+   "end": 22.96,
+   "beats": []
+  },
+  {
+   "id": 4,
+   "name": "ONE TICK",
+   "at": 28.38,
+   "end": 31.38,
+   "beats": []
+  },
+  {
+   "id": 5,
+   "name": "EINSTEIN",
+   "at": 32.5,
+   "end": 35.5,
+   "beats": []
+  },
+  {
+   "id": 6,
+   "name": "WITHOUT HIM",
+   "at": 36.54,
+   "end": 38.9,
+   "beats": []
+  },
+  {
+   "id": 7,
+   "name": "IN THE CITY",
+   "at": 38.9,
+   "end": 41.3,
+   "beats": []
+  }
+ ]
+}

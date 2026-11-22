@@ -118,6 +118,7 @@ async function epvideo(ep, sec = null) {
   for (let i = 0; i < N; i++) { await page.evaluate(s => window.frame(s), { t: i / 30 }); const buf = await page.screenshot({ type: "jpeg", quality: 95 }); if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once("drain", r)); if (i % 60 === 0) console.log(`  frame ${i}/${N}  ${((Date.now() - t0) / 1000).toFixed(0)} s`); }
   ff.stdin.end(); await new Promise(r => ff.on("close", r));
   cp.execFileSync("ffmpeg", ["-y", "-loglevel", "error", "-i", silent, "-i", audio, "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-t", String(Math.min(dur, adur)), "-movflags", "+faststart", file]); fs.unlinkSync(silent);
+  if (process.env.KEEP_ASSETS !== "1") { const { clean } = createRequire(import.meta.url)(path.join(REPO, "runtime/cleanup_run.js")); clean(epDir(ep), false); }
   const s2 = (Date.now() - t0) / 1000; console.log(`[epvideo] ${ep} ${N} frames, ${s2.toFixed(0)} s (${(s2 / dur).toFixed(1)} s per video second) -> ${path.relative(REPO, file)}`);
 }
 try {

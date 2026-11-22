@@ -28,4 +28,5 @@ if [ "$PAD" != "0" ]; then
   ffmpeg -v error -y -i final.mp4 -vf "tpad=stop_mode=clone:stop_duration=$PAD" -af "apad=pad_dur=$PAD" -c:v libx264 -crf 18 -preset medium -c:a aac -b:a 192k final-pad.mp4 && mv -f final-pad.mp4 final.mp4
 fi
 ffmpeg -v error -y -i final.mp4 -vf scale=1280:-2 -c:v libx264 -crf 25 -preset veryfast -c:a aac -b:a 160k final-720p.mp4
+node runtime/cleanup_run.js "$P" || true
 echo "ALL DONE $(ffprobe -v error -show_entries format=duration -of csv=p=0 final.mp4)s"

@@ -52,4 +52,5 @@ dialogue/       dialogue pipeline (engine, compiler, mg, voice, sfx, thumbs, epi
 - This repo holds the **recipe only** (code, scripts, docs, skills). Generated media, assets and vendored libraries (three.js, gsap, lucide icons, fonts, puppet SVG art, relief tiles) are git-ignored; fetch/restore them locally (`npm install`, see `dialogue/PLAN.md`, `runtime/MAPS.md`).
 - Licensed 3D asset packs (Quaternius, CC0) are **not** committed; place them in `.vendor-assets/dialogue/raw/` as described in `dialogue/PLAN.md`.
 - TTS models, voice references and API keys (`.env`) are local-only and git-ignored, as are rendered media (`out/`, `*.mp4`, `*.wav`).
+- **Per-run cleanup:** when a run finishes (`lf/finish.sh`, `shorts.js`, dialogue `epvideo`) `runtime/cleanup_run.js` deletes every generated asset except the final video(s), thumbnail and small text sources. Set `KEEP_ASSETS=1` to keep intermediates (e.g. before re-finishing a run).
 - Always run heavy jobs via `node runtime/jobq.js` (status: `node runtime/jobq.js status`).

@@ -213,3 +213,4 @@ fs.writeFileSync(path.join(OUT, "parts.json"), JSON.stringify({ series: SERIES, 
 fs.writeFileSync(path.join(OUT, "parts.md"), `# ${SERIES} — Shorts series (${N} parts)\n\n` + list.map((p) =>
   `## Part ${p.n} · ${fmt(p.start)}–${fmt(p.end)} (${p.dur.toFixed(0)} s)\n**Title:** ${p.title}\n\n**Description:** ${p.description.replace(/\n/g, " ")}\n\n**Hook (last line):** ${p.hook}\n`).join("\n"));
 console.log("part list:", path.join(OUT, "parts.md"));
+if (process.env.KEEP_ASSETS !== "1" && !flag("--grabs-only")) require("../cleanup_run.js").clean(OUT, false);

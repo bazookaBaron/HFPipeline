@@ -77,7 +77,6 @@ video-engine/.orchestrator-snap-*/
 /dialogue/sfx/_work/
 /dialogue/out_share/
 /dialogue/engine/out/
-<<<<<<< Updated upstream
 
 # --- recipe only: no generated content, media, assets or vendored libs ---
 *.png
@@ -110,6 +109,4 @@ video-engine/.orchestrator-snap-*/
 /video-engine/generated/
 **/*.svg
 !/runtime/lf-outro/**/*.svg
-=======
 /final-videos/
->>>>>>> Stashed changes

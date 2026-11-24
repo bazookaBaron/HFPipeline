@@ -1,0 +1,86 @@
+# One place for every knob. Money limits are enforced by ugc/compute, not just documented.
+[budget]
+cap_usd = 9.50            # everything, pilot included; never raised by code
+pilot_usd = 1.60          # the pilot session may not spend more than this
+max_dph = 0.70            # refuse any offer dearer than this, USD per hour
+idle_minutes = 10
+download_gb = 45
+
+[compute]
+# Countries the MiniMax H3 licence excludes: US, South Korea, UK and the EU. An unknown country is refused.
+excluded = ["US","KR","GB","UK","AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE"]
+avoid = ["CN","RU","BY","IR"]   # allowed by the licence, but model downloads or payments may not work there
+gpus = ["RTX 5090","RTX 5090D","RTX PRO 5000","RTX 4090"]
+min_ram_gb = 60
+min_reliability = 0.97
+min_down_mbps = 300
+disk_gb = 90
+image = "vastai/pytorch:2.9.1-cu130-cuda-13.2-mini-py312-2026-11-20"   # RTX 50 needs CUDA 12.8+
+
+[model]
+unet = "Minimax-h3_Singularity_ref2va_v2_pruned_int8.safetensors"
+text_encoder = "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"
+video_vae = "minimax_h3_video_vae_fp16.safetensors"
+audio_vae = "minimax_h3_audio_vae_fp32.safetensors"
+turbo_lora = "minimax_h3_ref2v_turbo_4step_v0.1_comfyui_bf16.safetensors"
+skin_lora = "minimax-h3-facial-realism-closeup-cp2000.safetensors"
+fps = 24
+frames = 243              # 17n+5; 10.125 s
+
+# Best first. The pilot measures seconds per take; the planner picks the first tier that fits the cap.
+[[tier]]
+id = "q1"                 # reference-faithful: no turbo, 20 steps (Comfy docs)
+width = 928
+height = 1664
+steps = 20
+turbo = 0.0
+skin = 0.8
+[[tier]]
+id = "q2"                 # the tutorial's settings
+width = 928
+height = 1664
+steps = 10
+turbo = 1.0
+skin = 1.0
+[[tier]]
+id = "q3"
+width = 736
+height = 1312
+steps = 10
+turbo = 1.0
+skin = 1.0
+[[tier]]
+id = "q4"
+width = 640
+height = 1152
+steps = 10
+turbo = 1.0
+skin = 1.0
+[[tier]]
+id = "q5"
+width = 640
+height = 1152
+steps = 4
+turbo = 1.0
+skin = 1.0
+
+[takes]
+max_per_clip = 3          # retry only failures
+expected = 1.6            # used to project cost
+
+[reel]
+seconds = 40.0
+ai_clips = 3
+broll_seconds = 10.0
+width = 1080
+height = 1920
+fps = 24                  # the model's native rate: no repeated or invented frames
+loudness_lufs = -14.0
+label = "AI-generated video"
+
+[checks]
+max_wer = 0.15             # the recogniser alone reached 0.12 on correctly spoken text; lower means paying for false retries
+# Measured on the tutorial's own clips (360p): same person 0.64-0.81 (means 0.73, 0.77), a clearly different person 0.92-0.97, but a
+# look-alike 0.64-0.85. So this only catches obvious misses; it does NOT prove identity. A person confirms the face. Recheck on the pilot.
+max_face_distance = 0.90
+min_face_fraction = 0.90  # share of sampled frames with exactly one face

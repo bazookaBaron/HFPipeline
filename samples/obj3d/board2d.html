@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><title>board2d</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style></head><body>
+<canvas id="c"></canvas>
+<script type="module">
+// Demo page for mg2d/board.js: ?ar=16x9 for landscape, ?seed=N to re-solve the layout. Everything is solved at runtime from SPEC.
+import { makeBoard } from "./mg2d/board.js";
+const q = new URLSearchParams(location.search), land = q.get("ar") === "16x9", W = land ? 1920 : 1080, H = land ? 1080 : 1920;
+const cv = document.getElementById("c"); cv.width = W; cv.height = H; const g = cv.getContext("2d");
+const SPEC = { seed: +(q.get("seed") || 4), items: [
+  { id: "eg", cap: "The blockage", art: "canal", key: true },
+  { id: "tr", cap: "12% of world trade", art: "globe", p: { share: 0.12 } },
+  { id: "sh", cap: "369 ships waiting", art: "grid", p: { n: 369 } },
+  { id: "car", cap: "Car parts", art: "car" },
+  { id: "oil", cap: "Oil", art: "oil" } ] };
+const B = makeBoard(SPEC, { W, H });
+window.renderAt = t => { g.setTransform(1, 0, 0, 1, 0, 0); B.draw(g, t); };
+window.__info = { T: B.T, shots: 12, arrive: B.arrive, cues: B.cues };
+window.renderAt(+(q.get("t") || 0)); window.__ready = true;
+</script></body></html>

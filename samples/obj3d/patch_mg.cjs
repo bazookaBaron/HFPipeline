@@ -1,0 +1,17 @@
+const fs = require('fs');
+let m = fs.readFileSync('suez-mg.js', 'utf8');
+const rep = (a, b) => { if (!m.includes(a)) console.log('MISSING', a.slice(0, 70)); m = m.split(a).join(b); };
+rep('[t0r, t1r] = [8.2, 10.9], [t0d, t1d] = [12.3, 14.9]', '[t0r, t1r] = [8.1, 11.4], [t0d, t1d] = [12.6, 15.0]');
+rep('Math.min(t, 10.9) * 0.9 + (t > 12.3 ? (t - 12.3) * 0.9 : 0)', 'Math.min(t, 11.4) * 0.9 + (t > 12.6 ? (t - 12.6) * 0.9 : 0)');
+rep('ps(pinA, 8.0); ps(signA, 8.3); ps(bar, 10.9); ps(signS, 11.0); ps(pinE, 14.3); ps(signE, 14.4); ps(days, 13.5)', 'ps(pinA, 8.0); ps(signA, 8.3); ps(bar, 11.4); ps(signS, 11.5); ps(pinE, 14.4); ps(signE, 14.5); ps(days, 13.9)');
+rep('signA.visible = t < 11.6;', 'signA.visible = t < 11.2;');
+rep('ps(km, 12.2)', 'ps(km, 12.6)');
+rep('mkSign("ASIA", 3.1, 1.0, 1.5, shanghai.clone().add(new THREE.Vector3(0.6, 0, 1.5)), [8, 11])', 'mkSign("ASIA", 3.8, 1.25, 1.5, shanghai.clone().add(new THREE.Vector3(0.6, 0, 1.5)), [8.1, 11.1])');
+rep('mkSign("EUROPE", 3.9, 1.0, 1.5, rott.clone().add(new THREE.Vector3(1.4, 0, 1.6)), [13.8, 15])', 'mkSign("EUROPE", 4.8, 1.45, 1.6, rott.clone().add(new THREE.Vector3(1.8, 0, 1.8)), [14.6, 15])');
+rep('mkSign("SUEZ", 3.1, 1.0, 1.6, suez.clone().add(new THREE.Vector3(-0.6, 0, 1.7)), [10.9, 12.5])', 'mkSign("SUEZ", 3.8, 1.25, 1.6, suez.clone().add(new THREE.Vector3(-0.6, 0, 1.9)), [11.5, 12.7])');
+rep('mkSign("+6,000 km", 4.6, 1.15, 1.5, P(50, 12.6, 0.5), [12.5, 15])', 'mkSign("+6,000 km", 5.6, 1.5, 1.5, P(50, 12.6, 0.5), [12.8, 15])');
+rep('mkSign("+10 days", 3.9, 1.0, 1.5, P(23, -26, 0.5).add(new THREE.Vector3(-1.2, 0, 0.5)), [13.5, 15])', 'mkSign("+10 days", 5.0, 1.4, 1.5, P(23, -26, 0.5).add(new THREE.Vector3(-1.2, 0, 0.5)), [14.0, 15])');
+rep('color: 0xdde8ee, roughness: 0.55', 'color: 0xd2dee6, roughness: 0.55');
+const a = m.indexOf('// ================= TIMELINE');
+m = m.slice(0, a) + fs.readFileSync('timeline_part.js', 'utf8') + '\n' + fs.readFileSync('board_part.js', 'utf8');
+fs.writeFileSync('suez-mg.js', m);

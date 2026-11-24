@@ -1,0 +1,25 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="style.css"><style>
+.wrap { position:absolute; left:80px; right:80px; top:170px; }
+.big { font-size:260px; line-height:.9; margin-top:46px; color:var(--red); }
+.sub { font:400 54px/1.15 Georgia,serif; margin-top:18px; }
+.chart { position:absolute; left:80px; right:80px; top:880px; height:640px; }
+.bar { position:absolute; bottom:90px; width:72px; border-radius:10px 10px 3px 3px; background:var(--ink); }
+.bar.red { background:var(--red); }
+.val { position:absolute; width:140px; margin-left:-34px; text-align:center; font-size:38px; color:var(--ink); }
+.day { position:absolute; bottom:22px; width:140px; margin-left:-34px; text-align:center; font:600 34px/1 Bahnschrift,"Segoe UI"; color:var(--mid); }
+.base { position:absolute; left:0; right:0; bottom:80px; height:3px; background:var(--ink); }
+.grid { position:absolute; left:0; right:0; height:2px; background:var(--hair); }
+.foot { position:absolute; left:80px; right:80px; top:1600px; }
+</style></head><body>
+<div class="bg blur" style="background-image:url(../out/suez_line12.jpg)"></div><div class="veil"></div>
+<div class="wrap"><div class="kicker"><i></i>Ships waiting to pass</div>
+  <div class="big num">369</div><div class="sub">ships stuck behind <em>one</em>.</div></div>
+<div class="chart" id="c"><div class="grid" style="bottom:330px"></div><div class="grid" style="bottom:570px"></div><div class="base"></div></div>
+<div class="foot"><div class="rule"></div><div class="src" style="margin-top:20px">Queue at both ends of the canal, 23–29 March 2021 (approx.) · day of March below each bar</div></div>
+<script>
+const q = [12, 74, 142, 230, 298, 350, 369], c = document.getElementById("c"), W = 920, step = W / 7;
+q.forEach((v, i) => { const h = v / 369 * 480, x = i * step + step / 2 - 36, red = i === 6;
+  c.insertAdjacentHTML("beforeend", '<div class="bar' + (red ? ' red' : '') + '" style="left:' + x + 'px;height:' + h + 'px"></div>' +
+    '<div class="val num" style="left:' + x + 'px;bottom:' + (h + 104) + 'px;' + (red ? 'color:#cf2219' : '') + '">' + v + '</div>' +
+    '<div class="day" style="left:' + x + 'px">' + (i ? '' : 'Mar ') + (23 + i) + '</div>'); });
+</script></body></html>

@@ -1,0 +1,15 @@
+goldstone: only free image is a casual selfie of Rob Goldstone (CC BY-SA 4.0, "Rob Goldstone in DC.jpeg") - rejected as unflattering/non-neutral; no other free image
+veselnitskaya: only free image is a PD House Foreign Affairs Committee candid (330x440, looking down, other people behind) - rejected as unflattering/low-res ("Natalia Veselnitskaya at House Foreign Affairs Committee hearing.jpg")
+manafort: only free Wikipedia image is a VOA video frame ("Paul Manafort at 2016 RNC.jpg", frame from a video) and DonkeyHotey caricatures - video frames/caricatures not allowed
+kilimnik: no free image: Wikipedia article has no image; FBI wanted page blocked (403) on this network
+steele: no free image: Wikipedia article has no image
+carterpage: no free image: only lead image is an MSNBC YouTube video frame (CC BY 3.0) - video frame not allowed
+bayrock: company with no public building photo (Wikipedia has only a logo and a Trump SoHo photo, which is a different entity)
+icexpert: company with no public building photo or logo on Wikipedia
+buzzfeed: no free image: Wikipedia has only a logo (non-free) and unrelated people photos
+fusiongps: no free image: only a logo file (non-free) on Wikipedia
+doc_tweet2013: tweet text not verifiable from a reliable archive here; screenshots not allowed
+doc_cohen: could not fetch the SDNY Information from justice.gov (justice.gov press-release pages sit behind a bot wall; direct file URLs return 404), so exact text unverified
+doc_ssci: intelligence.senate.gov blocked (403 Access Denied) from this network, cover text not verifiable from the primary source
+doc_ira: could not fetch the IRA indictment from justice.gov (file URLs return 404; press pages behind a bot wall), exact caption unverified
+doc_gru: could not fetch the Netyksho et al. indictment from justice.gov (file URLs return 404; press pages behind a bot wall), exact caption unverified

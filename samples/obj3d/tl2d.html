@@ -1,0 +1,26 @@
+<!doctype html><html><head><meta charset="utf-8"><title>tl2d</title>
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style></head><body>
+<canvas id="c"></canvas>
+<script type="module">
+// Demo for mg2d/timeline.js followed by mg2d/board.js (both with per-card arrival times). ?ar=16x9 for landscape. ?only=tl|bd shows one part.
+import { makeTimeline } from "./mg2d/timeline.js"; import { makeBoard } from "./mg2d/board.js";
+const q = new URLSearchParams(location.search), land = q.get("ar") === "16x9", W = land ? 1920 : 1080, H = land ? 1080 : 1920, only = q.get("only");
+const cv = document.getElementById("c"); cv.width = W; cv.height = H; const g = cv.getContext("2d");
+const TL = makeTimeline({ seed: 3, at: [0, 4.2, 8.1, 11.5, 15.0, 19.2], tail: 1.6, events: [
+  { id: "e2003", year: 2003, cap: "The dilemma named", art: "podium", key: true },
+  { id: "e2013", year: 2013, cap: "Gas pipeline opens", art: "pipeGas" },
+  { id: "e2015", year: 2015, cap: "Overland corridor", art: "corridor" },
+  { id: "e2017", year: 2017, cap: "Oil pipeline opens", art: "pipeOil" },
+  { id: "e2021", year: 2021, cap: "Canal talk returns", art: "canal" },
+  { id: "e2024", year: 2024, cap: "Arctic route opens", art: "ice" } ] }, { W, H });
+const BD = makeBoard({ seed: 4, at: [0, 5, 9, 13, 17, 21], items: [
+  { id: "gauge", cap: "About 4% of supply", art: "gauge", key: true }, { id: "conflict", cap: "Unrest on the route", art: "conflict" }, { id: "tanker", cap: "Tanker in the open sea", art: "tankerRoute" },
+  { id: "port", cap: "A quiet port", art: "quietPort" }, { id: "plan", cap: "A canal on paper", art: "blueprint" }, { id: "ice", cap: "Open months", art: "ice" } ] }, { W, H });
+const t0 = only === "bd" ? 0 : TL.T, tot = only === "tl" ? TL.T : only === "bd" ? BD.T : TL.T + BD.T;
+window.renderAt = t => { g.setTransform(1, 0, 0, 1, 0, 0); if (only === "bd") BD.draw(g, t); else if (only === "tl" || t < TL.T) TL.draw(g, t); else BD.draw(g, t - TL.T); };
+const capAt = t => only === "bd" ? BD.minCap(t) : (only === "tl" || t < TL.T) ? TL.minCap(t) : BD.minCap(t - TL.T);
+window.capAt = capAt;
+window.__info = { T: tot, tlT: TL.T, bdT: BD.T, arrive: TL.arrive, bdArrive: BD.arrive, cues: TL.cues, holdCapTL: TL.holdCap, holdCapBD: BD.holdCap, events: TL.events };
+console.log("TL.T", TL.T.toFixed(2), "BD.T", BD.T.toFixed(2), "holdCap TL", TL.holdCap.toFixed(1), "BD", BD.holdCap.toFixed(1));
+window.renderAt(0); window.__ready = true;
+</script></body></html>

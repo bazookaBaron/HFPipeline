@@ -62,7 +62,6 @@ video-engine/.orchestrator-snap-*/
 
 # --- 2026-11-22 cleanup: only the puppet + dialogue pipelines remain ---
 /.vendor-assets/
-/samples/
 /output/
 /node_modules/
 # dialogue: generated media / working output (source only is tracked)
@@ -110,3 +109,12 @@ video-engine/.orchestrator-snap-*/
 **/*.svg
 !/runtime/lf-outro/**/*.svg
 /final-videos/
+
+# miniature pipeline: code only, no generated/media
+/samples/**/out/
+/samples/**/take/
+/samples/**/__pycache__/
+/samples/**/photos/
+/samples/**/*.log
+/runtime/topics/cache/
+/runtime/topics/out/

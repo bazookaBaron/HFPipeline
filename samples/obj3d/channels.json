@@ -1,0 +1,43 @@
+{
+  "_meta": {
+    "about": "Channel registry for the miniature pipeline (make_film.mjs). The niche itself (scope, titlePatterns, thumbnailPatterns, shorts, seoKeywords, radarBuckets) lives in runtime/topics/niches.json under `niche`; tagline/channel below are checked against it. Per-film end lines live in films/<film>/channels.json (see `endLine`), written by the script-writer agent, never by hand.",
+    "perFilmFile": "films/<film>/channels.json = {\"<key>\": {\"name\": \"<Channel Name>\", \"line\": \"NARR (plain, dry): <last fact line>. Like the video, and subscribe. <name sentence>\"}}; variants.py reads exactly this shape",
+    "rule": "From 2026-11-15 each film is made for ONE channel: one entry in the film's own channels.json, one variant. The two-version rule applied only to nvidia_v4, china_v4, trump_v4."
+  },
+  "powder": {
+    "name": "Powder Keg",
+    "mark": "powder",
+    "niche": "powder",
+    "nicheFile": "runtime/topics/niches.json",
+    "tagline": "How it blew up",
+    "scope": "corporate collapses and white-collar fraud",
+    "voice": "deadpan, forensic, 'how did nobody notice'; follow one object (the memo, the ledger, the invoice) to the payoff",
+    "endLine": {
+      "format": "NARR (plain, dry): <last fact line>. Like the video, and subscribe. <name in its own sentence>",
+      "nameSentence": "This channel is called Powder Keg.",
+      "nameMustCloseOwnSentence": true,
+      "why": "MINIATURE-LESSONS 23: otherwise the name check hears 'Powderkeg' instead of the two words",
+      "source": "script-writer agent (longform-writer skill) only; never self-written"
+    },
+    "uploadFooter": "How it blew up. Subscribe to Powder Keg.",
+    "risk": "defamation: name living people only with charges, filings or rulings; skip allegation-only and private-individual topics"
+  },
+  "partition": {
+    "name": "Partition Lines",
+    "mark": "partition",
+    "niche": "partition",
+    "nicheFile": "runtime/topics/niches.json",
+    "tagline": "The lines on the map that move money",
+    "scope": "geo-economics of borders, chokepoints and trade routes",
+    "voice": "calm, concrete, money-first; follow one cargo, ship or price through the line",
+    "endLine": {
+      "format": "NARR (plain, dry): <last fact line>. Like the video, and subscribe. <name sentence>",
+      "nameSentence": "This channel is called Partition Lines.",
+      "nameMustCloseOwnSentence": false,
+      "why": "variants.py stage `voice` checks the name is heard as separate words in order (large-v3)",
+      "source": "script-writer agent (longform-writer skill) only; never self-written"
+    },
+    "uploadFooter": "The lines on the map that move money. Subscribe to Partition Lines.",
+    "risk": "skip war tactics, casualty and prediction topics; ad-safe framing, no war words in thumbnails"
+  }
+}

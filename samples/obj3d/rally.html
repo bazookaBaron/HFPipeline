@@ -1,0 +1,177 @@
+<!doctype html><html><head><meta charset="utf-8"><title>rally miniature</title>
+<style>html,body{margin:0;background:#dfe4e8}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/"}}</script></head>
+<body><script type="module">
+// White-miniature rally: red faceless leader on a podium, 100 identical soldier mannequins in formation, monument building, tilt-shift.
+import * as THREE from "three"; import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+const W = 1920, H = 1080;
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H);
+r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap; document.body.appendChild(r.domElement);
+const sc = new THREE.Scene(); sc.background = new THREE.Color(0xdfe4e8); sc.fog = new THREE.Fog(0xdfe4e8, 22, 60);
+const WHITE = new THREE.MeshStandardMaterial({ color: 0xf0eee9, roughness: 0.85 });
+const GREY = new THREE.MeshStandardMaterial({ color: 0xd9d8d4, roughness: 0.9 });
+const RED = new THREE.MeshStandardMaterial({ color: 0xcf2219, roughness: 0.5 });
+
+// mesh prep: vertex clustering to reduce triangles (indexed -> smooth normals), keep largest connected piece, feet at y=0
+function prep(src, cells) {
+  const g = mergeVertices(src); g.computeBoundingBox(); const sz = g.boundingBox.getSize(new THREE.Vector3());
+  const cell = Math.max(sz.x, sz.y, sz.z) / cells, P = g.attributes.position, I = g.index.array, key = new Map(), sum = [], rep = new Int32Array(P.count);
+  for (let i = 0; i < P.count; i++) { const k = Math.floor(P.getX(i) / cell) + "," + Math.floor(P.getY(i) / cell) + "," + Math.floor(P.getZ(i) / cell);
+    let id = key.get(k); if (id === undefined) { id = sum.length; key.set(k, id); sum.push([0, 0, 0, 0]); } rep[i] = id; const a = sum[id]; a[0] += P.getX(i); a[1] += P.getY(i); a[2] += P.getZ(i); a[3]++; }
+  const par = new Int32Array(sum.length).map((_, i) => i), f = x => { while (par[x] !== x) x = par[x] = par[par[x]]; return x; };
+  const tris = []; for (let t = 0; t < I.length; t += 3) { const a = rep[I[t]], b = rep[I[t + 1]], c = rep[I[t + 2]]; if (a === b || b === c || a === c) continue; tris.push(a, b, c); par[f(a)] = f(b); par[f(b)] = f(c); }
+  const cnt = new Map(); for (let t = 0; t < tris.length; t += 3) { const k = f(tris[t]); cnt.set(k, (cnt.get(k) || 0) + 1); }
+  let best = -1, bc = 0; for (const [k, v] of cnt) if (v > bc) { bc = v; best = k; }
+  const remap = new Map(), pos = [], idx = [];
+  for (let t = 0; t < tris.length; t += 3) { if (f(tris[t]) !== best) continue;
+    for (let j = 0; j < 3; j++) { const v = tris[t + j]; let n = remap.get(v); if (n === undefined) { n = pos.length / 3; remap.set(v, n); const q = sum[v]; pos.push(q[0] / q[3], q[1] / q[3], q[2] / q[3]); } idx.push(n); } }
+  const out = new THREE.BufferGeometry(); out.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); out.setIndex(idx);
+  out.computeBoundingBox(); const b = out.boundingBox, c = b.getCenter(new THREE.Vector3()); out.translate(-c.x, -b.min.y, -c.z); out.computeBoundingBox();
+  const h = out.boundingBox.max.y; out.scale(1 / h, 1 / h, 1 / h); out.computeBoundingBox(); out.computeVertexNormals(); return out; }
+async function load(n, cells) { const g = await new GLTFLoader().loadAsync(`out/${n}.glb`); let geo; g.scene.traverse(o => { if (o.isMesh && !geo) geo = prep(o.geometry, cells); }); return geo; }
+const box = (w, h, d, x, y, z, m = WHITE) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y + h / 2, z); o.castShadow = o.receiveShadow = true; sc.add(o); return o; };
+const cyl = (rad, h, x, y, z, m = WHITE, seg = 12) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(rad, rad, h, seg), m); o.position.set(x, y + h / 2, z); o.castShadow = o.receiveShadow = true; sc.add(o); return o; };
+
+// ---- square: paved plaza with faint joint lines
+const cv = document.createElement("canvas"); cv.width = cv.height = 512; const cx = cv.getContext("2d");
+cx.fillStyle = "#ebe9e4"; cx.fillRect(0, 0, 512, 512); cx.strokeStyle = "#d7d5cf"; cx.lineWidth = 2;
+for (let i = 0; i <= 512; i += 64) { cx.beginPath(); cx.moveTo(i, 0); cx.lineTo(i, 512); cx.stroke(); cx.beginPath(); cx.moveTo(0, i); cx.lineTo(512, i); cx.stroke(); }
+const pt = new THREE.CanvasTexture(cv); pt.wrapS = pt.wrapT = THREE.RepeatWrapping; pt.repeat.set(40, 40); pt.colorSpace = THREE.SRGBColorSpace; pt.anisotropy = 8;
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), new THREE.MeshStandardMaterial({ map: pt, roughness: 0.95 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; sc.add(ground);
+
+// ---- monument building behind the podium (z negative): plinth, colonnade, stepped roof, side wings
+const BZ = -9;
+box(30, 0.6, 7, 0, 0, BZ - 2.5, GREY);                 // plinth
+box(30, 0.25, 7.4, 0, 0.6, BZ - 2.5);
+for (let i = 0; i < 25; i++) cyl(0.2, 3.2, -12 + i * 1.0, 0.85, BZ + 0.6);   // colonnade
+box(30, 3.2, 4.5, 0, 0.85, BZ - 3.4);                  // hall body behind columns
+box(31, 0.5, 7.6, 0, 4.05, BZ - 2.5); box(27, 0.6, 6.2, 0, 4.55, BZ - 2.7); box(18, 0.7, 4.8, 0, 5.15, BZ - 2.9); // stepped roof
+box(8, 1.6, 3.2, 0, 5.85, BZ - 3.0);                   // central attic block
+for (const sx of [-1, 1]) { box(9, 6.5, 8, sx * 20, 0, BZ - 2.0); box(9.4, 0.4, 8.4, sx * 20, 6.5, BZ - 2.0);
+  for (let i = 0; i < 4; i++) box(0.5, 4.8, 0.3, sx * 20 - 3 + i * 2, 0.8, BZ + 2.05); }   // wings with pilasters
+// tribune steps in front of the building
+for (let i = 0; i < 4; i++) box(22 - i * 1.5, 0.22, 1.0, 0, i * 0.22, BZ + 2.4 + (3 - i) * 0.9, GREY);
+// flagpoles with pale flags along the front
+for (let i = 0; i < 8; i++) { const x = -14 + i * 4; cyl(0.05, 6.5, x, 0, BZ + 5.2, GREY, 8);
+  const fl = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 1.0, 8, 4), new THREE.MeshStandardMaterial({ color: 0xe6e3dd, roughness: 0.9, side: THREE.DoubleSide }));
+  fl.position.set(x + 0.82, 5.8, BZ + 5.2); fl.castShadow = true; sc.add(fl); fl.userData.flag = true; }
+
+// ---- hall detail: blank portrait frame (no face), star emblem, hanging banners, wing windows, tribune railing, lamps, parade markings
+const ATZ = BZ - 1.4;                                                   // front face of the attic block
+box(3.0, 1.5, 0.12, 0, 5.9, ATZ + 0.06, GREY); box(2.6, 1.15, 0.14, 0, 6.07, ATZ + 0.08);   // frame + blank panel
+{ const sh = new THREE.Shape(); for (let i = 0; i < 10; i++) { const a = Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 0.22 : 0.55; i ? sh.lineTo(Math.cos(a) * rr, Math.sin(a) * rr) : sh.moveTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+  const st = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: 0.12, bevelEnabled: false }), WHITE); st.position.set(0, 8.0, BZ - 3.0); st.castShadow = true; sc.add(st);
+  cyl(0.04, 0.6, 0, 7.45, BZ - 3.0, GREY, 6); }
+const BANNER = new THREE.MeshStandardMaterial({ color: 0xe4e1db, roughness: 0.9, side: THREE.DoubleSide });
+const banners = [];
+for (const x of [-10.5, -6.5, -2.5, 2.5, 6.5, 10.5]) { const b = new THREE.Mesh(new THREE.PlaneGeometry(0.75, 2.3, 4, 10), BANNER);
+  b.position.set(x, 4.05 - 1.15, BZ + 0.85); b.castShadow = true; sc.add(b); banners.push(b); }
+for (const sx of [-1, 1]) for (let fx = 0; fx < 4; fx++) for (let fy = 0; fy < 3; fy++)
+  box(1.0, 1.1, 0.06, sx * 20 - 3 + fx * 2 + 1, 1.2 + fy * 1.7, BZ + 2.03, GREY);                   // wing windows
+box(22, 0.35, 0.12, 0, 0.88, BZ + 1.9, WHITE);                                                    // tribune railing
+const LAMP = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfff4e0, emissiveIntensity: 0.25, roughness: 0.4 });
+for (const sx of [-1, 1]) for (let i = 0; i < 6; i++) { const z = -1 + i * 3; cyl(0.04, 2.2, sx * 7.5, 0, z, GREY, 8);
+  const g = new THREE.Mesh(new THREE.SphereGeometry(0.16, 12, 8), LAMP); g.position.set(sx * 7.5, 2.3, z); g.castShadow = true; sc.add(g); }
+for (let k = 0; k <= 10; k++) { box(0.03, 0.004, 9.4, (k - 5) * 0.9, 0, 0.6 + 4.05, GREY); box(9.4, 0.004, 0.03, 0, 0, 0.15 + k * 0.9, GREY); }  // parade grid
+
+// ---- podium: tiered stand with a lectern
+const PZ = -3.2;
+box(4.2, 0.35, 2.6, 0, 0, PZ, GREY); box(3.2, 0.35, 2.0, 0, 0.35, PZ); box(2.2, 0.35, 1.4, 0, 0.7, PZ, GREY);
+// red-free carpet runner from the podium down the square axis
+box(1.2, 0.01, 12, 0, 0, PZ + 7.5, GREY);
+box(0.8, 0.64, 0.35, 0, 1.05, PZ + 0.45);              // lectern (waist high, torso visible)
+for (const sx of [-0.25, 0.25]) cyl(0.02, 0.35, sx, 1.69, PZ + 0.5, GREY, 6);   // microphones
+
+const soldierG = await load("soldier", 60), leaderG = await load("leader", 120);
+// leader, red, behind the lectern facing the crowd (+z)
+// speech gesture without a rig: vertex-shader bend. Torso (y>0.5) leans/turns about the waist; the raised-hand arm (+x side, chest height) pumps about the shoulder.
+const G = { lean: { value: 0 }, twist: { value: 0 }, pump: { value: 0 } };
+const rotBlock = `
+  mat3 rx(float a){ float c=cos(a), s=sin(a); return mat3(1.,0.,0., 0.,c,s, 0.,-s,c); }
+  mat3 ry(float a){ float c=cos(a), s=sin(a); return mat3(c,0.,-s, 0.,1.,0., s,0.,c); }
+  uniform float gLean, gTwist, gPump;
+  vec3 bendP(vec3 p){
+    float wt = smoothstep(0.42, 0.62, p.y);
+    vec3 piv = vec3(0., 0.5, 0.);
+    float wa = smoothstep(0.08, 0.2, p.x) * smoothstep(0.5, 0.62, p.y) * (1. - smoothstep(0.86, 0.95, p.y));
+    vec3 sh = vec3(0.17, 0.8, 0.);
+    p = sh + rx(-gPump * wa) * (p - sh);
+    p = piv + ry(gTwist * wt) * rx(gLean * wt) * (p - piv);
+    return p; }`;
+RED.onBeforeCompile = s => { s.uniforms.gLean = G.lean; s.uniforms.gTwist = G.twist; s.uniforms.gPump = G.pump;
+  s.vertexShader = s.vertexShader.replace("#include <common>", "#include <common>\n" + rotBlock).replace("#include <begin_vertex>", "vec3 transformed = bendP(position);"); };
+const leader = new THREE.Mesh(leaderG, RED); leader.scale.setScalar(1.15); leader.position.set(0, 1.05, PZ - 0.05);
+leader.castShadow = true; sc.add(leader);
+const leaderDepth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking }); leaderDepth.onBeforeCompile = RED.onBeforeCompile; leader.customDepthMaterial = leaderDepth;
+// two honour guards flanking the podium
+for (const sx of [-1, 1]) { const g = new THREE.Mesh(soldierG, WHITE); g.position.set(sx * 2.6, 0, PZ + 0.6); g.castShadow = true; sc.add(g); }
+// 100 identical soldiers, 10 x 10, facing the podium (-z)
+const N = 10, sp = 0.9, SZ = 0.6;
+const inst = new THREE.InstancedMesh(soldierG, WHITE, N * N); inst.castShadow = inst.receiveShadow = true;
+const m4 = new THREE.Matrix4(), q = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.PI), s1 = new THREE.Vector3(1, 1, 1);
+for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { m4.compose(new THREE.Vector3((i - (N - 1) / 2) * sp, 0, SZ + j * sp), q, s1); inst.setMatrixAt(i * N + j, m4); }
+sc.add(inst);
+function breathe(t) { const sv = new THREE.Vector3();
+  for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) { const ph = (i * 7 + j * 13) % 10;
+    sv.set(1, 1 + 0.008 * Math.sin(t * 2.2 + ph), 1); m4.compose(new THREE.Vector3((i - (N - 1) / 2) * sp, 0, SZ + j * sp), q, sv); inst.setMatrixAt(i * N + j, m4); }
+  inst.instanceMatrix.needsUpdate = true; }
+// dove flock: simple low-poly birds (body + two flapping wings) crossing the sky
+const doves = []; const DOVE = new THREE.MeshStandardMaterial({ color: 0xfbfaf7, roughness: 0.7, side: THREE.DoubleSide, flatShading: true });
+const wingG = new THREE.BufferGeometry(); wingG.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, -0.08, 0, 0, 0.1, 0.28, 0, 0.0], 3)); wingG.computeVertexNormals();
+let ds = 3; const drnd = () => (ds = (ds * 16807) % 2147483647) / 2147483647;
+for (let k = 0; k < 18; k++) { const b = new THREE.Group(); const body = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.26, 5), DOVE); body.rotation.x = Math.PI / 2; b.add(body);
+  const wl = new THREE.Mesh(wingG, DOVE), wr = new THREE.Mesh(wingG, DOVE); wr.scale.x = -1; b.add(wl, wr); b.traverse(o => o.castShadow = true);
+  b.userData = { wl, wr, off: new THREE.Vector3(drnd() * 3 - 1.5, drnd() * 1.2, drnd() * 3 - 1.5), ph: drnd() * 6, sp: 9 + drnd() * 3 }; sc.add(b); doves.push(b); }
+function flock(t) { for (const b of doves) { const u = b.userData, tt = t - 0.8;
+    const p = new THREE.Vector3(-26 + tt * 6.5, 6.2 + Math.sin(tt * 0.6) * 0.6, 8 - tt * 2.2).add(u.off); b.position.copy(p);
+    b.rotation.y = Math.atan2(6.5, -2.2) - Math.PI / 2 + Math.PI / 2; b.lookAt(p.clone().add(new THREE.Vector3(6.5, 0, -2.2)));
+    const f = Math.sin(t * u.sp + u.ph) * 0.9; u.wl.rotation.z = f; u.wr.rotation.z = -f; } }
+
+// ---- light
+sc.add(new THREE.HemisphereLight(0xeef3ff, 0xb9b2a6, 1.15));
+const sun = new THREE.DirectionalLight(0xfff0d8, 3.0); sun.position.set(-10, 12, 8); sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096); Object.assign(sun.shadow.camera, { left: -22, right: 22, top: 22, bottom: -22, near: 1, far: 60 });
+sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.02; sc.add(sun);
+
+// ---- camera + tilt-shift (focus band follows the leader on screen)
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.05, 200);
+const comp = new EffectComposer(r); comp.addPass(new RenderPass(sc, cam));
+const mk = d => new ShaderPass({ uniforms: { tDiffuse: { value: null }, dir: { value: d }, res: { value: new THREE.Vector2(W, H) }, fy: { value: 0.5 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 dir, res; uniform float fy; varying vec2 vUv;
+    void main(){ float b = smoothstep(0.14, 0.5, abs(vUv.y-fy)) * 4.5; vec4 c = vec4(0.0); float w = 0.0;
+      for (int i=-6;i<=6;i++){ float k = exp(-float(i*i)/18.0); c += texture2D(tDiffuse, vUv + dir*float(i)*b/res)*k; w += k; }
+      gl_FragColor = c / w; }` });
+const tx = mk(new THREE.Vector2(1, 0)), ty = mk(new THREE.Vector2(0, 1)); comp.addPass(tx); comp.addPass(ty); comp.addPass(new OutputPass());
+const ease = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const CUT = 5, tgt = new THREE.Vector3(0, 1.6, PZ), v = new THREE.Vector3();
+window.renderAt = t => {
+  if (t < CUT) { // shot A: wide, high over the back of the formation, drifting in and around
+    const e = ease(t / CUT); const a = THREE.MathUtils.degToRad(-22 + 12 * e), d = 27 - 5 * e, h = 8.5 - 1.5 * e;
+    cam.fov = 30; cam.position.set(Math.sin(a) * d, h, PZ + Math.cos(a) * d); cam.lookAt(tgt.x, tgt.y - 0.6, tgt.z + 3.0);
+  } else {       // shot B: from inside the crowd, over soldiers' caps, slow push-in on the speaker
+    const e = ease(Math.min(1, (t - CUT) / 5)); cam.fov = 13;
+    cam.position.set(0.9 - 0.25 * e, 1.28, PZ + 14.5 - 2.2 * e); cam.lookAt(0, 1.82, PZ);
+  }
+  cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+  // speech: bursts of fist-pumping on emphasis, torso turns to sweep the crowd, small leans
+  const burst = Math.pow(Math.max(0, Math.sin(t * 1.15)), 2.0), beat = 0.5 + 0.5 * Math.sin(t * 7.0);
+  G.pump.value = 0.55 * burst * beat; G.twist.value = 0.32 * Math.sin(t * 0.7); G.lean.value = 0.05 + 0.06 * burst;
+  leader.rotation.y = 0;
+  breathe(t); flock(t);
+  for (const [k, b] of banners.entries()) { const p = b.geometry.attributes.position; for (let i = 0; i < p.count; i++) { const y = 1.15 - p.getY(i); p.setZ(i, Math.sin(y * 2.5 - t * 2 + k) * 0.04 * y); } p.needsUpdate = true; }
+  sc.traverse(o => { if (o.userData.flag) { const p = o.geometry.attributes.position; for (let i = 0; i < p.count; i++) { const x = p.getX(i) + 0.8; p.setZ(i, Math.sin(x * 3 - t * 4) * 0.08 * x); } p.needsUpdate = true; } });
+  v.copy(leader.position).add(new THREE.Vector3(0, 0.7, 0)).project(cam); tx.uniforms.fy.value = ty.uniforms.fy.value = v.y * 0.5 + 0.5;
+  comp.render();
+};
+window.renderAt(Number(new URLSearchParams(location.search).get("t") || 0));
+window.__info = { soldierTris: soldierG.index.count / 3, leaderTris: leaderG.index.count / 3 };
+window.__ready = true;
+</script></body></html>

@@ -1,0 +1,21 @@
+// node samples/obj3d/preview.mjs gun,mannequin,building  -> out/sheet.jpg
+import http from "http"; import fs from "fs"; import path from "path"; import { fileURLToPath } from "url"; import { createRequire } from "module";
+const here = path.dirname(fileURLToPath(import.meta.url)), REPO = path.resolve(here, "../..");
+const require = createRequire(path.join(REPO, "paper-studio/package.json")); const puppeteer = require("puppeteer-core");
+const CHROME = "C:/Users/debna/.cache/puppeteer/chrome-headless-shell/win64-146.0.7680.153/chrome-headless-shell-win64/chrome-headless-shell.exe";
+const MOUNTS = { "/three/": path.join(REPO, "runtime/vendor/three/"), "/": here + "/" };
+const MIME = { ".js": "text/javascript", ".html": "text/html", ".glb": "model/gltf-binary" };
+const server = http.createServer((req, res) => { const u = decodeURIComponent(req.url.split("?")[0]);
+  const m = Object.keys(MOUNTS).sort((a, b) => b.length - a.length).find(k => u.startsWith(k)); const f = path.join(MOUNTS[m], u.slice(m.length));
+  fs.readFile(f, (e, d) => { if (e) { res.writeHead(404); return res.end(); } res.writeHead(200, { "content-type": MIME[path.extname(f)] || "application/octet-stream" }); res.end(d); }); });
+await new Promise(r => server.listen(0, "127.0.0.1", r));
+const names = process.argv[2] || "gun,mannequin,building"; const MINI = process.argv[3] === "mini";
+const b = await puppeteer.launch({ executablePath: CHROME, headless: "shell", args: ["--use-angle=d3d11", "--enable-gpu", "--ignore-gpu-blocklist", "--no-sandbox"] });
+const p = await b.newPage(); await p.setViewport({ width: 1080, height: 360 * names.split(",").length });
+p.on("pageerror", e => console.log("PAGEERROR", e.message));
+if (MINI) await p.setViewport({ width: 1600, height: 900 });
+await p.goto(`http://127.0.0.1:${server.address().port}/${MINI ? "mini.html?focus=" + names : "preview.html?n=" + names}`); await p.waitForFunction("window.__ready===true", { timeout: 120000 });
+console.log(JSON.stringify(await p.evaluate("window.__info||{}")));
+const b64 = await p.evaluate(`document.querySelector("canvas").toDataURL("image/jpeg",0.92).split(",")[1]`);
+fs.writeFileSync(path.join(here, "out", MINI ? "mini_" + names + ".jpg" : "sheet.jpg"), Buffer.from(b64, "base64")); console.log("wrote out/sheet.jpg");
+await b.close(); server.close();

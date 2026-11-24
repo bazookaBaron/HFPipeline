@@ -1,0 +1,8 @@
+# China v4 - entities with no licensed card (checked 2026-11-15 via the en.wikipedia API / Commons metadata)
+Austria: the Austrian court that convicted the AMSC engineer is not named with certainty in our sources, so no court photo can be matched honestly; Austria itself is only a place mention
+Fujian Jinhua: no licensed photo of the company, its plant or products on Commons; logo would be non-free
+IP Commission: private commission (NBR); its 2017 report cover is copyrighted and no Commons image exists
+DeepSeek: no licensed photo of its office or staff on Commons; the logo is non-free and the only other file is a chat screenshot (off-topic)
+Anthropic: no licensed photo of its office on Commons; logo files are non-free or trademark-only
+BlueOval Battery Park Michigan: no licensed photo of the Marshall, Michigan plant on Commons (only the different BlueOval SK plants in Kentucky/Tennessee); the Ford HQ card (ford_hq) stands in for Ford
+Merchandise Marks Act 1887: no scan of the 1887 Act on Commons; the Made in Germany card (made_in_de, a real stamped part) covers the line

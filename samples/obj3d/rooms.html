@@ -1,0 +1,73 @@
+<!doctype html><html><head><meta charset="utf-8"><title>rooms harness</title>
+<style>html,body{margin:0;background:#e9e6e0}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/"}}</script></head>
+<body><script type="module">
+// Harness for sets/rooms.js (dollhouse rooms + street scenes). rooms.html?seed=N[&only=id,id]
+// window.renderAt(i[, framing]) builds scene i on demand (previous one disposed) and renders framing (name or index); x.ff encodes framing index ff/100.
+// Look = film.html (materials, ACES, PCF soft shadows, tilt-shift); shadow frustum from light.shadowExt (room scale needs a tight one).
+import * as THREE from "three";
+import { buildRoom } from "/sets/rooms.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+const QS = new URLSearchParams(location.search), W = 1920, H = 1080, D2R = Math.PI / 180, SEED = +(QS.get("seed") || 1);
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x)), Vv = (x, y, z) => new THREE.Vector3(x, y, z);
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H); r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+const outC = document.createElement("canvas"); outC.width = W; outC.height = H; document.body.appendChild(outC); const octx = outC.getContext("2d"); r.domElement.style.display = "none"; document.body.appendChild(r.domElement);
+const SKY = new THREE.Color(0xe9e6e0), sc = new THREE.Scene(); sc.background = SKY.clone(); sc.fog = new THREE.Fog(SKY.clone(), 300, 900);
+const WHITE = new THREE.MeshStandardMaterial({ color: 0xf0eee9, roughness: 0.85 }), GREY = new THREE.MeshStandardMaterial({ color: 0xd6d5d1, roughness: 0.9 });
+const SAND = new THREE.MeshStandardMaterial({ color: 0xf2ede2, roughness: 0.95 }), DARK = new THREE.MeshStandardMaterial({ color: 0xb9b8b4, roughness: 0.8 }), RED = new THREE.MeshStandardMaterial({ color: 0xcf2219, roughness: 0.5 });
+const KM = { white: WHITE, grey: new THREE.MeshStandardMaterial({ color: 0xc9c8c4, roughness: 0.6 }), dark: new THREE.MeshStandardMaterial({ color: 0x9a9995, roughness: 0.8 }) };
+const KMR = { white: RED, grey: new THREE.MeshStandardMaterial({ color: 0xa81c14, roughness: 0.55 }), dark: new THREE.MeshStandardMaterial({ color: 0x8c1710, roughness: 0.7 }) };
+const ctx = { M: { WHITE, GREY, SAND, DARK, RED }, KM, KMR, texts: [], figs: [], proxy: () => {} };
+const hemi = new THREE.HemisphereLight(0xeef3ff, 0xb9b2a6, 1.15); sc.add(hemi); const sun = new THREE.DirectionalLight(0xfff0d8, 3.0); sun.castShadow = true; sc.add(sun.target, sun);
+sun.shadow.mapSize.set(4096, 4096); Object.assign(sun.shadow.camera, { left: -20, right: 20, top: 20, bottom: -20, near: 1, far: 400 }); sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.02;
+const cam = new THREE.PerspectiveCamera(40, W / H, 0.05, 1200), comp = new EffectComposer(r); comp.addPass(new RenderPass(sc, cam));
+const mk = d => new ShaderPass({ uniforms: { tDiffuse: { value: null }, dir: { value: d }, res: { value: new THREE.Vector2(W, H) }, fy: { value: 0.5 }, amt: { value: 4 }, b0: { value: 0.1 }, b1: { value: 0.42 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 dir, res; uniform float fy, amt, b0, b1; varying vec2 vUv;
+    void main(){ float b = smoothstep(b0, b1, abs(vUv.y-fy)) * amt; vec4 c = vec4(0.0); float w = 0.0;
+      for (int i=-6;i<=6;i++){ float k = exp(-float(i*i)/18.0); c += texture2D(tDiffuse, vUv + dir*float(i)*b/res)*k; w += k; }
+      gl_FragColor = c / w; }` });
+const tx = mk(new THREE.Vector2(1, 0)), ty = mk(new THREE.Vector2(0, 1)); comp.addPass(tx); comp.addPass(ty); comp.addPass(new OutputPass());
+
+// ============================== the test specs (DATA a producer would write; room-type rules fill the rest) ==============================
+const CAST = { jensen: { build: 1.05, hair: "short", coat: true, tie: false }, alice: { build: 0.9, hair: "bun", coat: true, skirt: true }, kress: { build: 0.95, hair: "long", coat: true, prop: "papers" }, senator: { build: 1.25, hair: "none", coat: true, tie: true } };
+const SPECS = [
+  { id: "boardroom", type: "boardroom", cast: CAST, people: [{ id: "ceo", char: "jensen", pose: "speak", at: "end:table:1" }], focus: "ceo", shots: ["wide", "threeQuarter", "alongTable"] },
+  { id: "courtroom", type: "courtroom", cast: CAST, people: [{ id: "witness", char: "alice", pose: "sit_lean", at: "seat:witness" }], focus: "witness", shots: ["wide", "threeQuarter", "detail"] },
+  { id: "senate_hearing", type: "hearing", cast: CAST, people: [{ id: "ceo", char: "jensen", pose: "sit_lean", at: "seat:witnessTable:1" }], focus: "ceo", shots: ["wide", "threeQuarter", "overShoulder"] },
+  { id: "hotel_suite", type: "hotel", cast: CAST, people: [{ id: "a", char: "kress", pose: "sit", at: "seat:bed:0", with: "pair" }, { id: "b", char: "jensen", pose: "phone", at: [2.2, 0.4], face: "bed", with: "pair" }], focus: "pair", shots: ["wide", "threeQuarter", "eyeLevel"] },
+  { id: "diner_booth", type: "diner", people: [{ id: "m1", pose: "sit_lean", at: "seat:booths:4", with: "men", o: { coat: true, hat: "peak" } }, { id: "m2", pose: "sit_listen", at: "seat:booths:5", with: "men", o: { coat: false } }, { id: "m3", pose: "sit", at: "seat:booths:6", with: "men", o: { coat: true, build: 1.3 } }, { id: "waitress", pose: "stand", at: [1.4, 1.6], face: "booths", o: { hair: "bun", skirt: true, coat: false } }],
+    addGroups: [{ form: "table", of: "counter", n: 2, name: "regulars" }], focus: "men", shots: ["wide", "threeQuarter", "eyeLevel"] },
+  { id: "newsroom", type: "newsroom", focus: "editors", shots: ["wide", "threeQuarter", "reveal2"] },
+  { id: "trading_floor", type: "trading", focus: { id: "floor", index: 1 }, shots: ["wide", "threeQuarter", "highCorner"] },
+  { id: "factory_line", type: "factory", focus: { id: "workers", index: 3 }, shots: ["wide", "threeQuarter", "alongTable"] },
+  { id: "mill_1790s", type: "mill", people: [{ id: "overseer", pose: "stand_hips", at: [-5.5, 4.2], face: "frames", o: { hat: "peak", coat: true } }], addGroups: [], focus: { id: "spinners", index: 2 }, groupsLook: true, shots: ["wide", "threeQuarter", "lateral"] },
+  { id: "troll_farm", type: "trollfarm", people: [{ id: "boss", pose: "stand_arms_crossed", at: [4.6, 1.0], face: "rows", o: { coat: true, tie: true } }], focus: "boss", shots: ["wide", "threeQuarter", "highCorner"] },
+  { id: "press_conference", type: "pressroom", cast: CAST, addGroups: [], focus: "scrum.speaker", shots: ["wide", "threeQuarter", "detail"] },
+  { id: "street_rally", type: "rally", focus: "speaker", shots: ["wide", "threeQuarter", "highCorner"] },
+  { id: "courthouse_steps", type: "steps", cast: CAST, groups: [{ form: "podium", at: "steps-foot", n: 16, name: "scrum", speakerPose: "walk", speakerChar: "kress", h: 90 }, { form: "crowd", n: 36, area: "plaza", poses: ["stand", "phone", "stand_arms_crossed"], name: "onlookers" }], focus: "scrum.speaker", shots: ["wide", "threeQuarter", "eyeLevel"] },
+  { id: "airport_gate", type: "airport", focus: { id: "queue", index: 0 }, shots: ["wide", "threeQuarter", "reveal1"] },
+];
+const ONLY = (QS.get("only") || "").split(",").filter(Boolean);
+const LIST = ONLY.length ? SPECS.filter(s => ONLY.includes(s.id)) : SPECS;
+let cur = null, curI = -1;
+function build(i) { if (curI === i) return cur; if (cur) { sc.remove(cur.group); cur.group.traverse(m => { if (m.isMesh) m.geometry.dispose(); }); } const sp = { ...LIST[i], seed: SEED }; const t0 = performance.now();
+  cur = buildRoom(sp, ctx); sc.add(cur.group); cur.group.updateMatrixWorld(true); curI = i; cur.buildMs = Math.round(performance.now() - t0); return cur; }
+function setCam(s, F) { const look = F.look.clone(), el = F.el * D2R, az = F.az * D2R;
+  cam.position.copy(look).add(Vv(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az)).multiplyScalar(F.d)); cam.up.set(0, 1, 0); cam.lookAt(look); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+  const v = look.clone().project(cam); tx.uniforms.fy.value = ty.uniforms.fy.value = clamp(v.y * 0.5 + 0.5, 0.15, 0.85);
+  const L = s.light; for (const p of [tx, ty]) { p.uniforms.amt.value = L.tiltAmt; p.uniforms.b0.value = 0.16; p.uniforms.b1.value = 0.5; }
+  sun.color.setHex(L.sunColor); sun.intensity = L.sunIntensity; hemi.intensity = L.hemiIntensity; sc.background.setHex(L.sky); sc.fog.color.setHex(L.sky); sc.fog.near = Math.max(L.fog[0], F.d * 1.3); sc.fog.far = Math.max(L.fog[1], F.d * 3.4);
+  const a = L.sunAz * D2R, e = L.sunEl * D2R, tg = look.clone().setY(0); sun.target.position.copy(tg); sun.position.copy(tg).add(Vv(Math.cos(e) * Math.cos(a), Math.sin(e), Math.cos(e) * Math.sin(a)).multiplyScalar(80)); sun.target.updateMatrixWorld();
+  const hs = L.shadowExt; const sh = sun.shadow.camera; if (sh.right !== hs) { sh.left = sh.bottom = -hs; sh.right = sh.top = hs; sh.updateProjectionMatrix(); } }
+window.renderAt = (x, fr) => { const i = Math.floor(x + 1e-6); if (fr === undefined && x - i > 0.005) fr = Math.round((x - i) * 100); const s = build(i);
+  const F = typeof fr === "string" ? (s.framings.find(f => f.name === fr) || s.framings[0]) : s.framings[(fr ?? 0) % s.framings.length];
+  setCam(s, F); comp.render(); octx.clearRect(0, 0, W, H); octx.drawImage(r.domElement, 0, 0);
+  window.__last = { id: LIST[i].id, framing: F.name, az: +F.az.toFixed(1), el: +F.el.toFixed(1), d: +F.d.toFixed(2), figFrac: F.figFrac, note: F.note, info: s.info, buildMs: s.buildMs, drawCalls: r.info.render.calls, triangles: r.info.render.triangles };
+  return window.__last; };
+window.__list = LIST.map(s => ({ id: s.id, shots: s.shots })); window.__info = { n: LIST.length, seed: SEED }; window.__ready = true;
+</script></body></html>

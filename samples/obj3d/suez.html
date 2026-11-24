@@ -1,0 +1,273 @@
+<!doctype html><html><head><meta charset="utf-8"><title>suez miniature</title>
+<style>html,body{margin:0;background:#dfe4e8}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/"}}</script></head>
+<body><script type="module">
+// "One ship stopped the world": Suez blockage 23-29 March 2021, 60 s, 9:16, visual only. White miniature (coast2 look), red = focus only.
+// World beats + MG beats (map / timeline / string board) + numeral chapter transition. Camera-only storytelling.
+import * as THREE from "three";
+import { person, car, ship as shipKit, containerShip, tug as tugKit, excavator as excKit, palm as palmKit, dredger as dredgerKit } from "./kit.js";
+import { smooth, pop, textPlane, numeral, buildMap, buildTimeline, buildBoard, TL, CARDS } from "./suez-mg.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+const W = 1080, H = 1920, T = 60, FPS = 30, NF = T * FPS;
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H);
+r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap; document.body.appendChild(r.domElement);
+const SKY = new THREE.Color(0xdfe4e8);
+const sc = new THREE.Scene(); sc.background = SKY.clone(); sc.fog = new THREE.Fog(SKY.clone(), 40, 140);
+const WHITE = new THREE.MeshStandardMaterial({ color: 0xf0eee9, roughness: 0.85 });
+const GREY = new THREE.MeshStandardMaterial({ color: 0xd6d5d1, roughness: 0.9 });
+const SAND = new THREE.MeshStandardMaterial({ color: 0xf2ede2, roughness: 0.95 });
+const DARK = new THREE.MeshStandardMaterial({ color: 0xb9b8b4, roughness: 0.8 });
+const RED = new THREE.MeshStandardMaterial({ color: 0xcf2219, roughness: 0.5 });
+const KM = { white: WHITE, grey: new THREE.MeshStandardMaterial({ color: 0xc9c8c4, roughness: 0.6 }), dark: new THREE.MeshStandardMaterial({ color: 0x9a9995, roughness: 0.8 }) };
+const KMR = { white: RED, grey: new THREE.MeshStandardMaterial({ color: 0xa81c14, roughness: 0.55 }), dark: new THREE.MeshStandardMaterial({ color: 0x8c1710, roughness: 0.7 }) };
+let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const MAP_O = new THREE.Vector3(0, 0, -600), TIME_O = new THREE.Vector3(600, 0, 0), BOARD_O = new THREE.Vector3(0, 0, 600);
+const gW = new THREE.Group(), gM = new THREE.Group(), gT = new THREE.Group(), gB = new THREE.Group(); sc.add(gW, gM, gT, gB);
+const REG = { world: gW, map: gM, time: gT, board: gB };
+const texts = [], figs = [], PX = [];            // text registry (legibility gate), mannequins (size gate), camera proxies
+const ctx = { M: { WHITE, GREY, SAND, DARK, RED }, KM, KMR, texts };
+
+// ---------- helpers (world region)
+const add = (o, sh = true, g = gW) => { o.traverse?.(m => { if (m.isMesh) { m.castShadow = sh; m.receiveShadow = true; } }); g.add(o); return o; };
+const proxy = (mesh, region, hs, dyn = false) => { mesh.updateMatrixWorld(true); PX.push({ mesh, region, hs, dyn, inv: new THREE.Matrix4().copy(mesh.matrixWorld).invert() }); };
+const box = (w, h, d, x, y, z, m = WHITE, occ = true) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y + h / 2, z); add(o);
+  if (occ && h > 0.9) proxy(o, "world", new THREE.Vector3(w / 2 + 0.35, h / 2 + 0.35, d / 2 + 0.35)); return o; };
+const cyl = (r0, r1, h, x, y, z, m = WHITE, seg = 12) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(r0, r1, h, seg), m); o.position.set(x, y + h / 2, z); return add(o); };
+const SLX0 = -150, SLX1 = 100, ZW = 34, BANK = 0.6, WL = 0, BED = -1.3;
+// ---------- terrain: cross-section profile extruded along the canal (x)
+const profile = (pts) => { const sh = new THREE.Shape(pts.map(p => new THREE.Vector2(p[0], p[1]))); const g = new THREE.ExtrudeGeometry(sh, { depth: SLX1 - SLX0, bevelEnabled: false }); g.translate(0, 0, SLX0); g.rotateY(Math.PI / 2); return g; };
+const terrain = new THREE.Mesh(profile([[-ZW, -3], [ZW, -3], [ZW, BANK], [6.6, BANK], [4.3, BED], [-4.3, BED], [-6.6, BANK], [-ZW, BANK]]), WHITE); add(terrain);
+const waterMat = new THREE.MeshStandardMaterial({ color: 0xadc6d4, roughness: 0.2, transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide });
+{ const w = new THREE.Mesh(profile([[-5.9, WL], [5.9, WL], [4.3, BED], [-4.3, BED]]), waterMat); w.renderOrder = 2; gW.add(w); }
+const surfG = new THREE.PlaneGeometry(SLX1 - SLX0, 11.8, 420, 20); surfG.rotateX(-Math.PI / 2);
+const surf = new THREE.Mesh(surfG, new THREE.MeshStandardMaterial({ color: 0xd5e2ea, roughness: 0.15, transparent: true, opacity: 0.55, flatShading: true, side: THREE.DoubleSide, depthWrite: false }));
+surf.position.set((SLX0 + SLX1) / 2, 0.01, 0); surf.renderOrder = 3; gW.add(surf); surf.receiveShadow = true;
+const surfBase = surfG.attributes.position.array.slice();
+function waves(t) { const p = surfG.attributes.position; for (let i = 0; i < p.count; i++) { const x = surfBase[i * 3], z = surfBase[i * 3 + 2];
+  p.setY(i, Math.sin(x * 0.9 + t * 1.6) * 0.04 + Math.sin(z * 1.7 + x * 0.4 - t * 1.1) * 0.035); } p.needsUpdate = true; surfG.computeVertexNormals(); }
+// dunes, rocks, service roads, poles, palms
+for (let i = 0; i < 46; i++) { const side = rnd() < 0.5 ? -1 : 1, x = SLX0 + 8 + rnd() * (SLX1 - SLX0 - 16), z = side * (14 + rnd() * 17);
+  if (side > 0 && x > 40 && x < 98 && z < 31) continue; if (Math.hypot(x - 5, z + 8) < 12 || Math.hypot(x + 9, z - 15) < 14) continue;
+  const rr = 3 + rnd() * 6; const d = new THREE.Mesh(new THREE.SphereGeometry(rr, 20, 10), rnd() < 0.5 ? SAND : WHITE); d.scale.y = 0.1 + rnd() * 0.06; d.position.set(x, BANK - 0.05, z); d.rotation.y = rnd() * 3; add(d, false); }
+for (let i = 0; i < 40; i++) { const side = rnd() < 0.5 ? -1 : 1, x = SLX0 + 5 + rnd() * 240, z = side * (11 + rnd() * 20); if (Math.hypot(x - 5, z + 8) < 6 || Math.hypot(x + 9, z - 15) < 6) continue;
+  const g = new THREE.Mesh(new THREE.IcosahedronGeometry(0.2 + rnd() * 0.45, 0), GREY); g.scale.y = 0.55; g.position.set(x, BANK + 0.05, z); g.rotation.set(rnd() * 3, rnd() * 3, 0); add(g); }
+for (const z of [-9.2, 9.2]) { box(SLX1 - SLX0 - 4, 0.02, 2.0, (SLX1 + SLX0) / 2, BANK, z, GREY, false); for (let x = SLX0 + 4; x < SLX1 - 4; x += 3) box(1.1, 0.025, 0.1, x, BANK, z, WHITE, false); }
+for (let x = SLX0 + 8; x < SLX1 - 4; x += 9) { cyl(0.05, 0.05, 2.6, x, BANK, 12.3, GREY, 6); box(1.1, 0.06, 0.06, x, BANK + 2.45, 12.3, GREY, false); }
+const palms = []; for (let i = 0; i < 60; i++) { const x = SLX0 + 4 + rnd() * 240, side = i % 3 === 0 ? -1 : 1, z = side * (7.7 + rnd() * 1.1); if (Math.abs(x - 5) < 14 || Math.abs(x + 9) < 8) continue;
+  const p = palmKit(KM); p.scale.setScalar(1.9 + rnd() * 0.7); p.position.set(x, BANK, z); p.rotation.y = rnd() * 6; add(p); }
+// town A (east end, north bank) + town B (west end) + radar tower
+function town(x0, x1, z0, z1, k) { for (let x = x0; x < x1; x += 3.1) for (let z = z0; z < z1; z += 3.3) { if (rnd() < 0.18) continue;
+  const h = 1.0 + rnd() * rnd() * 5.5 * k, w = 1.9 + rnd() * 0.7, d = 2.0 + rnd() * 0.7; box(w, h, d, x, BANK, z, WHITE);
+  if (h > 2.6 && rnd() < 0.5) box(w * 0.55, h * 0.2, d * 0.55, x, BANK + h, z, GREY, false);
+  for (let q = 1; q < h / 0.85; q++) box(w + 0.02, 0.035, d + 0.02, x, BANK + q * 0.85, z, GREY, false); } }
+town(46, 96, 14.5, 31, 1); town(-146, -118, 14.5, 31, 0.7);
+{ const dome = new THREE.Mesh(new THREE.SphereGeometry(1.5, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2), WHITE); dome.position.set(62, BANK + 2.9, 22); add(dome); box(3.4, 2.9, 3.4, 62, BANK, 22, WHITE); cyl(0.22, 0.28, 7.5, 65, BANK, 22, WHITE, 10); }
+{ cyl(0.25, 0.4, 7, 28, BANK, -14, GREY, 8); box(1.8, 0.8, 1.8, 28, BANK + 7, -14, WHITE); }
+// ---------- Ever Given (red, wedged diagonally), queue of white container ships, tugs, dredger, excavator site
+const EGS = 15, RY0 = 0.82;
+const EG = containerShip(KMR, { rows: 12, seed: 5 }); EG.scale.setScalar(EGS); EG.position.set(0, -0.9, 0); EG.rotation.y = RY0; add(EG);
+const egProxy = new THREE.Mesh(new THREE.BoxGeometry(1, 0.24, 0.2)); egProxy.position.y = 0.1; egProxy.visible = false; EG.add(egProxy); proxy(egProxy, "world", new THREE.Vector3(0.5 + 0.35 / EGS, 0.12 + 0.35 / EGS, 0.1 + 0.35 / EGS), true);
+const dyn = [EG]; const qShips = [];
+for (let k = 0; k < 7; k++) { const s = containerShip(KM, { rows: 9 + (k % 3), seed: 20 + k * 7 }); s.scale.setScalar(12); s.position.set(-24 - k * 18, -0.75, (k % 2 ? 0.25 : -0.2)); add(s);
+  const pr = new THREE.Mesh(new THREE.BoxGeometry(1, 0.24, 0.2)); pr.position.y = 0.1; pr.visible = false; s.add(pr); proxy(pr, "world", new THREE.Vector3(0.5 + 0.35 / 12, 0.12 + 0.35 / 12, 0.1 + 0.35 / 12), true); qShips.push([s, s.position.x]); dyn.push(s); }
+const dredger = dredgerKit(KM); dredger.scale.setScalar(8.5); dredger.position.set(18.5, -0.65, 0.2); dredger.rotation.y = Math.PI; add(dredger);
+{ const pr = new THREE.Mesh(new THREE.BoxGeometry(1, 0.3, 0.3)); pr.position.y = 0.12; pr.visible = false; dredger.add(pr); proxy(pr, "world", new THREE.Vector3(0.5 + 0.04, 0.2, 0.2), false); }
+const tugs = [], ropes = [], ropeMat = new THREE.MeshStandardMaterial({ color: 0xaaa9a5, roughness: 0.8 });
+for (const [anchor, off] of [["S", [-3.8, -3.1]], ["S", [-5.0, -1.2]], ["B", [4.4, 2.6]]]) { const t = tugKit(KM); t.scale.setScalar(3); add(t); const rp = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 1, 5), ropeMat); rp.castShadow = true; gW.add(rp); tugs.push({ t, anchor, off }); ropes.push(rp); }
+const wakes = []; for (let i = 0; i < tugs.length; i++) for (let k = 0; k < 3; k++) { const m = new THREE.Mesh(new THREE.RingGeometry(0.55, 0.68, 28), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide })); m.rotation.x = -Math.PI / 2; m.renderOrder = 4; gW.add(m); wakes.push({ m, i, k }); }
+const EXC = excKit(KM); EXC.scale.setScalar(1.5); EXC.position.set(5.7, BANK, -7.1); EXC.rotation.y = -1.9; add(EXC);
+{ const pr = new THREE.Mesh(new THREE.BoxGeometry(1, 0.5, 0.6)); pr.position.y = 0.25; pr.visible = false; EXC.add(pr); proxy(pr, "world", new THREE.Vector3(0.5 + 0.2, 0.25 + 0.2, 0.3 + 0.2), false); }
+for (const [x, z, ry] of [[7.4, -7.9, 2.5], [4.0, -8.3, 0.7], [8.6, -6.9, 3.6]]) { const p = person(KM, { hat: "hard" }); p.scale.setScalar(0.5); p.position.set(x, BANK, z); p.rotation.y = ry; add(p); figs.push(p); }
+{ const c = car(KM, "van"); c.scale.setScalar(1.0); c.position.set(10.8, BANK, -9.6); c.rotation.y = 0.2; add(c); const tr = car(KM, "truck"); tr.scale.setScalar(1.1); tr.position.set(3.0, BANK, -10.6); tr.rotation.y = 2.9; add(tr); }
+for (const [x, z, s] of [[3.6, -8.8, 1.2], [8.8, -8.4, 0.9], [2.4, -7.6, 0.7]]) { const m = new THREE.Mesh(new THREE.SphereGeometry(s, 14, 8), SAND); m.scale.y = 0.45; m.position.set(x, BANK, z); add(m); }
+const dust = []; for (let i = 0; i < 26; i++) { const m = new THREE.Mesh(new THREE.SphereGeometry(0.16 + rnd() * 0.18, 8, 6), new THREE.MeshBasicMaterial({ color: 0xf6f2e9, transparent: true, opacity: 0.26, depthWrite: false })); gW.add(m); dust.push({ m, x0: -6 + rnd() * 20, z: -14 + rnd() * 9, y: 0.8 + rnd() * 1.8, sp: 0.35 + rnd() * 0.4, ph: rnd() }); }
+// cars on the road (parked / ambient)
+for (const [x, z, t] of [[-70, 9.2, "truck"], [-52, 9.6, "van"], [30, 9.2, "sedan"], [74, 9.6, "bus"], [-110, -9.2, "van"], [60, -9.6, "truck"]]) { const c = car(KM, t); c.scale.setScalar(0.9); c.position.set(x, BANK, z); c.rotation.y = z < 0 ? Math.PI : 0; add(c); }
+// chapter numeral "6" standing on the north bank (world copy; the timeline holds an identical one)
+const NUM_S = 1.1, NUMW = numeral(ctx, NUM_S); NUMW.position.set(-9, BANK, 15); NUMW.rotation.y = Math.PI; gW.add(NUMW);
+// birds
+const birds = []; const BIRD = new THREE.MeshStandardMaterial({ color: 0xfbfaf7, roughness: 0.7, side: THREE.DoubleSide, flatShading: true });
+const wingG = new THREE.BufferGeometry(); wingG.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, -0.08, 0, 0, 0.1, 0.3, 0, 0], 3)); wingG.computeVertexNormals();
+for (let k = 0; k < 14; k++) { const b = new THREE.Group(); const body = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.26, 5), BIRD); body.rotation.x = Math.PI / 2; b.add(body);
+  const wl = new THREE.Mesh(wingG, BIRD), wr = new THREE.Mesh(wingG, BIRD); wr.scale.x = -1; b.add(wl, wr); b.scale.setScalar(1.6);
+  b.userData = { wl, wr, cx: -40 + (k % 2) * 60, r: 6 + rnd() * 10, h: 5 + rnd() * 4, ph: rnd() * 6.28, sp: 0.18 + rnd() * 0.1, f: 8 + rnd() * 3 }; add(b); birds.push(b); }
+function flock(t) { for (const b of birds) { const u = b.userData, a = u.ph + t * u.sp, cx = u.cx;
+  b.position.set(cx + Math.cos(a) * u.r * 1.8, u.h + Math.sin(t * 0.8 + u.ph) * 0.3, Math.sin(a) * u.r * 0.7);
+  b.lookAt(cx + Math.cos(a + 0.1) * u.r * 1.8, b.position.y, Math.sin(a + 0.1) * u.r * 0.7); const f = Math.sin(t * u.f + u.ph) * 0.9; u.wl.rotation.z = f; u.wr.rotation.z = -f; } }
+// world dynamics: the release (EG swings straight, tugs follow, queue creeps forward)
+const Vv = (x, y, z) => new THREE.Vector3(x, y, z), UP = Vv(0, 1, 0), tmpD = Vv(0, 0, 0);
+function worldAt(t) {
+  const k = smooth((t - 44.4) / 6.6), ry = RY0 * (1 - k), egx = 3.4 * smooth((t - 49.2) / 5.5); EG.rotation.y = ry; EG.position.x = egx;
+  const sh = 9 * smooth((t - 47.6) / 6.5); for (const [s, x0] of qShips) s.position.x = x0 + sh;
+  const D = Vv(Math.cos(ry), 0, -Math.sin(ry)), Sp = Vv(egx, 0, 0).addScaledVector(D, -EGS * 0.49), Bp = Vv(egx, 0, 0).addScaledVector(D, EGS * 0.49);
+  tugs.forEach((u, i) => { const an = u.anchor === "S" ? Sp : Bp; const c = an.clone().add(Vv(u.off[0], 0, u.off[1])); c.y = -0.35;
+    const h = c.clone().sub(an); h.y = 0; h.normalize(); u.t.position.copy(c); u.t.rotation.y = Math.atan2(-h.z, h.x);
+    const a = c.clone().addScaledVector(h, -1.5), b = an.clone(); a.y = 0.3; b.y = 0.6; const d = b.clone().sub(a), len = d.length(); const m = ropes[i]; m.position.copy(a).add(b).multiplyScalar(0.5);
+    m.quaternion.setFromUnitVectors(UP, d.normalize()); m.scale.set(0.045, len, 0.045); });
+  for (const w of wakes) { const u = tugs[w.i], ph = (t * 0.55 + w.k / 3) % 1; const hd = Vv(Math.cos(u.t.rotation.y), 0, -Math.sin(u.t.rotation.y));
+    w.m.position.copy(u.t.position).addScaledVector(hd, -1.7 - ph * 0.8); w.m.position.y = 0.04; w.m.scale.setScalar(0.6 + ph * 3.2); w.m.material.opacity = 0.3 * (1 - ph); }
+  for (const d of dust) { const u = (d.ph + t * d.sp * 0.05) % 1; d.m.position.set(d.x0 + u * 20, d.y + Math.sin(t * 0.7 + d.ph * 9) * 0.15, d.z); }
+  EXC.userData.arm.rotation.z = -0.35 + Math.sin(t * 2.0) * 0.28; flock(t); waves(t); for (const o of dyn) o.updateMatrixWorld(true); }
+// ---------- MG regions
+const MAP = buildMap(ctx, await (await fetch("/data/ne_110m_admin_0_countries.geojson")).json(), MAP_O); gM.add(MAP.group);
+const TLN = buildTimeline(ctx, TIME_O); gT.add(TLN.group);
+const BRD = buildBoard(ctx, BOARD_O); gB.add(BRD.group);
+{ const n2 = numeral(ctx, NUM_S); n2.position.set(TIME_O.x + 62, 0.9, TIME_O.z - 18); n2.rotation.y = Math.PI; gT.add(n2); }
+{ const fl = new THREE.Mesh(new THREE.BoxGeometry(160, 0.4, 120), WHITE); fl.position.set(TIME_O.x + 28, -0.2, TIME_O.z - 20); fl.receiveShadow = true; gT.add(fl); }   // timeline stage floor
+for (const o of TLN.occ) { const m = new THREE.Mesh(new THREE.BoxGeometry(4, o.hs.y * 2, 4)); m.position.copy(o.c); m.visible = false; gT.add(m); proxy(m, "time", new THREE.Vector3(2.35, o.hs.y + 0.35, 2.35)); }
+for (const o of BRD.occ) { const m = new THREE.Mesh(new THREE.BoxGeometry(o.hs.x * 2, o.hs.y * 2, 0.8)); m.position.copy(o.c); m.visible = false; gB.add(m); proxy(m, "board", new THREE.Vector3(o.hs.x + 0.3, o.hs.y + 0.3, 0.7)); }
+// ---------- light
+sc.add(new THREE.HemisphereLight(0xeef3ff, 0xb9b2a6, 1.15));
+const sun = new THREE.DirectionalLight(0xfff0d8, 3.0); sun.castShadow = true; sc.add(sun.target);
+sun.shadow.mapSize.set(4096, 4096); Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 40, bottom: -40, near: 1, far: 140 });
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03; sc.add(sun);
+// ---------- post: tilt-shift with a focus band at the shot's subject
+const cam = new THREE.PerspectiveCamera(40, W / H, 0.05, 520);
+const comp = new EffectComposer(r); comp.addPass(new RenderPass(sc, cam));
+const mk = d => new ShaderPass({ uniforms: { tDiffuse: { value: null }, dir: { value: d }, res: { value: new THREE.Vector2(W, H) }, fy: { value: 0.5 }, amt: { value: 4 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 dir, res; uniform float fy, amt; varying vec2 vUv;
+    void main(){ float b = smoothstep(0.10, 0.42, abs(vUv.y-fy)) * amt; vec4 c = vec4(0.0); float w = 0.0;
+      for (int i=-6;i<=6;i++){ float k = exp(-float(i*i)/18.0); c += texture2D(tDiffuse, vUv + dir*float(i)*b/res)*k; w += k; }
+      gl_FragColor = c / w; }` });
+const tx = mk(new THREE.Vector2(1, 0)), ty = mk(new THREE.Vector2(0, 1)); comp.addPass(tx); comp.addPass(ty); comp.addPass(new OutputPass());
+
+// ================= camera system =================
+// segments: abs keyframes (pos+look, C1 Hermite) or ride keyframes (carrier curve + d/az/el, as coast2). Every frame is checked
+// (inside geometry / below ground / view blocked) and fixed by sideways swing first, then lift, iteratively smoothed per continuous run.
+function hermF(kt, vals) { const n = kt.length;
+  return t => { if (n === 1 || t <= kt[0]) return vals[0]; if (t >= kt[n - 1]) return vals[n - 1];
+    let i = 0; while (kt[i + 1] < t) i++; const t0 = kt[i], t1 = kt[i + 1], h = t1 - t0, u = (t - t0) / h;
+    const m = j => j <= 0 ? (vals[1] - vals[0]) / (kt[1] - kt[0]) : j >= n - 1 ? (vals[n - 1] - vals[n - 2]) / (kt[n - 1] - kt[n - 2]) : (vals[j + 1] - vals[j - 1]) / (kt[j + 1] - kt[j - 1]);
+    const h00 = 2 * u * u * u - 3 * u * u + 1, h10 = u * u * u - 2 * u * u + u, h01 = -2 * u * u * u + 3 * u * u, h11 = u * u * u - u * u;
+    return h00 * vals[i] + h10 * h * m(i) + h01 * vals[i + 1] + h11 * h * m(i + 1); }; }
+const SEGS = [];
+// abs: keys [t, px,py,pz, lx,ly,lz]; token "prev"/"next" in place of the numbers = continuity with neighbouring segment
+function absSeg(t0, t1, region, keys, o = {}) { const s = { t0, t1, region, o, keys, gen: null }; SEGS.push(s); return s; }
+function rideSeg(t0, t1, region, curve, keys, o = {}) { const s = { t0, t1, region, o, ride: { curve, keys }, gen: null }; SEGS.push(s); return s; }
+function build(s, i) {
+  if (s.ride) { const { curve, keys } = s.ride, kt = keys.map(k => k[0]), F = [1, 2, 3, 4, 5].map(j => hermF(kt, keys.map(k => k[j]))), off = s.o.off || Vv(0, 0, 0);
+    s.gen = t => { const ss = s.o.sfn ? s.o.sfn(t) : F[0](t), look = curve.getPointAt(THREE.MathUtils.clamp(ss + (s.o.lead || 0), 0, 1)).add(off); look.y += F[4](t);
+      const d = F[1](t), az = THREE.MathUtils.degToRad(F[2](t)), el = THREE.MathUtils.degToRad(F[3](t)); return { look, pos: look.clone().add(Vv(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az)).multiplyScalar(d)) }; }; return; }
+  const kk = s.keys, off = s.o.off || Vv(0, 0, 0);
+  const pre = kk.map((k, j) => typeof k[1] === "string" ? null : k);
+  const resolved = kk.map((k, j) => { if (typeof k[1] !== "string") return k; const other = SEGS[i + (k[1] === "prev" ? -1 : 1)], g = other.gen(k[0]);
+    return [k[0], g.pos.x, g.pos.y, g.pos.z, g.look.x, g.look.y, g.look.z]; });
+  const kt = resolved.map(k => k[0]), F = [1, 2, 3, 4, 5, 6].map(j => hermF(kt, resolved.map(k => k[j])));
+  s.gen = t => ({ pos: Vv(F[0](t), F[1](t), F[2](t)).add(off), look: Vv(F[3](t), F[4](t), F[5](t)).add(off) }); }
+const WO = Vv(0, 0, 0);
+// 1 WORLD establishing: high over the east town, drifting west along the canal to the wedged red ship
+absSeg(0, 8, "world", [[0, 74, 25, 24, 22, 0, -1], [2.6, 50, 17, 20, 9, 0.5, -1], [5.4, 27, 10, 16, 3.4, 0.8, -1.5], [8, 14, 5.6, 12, 1.8, 0.8, -2]]);
+// 2 MG MAP (own region, 600 m away): route draws, stops at Suez, grey detour round the Cape
+const sMapA = rideSeg(8, 10.95, "map", MAP.MR, [[8, 0, 17, 25, 42, 0], [9.4, 0, 13, 20, 36, 0], [10.95, 0, 9, 38, 30, 0]], { sfn: MAP.prog, lead: 0.018, off: MAP_O });
+const sMapB = absSeg(10.95, 12.3, "map", [[10.95, "prev"], [11.7, ...[MAP.MR.getPointAt(1).x + 3.2, 5.4, MAP.MR.getPointAt(1).z + 8.2], ...[MAP.MR.getPointAt(1).x, 0.8, MAP.MR.getPointAt(1).z]], [12.3, "next"]], { off: MAP_O });
+{ const e = sMapB.keys[1]; for (let j of [1, 4]) e[j] = e[j]; }
+const sMapC = rideSeg(12.3, 15, "map", MAP.DR, [[12.3, 0, 12, 82, 40, 0], [13.6, 0, 13, 92, 36, 0], [15, 0, 11, 100, 33, 0]], { sfn: MAP.progD, lead: 0.02, off: MAP_O });
+// 3 WORLD queue ride -> excavator at the bow -> back over the hull to the tugs -> fly through the numeral "6"
+absSeg(15, 27.6, "world", [[15, -118, 8, 13, -104, 0.5, 0], [16.5, -96, 7, 11, -82, 0.5, 0], [18, -70, 6.5, 10.5, -56, 0.5, 0], [19.5, -42, 6, 10, -28, 0.5, 0], [20.5, -24, 6, 11, -8, 1.5, 0],
+  [21.5, -8, 6, 12, 0, 1.5, -1], [22.5, 10, 5, 10, 6, 1, -4], [23.5, 13, 3.6, -1, 6.2, 1.2, -7.6], [24.5, 10.5, 3.2, -3.2, 6.0, 1.2, -7.4], [25.3, 3, 8, -3, -6, 1, 3], [26.2, -8, 7.5, -2.5, -8.5, 0.5, 4], [27.0, -9, 6.4, 2.6, -9, 6.3, 11], [27.6, -9, 6.36, 10, -9, 6.36, 16]]);
+// 4 MG TIMELINE (numeral flight continues from the world cut, then dolly along the plinth, speeding up, hold on the red pillar)
+{ const nz = TIME_O.z - 18, tx0 = 62; const S4 = absSeg(27.6, 36, "time", [[27.6, tx0, 6.36, nz - 5, tx0, 6.36, nz + 1], [28.0, tx0, 6.36, nz - 0.4, tx0, 6.2, nz + 6], [28.5, tx0 - 1, 6, nz + 4.6, tx0 - 2, 4.6, nz + 12],
+  [29.4, 53.5, 5.8, -14, 52, 3.4, 0], [30.4, 45.5, 6.4, -15, 44, 4.8, 0], [31.3, 37.5, 7.4, -16, 36, 5.6, 0], [32.1, 29.5, 8.2, -16.5, 28, 6.4, 0], [32.8, 21.5, 9, -17, 20, 7, 0],
+  [33.4, 13, 9.4, -17.5, 12, 7.6, 0], [33.95, 6.5, 9.4, -17, 4.8, 7.6, 0], [35.0, 3.5, 8.6, -14, 4, 7.0, 0], [36, 3.4, 8.2, -12, 4, 6.8, 0]], { off: Vv(TIME_O.x * 0, 0, 0) });
+  S4.keys.forEach((k, i) => { if (i > 2 || true) { k[1] += TIME_O.x * (i < 3 ? 0 : 1) * 1; } });
+  // first three keys were given in absolute-x (62), the rest relative to the region: normalise everything to region-relative + origin
+  S4.keys.forEach((k, i) => { if (i < 3) { k[1] += TIME_O.x; k[4] += TIME_O.x; } else { k[4] += TIME_O.x; } }); }
+// 5 MG STRING BOARD: card to card riding the strings, pull back on the whole web
+const bc = id => CARDS.find(c => c.id === id), bk = (t, id, dx, dy, dz, ly = 0) => { const c = bc(id); return [t, BOARD_O.x + c.x + dx, c.y + dy, BOARD_O.z + dz, BOARD_O.x + c.x, c.y + ly, BOARD_O.z + 0.3]; };
+absSeg(36, 44, "board", [bk(36, "eg", 1.2, 0.9, 12.5), bk(36.9, "eg", 0.6, 1.3, 11.5), bk(37.9, "tr", -1.0, 0.8, 10.5), bk(38.6, "sh", 1.0, 0.4, 10.8), bk(39.3, "oil", -0.6, 0.6, 10.6), bk(39.95, "car", 0.8, 0.5, 10.6),
+  bk(40.6, "cof", -0.7, 0.4, 10.8), bk(41.2, "fur", 0.8, 0.3, 10.8), bk(41.9, "liv", -0.4, 0.5, 11),
+  [43.0, BOARD_O.x + 1, 11, BOARD_O.z + 24, BOARD_O.x, 8.4, BOARD_O.z], [44, BOARD_O.x + 0.3, 10.2, BOARD_O.z + 30, BOARD_O.x, 8.2, BOARD_O.z]]);
+// 6 WORLD release + finale (top-down rise appended in solver)
+absSeg(44, 60, "world", [[44, -16, 4.5, 9, -7, 1, 2], [46, -9, 5.5, 11, -4, 1, 1.5], [48, 2, 7, 12, 2, 1, 0], [50, 12, 7, 9, 6, 1, -1], [52, 6, 9, 13, -16, 1, 0], [54, -6, 13, 14, -22, 0.5, 0], [56, -10, 26, 16, -14, 0, 0], [60, -10, 26, 16, -14, 0, 0]]);
+SEGS.forEach((s, i) => { if (s.ride || !s.keys.some(k => typeof k[1] === "string")) build(s, i); }); SEGS.forEach((s, i) => { if (!s.gen) build(s, i); });
+const TOP_P = Vv(-14, 128, 0.2), TOP_L = Vv(-14, 0, 0), TOP_T0 = 56.0;
+// run boundaries = hard cuts (no smoothing / continuity across them)
+const RUNS = [[0, 8, "world"], [8, 15, "map"], [15, 27.6, "world"], [27.6, 36, "time"], [36, 44, "board"], [44, 60, "world"]];
+const fixOff = new Set(["map"]); // map camera is high; blockage impossible except ground
+const gyW = (x, z) => { const a = Math.abs(z); return a >= 6.6 ? BANK : a <= 4.3 ? BED : BED + (a - 4.3) / 2.3 * (BANK - BED); };
+const groundY = (reg, p) => reg === "world" ? gyW(p.x, p.z) : reg === "map" ? 1.2 : reg === "board" ? 0.2 : 0.95;
+const PXR = {}; for (const p of PX) (PXR[p.region] ??= []).push(p);
+const ray = new THREE.Raycaster(), tmp = Vv(0, 0, 0);
+const containsP = (p, pos) => { tmp.copy(pos).applyMatrix4(p.inv); return Math.abs(tmp.x) <= p.hs.x && Math.abs(tmp.y) <= p.hs.y && Math.abs(tmp.z) <= p.hs.z; };
+function refreshDyn(t) { worldAt(t); for (const p of PXR.world || []) if (p.dyn) { p.mesh.updateMatrixWorld(true); p.inv.copy(p.mesh.matrixWorld).invert(); } }
+function bad(pos, look, reg) {
+  if (pos.y < groundY(reg, pos) + 0.3) return "ground"; const list = PXR[reg] || [];
+  for (const p of list) if (containsP(p, pos)) return "inside";
+  const dir = Vv().subVectors(look, pos), dl = dir.length(); ray.set(pos, dir.normalize()); ray.far = Math.max(0.01, dl - 0.4);
+  const holder = new Set(list.filter(p => containsP(p, look)).map(p => p.mesh));
+  if (ray.intersectObjects(list.map(p => p.mesh), false).some(h => !holder.has(h.object))) return "blocked";
+  if (reg === "world" && ray.intersectObject(terrain, false).length) return "blocked";
+  return null; }
+const camAz = (pos, look, sw, lift) => { const d = pos.clone().sub(look), c = Math.cos(sw), s = Math.sin(sw); const x = d.x * c - d.z * s, z = d.x * s + d.z * c; return Vv(look.x + x, pos.y + lift, look.z + z); };
+const gauss = (a, R, lo, hi) => { const o = new Float32Array(a.length); for (let f = lo; f <= hi; f++) { let s2 = 0, w = 0; for (let j = -R; j <= R; j++) { const g = Math.exp(-(j * j) / (2 * (R / 2) ** 2)), x = a[Math.min(hi, Math.max(lo, f + j))]; s2 += g * x; w += g; } o[f] = s2 / w; } return o; };
+const holdMax = (a, R, lo, hi) => { const o = new Float32Array(a.length); for (let f = lo; f <= hi; f++) { let m = 0, mi = 0; for (let j = Math.max(lo, f - R); j <= Math.min(hi, f + R); j++) if (Math.abs(a[j]) > m) { m = Math.abs(a[j]); mi = a[j]; } o[f] = mi; } return o; };
+const SW = [0, 8, -8, 16, -16, 24, -24, 34, -34, 45, -45, 60, -60, 75, -75, 90, -90].map(THREE.MathUtils.degToRad);
+const bestFix = (pos, look, reg, baseA, baseL) => { let best = null;
+  for (const sw of SW) for (let k = 0; k <= 22; k++) { const p = camAz(pos, look, baseA + sw, baseL + k * 0.4); if (!bad(p, look, reg)) { const cost = Math.abs(sw) * 6 + k * 0.4; if (!best || cost < best.cost) best = { cost, sw, k }; break; } }
+  return best; };
+const P = new Array(NF + 1), L = new Array(NF + 1), UPV = new Array(NF + 1), REGF = new Array(NF + 1);
+const base = []; let solveInfo = { fixed: 0, stillBad: 0, why: {}, badSec: {} };
+const segAt = t => { for (let i = SEGS.length - 1; i >= 0; i--) if (t >= SEGS[i].t0 - 1e-6) return SEGS[i]; return SEGS[0]; };
+const tSolve0 = performance.now();
+for (const [a, b, reg] of RUNS) {
+  const f0 = Math.round(a * FPS), f1 = Math.min(NF, Math.round(b * FPS) - (b < T ? 1 : 0));
+  const bp = [], bl = [];
+  for (let f = f0; f <= f1; f++) { const t = f / FPS, g = segAt(t).gen(t); bp.push(g.pos); bl.push(g.look); }
+  // light smoothing of the base path inside the run (removes joins between segments)
+  const sm = (arr, R) => arr.map((_, i) => { let s = Vv(0, 0, 0), w = 0; for (let j = -R; j <= R; j++) { const k = Math.min(arr.length - 1, Math.max(0, i + j)), g = Math.exp(-(j * j) / (2 * (R / 2) ** 2)); s.addScaledVector(arr[k], g); w += g; } return s.multiplyScalar(1 / w); });
+  const pp = sm(bp, 4), ll = sm(bl, 4); for (let f = f0; f <= f1; f++) { bp[f - f0] = pp[f - f0]; bl[f - f0] = ll[f - f0]; }
+  const n = f1 - f0 + 1, daz = new Float32Array(n), lift = new Float32Array(n);
+  const setT = f => { if (reg === "world") refreshDyn(f / FPS); };
+  if (!fixOff.has(reg)) {
+    for (let i = 0; i < n; i++) { const f = f0 + i; const tt = f / FPS; if (reg === "world" && tt > TOP_T0 + 0.6) continue; if (reg === "world" && tt > 26.9 && tt < 27.7) continue; setT(f); if (!bad(bp[i], bl[i], reg)) continue; const bf = bestFix(bp[i], bl[i], reg, 0, 0); if (bf) { daz[i] = bf.sw; lift[i] = bf.k * 0.4; solveInfo.fixed++; } }
+    let dazS = gauss(holdMax(daz, 20, 0, n - 1), 30, 0, n - 1), liftS = gauss(holdMax(lift, 20, 0, n - 1), 30, 0, n - 1);
+    for (let it = 0; it < 6; it++) { let nBad = 0; const addA = new Float32Array(n), addL = new Float32Array(n);
+      for (let i = 0; i < n; i++) { const f = f0 + i, tt = f / FPS; if (reg === "world" && (tt > TOP_T0 + 0.6 || (tt > 26.9 && tt < 27.7))) continue; setT(f);
+        const p = camAz(bp[i], bl[i], dazS[i], liftS[i]); if (!bad(p, bl[i], reg)) continue; nBad++; const bf = bestFix(bp[i], bl[i], reg, dazS[i], liftS[i]); if (bf) { addA[i] = bf.sw; addL[i] = bf.k * 0.4 + 0.2; } }
+      if (!nBad) break; const a2 = gauss(holdMax(addA, 20, 0, n - 1), 30, 0, n - 1), l2 = gauss(holdMax(addL, 20, 0, n - 1), 30, 0, n - 1);
+      for (let i = 0; i < n; i++) { dazS[i] += a2[i] * 1.3; liftS[i] += l2[i] * 1.3; } }
+    for (let i = 0; i < n; i++) { daz[i] = dazS[i]; lift[i] = liftS[i]; } }
+  for (let i = 0; i < n; i++) { const f = f0 + i, t = f / FPS; setT(f); let pos = fixOff.has(reg) ? bp[i].clone() : camAz(bp[i], bl[i], daz[i], lift[i]); const look = bl[i].clone(); const up = Vv(0, 1, 0);
+    let bd = null;
+    if (reg === "world" && t >= TOP_T0) { const u = Math.min(1, (t - TOP_T0) / (T - TOP_T0)), e = u * u * (3 - 2 * u); pos.lerp(TOP_P, e); look.lerp(TOP_L, e); up.lerp(Vv(1, 0, 0), Math.min(1, e * 1.3)).normalize(); }
+    else if (!(reg === "world" && t > 26.9 && t < 27.7) && !(reg === "time" && t < 28.9)) { bd = bad(pos, look, reg); let k = 0; while (bd && k < 25 && !fixOff.has(reg)) { pos.y += 0.4; k++; bd = bad(pos, look, reg); } }
+    if (bd) { solveInfo.stillBad++; solveInfo.why[bd] = (solveInfo.why[bd] || 0) + 1; const sec = Math.floor(t); solveInfo.badSec[sec] = (solveInfo.badSec[sec] || 0) + 1; }
+    P[f] = pos; L[f] = look; UPV[f] = up; REGF[f] = reg; } }
+const solveMs = Math.round(performance.now() - tSolve0);
+refreshDyn(0);
+// ---------- per-frame state
+const sunOff = Vv(-20, 28, 18), v = Vv(0, 0, 0), FOG = { world: [40, 140], map: [60, 260], time: [60, 240], board: [50, 220] };
+function setCam(t) { const f = Math.min(NF, Math.max(0, Math.round(t * FPS))), reg = REGF[f];
+  for (const k in REG) REG[k].visible = k === reg;
+  cam.position.copy(P[f]); cam.up.copy(UPV[f]); cam.lookAt(L[f]); cam.fov = 40; cam.aspect = W / H; cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+  v.copy(L[f]).project(cam); tx.uniforms.fy.value = ty.uniforms.fy.value = THREE.MathUtils.clamp(v.y * 0.5 + 0.5, 0.15, 0.85);
+  const top = reg === "world" && t > TOP_T0 ? smooth((t - TOP_T0) / (T - TOP_T0)) : 0; tx.uniforms.amt.value = ty.uniforms.amt.value = 3.5 - 2.5 * top;
+  const [fn, ff] = FOG[reg]; sc.fog.near = fn + 140 * top; sc.fog.far = ff + 320 * top;
+  const tg = Vv(Math.round(L[f].x), 0, Math.round(L[f].z)); sun.target.position.copy(tg); sun.position.copy(tg).add(sunOff); sun.target.updateMatrixWorld();
+  return { f, reg }; }
+function animate(t, reg) { if (reg === "world") worldAt(t); else if (reg === "map") MAP.update(t); else if (reg === "time") TLN.update(t); else BRD.update(t); }
+// ---------- gates: tallest projected mannequin (frame fraction) + legibility of every text element on screen
+const bb = new THREE.Box3(), corners = Array.from({ length: 8 }, () => new THREE.Vector3());
+function figFrac() { let mx = 0; for (const m of figs) { if (!m.parent?.visible) continue; bb.setFromObject(m); let y0 = 9, y1 = -9, vis = false;
+  let k = 0; for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) corners[k++].set(x, y, z);
+  for (const c of corners) { c.project(cam); if (c.z < 1 && Math.abs(c.x) < 1.2 && Math.abs(c.y) < 1.2) vis = true; y0 = Math.min(y0, c.y); y1 = Math.max(y1, c.y); }
+  if (vis) mx = Math.max(mx, (y1 - y0) / 2); } return mx; }
+const pa = Vv(0, 0, 0), pb = Vv(0, 0, 0);
+function textMin(t) { let mn = 1e9, who = ""; for (const m of texts) { const w = m.userData.win; if (!w || t < w[0] + 0.35 || t > w[1] - 0.2) continue; let vis = true; m.traverseAncestors(a => { if (!a.visible) vis = false; }); if (!vis || !m.visible) continue;
+  m.updateMatrixWorld(true); const hh = m.geometry.parameters.height / 2; pa.set(0, hh, 0).applyMatrix4(m.matrixWorld).project(cam); pb.set(0, -hh, 0).applyMatrix4(m.matrixWorld).project(cam);
+  if (pa.z > 1 || pb.z > 1 || Math.abs(pa.x) > 1 || Math.abs(pb.x) > 1) continue; const px = Math.hypot((pa.x - pb.x) * W / 2, (pa.y - pb.y) * H / 2) * m.userData.cap; if (px < mn) { mn = px; who = m.userData.txt; } } return [mn, who]; }
+window.renderAt = t => { const { reg } = setCam(t); animate(t, reg); comp.render(); };
+window.checkSizes = () => { let m = 0, at = 0, tm = 1e9, tw = "", ta = 0; const low = [];
+  for (let t = 0; t <= T; t += 0.25) { const { reg } = setCam(t); animate(t, reg); const x = figFrac(); if (x > m) { m = x; at = t; } const [c, w] = textMin(t); if (c < tm) { tm = c; tw = w; ta = t; } if (c < 38) low.push([t, +c.toFixed(1), w]); }
+  // camera jerk (non-cut) report
+  let jerk = []; const cuts = new Set(RUNS.map(r => Math.round(r[0] * FPS))); for (let f = 2; f < NF; f++) { if (cuts.has(f) || cuts.has(f - 1) || cuts.has(f + 1)) continue; const a = P[f + 1].clone().sub(P[f]).sub(P[f].clone().sub(P[f - 1])).length(); if (a > 1.5 && REGF[f] === "world") jerk.push([+(f / FPS).toFixed(2), +a.toFixed(2)]); }
+  return { maxFig: +m.toFixed(3), maxFigAt: at, minCapPx: +tm.toFixed(1), minCapWho: tw, minCapAt: ta, lowText: low.slice(0, 12), nLow: low.length, solve: solveInfo, solveMs, jerk: jerk.slice(0, 10) }; };
+window.renderAt(Number(new URLSearchParams(location.search).get("t") || 0));
+window.__info = { shots: 24, T, figs: figs.length, solve: solveInfo, solveMs };
+window.__ready = true;
+</script></body></html>

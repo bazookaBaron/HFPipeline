@@ -1,0 +1,197 @@
+<!doctype html><html><head><meta charset="utf-8"><title>coast miniature</title>
+<style>html,body{margin:0;background:#dfe4e8}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/"}}</script></head>
+<body><script type="module">
+// "The internet lives under the sea": one white-miniature set (sea, beach, landing station, road, city), red cable is the only red thing.
+// Camera-only storytelling: 12 shots x 3.33 s, 9:16. No character motion; ambient motion only (waves, cable light pulse, birds).
+import * as THREE from "three"; import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+const W = 1080, H = 1920;
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H);
+r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap; document.body.appendChild(r.domElement);
+const SKY = new THREE.Color(0xdfe4e8), DEEP = new THREE.Color(0xd5e3ea);
+const sc = new THREE.Scene(); sc.background = SKY.clone(); sc.fog = new THREE.Fog(SKY.clone(), 40, 140);
+const WHITE = new THREE.MeshStandardMaterial({ color: 0xf0eee9, roughness: 0.85 });
+const GREY = new THREE.MeshStandardMaterial({ color: 0xd6d5d1, roughness: 0.9 });
+const SAND = new THREE.MeshStandardMaterial({ color: 0xf2ede2, roughness: 0.95 });
+const DARK = new THREE.MeshStandardMaterial({ color: 0xb9b8b4, roughness: 0.8 });
+let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+const add = (o, sh = true) => { o.traverse?.(m => { if (m.isMesh) { m.castShadow = sh; m.receiveShadow = true; } }); sc.add(o); return o; };
+const box = (w, h, d, x, y, z, m = WHITE) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y + h / 2, z); return add(o); };
+const cyl = (r0, r1, h, x, y, z, m = WHITE, seg = 12) => { const o = new THREE.Mesh(new THREE.CylinderGeometry(r0, r1, h, seg), m); o.position.set(x, y + h / 2, z); return add(o); };
+
+// ---------- terrain: one extruded side profile = diorama slab with beach slope; sea floor at -2.5
+const ZW = 28, LAND0 = -6, SLOPE0 = -12, FLOOR = -2.5, XMIN = -48, XMAX = 42;
+{ const sh = new THREE.Shape(); sh.moveTo(XMIN, -3.4); sh.lineTo(XMAX, -3.4); sh.lineTo(XMAX, 0); sh.lineTo(LAND0, 0); sh.lineTo(SLOPE0, FLOOR); sh.lineTo(XMIN, FLOOR); sh.closePath();
+  const g = new THREE.ExtrudeGeometry(sh, { depth: ZW, bevelEnabled: false }); g.translate(0, 0, -ZW / 2); const m = new THREE.Mesh(g, WHITE); add(m); }
+// sand strip on the slope + dry beach
+{ const len = Math.hypot(LAND0 - SLOPE0, -FLOOR);
+  const q = new THREE.Mesh(new THREE.PlaneGeometry(len, ZW), SAND); q.position.set((LAND0 + SLOPE0) / 2, FLOOR / 2 + 0.01, 0);
+  q.rotation.set(-Math.PI / 2, 0, 0); q.rotateOnWorldAxis(new THREE.Vector3(0, 0, 1), Math.atan2(-FLOOR, LAND0 - SLOPE0)); add(q, false);
+  box(5, 0.01, ZW, LAND0 + 2.5, 0, 0, SAND); }
+// sea-floor rocks
+for (let i = 0; i < 70; i++) { const g = new THREE.IcosahedronGeometry(0.2 + rnd() * 0.5, 0); const m = new THREE.Mesh(g, GREY);
+  m.position.set(XMIN + 2 + rnd() * (SLOPE0 - XMIN - 3), FLOOR + 0.05, -ZW / 2 + 1 + rnd() * (ZW - 2)); m.scale.y = 0.5; m.rotation.set(rnd() * 3, rnd() * 3, 0); add(m); }
+// water: translucent box (its front face is the cut-away) + animated surface
+const WX0 = XMIN, WX1 = -9;
+const waterMat = new THREE.MeshStandardMaterial({ color: 0xadc6d4, roughness: 0.2, transparent: true, opacity: 0.5, depthWrite: false, side: THREE.DoubleSide });
+{ const w = new THREE.Mesh(new THREE.BoxGeometry(WX1 - WX0, -FLOOR - 0.02, ZW - 0.02), waterMat); w.position.set((WX0 + WX1) / 2, FLOOR / 2, 0); w.renderOrder = 2; sc.add(w); }
+box(WX1 - WX0, 0.05, 0.06, (WX0 + WX1) / 2, -0.03, ZW / 2, DARK); box(0.06, -FLOOR, 0.06, WX1, FLOOR, ZW / 2, DARK);   // glass rim
+const surfG = new THREE.PlaneGeometry(WX1 - WX0, ZW, 120, 50); surfG.rotateX(-Math.PI / 2);
+const surf = new THREE.Mesh(surfG, new THREE.MeshStandardMaterial({ color: 0xd5e2ea, roughness: 0.15, metalness: 0.0, transparent: true, opacity: 0.55, flatShading: true, side: THREE.DoubleSide, depthWrite: false }));
+surf.position.set((WX0 + WX1) / 2, 0, 0); surf.receiveShadow = true; surf.renderOrder = 3; sc.add(surf);
+const surfBase = surfG.attributes.position.array.slice();
+function waves(t) { const p = surfG.attributes.position; for (let i = 0; i < p.count; i++) { const x = surfBase[i * 3], z = surfBase[i * 3 + 2];
+  p.setY(i, Math.sin(x * 0.9 + t * 1.6) * 0.06 + Math.sin(z * 1.3 + x * 0.4 - t * 1.1) * 0.05); } p.needsUpdate = true; surfG.computeVertexNormals(); }
+
+// ---------- beach: manhole, trench, fence posts, beach huts
+box(1.3, 0.04, 1.3, -4, 0, 0, DARK); cyl(0.5, 0.5, 0.05, -4, 0.04, 0, GREY, 20);
+box(5.6, 0.03, 0.5, -1, 0, 0, GREY);   // trench to the station
+for (let i = 0; i < 4; i++) box(0.9, 0.7, 0.9, -3.2 - i * 1.6, 0, -9 - (i % 2) * 1.5);   // little huts
+// ---------- landing station: windowless box, door, roof units, fence
+box(4, 2.6, 3.2, 2.6, 0, 0); box(4.2, 0.15, 3.4, 2.6, 2.6, 0); box(0.9, 1.4, 0.05, 2.6, 0, 1.62, GREY);
+box(0.9, 0.5, 0.9, 1.6, 2.75, -0.6, GREY); box(0.6, 0.4, 0.6, 3.5, 2.75, 0.5, GREY);
+for (let i = 0; i <= 12; i++) { const a = i / 12; const pts = [[-0.2 + a * 5.6, -2.6], [-0.2 + a * 5.6, 2.6]];
+  for (const [x, z] of pts) cyl(0.03, 0.03, 0.8, x, 0, z, GREY, 6); }
+for (const z of [-2.6, 2.6]) box(5.6, 0.04, 0.02, 2.6, 0.7, z, GREY);
+for (let i = 0; i <= 6; i++) cyl(0.03, 0.03, 0.8, 5.4, 0, -2.6 + i * 0.87, GREY, 6);
+// ---------- road into town with utility poles; red duct line inlaid in the verge
+box(XMAX - 5.5, 0.02, 2.2, (XMAX + 5.5) / 2, 0, -1.6, GREY);
+for (let x = 6; x < XMAX; x += 1.4) box(0.6, 0.025, 0.08, x, 0, -1.6, WHITE);
+for (let x = 7; x < 20; x += 3) { cyl(0.05, 0.05, 2.4, x, 0, -3.0, GREY, 8); box(0.9, 0.06, 0.06, x, 2.25, -3.0, GREY); }
+// ---------- city: blocks with setbacks, plaza, cell tower
+const towers = [];
+for (let gx = 0; gx < 7; gx++) for (let gz = 0; gz < 8; gz++) { const x = 20 + gx * 3.0, z = -12 + gz * 3.2;
+  if (Math.abs(z + 1.6) < 2.2) continue; if (Math.hypot(x - 28, z - 3.0) < 4.6) continue;
+  const h = 1.2 + rnd() * rnd() * 9, w = 1.8 + rnd() * 0.6, d = 2.0 + rnd() * 0.6; box(w, h, d, x, 0, z);
+  if (h > 4 && rnd() < 0.6) box(w * 0.6, h * 0.25, d * 0.6, x, h, z);
+  for (let k = 1; k < h / 0.9; k++) box(w + 0.02, 0.04, d + 0.02, x, k * 0.9, z, GREY); }   // floor lines
+box(7, 0.02, 6, 28.2, 0, 3.2, SAND);                                           // plaza
+const TWR = new THREE.Vector3(26.6, 0, 1.4);                                   // cell tower (lattice-ish)
+{ cyl(0.12, 0.32, 6.2, TWR.x, 0, TWR.z, GREY, 4); for (let k = 0; k < 6; k++) box(0.7 - k * 0.07, 0.05, 0.05, TWR.x, 0.6 + k * 1.0, TWR.z, GREY);
+  for (let a = 0; a < 3; a++) { const an = a * 2.09; box(0.12, 0.7, 0.06, TWR.x + Math.cos(an) * 0.22, 5.4, TWR.z + Math.sin(an) * 0.22, WHITE); } }
+
+// ---------- generated objects (white), loaded at runtime; placeholder capsule if a GLB is missing
+function prep(src, cells) {
+  const g = mergeVertices(src); g.computeBoundingBox(); const sz = g.boundingBox.getSize(new THREE.Vector3());
+  const cell = Math.max(sz.x, sz.y, sz.z) / cells, P = g.attributes.position, I = g.index.array, key = new Map(), sum = [], rep = new Int32Array(P.count);
+  for (let i = 0; i < P.count; i++) { const k = Math.floor(P.getX(i) / cell) + "," + Math.floor(P.getY(i) / cell) + "," + Math.floor(P.getZ(i) / cell);
+    let id = key.get(k); if (id === undefined) { id = sum.length; key.set(k, id); sum.push([0, 0, 0, 0]); } rep[i] = id; const a = sum[id]; a[0] += P.getX(i); a[1] += P.getY(i); a[2] += P.getZ(i); a[3]++; }
+  const par = new Int32Array(sum.length).map((_, i) => i), f = x => { while (par[x] !== x) x = par[x] = par[par[x]]; return x; };
+  const tris = []; for (let t = 0; t < I.length; t += 3) { const a = rep[I[t]], b = rep[I[t + 1]], c = rep[I[t + 2]]; if (a === b || b === c || a === c) continue; tris.push(a, b, c); par[f(a)] = f(b); par[f(b)] = f(c); }
+  const cnt = new Map(); for (let t = 0; t < tris.length; t += 3) { const k = f(tris[t]); cnt.set(k, (cnt.get(k) || 0) + 1); }
+  let best = -1, bc = 0; for (const [k, v] of cnt) if (v > bc) { bc = v; best = k; }
+  const remap = new Map(), pos = [], idx = [];
+  for (let t = 0; t < tris.length; t += 3) { if (f(tris[t]) !== best) continue;
+    for (let j = 0; j < 3; j++) { const v = tris[t + j]; let n = remap.get(v); if (n === undefined) { n = pos.length / 3; remap.set(v, n); const q = sum[v]; pos.push(q[0] / q[3], q[1] / q[3], q[2] / q[3]); } idx.push(n); } }
+  const out = new THREE.BufferGeometry(); out.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); out.setIndex(idx);
+  out.computeBoundingBox(); const b = out.boundingBox, c = b.getCenter(new THREE.Vector3()); out.translate(-c.x, -b.min.y, -c.z);
+  out.computeBoundingBox(); const s = 1 / out.boundingBox.max.y; out.scale(s, s, s); out.computeBoundingBox(); out.computeVertexNormals(); return out; }
+async function load(n, cells) { try { const g = await new GLTFLoader().loadAsync(`out/${n}.glb`); let geo; g.scene.traverse(o => { if (o.isMesh && !geo) geo = prep(o.geometry, cells); }); return geo; }
+  catch (e) { const g = new THREE.CapsuleGeometry(0.2, 0.6, 4, 8); g.translate(0, 0.5, 0); g.computeBoundingBox(); return g; } }
+const figs = [];   // people meshes, for the size rule
+function place(geo, h, x, z, ry = 0, y = 0, isFig = false, sx = 1) { const m = new THREE.Mesh(geo, WHITE); m.scale.set(h * sx, h, h * sx); m.position.set(x, y, z); m.rotation.y = ry; add(m); if (isFig) figs.push(m); return m; }
+const [shipG, workerG, phoneG, spoolG, carG] = await Promise.all([load("ship", 160), load("worker", 70), load("phoneguy", 70), load("spool", 50), load("car", 50)]);
+// ship: hull long axis along its own x after prep? we size by length instead of height
+const ship = new THREE.Mesh(shipG, WHITE); { const b = shipG.boundingBox; const L = Math.max(b.max.x - b.min.x, b.max.z - b.min.z); const s = 7.5 / L;
+  ship.scale.setScalar(s); ship.position.set(-34, -0.35, -1); ship.rotation.y = (b.max.x - b.min.x) > (b.max.z - b.min.z) ? 0.25 : Math.PI / 2 + 0.25; add(ship); }
+const SHIPSTERN = new THREE.Vector3(-30.5, 0.2, -0.2);
+for (const [x, z, ry] of [[-4.9, 0.9, 2.4], [-3.0, 1.0, -2.2], [-4.2, -1.1, 0.4], [0.0, 1.4, 3.0], [-1.6, -0.9, 0.8]]) place(workerG, 0.9, x, z, ry, 0, true);
+place(spoolG, 0.9, -6.2, -1.4, 0.4); place(spoolG, 0.75, -6.9, 0.2, 1.2);
+const PHONE = new THREE.Vector3(29.2, 0, 4.0); place(phoneG, 0.9, PHONE.x, PHONE.z, -0.6, 0, true);
+for (const [x, z] of [[9, -1.0], [13.5, -2.2], [17, -1.0], [22, -2.2], [31, -1.0]]) { const c = place(carG, 0.55, x, z, 0); const b = carG.boundingBox; if (b.max.z - b.min.z > b.max.x - b.min.x) c.rotation.y = Math.PI / 2; }
+for (const [x, z] of [[30.6, 2.2], [27.2, 5.2]]) place(workerG, 0.9, x, z, rnd() * 6, 0, true);   // passers-by (same mesh)
+
+// ---------- red cable: ship stern -> sea floor -> beach manhole -> station -> road verge -> cell tower; light pulses travel along it
+const cablePts = [SHIPSTERN, new THREE.Vector3(-29.5, -1.2, 0.1), new THREE.Vector3(-27.5, FLOOR + 0.12, 0.4), new THREE.Vector3(-20, FLOOR + 0.12, 0.6),
+  new THREE.Vector3(-13, FLOOR + 0.12, 0.2), new THREE.Vector3(-9, -1.4, 0.05), new THREE.Vector3(-6, -0.05, 0), new THREE.Vector3(-4, 0.06, 0),
+  new THREE.Vector3(0.6, 0.06, 0), new THREE.Vector3(4.6, 0.06, 0), new THREE.Vector3(5.6, 0.06, -0.5), new THREE.Vector3(6.2, 0.06, -0.7),
+  new THREE.Vector3(24.5, 0.06, -0.7), new THREE.Vector3(26.0, 0.06, 0.2), new THREE.Vector3(TWR.x, 0.06, TWR.z - 0.4), new THREE.Vector3(TWR.x, 5.6, TWR.z - 0.2)];
+const curve = new THREE.CatmullRomCurve3(cablePts, false, "centripetal");
+const CAB = { t: { value: 0 } };
+const cableMat = new THREE.MeshStandardMaterial({ color: 0xcf2219, roughness: 0.45 });
+cableMat.onBeforeCompile = s => { s.uniforms.cT = CAB.t;
+  s.vertexShader = s.vertexShader.replace("#include <common>", "#include <common>\nvarying float vCU;").replace("#include <begin_vertex>", "#include <begin_vertex>\nvCU = uv.x;");
+  s.fragmentShader = s.fragmentShader.replace("#include <common>", "#include <common>\nvarying float vCU; uniform float cT;")
+    .replace("#include <color_fragment>", "#include <color_fragment>\nfloat ph = fract(vCU*14.0 - cT*0.35); float band = smoothstep(0.0,0.03,ph)*(1.0-smoothstep(0.03,0.09,ph));\ndiffuseColor.rgb = mix(diffuseColor.rgb, vec3(1.0,0.62,0.55), band*0.85);"); };
+const cable = new THREE.Mesh(new THREE.TubeGeometry(curve, 1200, 0.13, 10, false), cableMat); add(cable);
+
+// ---------- birds over the sea
+const birds = []; const BIRD = new THREE.MeshStandardMaterial({ color: 0xfbfaf7, roughness: 0.7, side: THREE.DoubleSide, flatShading: true });
+const wingG = new THREE.BufferGeometry(); wingG.setAttribute("position", new THREE.Float32BufferAttribute([0, 0, -0.08, 0, 0, 0.1, 0.3, 0, 0], 3)); wingG.computeVertexNormals();
+for (let k = 0; k < 14; k++) { const b = new THREE.Group(); const body = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.26, 5), BIRD); body.rotation.x = Math.PI / 2; b.add(body);
+  const wl = new THREE.Mesh(wingG, BIRD), wr = new THREE.Mesh(wingG, BIRD); wr.scale.x = -1; b.add(wl, wr);
+  b.userData = { wl, wr, r: 6 + rnd() * 6, h: 4 + rnd() * 2.5, ph: rnd() * 6.28, sp: 0.18 + rnd() * 0.1, f: 8 + rnd() * 3 }; add(b); birds.push(b); }
+function flock(t) { for (const b of birds) { const u = b.userData, a = u.ph + t * u.sp;
+  b.position.set(-30 + Math.cos(a) * u.r, u.h + Math.sin(t * 0.8 + u.ph) * 0.3, Math.sin(a) * u.r * 0.7);
+  b.lookAt(-30 + Math.cos(a + 0.1) * u.r, b.position.y, Math.sin(a + 0.1) * u.r * 0.7); const f = Math.sin(t * u.f + u.ph) * 0.9; u.wl.rotation.z = f; u.wr.rotation.z = -f; } }
+
+// ---------- light
+sc.add(new THREE.HemisphereLight(0xeef3ff, 0xb9b2a6, 1.15));
+const sun = new THREE.DirectionalLight(0xfff0d8, 3.0); sun.position.set(-20, 28, 18); sun.castShadow = true; sun.target.position.set(-3, 0, 0); sc.add(sun.target);
+sun.shadow.mapSize.set(4096, 4096); Object.assign(sun.shadow.camera, { left: -50, right: 50, top: 30, bottom: -30, near: 1, far: 120 });
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03; sc.add(sun);
+
+// ---------- post: tilt-shift with a focus band at the shot's subject
+const cam = new THREE.PerspectiveCamera(40, W / H, 0.05, 400);
+const comp = new EffectComposer(r); comp.addPass(new RenderPass(sc, cam));
+const mk = d => new ShaderPass({ uniforms: { tDiffuse: { value: null }, dir: { value: d }, res: { value: new THREE.Vector2(W, H) }, fy: { value: 0.5 }, amt: { value: 4 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 dir, res; uniform float fy, amt; varying vec2 vUv;
+    void main(){ float b = smoothstep(0.10, 0.42, abs(vUv.y-fy)) * amt; vec4 c = vec4(0.0); float w = 0.0;
+      for (int i=-6;i<=6;i++){ float k = exp(-float(i*i)/18.0); c += texture2D(tDiffuse, vUv + dir*float(i)*b/res)*k; w += k; }
+      gl_FragColor = c / w; }` });
+const tx = mk(new THREE.Vector2(1, 0)), ty = mk(new THREE.Vector2(0, 1)); comp.addPass(tx); comp.addPass(ty); comp.addPass(new OutputPass());
+
+// ---------- shot timeline (from -> to, eased). Each: [p0, look0, p1, look1, fov, focusPoint]
+const V = (x, y, z) => new THREE.Vector3(x, y, z);
+const SHOTS = [
+  [V(27.5, 30, 3.5), V(27.2, 0, 1.6), V(25.0, 27, 1.0), V(24.8, 0, -0.6), 42, PHONE],                 // 1 top-down drift over the city
+  [V(36, 14, 15), V(29.2, 0.6, 4.0), V(35.5, 6.5, 12.0), V(29.2, 0.7, 4.0), 38, PHONE],            // 2 crane down to the person with a phone
+  [V(25, 3.2, 6.5), V(17, 0.3, -0.4), V(-1, 3.2, 6.5), V(-9, 0.2, -0.2), 44, null],              // 3 whip along the red line toward the sea
+  [V(-16, 11, 20), V(-33, 0, -0.5), V(-20, 9.5, 17), V(-34, 0, -0.5), 40, SHIPSTERN],            // 4 wide over the ocean with the ship
+  ["orbit", V(-33, 0.8, -0.6), 19, 7.5, 55, 125, 40, SHIPSTERN],                               // 5 orbit the cable ship
+  [V(-24, 1.6, 22), V(-23, -1.2, 0), V(-21, -0.9, 18.5), V(-20, -1.9, 0), 40, V(-20, -2.3, 0.6)],  // 6 slide down to the cut-away
+  [V(-29, -1.5, 3.6), V(-21, -2.3, 0.6), V(-15, -1.2, 3.6), V(-7, -0.6, 0.0), 46, null],         // 7 dolly along the sea floor
+  [V(-8.5, 1.6, 8.5), V(-4, 0.1, 0), V(-10, 5.5, 10.5), V(-3.5, 0, 0), 40, V(-4, 0, 0)],         // 8 rise up at the beach manhole
+  [V(-3, 4.5, 15), V(2.6, 1.2, 0), V(-1.5, 3.4, 10.5), V(2.6, 1.2, 0), 40, V(2.6, 1, 0)],        // 9 push toward the landing station
+  [V(6, 2.6, 7.2), V(8.5, 0, -0.3), V(17, 2.6, 7.2), V(19.5, 0, -0.3), 42, null],                // 10 pan along the duct by the road
+  [V(20.5, 2.8, -2.3), V(TWR.x, 1.6, TWR.z), V(21.0, 8.5, -2.5), V(TWR.x, 5.6, TWR.z), 40, null],  // 11 crane up the cell tower
+  [V(-6, 24, 6), V(-5, 0, 0), V(-3, 112, 22), V(-3, 0, 0), 46, null],                           // 12 pull out to the whole world
+];
+const SHOT_LEN = 40 / SHOTS.length;
+const ease = x => x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const sm = x => x * x * (3 - 2 * x);
+const v = new THREE.Vector3(), up = new THREE.Vector3(0, 1, 0);
+function setCam(t) {
+  const i = Math.min(SHOTS.length - 1, Math.floor(t / SHOT_LEN)), u = (t - i * SHOT_LEN) / SHOT_LEN, S = SHOTS[i];
+  const e = i === 2 ? ease(u) : sm(u) * 0.85 + u * 0.15;   // whip shot gets the strong ease
+  let focus;
+  if (S[0] === "orbit") { const [, c, rad, h, a0, a1, fov, f] = S; const a = THREE.MathUtils.degToRad(a0 + (a1 - a0) * e);
+    cam.position.set(c.x + Math.cos(a) * rad, h, c.z + Math.sin(a) * rad); cam.up.copy(up); cam.lookAt(c); cam.fov = fov; focus = f; }
+  else { const [p0, l0, p1, l1, fov, f] = S; cam.position.lerpVectors(p0, p1, e); const lk = new THREE.Vector3().lerpVectors(l0, l1, e);
+    cam.up.set(0, 1, 0); if (i === 0) cam.up.set(0, 0, -1); if (i === 11) cam.up.set(1, 0, 0); cam.lookAt(lk); cam.fov = fov; focus = f || lk; }
+  cam.aspect = W / H; cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+  v.copy(focus).project(cam); tx.uniforms.fy.value = ty.uniforms.fy.value = THREE.MathUtils.clamp(v.y * 0.5 + 0.5, 0.15, 0.85);
+  tx.uniforms.amt.value = ty.uniforms.amt.value = i === 11 ? 1.2 : 4;
+  const under = cam.position.y < 0 && cam.position.x < WX1;   // underwater tint
+  sc.fog.color.copy(under ? DEEP : SKY); sc.background.copy(under ? DEEP : SKY); sc.fog.near = under ? 6 : (i === 11 ? 90 : 40); sc.fog.far = under ? 34 : (i === 11 ? 260 : 140);
+  return i;
+}
+// size rule: tallest projected figure height as a fraction of frame height
+const bb = new THREE.Box3(), corners = Array.from({ length: 8 }, () => new THREE.Vector3());
+function figFrac() { let mx = 0; for (const m of figs) { bb.setFromObject(m); let y0 = 9, y1 = -9, vis = false;
+  let k = 0; for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) corners[k++].set(x, y, z);
+  for (const c of corners) { c.project(cam); if (c.z < 1 && Math.abs(c.x) < 1.2 && Math.abs(c.y) < 1.2) vis = true; y0 = Math.min(y0, c.y); y1 = Math.max(y1, c.y); }
+  if (vis) mx = Math.max(mx, (y1 - y0) / 2); } return mx; }
+window.renderAt = t => { setCam(t); waves(t); flock(t); CAB.t.value = t; comp.render(); };
+window.checkSizes = () => SHOTS.map((_, i) => { let m = 0; for (const u of [0.02, 0.5, 0.98]) { setCam((i + u) * SHOT_LEN); m = Math.max(m, figFrac()); } return +m.toFixed(3); });
+window.renderAt(Number(new URLSearchParams(location.search).get("t") || 0));
+window.__info = { shots: SHOTS.length, figs: figs.length };
+window.__ready = true;
+</script></body></html>

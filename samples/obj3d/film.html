@@ -1,0 +1,640 @@
+<!doctype html><html><head><meta charset="utf-8"><title>miniature film</title>
+<style>html,body{margin:0;background:#dfe4e8}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/","/three/jsm/math/SimplexNoise.js":"/post/SimplexNoise.js"}}</script></head>
+<body><script type="module">
+// film.html?film=<id>[&ar=16x9] - GENERIC miniature film engine (v2). Everything is generated at runtime from data:
+//   films/<id>/lines.json  (voiced line times; the picture follows the voice)
+//   films/<id>/plan.json   (producer output: sets[] = composer specs, mg[] = MG beats (kinds + data), map = map spec, lines{n: visual})
+// Nothing prebuilt: sets come from sets/composer.js (shape grammar), MG from mg2d/kinds (generators), map from map3d.js (plan data).
+// Gates (window.checkSizes): blocked frames, camera speed (coast2 caps), figure size, text legibility (3D + 2D), MG text overlaps,
+// set variety, MG variety, map share/runs, pace (event gaps). Narration gate: subjects registry (render.mjs lines).
+import * as THREE from "three";
+import { buildSet } from "./sets/composer.js";
+import { buildMap } from "./map3d.js";
+import { installSubjects } from "./subjects.js";
+import { makeStage, P as PAL } from "./mg2d/core.js";
+import { KINDS } from "./mg2d/kinds/index.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+import { GTAOPass } from "three/addons/postprocessing/GTAOPass.js";
+import { buildRoom, ARCH } from "./sets/rooms.js";
+// v3: plan sets with scale "room"/"street" (or type in rooms.js ARCH) are built by sets/rooms.js (dollhouse cut-away / street diorama);
+// per line {set, subject, framing, path}; PLAN.cast = recurring silhouettes; PLAN.v3 = true enforces the v3 gates (see gates block).
+const QS = new URLSearchParams(location.search), LAND = QS.get("ar") === "16x9", FILM = QS.get("film") || "malacca";
+const W = LAND ? 1920 : 1080, H = LAND ? 1080 : 1920, FPS = 30, D2R = Math.PI / 180;
+const tLoad0 = performance.now();
+const VARIANT = QS.get("channel"), VLINES = VARIANT ? await fetch(`/films/${FILM}/variants/${VARIANT}/lines.json`).then(r => r.ok ? r.json() : null).catch(() => null) : null;   // channel variant (variants.mjs): last line swapped
+const LINES = VLINES || await (await fetch(`/films/${FILM}/lines.json`)).json(), PLAN = await (await fetch(`/films/${FILM}/plan.json`)).json();
+const T = Math.ceil((LINES[LINES.length - 1].end + 3.6) * 10) / 10, NF = Math.round(T * FPS);
+const smooth = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x), clamp = (x, a, b) => Math.max(a, Math.min(b, x)), Vv = (x, y, z) => new THREE.Vector3(x, y, z);
+// ---------------- renderer + look (same as the approved miniature look)
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H);
+r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05; r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+const outC = document.createElement("canvas"); outC.width = W; outC.height = H; document.body.appendChild(outC); const octx = outC.getContext("2d");
+r.domElement.style.display = "none"; document.body.appendChild(r.domElement);
+const c2 = document.createElement("canvas"); c2.width = W; c2.height = H; const x2 = c2.getContext("2d");
+const c3 = document.createElement("canvas"); c3.width = W; c3.height = H; const x3 = c3.getContext("2d");
+const SKY = new THREE.Color(0xdfe4e8), sc = new THREE.Scene(); sc.background = SKY.clone(); sc.fog = new THREE.Fog(SKY.clone(), 300, 900);
+const WHITE = new THREE.MeshStandardMaterial({ color: 0xf0eee9, roughness: 0.85 }), GREY = new THREE.MeshStandardMaterial({ color: 0xd6d5d1, roughness: 0.9 });
+const SAND = new THREE.MeshStandardMaterial({ color: 0xf2ede2, roughness: 0.95 }), DARK = new THREE.MeshStandardMaterial({ color: 0xb9b8b4, roughness: 0.8 }), RED = new THREE.MeshStandardMaterial({ color: 0xcf2219, roughness: 0.5 });
+const KM = { white: WHITE, grey: new THREE.MeshStandardMaterial({ color: 0xc9c8c4, roughness: 0.6 }), dark: new THREE.MeshStandardMaterial({ color: 0x9a9995, roughness: 0.8 }) };
+const KMR = { white: RED, grey: new THREE.MeshStandardMaterial({ color: 0xa81c14, roughness: 0.55 }), dark: new THREE.MeshStandardMaterial({ color: 0x8c1710, roughness: 0.7 }) };
+const texts = [], figs = [];
+const ctx = { M: { WHITE, GREY, SAND, DARK, RED }, KM, KMR, texts, figs, proxy: () => {} };
+const hemi = new THREE.HemisphereLight(0xeef3ff, 0xb9b2a6, 1.15); sc.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff0d8, 3.0); sun.castShadow = true; sc.add(sun.target, sun);
+sun.shadow.mapSize.set(4096, 4096); Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 900 }); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
+const cam = new THREE.PerspectiveCamera(40, W / H, 0.1, 1600), comp = new EffectComposer(r); comp.addPass(new RenderPass(sc, cam));
+const mk = d => new ShaderPass({ uniforms: { tDiffuse: { value: null }, dir: { value: d }, res: { value: new THREE.Vector2(W, H) }, fy: { value: 0.5 }, amt: { value: 4 }, b0: { value: 0.1 }, b1: { value: 0.42 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 dir, res; uniform float fy, amt, b0, b1; varying vec2 vUv;
+    void main(){ float b = smoothstep(b0, b1, abs(vUv.y-fy)) * amt; vec4 c = vec4(0.0); float w = 0.0;
+      for (int i=-6;i<=6;i++){ float k = exp(-float(i*i)/18.0); c += texture2D(tDiffuse, vUv + dir*float(i)*b/res)*k; w += k; }
+      gl_FragColor = c / w; }` });
+// ambient occlusion (room / street scenes only; exterior sets keep the approved look): GTAO at half resolution, blended before tilt-shift
+const ao = new GTAOPass(sc, cam, W, H); { const ss = ao.setSize.bind(ao); ao.setSize = (w, h) => ss(Math.round(w / 2), Math.round(h / 2)); ao.setSize(W, H); }
+ao.output = GTAOPass.OUTPUT.Default; ao.blendIntensity = 1.0; ao.updateGtaoMaterial({ radius: 0.35, distanceExponent: 1.4, thickness: 1.2, scale: 1.0, samples: 12 }); ao.updatePdMaterial({ radius: 6, samples: 12 }); ao.enabled = false; comp.addPass(ao);
+{ const r0 = ao.render.bind(ao), hid = []; ao.render = (...a) => { hid.length = 0; sc.traverseVisible(m => { if (m.isMesh && m.material && m.material.transparent && m.material.blending === THREE.AdditiveBlending) { m.visible = false; hid.push(m); } }); r0(...a); for (const m of hid) m.visible = true; }; }   // shafts stay out of the AO depth/normal pass
+{ const r0 = ao.render.bind(ao), hid = []; ao.render = (...a) => { hid.length = 0; sc.traverseVisible(m => { if (m.isMesh && m.material && m.material.transparent && m.material.blending === THREE.AdditiveBlending) { m.visible = false; hid.push(m); } }); r0(...a); for (const m of hid) m.visible = true; }; }   // shafts stay out of the AO depth/normal pass
+const tx = mk(new THREE.Vector2(1, 0)), ty = mk(new THREE.Vector2(0, 1)); comp.addPass(tx); comp.addPass(ty); comp.addPass(new OutputPass());
+
+// ================= sets (composer) - one region each, far apart =================
+const SETS = {}, REG = {}, PX = [];
+const isRoomSpec = sp => sp.scale === "room" || sp.scale === "street" || !!ARCH[sp.type];
+const roomFigs = new Set();
+(PLAN.sets || []).forEach((spec0, i) => { const room = isRoomSpec(spec0), spec = room ? { ...spec0, cast: { ...(PLAN.cast || {}), ...(spec0.cast || {}) } } : spec0;
+  const s = room ? buildRoom(spec, ctx) : buildSet(spec, ctx); s.isRoom = room; s.unit = room ? (s.info.unit ?? 1) : 1; s.group.position.set((i % 8) * 2200, 0, Math.floor(i / 8) * 2200 + 2200); sc.add(s.group); s.group.visible = false; s.group.updateMatrixWorld(true);
+  if (room) { for (const g of s.figures || []) { figs.push(g); roomFigs.add(g); } if ((s.info.warns || []).length) console.log("room " + spec.id + " warns: " + s.info.warns.slice(0, 6).join(" | ")); }
+  else for (const it of s.items || []) if (it.what === "people" && it.obj) it.obj.children.forEach(c => figs.push(c));   // mannequins -> figure-size gate
+  const reg = "set:" + spec.id; s.off = s.group.position.clone(); s.spec = spec; SETS[spec.id] = s; REG[reg] = s.group;
+  for (const p of s.proxies) { p.mesh.updateMatrixWorld(true); PX.push({ mesh: p.mesh, region: reg, hs: p.hs, dyn: p.dyn, set: s, inv: new THREE.Matrix4().copy(p.mesh.matrixWorld).invert() }); } });
+console.log('T sets', Math.round(performance.now() - tLoad0));
+// ================= map (plan data) =================
+const MAP_O = Vv(-3000, 0, 0); let MAP = null;
+if (PLAN.map) { MAP = buildMap(ctx, await (await fetch("/data/ne_110m_admin_0_countries.geojson")).json(), MAP_O, PLAN.map); sc.add(MAP.group); REG.map = MAP.group; MAP.group.visible = false; }
+
+// ================= script -> visual per line (from the plan) =================
+for (const l of LINES) { const v = PLAN.lines[l.n] || PLAN.lines[String(l.n)]; if (!v) throw new Error("plan has no visual for line " + l.n); l.v = v;
+  l.key = v.set ? "set:" + v.set : v.mg ? "mg:" + v.mg : "map"; l.kind = v.mg ? "2d" : "3d"; l.subj = v.set ? `set:${v.set}:${v.subject || "focus"}` : v.mg ? `mg:${v.mg}:${v.focus ?? 0}` : `map:${v.subject || "map"}`; }
+const occ = {}; LINES.forEach(l => { l.k = occ[l.subj] = (occ[l.subj] ?? -1) + 1; });
+const RUNS0 = []; for (const l of LINES) { const last = RUNS0[RUNS0.length - 1]; if (last && last.key === l.key) last.lines.push(l); else RUNS0.push({ key: l.key, kind: l.kind, lines: [l] }); }
+RUNS0.forEach((ru, i) => { ru.t0 = i ? RUNS0[i - 1].t1 : 0; const nx = RUNS0[i + 1], le = ru.lines[ru.lines.length - 1].end; ru.t1 = nx ? Math.max(le + 0.1, nx.lines[0].start - 0.55) : T;
+  if (nx && nx.lines[0].v.chapterOpen) ru.t1 = Math.min(ru.t1, le + 0.45); });   // chapterOpen (plan line flag): the chapter's set + its in-world title sign take over right after the last word, so the title holds through the chgap pause
+
+// ================= MG beats (one stage per beat; a beat split over several runs continues where it left off) =================
+const MG2D = [], MODS = {}, cuesOut = [], MG_EV = [], BRIDGES = [];
+for (const beat of PLAN.mg || []) { const runs = RUNS0.filter(r => r.key === "mg:" + beat.id); if (!runs.length) continue;
+  const keys0 = makeStage({ registry: KINDS, seed: 1, parts: beat.parts, at: {} }, { W, H }).keys;   // learn the focus keys; lines address them by index (or key)
+  const fkey = f => typeof f === "number" ? keys0[Math.min(f, keys0.length - 1)] : f;
+  let acc = 0; const at = {}; runs.forEach(ru => { ru.m0 = acc; for (const l of ru.lines) { const k = fkey(l.v.focus ?? 0); l.fkey = k; l.subj = `mg:${beat.id}:${Math.max(0, keys0.indexOf(k))}`; if (at[k] === undefined) at[k] = Object.keys(at).length ? acc + l.start - ru.t0 : 0.0; } acc += ru.t1 - ru.t0; });
+  const last = runs[runs.length - 1], lastEnd = last.m0 + last.lines[last.lines.length - 1].end - last.t0;
+  const prevRu = RUNS0[RUNS0.indexOf(runs[0]) - 1], prevSet = prevRu && prevRu.key.startsWith("set:") ? (PLAN.sets || []).find(q => "set:" + q.id === prevRu.key) : null, prevRoom = prevSet && isRoomSpec(prevSet);
+  const TABLETOP = new Set(["boardroom", "diner", "hearing", "courtroom", "hotel", "newsroom", "trading", "trollfarm", "office", "lab"]);
+  const bridge = beat.bridge === false ? null : beat.bridge ?? (prevRoom ? { from: TABLETOP.has(prevSet.type) ? "tabletop" : "poster", rect: [W * 0.4, H * 0.4, W * 0.2, H * 0.2], dur: 0.7, prevKey: prevRu.key, prevLine: prevRu.lines[prevRu.lines.length - 1] } : null);
+  const st = makeStage({ registry: KINDS, seed: (PLAN.seed ?? 7) * 101 + MG2D.length * 7, cards: beat.cards ?? PLAN.mgCards ?? false, parts: beat.parts, at, dur: Math.max(acc, lastEnd + 1.0), end: acc - lastEnd > 1.6 ? 1.1 : 0, ...(bridge ? { bridge: { from: bridge.from, rect: bridge.rect, dur: bridge.dur } } : {}) }, { W, H });
+  if (bridge && st.bridge) BRIDGES.push({ st, b: bridge, t0: runs[0].t0 });
+  const over = st.T - acc; if (over > 0.05) { last.t1 += over; const nx = RUNS0[RUNS0.indexOf(last) + 1]; if (nx) nx.t0 = last.t1; }
+  MODS[beat.id] = { st, runs, beat, mt: t => { for (const ru of runs) if (t >= ru.t0 - 1e-6 && t <= ru.t1 + 1e-6) return ru.m0 + t - ru.t0; return null; } };
+  runs.forEach((ru, ri) => MG2D.push({ t0: ru.t0, t1: ru.t1, mode: "full", fade: true, bridge: ri === 0 && bridge && st.bridge ? st.bridge.dur : 0, key: beat.id, draw: (g, tl) => st.draw(g, ru.m0 + tl) }));
+  let firstCue = false; for (const [t, id, db, pan] of st.cues) { const ru = runs.find(q => t >= q.m0 && t < q.m0 + (q.t1 - q.t0)); if (ru) { const e = [ru.t0 + t - ru.m0, id, db, pan]; MG_EV.push(e); if (!firstCue) { firstCue = true; cuesOut.push(e); } } } }   // audio: one UI cue per MG beat; MG_EV keeps every element event for the event-gap gate
+for (const l of LINES) if (l.kind === "2d" && !MODS[l.v.mg]) throw new Error("line " + l.n + " uses unknown mg beat " + l.v.mg);
+
+console.log('T mg', Math.round(performance.now() - tLoad0));
+// ================= camera: framing per line (composer framings or a solved framing on the line's subject) =================
+const spher = (S, u) => { const az = (S.az + S.daz * u) * D2R, el = S.el * D2R, d = S.d * (1 + (S.dd - 1) * u), look = S.look.clone().addScaledVector(S.dlook || Vv(0, 0, 0), u);
+  return { look, pos: look.clone().add(Vv(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az)).multiplyScalar(d)) }; };
+const usedFraming = {};   // "set|framing|subject" -> count (variety gate)
+const TEMPL = [[30, 22, 1.25], [-35, 28, 1.3], [80, 14, 1.15], [150, 26, 1.35], [0, 48, 1.5], [-110, 18, 1.2], [200, 34, 1.4]];   // az offset, el, distance factor (rotated so no two shots repeat)
+// subject position at time t (vessels move along lanes): framings track the subject, never a stale t=0 position
+function subjCenter(s, subj, idx, t) { s.update(t); const objs = subj === "focus" || subj === "set" ? (s.focus ? [s.focus.obj] : []) : [].concat(s.subjects[subj] || []); const o = objs.length ? [objs[Math.min(idx || 0, objs.length - 1)]] : [];
+  if (!o.length) return null; const bb = new THREE.Box3(); o.forEach(x => { x.updateMatrixWorld(true); bb.expandByObject(x); }); return bb.isEmpty() ? null : bb.getCenter(Vv()); }
+// ---- room / street sets (sets/rooms.js): metres (street: x0.4), cut-away sides only (info.azRange), close camera (info.camMin), named high framings kept
+const ROOM_HIGH = new Set(["topDown", "highCorner", "wide", "reveal1"]);   // framings whose elevation is part of the composition (no el<=40 clamp)
+const PREF_ROOM_FOCUS = ["threeQuarter", "eyeLevel", "alongTable", "overShoulder", "detail", "lateral", "reveal3", "doorway", "highCorner", "wide"];
+const PREF_ROOM_SET = ["wide", "highCorner", "doorway", "reveal1", "threeQuarter", "detail", "topDown"];
+const ROOM_TEMPL = [[0.5, 26, 1.0], [0.22, 34, 1.15], [0.78, 20, 1.05], [0.36, 42, 1.25], [0.64, 16, 1.0], [0.12, 30, 1.2], [0.9, 24, 1.1]];   // az fraction of the open range, el, distance factor
+function roomS(s, fr, kd, opt = {}) { const [az0, az1] = s.info.azRange || [0, 360], span = az1 - az0, daz = opt.daz ?? (fr.exact ? 2 : span >= 359 ? 6 : Math.min(6, span * 0.08)) * (kd % 2 ? -1 : 1);
+  const az = span >= 359 ? fr.az : clamp(((fr.az % 360) + 360) % 360, az0 + Math.abs(daz) + 1, az1 - Math.abs(daz) - 1);
+  return { look: fr.look.clone().add(s.off), az, el: ROOM_HIGH.has(fr.name) || opt.keepEl ? fr.el : Math.min(fr.el, 40), d: fr.d, daz, dd: opt.dd ?? 0.95 }; }
+const capCam = new THREE.PerspectiveCamera(40, W / H, 0.05, 2000), capBox = new THREE.Box3(), capP = Vv();
+function figMaxFrom(s, pos, look) { capCam.position.copy(pos); capCam.up.set(0, 1, 0); capCam.lookAt(look); capCam.updateMatrixWorld(); capCam.updateProjectionMatrix(); let mx = 0;
+  // figure height in frame = projected distance feet -> head on the figure's vertical axis (bbox corners overstate it at steep angles); figures whose
+  // centre is outside the frame are skipped unless their visible part alone would exceed the cap
+  for (const g of s.figures || []) { capBox.setFromObject(g); const cx = (capBox.min.x + capBox.max.x) / 2, cz = (capBox.min.z + capBox.max.z) / 2, top = capP.set(cx, capBox.max.y, cz).clone(), bot = capP.set(cx, capBox.min.y, cz).clone(), mid = top.clone().lerp(bot, 0.5);
+    if (mid.clone().applyMatrix4(capCam.matrixWorldInverse).z >= -0.05) continue; top.project(capCam); bot.project(capCam); mid.project(capCam);
+    const inF = Math.abs(mid.x) <= 1 && Math.abs(mid.y) <= 1, h = Math.abs(top.y - bot.y) / 2, hVis = Math.max(0, Math.min(1, Math.max(top.y, bot.y)) - Math.max(-1, Math.min(top.y, bot.y))) / 2;
+    if (Math.abs(mid.x) > 1.1) continue; mx = Math.max(mx, inF ? h : hVis); } return mx; }
+function capFig(s, S) { for (let k = 0; k < 14; k++) { let mx = 0; for (const u of [0, 0.5, 1]) { const q = spher(S, u); mx = Math.max(mx, figMaxFrom(s, q.pos, q.look)); } if (mx <= 0.33) return S; S.d *= 1.1; } return S; }
+function roomShot(l, s, v, kd) { const sh = roomShot0(l, s, v, kd); for (const S of sh.stops || [sh.S]) capFig(s, S); return sh; }
+function roomShot0(l, s, v, kd) { const subj = v.subject || "focus", U = s.unit, region = "set:" + v.set;
+  if (v.path) { const P = (s.paths || []).find(p => p.name === v.path); if (!P) throw new Error(`set ${v.set} has no path ${v.path}`);
+    const st = P.stops.map(n => s.framings.find(f => f.name === n)).filter(Boolean); if (st.length < 2) throw new Error(`path ${v.path} has <2 stops`);
+    const SS = st.map((f, i) => roomS(s, f, kd, { daz: i === st.length - 1 ? (kd % 2 ? -3 : 3) : 0, dd: i === st.length - 1 ? 0.96 : 1, keepEl: true }));
+    st.forEach(f => usedFraming[v.set + "|" + f.name + "|" + subj] = (usedFraming[v.set + "|" + f.name + "|" + subj] ?? 0)); return { region, S: SS[SS.length - 1], stops: SS, fr: "path:" + v.path }; }
+  const named = v.framing && s.framings.find(f => f.name === v.framing); if (v.framing && !named) throw new Error(`set ${v.set} has no framing ${v.framing}`);
+  if (named || subj === "focus" || subj === "set") { const PREF = subj === "set" ? PREF_ROOM_SET : PREF_ROOM_FOCUS, pool = named ? [named] : s.framings.filter(f => PREF.includes(f.name) && !/unverified/.test(f.note || "") && !f.drop);
+    const rank = f => PREF.indexOf(f.name), use = f => usedFraming[v.set + "|" + f.name + "|" + subj] ?? 0;
+    const fr = named || pool.slice().sort((a, b) => use(a) - use(b) || rank(a) - rank(b))[0]; if (!fr) throw new Error(`set ${v.set}: no usable framing`);
+    usedFraming[v.set + "|" + fr.name + "|" + subj] = use(fr) + 1; return { region, S: roomS(s, fr, kd), fr: fr.name }; }
+  const objs = [].concat(s.subjects[subj] || []); if (!objs.length) throw new Error(`set ${v.set} has no subject ${subj}`);
+  const bb = new THREE.Box3(); objs.slice(0, 16).forEach(o => { o.updateMatrixWorld(true); bb.expandByObject(o); }); const c = bb.getCenter(Vv()); c.y = Math.min(c.y, bb.min.y + 1.1 * U);
+  const rad = Math.max(0.9 * U, bb.getSize(Vv()).length() * 0.5), [az0, az1] = s.info.azRange || [0, 360], tp = ROOM_TEMPL[(kd + (s.spec.seed ?? 0)) % ROOM_TEMPL.length];
+  const dMin = Math.max(s.info.camMin ?? 4 * U, 7.4 * U);   // a standing figure near the look point stays under the 0.35 cap
+  usedFraming[v.set + "|rt" + (kd % ROOM_TEMPL.length) + "|" + subj] = (usedFraming[v.set + "|rt" + (kd % ROOM_TEMPL.length) + "|" + subj] ?? 0) + 1;
+  return { region, S: { look: c, az: az1 - az0 >= 359 ? 45 + 360 * tp[0] : az0 + 6 + (az1 - az0 - 12) * tp[0], el: tp[1], d: clamp(rad * 2.4 * tp[2], dMin, 60 * U), daz: kd % 2 ? -5 : 5, dd: 0.94 }, fr: "rt" + (kd % ROOM_TEMPL.length) }; }
+function shotFor(l) {
+  const v = l.v, kd = l.k;
+  if (v.set && SETS[v.set]?.isRoom) return roomShot(l, SETS[v.set], v, kd);
+  if (v.set) { const s = SETS[v.set]; if (!s) throw new Error("unknown set " + v.set); const subj = v.subject || "focus";
+    if (Array.isArray(v.path)) { const st = v.path.map(n => s.framings.find(f => f.name === n)).filter(Boolean); if (st.length < 2) throw new Error(`set ${v.set}: path needs 2+ known framings`);
+      const SS = st.map((fr, i) => ({ look: fr.look.clone().add(s.off), az: fr.az, el: fr.name === "topDown" ? fr.el : Math.min(fr.el, 48), d: Math.min(fr.d, 175), daz: i === st.length - 1 ? (kd % 2 ? -4 : 4) : 0, dd: i === st.length - 1 ? 0.95 : 1 }));
+      return { region: "set:" + v.set, S: SS[SS.length - 1], stops: SS, fr: "path:" + v.path.join(">") }; }
+    if (Array.isArray(v.path)) { const st = v.path.map(n => s.framings.find(f => f.name === n)).filter(Boolean); if (st.length < 2) throw new Error(`set ${v.set}: path needs 2+ known framings`);
+      const SS = st.map((fr, i) => ({ look: fr.look.clone().add(s.off), az: fr.az, el: fr.name === "topDown" ? fr.el : Math.min(fr.el, 48), d: Math.min(fr.d, 175), daz: i === st.length - 1 ? (kd % 2 ? -4 : 4) : 0, dd: i === st.length - 1 ? 0.95 : 1 }));
+      return { region: "set:" + v.set, S: SS[SS.length - 1], stops: SS, fr: "path:" + v.path.join(">") }; }
+    const named = v.framing && s.framings.find(f => f.name === v.framing);
+    if (named || subj === "focus" || subj === "set") { const pool = named ? [named] : s.framings.filter(f => !/unverified/.test(f.note || ""));
+      // prefer framings that read the subject (mid/close); wide/top-down only when asked or nothing else is left
+      const PREF = subj === "set" ? ["highOblique", "threeQuarter", "orbitBack", "wide", "lateralLow", "detail", "alongAxis", "pushThrough", "overShoulder", "topDown"] : ["threeQuarter", "lateralLow", "orbitBack", "detail", "overShoulder", "highOblique", "pushThrough", "alongAxis", "wide", "topDown"];
+      const rank = f => { const i = PREF.indexOf(f.name); return i < 0 ? 50 : i; }, use = f => usedFraming[v.set + "|" + f.name + "|" + subj] ?? 0;
+      const fr = named || pool.slice().sort((a, b) => use(a) - use(b) || rank(a) - rank(b))[0];
+      usedFraming[v.set + "|" + fr.name + "|" + subj] = (usedFraming[v.set + "|" + fr.name + "|" + subj] ?? 0) + 1;
+      const c0 = subjCenter(s, subj, v.idx, 0), c1 = subjCenter(s, subj, v.idx, l.start), c2 = subjCenter(s, subj, v.idx, l.end);
+      const shift = c0 && c1 && subj !== "set" ? c1.clone().sub(c0) : Vv(), drift = c1 && c2 && subj !== "set" ? c2.clone().sub(c1) : Vv();
+      return { region: "set:" + v.set, S: { dlook: drift, look: fr.look.clone().add(s.off).add(shift), az: fr.az, el: Math.min(fr.el, subj === "set" ? 48 : 40), d: Math.min(fr.d, subj === "set" ? 175 : 120), daz: kd % 2 ? -7 : 7, dd: 0.92 }, fr: fr.name }; }
+    const objs = s.subjects[subj]; if (!objs || !objs.length) throw new Error(`set ${v.set} has no subject ${subj}`);
+    const objs3 = [].concat(objs).slice(0, 3);   /* a long queue: frame its leading members, not the whole lane */
+    s.update(l.start); const bb = new THREE.Box3(); objs3.forEach(o => { o.updateMatrixWorld(true); bb.expandByObject(o); }); const c = bb.getCenter(Vv()), rad = Math.max(6, bb.getSize(Vv()).length() * 0.5);
+    s.update(l.end); const bb2 = new THREE.Box3(); objs3.forEach(o => { o.updateMatrixWorld(true); bb2.expandByObject(o); }); const drift = bb2.getCenter(Vv()).sub(c);
+    const tp = TEMPL[(kd + (s.spec.seed ?? 0)) % TEMPL.length], base = (s.light?.sunAz ?? 120) + 180;
+    usedFraming[v.set + "|t" + ((kd) % TEMPL.length) + "|" + subj] = (usedFraming[v.set + "|t" + ((kd) % TEMPL.length) + "|" + subj] ?? 0) + 1;
+    return { region: "set:" + v.set, S: { look: c, dlook: drift, az: base + tp[0], el: tp[1], d: clamp(rad * 2.4 * tp[2], 14, 160), daz: kd % 2 ? -8 : 8, dd: 0.9 }, fr: "t" + (kd % TEMPL.length) }; }
+  if (v.map !== undefined || l.key === "map") { const s = v.subject || "map";
+    if (s === "map") { const c = MAP.center.clone().add(MAP_O); const V3 = [[0, 0, 90, 58, 56], [-9, 3, 118, 40, 46], [8, 2, 62, 48, 50], [2, -4, 100, 66, 60]][kd % 4]; c.x += V3[0]; c.z += V3[1]; return { region: "map", S: { look: c, az: V3[2], el: V3[3], d: V3[4], daz: kd % 2 ? -6 : 6, dd: 0.94 } }; }   // overview angles differ per use
+    if (s.startsWith("route:")) { const R = MAP.routes[s.slice(6)], b = R.box, c = b.getCenter(Vv()).add(MAP_O), sz = b.getSize(Vv());
+      const d = Math.max(sz.x / (2 * Math.tan(32 * D2R)), sz.z / (2 * Math.tan(20 * D2R)) * 0.8) * 1.2 + 9; return { region: "map", S: { look: c, az: [90, 104, 78][kd % 3], el: [58, 50, 64][kd % 3], d, daz: kd % 2 ? -5 : 5, dd: 0.93 } }; }
+    if (s.startsWith("pin:")) { const p = MAP.pins[s.slice(4)].pin.position.clone().add(MAP_O); return { region: "map", S: { look: p, az: [94, 80, 108][kd % 3], el: 55, d: [21, 19, 23][kd % 3], daz: 5, dd: 0.92 } }; } }
+  throw new Error("no shot for line " + l.n);
+}
+// focus windows: what is red when (the line's subject; red = current focus only)
+const FOCUSW = []; for (const l of LINES) if (l.v.set) FOCUSW.push({ set: l.v.set, subject: l.v.subject && l.v.subject !== "set" ? l.v.subject : (l.v.subject === "set" ? null : "focus"), idx: l.v.idx ?? 0, a: l.start - 0.6, b: l.end + 0.6, n: l.n });
+const focusAt = (setId, t) => { const w = FOCUSW.find(f => f.set === setId && t >= f.a && t <= f.b); return w ? w : null; };
+// focus per RENDERED SHOT (camera key k, k.lines = the lines it films): a shot keeps its own focus until it is fully gone (live-dissolve ghost, old 0.5 s dissolve,
+// MG fade-over), so the red never drops / jumps on an outgoing picture. Inside the shot the windows switch as before; before its first / after its last window it holds.
+const focusOfKey = (k, t) => { const ws = k.fw ??= (k.lines || []).filter(l => "set:" + l.v.set === k.region).map(l => FOCUSW.find(w => w.n === l.n)).filter(Boolean);
+  if (!ws.length) return focusAt(k.region.slice(4), t); let w = ws.find(q => t >= q.a && t <= q.b); if (!w) { w = ws[0]; for (const q of ws) if (q.a <= t) w = q; } return w; };
+const focusSig = w => w ? `${w.set}:${w.subject}:${w.idx}` : "none";
+if (MAP) { for (const l of LINES) { const s = l.v.set ? null : l.v.subject; if (!s || l.kind === "2d") continue; if (s.startsWith("route:") || s.startsWith("pin:")) { MAP.focusWin[s] ??= []; MAP.focusWin[s].push([l.start, l.end]); const id = s.split(":")[1]; MAP.intro(id, l.start + 0.15); MAP.setSignWin(id, l.start - 0.2, l.end + 0.6); MAP.setSignWin(id + "2", l.start - 0.2, l.end + 0.6); } }
+  for (const [id, a] of Object.entries(PLAN.map.introWith || {})) { const l = LINES.find(q => q.v.subject === a); if (l) { MAP.intro(id, l.start); MAP.setSignWin(id, l.start, l.end + 0.6); } } MAP.finalize(T); }
+
+const RUNS = [], DISS = [], KEYS = [];
+const angV = (a, b) => { const d0 = a.look.clone().sub(a.pos).normalize(), d1 = b.look.clone().sub(b.pos).normalize(); return Math.acos(clamp(d0.dot(d1), -1, 1)) / D2R; };
+const SHOT = {};
+// ---- v3.1 room/street camera (OLDCAM=1 in the URL restores the old keys for before/after): ONE eased move per line (smootherstep, zero tangents at shot ends), a glide to the
+// next line only if it fits the caps (else a LIVE 1.0 s dissolve: outgoing + incoming both keep moving), 1.2 s dissolve at set changes, daz sign never flips (vector law),
+// speed caps per scale (room / street), path hops >= cap.hop seconds. Key = [t, pos, look, still].
+const OLDCAM = QS.get("oldcam") === "1", PK = 1.875, DISS_RUN = 1.2, DISS_LINE = 1.0, GLIDE_MAX = 3.0;   // PK = smootherstep peak/avg speed
+const CAM_CAP = { room: { ang: 8, angMax: 12, lin: 0.14, linMax: 0.25, step: 1.0, linStep: 0.02, hop: 4, rate: 3.2 }, street: { ang: 6, angMax: 9, lin: 0.12, linMax: 0.2, step: 0.8, linStep: 0.016, hop: 5.5, rate: 2.2 }, world: { ang: 6, angMax: 9, lin: 0.12, linMax: 0.2, step: 0.8, linStep: 0.016, hop: 5.5, rate: 2.2 } };   // world = non-room composer sets   // deg/s, share-of-view-distance/s, per-frame speed step, seconds per path hop
+const scaleOf = s => s.isRoom ? (s.info.scale === "street" ? "street" : "room") : "world", capOf = s => s ? CAM_CAP[scaleOf(s)] : null, GHOSTS = [], PO = {}, LO = {}, RO = {};
+let dirSgn = 1;
+const isRoomRun = ru => !OLDCAM && ru.kind !== "2d" && !!SETS[ru.lines[0].v.set];   // every 3D set run (room, street, world)
+RUNS0.forEach((ru, i) => { const nx = RUNS0[i + 1]; if (nx && isRoomRun(ru) && isRoomRun(nx)) { const le = ru.lines[ru.lines.length - 1].end, tc = nx.lines[0].v.chapterOpen ? Math.min((le + nx.lines[0].start) / 2, le + 0.75) : (le + nx.lines[0].start) / 2; ru.bEnd = tc - DISS_RUN / 2; ru.gEnd = tc + DISS_RUN / 2; nx.bStart = ru.bEnd; DISS.push({ t: tc, d: DISS_RUN, live: true }); } });
+const swing = (a, b, dRef) => { const dist = a.pos.distanceTo(b.pos) / Math.max(dRef, b.pos.distanceTo(b.look)); return { dist, ang: angV(a, b) }; };
+function roomRunKeys(ru) {
+  const set = SETS[ru.lines[0].v.set], cap = capOf(set), dRef = set.isRoom ? 2 * set.unit : 20, ls = ru.lines, region = "set:" + ls[0].v.set, sh = ls.map(l => shotFor(l)), nL = ls.length;
+  ls.forEach((l, i) => { const s = sh[i], S = s.S, dur = Math.max(1.8, l.end - l.start); SHOT[l.n] = s.fr;
+    S.daz = Math.abs(S.daz ?? 0) * dirSgn; const mA = cap.ang * 0.7 * dur / PK, mD = cap.lin * 0.7 * dur / PK; S.daz = clamp(S.daz, -mA, mA); S.dd = 1 + clamp((S.dd ?? 1) - 1, -mD, mD);   // drift fits the line, direction never flips
+    if (s.stops) { const hopOK = st => { const n = st.length, dt = 0.9 * dur / (n - 1); if (dt < cap.hop) return false; for (let k = 1; k < n; k++) { const q = swing(spher(st[k - 1], 0), spher(st[k], 0), dRef); if (PK * q.dist / dt > cap.lin || PK * q.ang / dt > cap.ang) return false; } return true; };
+      if (!hopOK(s.stops) && s.stops.length > 2) s.stops = [s.stops[0], s.stops[s.stops.length - 1]]; if (!hopOK(s.stops)) { s.stops = null; s.fr = "single:" + s.fr; SHOT[l.n] = s.fr; } }
+    if (!s.stops) { let dz = Math.min(cap.rate * dur, cap.ang * 0.85 * dur / PK), sg = dirSgn; const rg = set.info?.azRange;   /* alive: one eased orbit per line; flips only to stay inside the cut-away arc */
+      if (rg && rg[1] - rg[0] < 359) { const lo = rg[0] + 3, hi = rg[1] - 3, bad = x => S.az + x * dz > hi || S.az + x * dz < lo; if (bad(sg)) sg = -sg; if (bad(sg)) dz = Math.max(0, Math.min(dz, sg > 0 ? hi - S.az : S.az - lo)); } S.daz = sg * dz; } });
+  // transitions between lines: glide only if the caps hold over the available time, otherwise a live dissolve in the middle of the gap
+  const tr = [null], tBp = [null]; for (let i = 1; i < nL; i++) { const pv = ls[i - 1], l = ls[i], dur = l.end - l.start, tB = pv.end - 0.3, avail = l.start + Math.min(1.5, 0.3 * dur) - tB, q = swing(spher(sh[i - 1].S, 1), spher(sh[i].stops ? sh[i].stops[0] : sh[i].S, 0), dRef), need = PK * Math.max(q.dist / cap.lin, q.ang / cap.ang);
+    tBp[i] = tB; tr[i] = need <= Math.min(GLIDE_MAX, avail) ? { glide: true, dt: Math.min(avail, Math.max(need, l.start - pv.end + 0.6)) } : { glide: false, tc: (pv.end + l.start) / 2 }; }
+  const tStart = ru.bStart ?? ru.t0, tEndOwn = ru.bEnd ?? ru.t1, segs = []; let a = 0; for (let i = 1; i <= nL; i++) if (i === nL || !tr[i].glide) { segs.push([a, i - 1]); a = i; }
+  segs.forEach(([a, b], si) => { const t0 = si === 0 ? tStart : tr[a].tc - DISS_LINE / 2, nxt = segs[si + 1], t1 = nxt ? tr[nxt[0]].tc - DISS_LINE / 2 : tEndOwn, gEnd = nxt ? tr[nxt[0]].tc + DISS_LINE / 2 : (ru.gEnd ?? ru.t1), keys = [], k = { t0, t1, region, keys, pushed: true, lines: ls.slice(a, b + 1) }; KEYS.push(k); RUNS.push([t0, t1, region]);
+    if (nxt) DISS.push({ t: tr[nxt[0]].tc, d: DISS_LINE, live: true });
+    for (let i = a; i <= b; i++) { const l = ls[i], s = sh[i], last = i === b, A = spher(s.stops ? s.stops[0] : s.S, 0), B = spher(s.S, 1); l.revealT = []; l.cutT = i === a ? (a === 0 ? ru.t0 : tr[a].tc) : null;
+      const tA = i === a ? t0 : tBp[i] + tr[i].dt;
+      keys.push([tA, A.pos, A.look, true]); const tE = last ? l.end : l.end - 0.3;
+      if (s.stops) { const n = s.stops.length; let tPrev = tA; for (let j = 1; j < n; j++) { const t = tA + (tE - tA) * j / (n - 1), Q = j === n - 1 ? B : spher(s.stops[j], 0); keys.push([t, Q.pos, Q.look, j === n - 1 && !last]); l.revealT.push((tPrev + t) / 2); tPrev = t; } }
+      else keys.push([tE, B.pos, B.look, !last]);
+      if (last) { const tX = Math.max(l.end + 0.2, gEnd + 0.1), E = spher(s.S, 1 + (tX - l.end) / Math.max(4, l.end - l.start)); keys.push([tX, E.pos, E.look, false]); } }
+    for (let q = 1; q < keys.length; q++) if (keys[q][0] < keys[q - 1][0] + 0.05) keys[q][0] = keys[q - 1][0] + 0.05;
+    if (nxt) GHOSTS.push({ t0: t1, t1: tr[nxt[0]].tc + DISS_LINE / 2 + 1 / FPS, region, keys, ghost: true }); });
+  if (ru.gEnd !== undefined) { const k = KEYS[KEYS.length - 1]; GHOSTS.push({ t0: ru.bEnd, t1: ru.gEnd + 1 / FPS, region, keys: k.keys, ghost: true }); }
+  dirSgn = Math.sign(sh[nL - 1].S.daz) || dirSgn; }
+// ---- camera gate (room / street caps + speed steps) : key-list report (pre-solver, no frames) and the solved-path gate camStats() ----
+const q95 = (x, p) => { if (!x.length) return 0; const s = [...x].sort((m, n) => m - n); return +s[Math.min(s.length - 1, Math.floor(p * s.length))].toFixed(3); }, stt = x => ({ p50: q95(x, .5), p95: q95(x, .95), max: +(x.length ? Math.max(...x) : 0).toFixed(3) });
+function keyReport() { const rows = { room: { a: [], l: [], s: [] }, street: { a: [], l: [], s: [] }, world: { a: [], l: [], s: [] } }, bad = {}, lineAt = t => { let n = LINES[0].n; for (const l of LINES) if (l.start - 0.9 <= t) n = l.n; return n; }; let minShot = 1e9, minAt = 0;
+  for (const k of KEYS) { const set = k.region.startsWith("set:") ? SETS[k.region.slice(4)] : null, cap = capOf(set); if (!cap) continue; const sc = scaleOf(set); let pg = null, pa = null, pl = null;
+    if (!k.ghost && k.t1 - k.t0 < minShot) { minShot = k.t1 - k.t0; minAt = k.t0; }
+    for (let f = Math.ceil(k.t0 * FPS); f <= Math.round(k.t1 * FPS) - 1; f++) { const g = k.gen(f / FPS); if (pg) { const d0 = pg.look.clone().sub(pg.pos), d1 = g.look.clone().sub(g.pos), a = d0.angleTo(d1) / D2R * FPS, l = g.pos.distanceTo(pg.pos) * FPS / d0.length(), sa = pa === null ? 0 : Math.abs(a - pa), sl = pl === null ? 0 : Math.abs(l - pl);
+        rows[sc].a.push(a); rows[sc].l.push(l); rows[sc].s.push(sa); const r = Math.max(a / cap.angMax, l / cap.linMax, sa / cap.step, sl / cap.linStep);
+        if (r > 1) { const n = lineAt(f / FPS); if (!bad[n] || bad[n].r < r) bad[n] = { line: n, t: +(f / FPS).toFixed(2), r: +r.toFixed(2), ang: +a.toFixed(1), lin: +l.toFixed(3), step: +sa.toFixed(2) }; } pa = a; pl = l; } pg = g; } }
+  const out = {}; let pass = true; for (const sc of ["room", "street", "world"]) { const R = rows[sc], cap = CAM_CAP[sc]; if (!R.a.length) continue; const a = stt(R.a), l = stt(R.l), s = stt(R.s); out[sc] = { ang: a, lin: l, step: s, caps: cap }; if (a.p95 > cap.ang || l.p95 > cap.lin) pass = false; }
+  const fails = Object.values(bad).sort((x, y) => y.r - x.r); if (fails.length) pass = false; if (minShot < 2.0 - 1e-6) pass = false;
+  return { ...out, nBad: fails.length, bad: fails.slice(0, 30), minShot: +minShot.toFixed(2), minShotAt: +minAt.toFixed(1), dissolves: { n: DISS.length, live: DISS.filter(d => d.live).length, oldStyle: DISS.filter(d => !d.live).map(d => +d.t.toFixed(1)), dMin: DISS.length ? Math.min(...DISS.map(d => d.d)) : 0, dMax: DISS.length ? Math.max(...DISS.map(d => d.d)) : 0 }, oldcam: OLDCAM, pass }; }
+for (const ru of RUNS0) {
+  if (ru.kind === "2d") { RUNS.push([ru.t0, ru.t1, "mg"]); continue; }
+  if (isRoomRun(ru)) { roomRunKeys(ru); continue; }
+  let cur = null; const open = (t, region) => { cur = { t0: t, region, keys: [], lines: [] }; KEYS.push(cur); };
+  ru.lines.forEach(l => { const sh = shotFor(l); SHOT[l.n] = sh.fr; const A = spher(sh.stops ? sh.stops[0] : sh.S, 0), B = spher(sh.S, 1), tA = l.start + Math.min(0.5, (l.end - l.start) * 0.15);
+    const rs = l.v.set && SETS[l.v.set]?.isRoom ? SETS[l.v.set] : null, dRef = rs ? 2 * rs.unit : 20;   // room scale: no 20-unit floor on the move/cut test
+    l.cutT = null; if (!cur) { open(ru.t0, sh.region); cur.keys.push([ru.t0, A.pos, A.look]); l.cutT = ru.t0; }
+    else { const pv = cur.keys[cur.keys.length - 1], dt = tA - pv[0], dist = pv[1].distanceTo(A.pos) / Math.max(dRef, A.pos.distanceTo(A.look)), ang = angV({ pos: pv[1], look: pv[2] }, A);
+      if (dist / dt > 0.55 || ang / dt > 22) { const tc = Math.max(pv[0] + 0.2, l.start - 0.45); cur.t1 = tc; open(tc, sh.region); DISS.push({ t: tc, d: 0.5 }); cur.keys.push([tc, A.pos, A.look]); l.cutT = tc; } }
+    if (Math.abs(cur.keys[cur.keys.length - 1][0] - tA) > 0.05) cur.keys.push([tA, A.pos, A.look]);
+    l.revealT = []; cur.lines.push(l);
+    if (sh.stops) { const tE = Math.max(tA + 0.3, l.end), n = sh.stops.length; let tPrev = tA;   // a 2-3 stop reveal across the line (hermite keys -> one continuous dolly)
+      for (let i = 1; i < n; i++) { const t = tA + (tE - tA) * 0.9 * i / (n - 1), Q = spher(sh.stops[i], 0); cur.keys.push([t, Q.pos, Q.look]); l.revealT.push((tPrev + t) / 2); tPrev = t; }
+      if (tE - tPrev > 0.05) cur.keys.push([tE, B.pos, B.look]); }
+    else cur.keys.push([Math.max(tA + 0.3, l.end), B.pos, B.look]); ru.lastShot = sh; ru.lastLine = l; });
+  const l = ru.lastLine, E = spher(ru.lastShot.S, 1 + (ru.t1 - l.end) / Math.max(4, l.end - l.start)); cur.keys.push([ru.t1, E.pos, E.look]); cur.t1 = ru.t1;
+  for (const k of KEYS.filter(q => q.t0 >= ru.t0 - 1e-6 && q.t1 <= ru.t1 + 1e-6 && !q.pushed)) { k.pushed = true; RUNS.push([k.t0, k.t1, k.region]); } }
+RUNS.forEach((ru, i) => { if (i && ru[2] !== "mg" && RUNS[i - 1][2] !== "mg" && !DISS.some(d => Math.abs(d.t - ru[0]) < (d.live ? d.d / 2 + 0.03 : 0.01))) { const k1 = !OLDCAM && KEYS.find(k => !k.ghost && Math.abs(k.t1 - ru[0]) < 1e-6), k2 = !OLDCAM && KEYS.find(k => !k.ghost && Math.abs(k.t0 - ru[0]) < 1e-6);   /* run boundary to/from a non-room set: 1.0 s dissolve, outgoing keeps drifting (ghost), incoming pre-rolled */
+      if (k1 && k2 && k1 !== k2) { const tc = ru[0], a = tc - DISS_LINE / 2; GHOSTS.push({ t0: a, t1: tc + DISS_LINE / 2 + 1 / FPS, region: k1.region, keys: k1.keys, ghost: true }); k1.t1 = a; k2.keys.unshift([a, k2.keys[0][1], k2.keys[0][2], !!k2.keys[0][3]]); k2.t0 = a; RUNS[i - 1][1] = a; ru[0] = a; DISS.push({ t: tc, d: DISS_LINE, live: true }); } else DISS.push({ t: ru[0], d: 0.5 }); } });
+KEYS.push(...GHOSTS);   // outgoing (still moving) cameras of the live dissolves: solved into PO/LO/RO, not P/L/REGF
+function hermF(kt, vals, st) { const n = kt.length;
+  return t => { if (n === 1 || t <= kt[0]) return vals[0]; if (t >= kt[n - 1]) return vals[n - 1]; let i = 0; while (kt[i + 1] < t) i++; const t0 = kt[i], t1 = kt[i + 1], h = t1 - t0, u = (t - t0) / h; if (st && st[i] && st[i + 1]) return vals[i] + (vals[i + 1] - vals[i]) * u * u * u * (u * (u * 6 - 15) + 10);   /* smootherstep between held keys */
+    const m = j => j <= 0 || j >= n - 1 || (st && st[j]) ? 0 : (vals[j + 1] - vals[j - 1]) / (kt[j + 1] - kt[j - 1]) * 0.85;
+    return (2 * u ** 3 - 3 * u * u + 1) * vals[i] + (u ** 3 - 2 * u * u + u) * h * m(i) + (-2 * u ** 3 + 3 * u * u) * vals[i + 1] + (u ** 3 - u * u) * h * m(i + 1); }; }
+for (const k of KEYS) { const kt = k.keys.map(q => q[0]), stl = k.keys.map(q => !!q[3]); const F = [0, 1, 2].map(j => hermF(kt, k.keys.map(q => q[1].getComponent(j)), stl)), G = [0, 1, 2].map(j => hermF(kt, k.keys.map(q => q[2].getComponent(j)), stl));
+  k.gen = t => ({ pos: Vv(F[0](t), F[1](t), F[2](t)), look: Vv(G[0](t), G[1](t), G[2](t)) }); }
+
+const KEYREP = keyReport(); window.__keyReport = KEYREP;
+if (QS.get("keys") === "1") { window.__ready = true; throw new Error("keys-only mode (camera key report ready: window.__keyReport)"); }
+console.log('T keys', Math.round(performance.now() - tLoad0));
+// ================= solver: every frame checked (inside / ground / blocked); swing then lift; smoothed per run =================
+const PXR = {}; for (const p of PX) (PXR[p.region] ??= []).push(p);
+const ray = new THREE.Raycaster(), tmp = Vv(0, 0, 0);
+const containsP = (p, pos) => { tmp.copy(pos).applyMatrix4(p.inv); return Math.abs(tmp.x) <= p.hs.x && Math.abs(tmp.y) <= p.hs.y && Math.abs(tmp.z) <= p.hs.z; };
+const groundAt = (reg, pos) => { if (reg.startsWith("set:")) { const s = SETS[reg.slice(4)]; if (s.isRoom) return (s.info.eyeMin ?? 1.5) - 0.15 * s.unit; const x = pos.x - s.off.x, z = pos.z - s.off.z; return Math.max(0, s.field.y(x, z)) + 1.6; } return 1.6; };   // room/street: eye height from info.eyeMin (bad() adds 0.3)
+let dynKey = ""; function refreshDyn(reg, t) { if (!reg.startsWith("set:")) return; const k = reg + "|" + Math.floor(t * 5); if (k === dynKey) return; dynKey = k; const s = SETS[reg.slice(4)]; /* movers drift slowly: refresh at 5 Hz in the solver */ s.update(t); for (const p of PXR[reg] || []) if (p.dyn) { p.mesh.updateMatrixWorld(true); p.inv.copy(p.mesh.matrixWorld).invert(); } }
+// broad phase: each proxy gets a world bounding sphere; only proxies near the camera->look segment are tested (sets have hundreds of proxies)
+for (const p of PX) { const m = p.mesh; m.updateMatrixWorld(true); p.c = Vv().setFromMatrixPosition(m.matrixWorld); const sc3 = Vv().setFromMatrixScale(m.matrixWorld); p.rad = Math.hypot(p.hs.x * sc3.x, p.hs.y * sc3.y, p.hs.z * sc3.z); }
+const segD2 = (c, a, ab, abl2) => { const t = clamp(((c.x - a.x) * ab.x + (c.y - a.y) * ab.y + (c.z - a.z) * ab.z) / abl2, 0, 1); const dx = a.x + ab.x * t - c.x, dy = a.y + ab.y * t - c.y, dz = a.z + ab.z * t - c.z; return dx * dx + dy * dy + dz * dz; };
+const abV = Vv();
+function bad(pos, look, reg) { if (pos.y < groundAt(reg, pos) + 0.3) return "ground"; const all = PXR[reg] || [];
+  abV.subVectors(look, pos); const abl2 = Math.max(1e-6, abV.lengthSq()), list = []; for (const p of all) { if (p.dyn) { p.c.setFromMatrixPosition(p.mesh.matrixWorld); } if (segD2(p.c, pos, abV, abl2) <= p.rad * p.rad + 1) list.push(p); }
+  for (const p of list) if (containsP(p, pos)) return "inside";
+  const dir = Vv().subVectors(look, pos), dl = dir.length(); ray.set(pos, dir.normalize()); ray.far = Math.max(0.01, dl - 0.4); const holder = new Set(list.filter(p => containsP(p, look)).map(p => p.mesh));
+  if (list.length && ray.intersectObjects(list.map(p => p.mesh), false).some(h => !holder.has(h.object))) return "blocked";
+  if (reg.startsWith("set:")) { const s = SETS[reg.slice(4)]; for (let k = 1; k < 8; k++) { const q = pos.clone().lerp(look, k / 8); if (q.y < Math.max(0, s.field.y(q.x - s.off.x, q.z - s.off.z)) + 0.2) return "blocked"; } }   // terrain between camera and look
+  return null; }
+const camAz = (pos, look, sw, lift) => { const d = pos.clone().sub(look), c = Math.cos(sw), s = Math.sin(sw); return Vv(look.x + d.x * c - d.z * s, pos.y + lift, look.z + d.x * s + d.z * c); };
+const gauss = (a, R, lo, hi) => { const o = new Float32Array(a.length); for (let f = lo; f <= hi; f++) { let s2 = 0, w = 0; for (let j = -R; j <= R; j++) { const g = Math.exp(-(j * j) / (2 * (R / 2) ** 2)), x = a[Math.min(hi, Math.max(lo, f + j))]; s2 += g * x; w += g; } o[f] = s2 / w; } return o; };
+const holdMax = (a, R, lo, hi) => { const o = new Float32Array(a.length); for (let f = lo; f <= hi; f++) { let m = 0, mi = 0; for (let j = Math.max(lo, f - R); j <= Math.min(hi, f + R); j++) if (Math.abs(a[j]) > m) { m = Math.abs(a[j]); mi = a[j]; } o[f] = mi; } return o; };
+const SW = [0, 8, -8, 16, -16, 24, -24, 34, -34, 45, -45, 60, -60, 75, -75, 90, -90].map(x => x * D2R);
+const bestFix = (pos, look, reg, baseA, baseL) => { let best = null; for (const sw of SW) for (let k = 0; k <= 22; k++) { const p = camAz(pos, look, baseA + sw, baseL + k * 0.6); if (!bad(p, look, reg)) { const cost = Math.abs(sw) * 6 + k * 0.6; if (!best || cost < best.cost) best = { cost, sw, k }; break; } } return best; };
+const P = new Array(NF + 1), L = new Array(NF + 1), REGF = new Array(NF + 1), FW = new Array(NF + 1), FWO = {}, solveInfo = { fixed: 0, stillBad: 0, why: {}, badSec: {} }, tSolve0 = performance.now();
+// live dissolves: the outgoing (ghost) camera is solved TOGETHER with the shot it continues (same keys, starts where the shot ends), so the
+// occlusion offsets (daz / lift) stay continuous across the hand-over frame; solving them apart left a 1-frame pop at every dissolve start
+for (const k of KEYS) if (!k.ghost) { const g = GHOSTS.find(q => q.keys === k.keys && Math.abs(q.t0 - k.t1) < 1e-6 && !q.merged); if (g) { g.merged = true; k.ext = g; } }
+window.__regMs = {}; for (const k of KEYS) { if (k.merged) continue; const tk0 = performance.now(); const f0 = Math.round(k.t0 * FPS), fOwn = Math.min(NF, Math.round(k.t1 * FPS) - (k.t1 < T - 1e-6 ? 1 : 0)), f1 = k.ext ? Math.min(NF, Math.round(k.ext.t1 * FPS) - (k.ext.t1 < T - 1e-6 ? 1 : 0)) : fOwn, reg = k.region; if (f1 < f0) continue;
+  const fk = k.ghost ? (KEYS.find(q => !q.ghost && q.keys === k.keys) || k) : k;   // focus source: the shot this camera films (a ghost continues its shot)
+  const bp = [], bl = []; for (let f = f0; f <= f1; f++) { const g = k.gen(f / FPS); bp.push(g.pos); bl.push(g.look); }
+  const n = f1 - f0 + 1, daz = new Float32Array(n), lift = new Float32Array(n);
+  if (reg !== "map") { for (let i = 0; i < n; i++) { refreshDyn(reg, (f0 + i) / FPS); if (!bad(bp[i], bl[i], reg)) continue; const bf = bestFix(bp[i], bl[i], reg, 0, 0); if (bf) { daz[i] = bf.sw; lift[i] = bf.k * 0.6; solveInfo.fixed++; } }
+    let dS = gauss(holdMax(daz, 20, 0, n - 1), 30, 0, n - 1), lS = gauss(holdMax(lift, 20, 0, n - 1), 30, 0, n - 1);
+    for (let it = 0; it < 6; it++) { let nBad = 0; const aA = new Float32Array(n), aL = new Float32Array(n);
+      for (let i = 0; i < n; i++) { refreshDyn(reg, (f0 + i) / FPS); const p = camAz(bp[i], bl[i], dS[i], lS[i]); if (!bad(p, bl[i], reg)) continue; nBad++; const bf = bestFix(bp[i], bl[i], reg, dS[i], lS[i]); if (bf) { aA[i] = bf.sw; aL[i] = bf.k * 0.6 + 0.3; } }
+      if (!nBad) break; const a2 = gauss(holdMax(aA, 20, 0, n - 1), 30, 0, n - 1), l2 = gauss(holdMax(aL, 20, 0, n - 1), 30, 0, n - 1); for (let i = 0; i < n; i++) { dS[i] += a2[i] * 1.3; lS[i] += l2[i] * 1.3; } }
+    for (let i = 0; i < n; i++) { daz[i] = dS[i]; lift[i] = lS[i]; } }
+  for (let i = 0; i < n; i++) { const f = f0 + i; refreshDyn(reg, f / FPS); const pos = camAz(bp[i], bl[i], daz[i], lift[i]), look = bl[i].clone(); let bd = bad(pos, look, reg), q = 0;
+    while (bd && q < 25 && reg !== "map") { pos.y += 0.6; q++; bd = bad(pos, look, reg); }
+    if (bd) { solveInfo.stillBad++; solveInfo.why[bd] = (solveInfo.why[bd] || 0) + 1; const sec = Math.floor(f / FPS); solveInfo.badSec[sec] = (solveInfo.badSec[sec] || 0) + 1; }
+    const fw = reg.startsWith("set:") ? focusOfKey(fk, f / FPS) : null;   // the shot's own focus, also on its ghost frames
+    if (k.ghost || f > fOwn) { PO[f] = pos; LO[f] = look; RO[f] = reg; FWO[f] = fw; } else { P[f] = pos; L[f] = look; REGF[f] = reg; FW[f] = fw; } } window.__regMs[reg] = (window.__regMs[reg] || 0) + Math.round(performance.now() - tk0); }
+for (let f = 0; f <= NF; f++) if (!P[f]) REGF[f] = "mg";
+const solveMs = Math.round(performance.now() - tSolve0); console.log('T solve', solveMs, 'per-reg', JSON.stringify(window.__regMs || {}));
+const near3D = f => { for (let d = 0; d < NF; d++) { if (P[f - d]) return f - d; if (P[f + d]) return f + d; } return 0; };
+
+// ================= per-frame state =================
+const v = Vv();
+function setCam(t, fOv) { let f = fOv ?? clamp(Math.round(t * FPS), 0, NF); if (!P[f]) f = near3D(f); const reg = REGF[f];
+  for (const k in REG) REG[k].visible = k === reg;
+  cam.position.copy(P[f]); cam.up.set(0, 1, 0); cam.lookAt(L[f]); cam.fov = 40; cam.aspect = W / H; cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+  v.copy(L[f]).project(cam); tx.uniforms.fy.value = ty.uniforms.fy.value = clamp(v.y * 0.5 + 0.5, 0.15, 0.85);
+  const s = reg.startsWith("set:") ? SETS[reg.slice(4)] : null, Lt = s?.light;
+  const amt = reg === "map" ? 1.4 : (Lt?.tiltAmt ?? 2.4), b0 = reg === "map" ? 0.22 : 0.14; tx.uniforms.amt.value = ty.uniforms.amt.value = amt; tx.uniforms.b0.value = ty.uniforms.b0.value = b0; tx.uniforms.b1.value = ty.uniforms.b1.value = b0 + 0.34;
+  if (s) { const dd = P[f].distanceTo(L[f]); sc.fog.near = Math.max(Lt.fog[0], dd * 1.3); sc.fog.far = Math.max(Lt.fog[1], dd * 3.4);   /* fog stays behind the subject */ sc.background.setHex(Lt.sky); sc.fog.color.setHex(Lt.sky); sun.color.setHex(Lt.sunColor); sun.intensity = Lt.sunIntensity; hemi.intensity = Lt.hemiIntensity; }
+  else { sc.fog.near = 90; sc.fog.far = 320; sc.background.copy(SKY); sc.fog.color.copy(SKY); sun.color.setHex(0xfff0d8); sun.intensity = 3.0; hemi.intensity = 1.15; }
+  const dist = P[f].distanceTo(L[f]), hs = s?.isRoom ? Lt.shadowExt : clamp(dist * 1.1, 60, 260), sh = sun.shadow.camera; if (sh.right !== hs) { sh.left = sh.bottom = -hs; sh.right = sh.top = hs; sh.updateProjectionMatrix(); }
+  sun.shadow.bias = s?.isRoom ? -0.0003 : -0.0004; sun.shadow.normalBias = s?.isRoom ? 0.02 * s.unit : 0.03;
+  r.toneMappingExposure = s?.isRoom ? (Lt.exposure ?? 0.94) : 1.05; ao.enabled = !!s?.isRoom; if (s?.isRoom && ao.__u !== s.unit) { ao.__u = s.unit; ao.updateGtaoMaterial({ radius: (Lt.aoRadius ?? 0.32) * s.unit }); ao.blendIntensity = Lt.ao ?? 1.0; }
+  const az = (Lt?.sunAz ?? 135) * D2R, el = (Lt?.sunEl ?? 40) * D2R, tg = s?.isRoom ? s.off.clone() : Vv(Math.round(L[f].x), 0, Math.round(L[f].z)); sun.target.position.copy(tg);   /* rooms: fixed frustum on the diorama (no shadow swim) */
+  sun.position.copy(tg).add(Vv(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az)).multiplyScalar(60)); sun.target.updateMatrixWorld();
+  return { f, reg }; }
+function animate(t, reg, f) { if (reg === "map") MAP.update(t, cam.position); else if (reg.startsWith("set:")) { const id = reg.slice(4), s = SETS[id], wf = f === undefined ? undefined : FW[f], w = wf !== undefined && (!wf || wf.set === id) ? wf : focusAt(id, t);   /* f = the camera frame being drawn: its shot's focus (focusOfKey), else the time window */ s.setFocus(w ? w.subject : null, w?.idx ?? 0); s.update(t); } }
+
+function bridgeRects() { for (const B of BRIDGES) { const l = B.b.prevLine, s0 = SETS[B.b.prevKey.slice(4)]; setCam(B.t0 - 0.02); let objs = [];
+    if (B.b.from === "tabletop") { const tb = (s0.items || []).filter(r => r.it && r.anchors && r.anchors.filter(a => a.type === "seat").length >= 2).sort((a, b) => (b.it.len * b.it.wid) - (a.it.len * a.it.wid))[0]; if (tb) objs = [tb.obj]; }
+    if (!objs.length) { const sb = l.v.subject && l.v.subject !== "focus" && l.v.subject !== "set" ? s0.subjects[l.v.subject] : s0.focus?.objs || (s0.focus?.obj ? [s0.focus.obj] : []); objs = [].concat(sb || []).slice(0, 12); }
+    const bx = new THREE.Box3(); objs.forEach(o => bx.expandByObject(o)); if (bx.isEmpty()) continue; let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+    for (let i = 0; i < 8; i++) { const q = Vv(i & 1 ? bx.max.x : bx.min.x, i & 2 ? bx.max.y : bx.min.y, i & 4 ? bx.max.z : bx.min.z).project(cam); const X = (q.x + 1) / 2 * W, Y = (1 - q.y) / 2 * H; x0 = Math.min(x0, X); x1 = Math.max(x1, X); y0 = Math.min(y0, Y); y1 = Math.max(y1, Y); }
+    x0 = clamp(x0, 0, W - 160); y0 = clamp(y0, 0, H - 100); const w = clamp(x1 - x0, 160, W * 0.5), h = clamp(Math.max(y1 - y0, w * H / W * 0.8), 100, H * 0.5); B.st.bridge.rect = [x0, y0, w, h]; } }
+bridgeRects();
+// ================= callouts on 3D subjects (MG2D overlay beats): ring + leader + paper label =================
+const projPx = p => { const q = p.clone().project(cam); return q.z < 1 && q.z > -1 ? [(q.x + 1) / 2 * W, (1 - q.y) / 2 * H] : null; };
+function rr(g, x, y, w, h, q) { g.beginPath(); g.moveTo(x + q, y); g.arcTo(x + w, y, x + w, y + h, q); g.arcTo(x + w, y + h, x, y + h, q); g.arcTo(x, y + h, x, y, q); g.arcTo(x, y, x + w, y, q); g.closePath(); }
+function label(g, x, y, txt, a) { g.save(); g.globalAlpha = a; g.font = "600 34px 'Segoe UI'"; const w = g.measureText(txt).width + 44, h = 60; g.shadowColor = "rgba(70,55,30,.25)"; g.shadowBlur = 18; g.shadowOffsetY = 6;
+  g.fillStyle = PAL.paper; rr(g, x - w / 2, y - h / 2, w, h, 10); g.fill(); g.shadowColor = "transparent"; g.strokeStyle = "rgba(43,42,39,.35)"; g.lineWidth = 2; g.stroke(); g.fillStyle = PAL.ink; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(txt, x, y + 1); g.restore(); }
+const CALLOUTS = [];
+// optional second callout on a long line (plan: callout2 + callout2T s after line start; added 2026-11-15 china_v4): the first label hands over to it
+const CALL_LINES = LINES.flatMap(l => l.v.callout && l.v.callout2 && l.v.callout2T ? [{ ...l, end: l.start + l.v.callout2T - 0.1 }, { ...l, v: { ...l.v, callout: l.v.callout2, calloutT: l.v.callout2T } }] : [l]);
+for (const l of CALL_LINES) { if (!l.v.callout || !l.v.set) continue; const s = SETS[l.v.set], objs = s.subjects[l.v.subject || "focus"] || (s.focus ? [s.focus.obj] : []); if (!objs.length) continue;
+  const t0 = l.start + (l.v.calloutT ?? 0.45), t1 = l.end + 0.1, txt = l.v.callout, o = [].concat(objs)[Math.min(l.v.idx ?? 0, [].concat(objs).length - 1)]; CALLOUTS.push({ t0, t1, txt });
+  MG2D.push({ t0, t1, mode: "overlay", draw: (g, tl) => { const t = t0 + tl, a = Math.min(smooth(tl / 0.35), smooth((t1 - t) / 0.3)); if (a <= 0) return;
+    const bx = new THREE.Box3().setFromObject(o), c = bx.getCenter(Vv()); c.y = bx.max.y; const p = projPx(c); if (!p || p[0] < 0 || p[0] > W || p[1] < 0 || p[1] > H) return;
+    const lx = clamp(p[0] + (p[0] < W * 0.62 ? 230 : -230), 260, W - 260), ly = clamp(p[1] - 160, 70, H - 70), u = smooth(tl / 0.5);
+    g.save(); g.globalAlpha = a; g.strokeStyle = PAL.red; g.lineWidth = 4; g.beginPath(); g.arc(p[0], p[1], 22 * (0.6 + 0.4 * u), 0, 7); g.stroke();
+    g.strokeStyle = PAL.ink; g.lineWidth = 2.5; g.beginPath(); g.moveTo(p[0] + (lx - p[0]) * 0.08, p[1] + (ly - p[1]) * 0.08); g.lineTo(p[0] + (lx - p[0]) * u, p[1] + (ly - p[1]) * u); g.stroke(); g.restore();
+    if (u > 0.7) label(g, lx, ly, txt, a * smooth((u - 0.7) / 0.3)); } }); }
+
+// End card v2 (2026-11-15, MINIATURE-LESSONS 19): per-channel name + flat channel mark drawn in code. Channel: URL ?channel=partition|powder
+// (name from films/<film>/channels.json, else the built-in name), else PLAN.endcard.{name, mark}. Two designs (?endstyle= or PLAN.endcard.style):
+//   "tag"  (default) = a white paper tag card like the photo cards (ink hairline, soft shadow, small red pushpin) holding mark + name | Like | Subscribe;
+//   "rule" = a solid paper footer band with a thin red rule drawn in from the centre above the row.
+// Motion: one eased slide-up (cubic out, no overshoot). Like / Subscribe press on their spoken words (real word times from words.json when present,
+// else the per-word estimate); a press is an ink-stamp moment: the button dips (0.12 s), then Subscribe turns into a red-ink stamp impression
+// "Subscribed" (paper fill, red double border, -3 deg), Like fills ink "Liked". Still no glow / gradients / bounce / sparkles / full-frame dimming.
+const ENDS = []; const CHAN = QS.get("channel"), CH_BUILTIN = { partition: "Partition Lines", powder: "Powder Keg" };
+const CHJ = CHAN ? await fetch(`/films/${FILM}/channels.json`).then(r => r.ok ? r.json() : null).catch(() => null) : null;
+const CH_NAME = (CHAN && (CHJ?.[CHAN]?.name || CH_BUILTIN[CHAN])) || PLAN.endcard?.name || "Blind Luck Time";
+const CH_MARK = PLAN.endcard?.mark && !CHAN ? PLAN.endcard.mark : /partition/i.test(CHAN || CH_NAME) ? "partition" : /powder/i.test(CHAN || CH_NAME) ? "powder" : "die";
+const END_STYLE = QS.get("endstyle") || PLAN.endcard?.style || "tag", END_FAM = "'Segoe UI', 'Helvetica Neue', Arial, sans-serif";
+const easeOut = x => 1 - Math.pow(1 - clamp(x, 0, 1), 3);
+function thumbIcon(g, x, y, filled, col) { g.save(); g.translate(x, y); g.fillStyle = col; g.strokeStyle = col; g.lineWidth = 3; g.lineJoin = "round";   // flat thumbs-up: cuff + palm + thumb
+  g.beginPath(); g.rect(-13, -3, 6, 15); filled ? g.fill() : g.stroke();
+  g.beginPath(); g.moveTo(-4, -3); g.lineTo(1, -15); g.quadraticCurveTo(6, -16, 5, -9); g.lineTo(3, -3); g.lineTo(12, -3); g.quadraticCurveTo(15, -2, 13, 2); g.lineTo(10, 12); g.lineTo(-4, 12); g.closePath(); filled ? g.fill() : g.stroke(); g.restore(); }
+function chanMark(g, kind, x, y, s) { const h = s / 2; g.save(); g.translate(x, y); g.lineJoin = "round"; g.lineCap = "round";
+  if (kind === "partition") {   // Partition Lines: an ink square cut by one slanted paper line; the far side is the red accent
+    rr(g, -h, -h, s, s, s * 0.12); g.fillStyle = PAL.ink; g.fill(); g.save(); rr(g, -h, -h, s, s, s * 0.12); g.clip();
+    g.fillStyle = PAL.red; g.beginPath(); g.moveTo(s * 0.16, -h - 1); g.lineTo(h + 1, -h - 1); g.lineTo(h + 1, h + 1); g.lineTo(-s * 0.08, h + 1); g.closePath(); g.fill();
+    g.strokeStyle = PAL.paper; g.lineWidth = s * 0.08; g.lineCap = "butt"; g.beginPath(); g.moveTo(s * 0.16, -h - 2); g.lineTo(-s * 0.08, h + 2); g.stroke(); g.restore();
+  } else if (kind === "powder") {   // Powder Keg: a flat ink keg with two paper hoops, a short fuse and a red spark dot
+    const bw = s * 0.62, bh = s * 0.7, by = s * 0.12, bulge = s * 0.08;
+    g.fillStyle = PAL.ink; g.beginPath(); g.moveTo(-bw / 2, by - bh / 2); g.lineTo(bw / 2, by - bh / 2); g.quadraticCurveTo(bw / 2 + bulge * 2, by, bw / 2, by + bh / 2);
+    g.lineTo(-bw / 2, by + bh / 2); g.quadraticCurveTo(-bw / 2 - bulge * 2, by, -bw / 2, by - bh / 2); g.closePath(); g.fill();
+    g.strokeStyle = PAL.paper; g.lineWidth = s * 0.035; g.lineCap = "butt"; for (const f of [-0.25, 0.25]) { const yy = by + bh * f, xw = bw / 2 + bulge * 0.9 * (1 - 4 * f * f) + 1; g.beginPath(); g.moveTo(-xw, yy); g.lineTo(xw, yy); g.stroke(); }
+    g.strokeStyle = PAL.ink; g.lineWidth = s * 0.06; g.lineCap = "round"; g.beginPath(); g.moveTo(0, by - bh / 2); g.quadraticCurveTo(s * 0.02, -h + s * 0.02, s * 0.22, -h + s * 0.1); g.stroke();
+    g.fillStyle = PAL.red; g.beginPath(); g.arc(s * 0.27, -h + s * 0.08, s * 0.085, 0, 7); g.fill();
+  } else {   // Blind Luck Time: a die face
+    rr(g, -h, -h, s, s, s * 0.22); g.fillStyle = PAL.ink; g.fill(); g.fillStyle = PAL.paper; for (const [dx, dy] of [[-0.24, -0.24], [0, 0], [0.24, 0.24]]) { g.beginPath(); g.arc(dx * s, dy * s, s * 0.095, 0, 7); g.fill(); } }
+  g.restore(); }
+function endPressTimes(l) { const words = l.text.split(/\s+/), bare = words.map(w => w.replace(/^[^\w]+/, "")), wi = Math.max(0, words.findIndex(w => /subscri/i.test(w))), li = bare.findIndex(w => /^like/i.test(w));
+  const tAt = i => l.start + (l.end - l.start) * (i + 0.5) / words.length; let tPress = tAt(wi), tLike = li >= 0 ? tAt(li) : null;
+  let rw = []; try { rw = Array.isArray(WORDS) ? WORDS.filter(x => x[0] >= l.start - 0.2 && x[1] <= l.end + 0.3) : []; } catch (e) {}   // real word times win (press on the word's onset + 0.08 s); WORDS is declared further down (TDZ at block time)
+  const ws = rw.find(x => /subscri/i.test(x[2])), wl = rw.find(x => /^\W*like/i.test(x[2])); if (ws) tPress = ws[0] + 0.08; if (wl && tLike !== null) tLike = wl[0] + 0.08;
+  return { tPress, tLike }; }
+// one button: x = left edge, cy = centre; kind "like" | "sub"; st = { t, tP } -> dip during [tP, tP+0.12], done after
+function endButton(g, kind, x, cy, w, h, t, tP, style) { const done = tP !== null && t >= tP + 0.12, dip = tP !== null && t >= tP && t < tP + 0.12, sq = dip ? 0.93 : 1, R = style === "tag" ? 10 : 8;
+  g.save(); g.translate(x + w / 2, cy); g.scale(sq, sq); g.textAlign = "center"; g.textBaseline = "middle";
+  if (kind === "like") { rr(g, -w / 2, -h / 2, w, h, style === "tag" ? R : h / 2); if (done || dip) { g.fillStyle = PAL.ink; g.fill(); } else { g.fillStyle = "#ffffff"; g.fill(); g.strokeStyle = PAL.ink; g.lineWidth = 2.5; g.stroke(); }
+    const col = done || dip ? PAL.paper : PAL.ink; thumbIcon(g, -w / 2 + 38, 1, done || dip, col); g.fillStyle = col; g.font = `700 30px ${END_FAM}`; g.fillText(done ? "Liked" : "Like", 14, 1); }
+  else if (!done) { rr(g, -w / 2, -h / 2, w, h, R); g.fillStyle = dip ? PAL.redInk : PAL.red; g.fill(); g.fillStyle = "#ffffff"; g.font = `700 30px ${END_FAM}`; g.fillText("Subscribe", 0, 1); }
+  else { const k = clamp((t - tP - 0.12) / 0.1, 0, 1); g.rotate(-3 * D2R * k); g.globalAlpha *= 0.65 + 0.35 * k;   // the stamp impression: paper, red double rule, red ink caps
+    rr(g, -w / 2, -h / 2, w, h, R); g.fillStyle = "#ffffff"; g.fill(); g.strokeStyle = PAL.red; g.lineWidth = 3.5; g.stroke(); rr(g, -w / 2 + 6, -h / 2 + 6, w - 12, h - 12, Math.max(2, R - 4)); g.lineWidth = 1.5; g.stroke();
+    g.fillStyle = PAL.red; g.font = `800 23px ${END_FAM}`; if ("letterSpacing" in g) g.letterSpacing = "2px"; g.fillText("SUBSCRIBED", 17, 2); if ("letterSpacing" in g) g.letterSpacing = "0px";
+    g.strokeStyle = PAL.red; g.lineWidth = 3.5; g.lineCap = "round"; g.lineJoin = "round"; const cx = -w / 2 + 27; g.beginPath(); g.moveTo(cx - 8, 1); g.lineTo(cx - 2, 8); g.lineTo(cx + 9, -7); g.stroke(); }
+  g.restore(); }
+for (const l of LINES) { if (!l.v.endcard) continue; const tIn = l.start - 0.25, hasLike = l.text.split(/\s+/).some(w => /^like/i.test(w.replace(/^[^\w]+/, ""))), E = { l, tIn, tPress: null, tLike: null };
+  { const p = endPressTimes(l); E.tPress = p.tPress; E.tLike = p.tLike; } ENDS.push(E); l.subj = "end:card"; let timed = false;
+  MG2D.push({ t0: tIn, t1: T, mode: "overlay", draw: (g, tl) => { if (!timed) { Object.assign(E, endPressTimes(l)); timed = true; }   // WORDS is loaded after this block: re-time on first draw
+    const t = tIn + tl, u = easeOut(tl / 0.55), out = smooth((T - t) / 0.6), a = Math.min(smooth(tl / 0.35), out); if (a <= 0) return;
+    g.save(); g.font = `700 36px ${END_FAM}`; const nameW = g.measureText(CH_NAME).width; g.font = `700 30px ${END_FAM}`;
+    const BH = 60, likeW = hasLike ? g.measureText("Liked").width + 92 : 0, subW = Math.max(g.measureText("Subscribe").width + 64, 250), MARK = 54;
+    if (END_STYLE === "rule") {   // ---- candidate B: paper footer band + thin red rule from the centre
+      const bandH = 148, by = H - bandH + (1 - u) * 24; g.globalAlpha = a * 0.94; g.fillStyle = PAL.paper; g.fillRect(0, by, W, bandH + 30); g.globalAlpha = a;
+      g.fillStyle = "rgba(43,42,39,.22)"; g.fillRect(0, by, W, 1.5); const rw = 260 * easeOut((tl - 0.15) / 0.6); g.fillStyle = PAL.red; g.fillRect(W / 2 - rw / 2, by - 2, rw, 4);
+      const gap1 = 18, gap2 = 44, gapP = 16, rowW = MARK + gap1 + nameW + gap2 + (likeW ? likeW + gapP : 0) + subW, x0 = (W - rowW) / 2, cy = by + bandH / 2 + 2;
+      chanMark(g, CH_MARK, x0 + MARK / 2, cy, MARK); g.fillStyle = PAL.ink; g.font = `700 36px ${END_FAM}`; g.textAlign = "left"; g.textBaseline = "middle"; g.fillText(CH_NAME, x0 + MARK + gap1, cy + 1);
+      let px = x0 + MARK + gap1 + nameW + gap2; if (likeW) { endButton(g, "like", px, cy, likeW, BH, t, E.tLike, "rule"); px += likeW + gapP; } endButton(g, "sub", px, cy, subW, BH, t, E.tPress, "rule");
+    } else {   // ---- candidate A: white paper tag card (photo-card language) with a red pushpin
+      const pad = 26, gap1 = 18, gapD = 30, gapP = 14, cw = pad + MARK + gap1 + nameW + gapD * 2 + 2 + (likeW ? likeW + gapP : 0) + subW + pad, ch = 100;
+      const x0 = Math.round((W - cw) / 2), y0 = Math.round(H - 70 - ch + (1 - u) * 30), cy = y0 + ch / 2; g.globalAlpha = a;
+      g.save(); g.shadowColor = "rgba(60,46,26,.28)"; g.shadowBlur = 22; g.shadowOffsetY = 8; g.fillStyle = "#ffffff"; g.fillRect(x0, y0, cw, ch); g.restore();
+      g.strokeStyle = "rgba(43,42,39,.35)"; g.lineWidth = 2; g.strokeRect(x0 + 1, y0 + 1, cw - 2, ch - 2);
+      const pxp = x0 + 30, pyp = y0 + 4; g.save(); g.shadowColor = "rgba(40,20,10,.35)"; g.shadowBlur = 5; g.shadowOffsetX = 2; g.shadowOffsetY = 3; g.fillStyle = PAL.red; g.beginPath(); g.arc(pxp, pyp, 9, 0, 7); g.fill(); g.restore();
+      g.fillStyle = PAL.redInk; g.beginPath(); g.arc(pxp, pyp, 4, 0, 7); g.fill(); g.fillStyle = "rgba(255,255,255,.55)"; g.beginPath(); g.arc(pxp - 3, pyp - 3, 2.4, 0, 7); g.fill();
+      let px = x0 + pad; chanMark(g, CH_MARK, px + MARK / 2, cy, MARK); px += MARK + gap1;
+      g.fillStyle = PAL.ink; g.font = `700 36px ${END_FAM}`; g.textAlign = "left"; g.textBaseline = "middle"; g.fillText(CH_NAME, px, cy + 1); px += nameW + gapD;
+      g.fillStyle = "rgba(43,42,39,.22)"; g.fillRect(px, cy - 26, 2, 52); px += 2 + gapD;
+      if (likeW) { endButton(g, "like", px, cy, likeW, BH, t, E.tLike, "tag"); px += likeW + gapP; } endButton(g, "sub", px, cy, subW, BH, t, E.tPress, "tag"); }
+    g.restore(); } }); }
+
+// ================= sound: cues from the picture's own constants; beds per place (data-driven from the set's ground + content) =================
+if (MAP) { for (const R of Object.values(MAP.routes)) if (R.t0 !== null) cuesOut.push([R.t0, "ui.line.draw", -6, 0]); for (const p of Object.values(MAP.pins)) if (p.t0 !== null) cuesOut.push([p.t0, "ui.pin.drop", -6, 0]); }
+// (callouts carry no sound: set-driven sound design)
+for (const ru of RUNS0.slice(1)) if (ru.kind === "2d" && RUNS0[RUNS0.indexOf(ru) - 1].kind !== "2d") cuesOut.push([ru.t0, "ui.whoosh.soft", -16, 0]);   // one whoosh per MG beat, on the way in
+// ---- v3 world sound, SET-DRIVEN: a cue exists only for a visible event (a figure's pose, a prop/vehicle in the subject, a cut/reveal), never for a narration word.
+// archetypeOf(set) picks ONE ambience bed per set (audio/sfxmap.json scene); WORLD_CUES are thinned to <= 1 per 10 s, off the key words, and each carries the visible source in `src`.
+const AR_KNOWN = new Set(["boardroom", "office", "lab", "newsroom", "trading", "courtroom", "hearing", "press", "hotel", "diner", "factory", "assembly", "mill", "market", "rally", "street", "plaza", "airport", "port", "station", "rain"]);
+const AR_ALIAS = { pressroom: "press", trollfarm: "office", steps: "plaza", court: "courtroom", senate: "hearing", plant: "factory", harbour: "port", harbor: "port", dock: "port", railway: "station", bazaar: "market", shop: "market", cafe: "diner", restaurant: "diner" };
+const AR_ROOM = [[/judgeBench|gavel|jury|witness/i, "courtroom"], [/dais|presidium|parliament|senate|committee/i, "hearing"], [/tvCamera|podium|pressWall/i, "press"], [/trading|ticker|exchange/i, "trading"], [/newsDesk|newsroom|studio/i, "newsroom"],
+  [/server|rack|\blab\b|labBench/i, "lab"], [/loom|spindle|mill/i, "mill"], [/benches|assembl|conveyor|crates|workshop|machine|production/i, "factory"], [/roundTable|boardTable|boardroom|conference/i, "boardroom"],
+  [/lobby|reception|\bbed\b|hotel/i, "hotel"], [/counter|booth|diner|cafe/i, "diner"], [/deskRow|desk|filing|docPile|shelf|table/i, "office"]];
+const AR_EXT = [[/stall|market|bazaar/i, "market"], [/quay|container|gantry|tanker|harbou?r|\bport\b/i, "port"], [/airport|runway|airliner|terminal/i, "airport"], [/\brail|train|tram|station/i, "station"], [/factory|refinery|kiln|assembly/i, "factory"], [/city|town|road|street|skyscraper|tower/i, "street"]];
+const AR_GROUND = new Set(["plain", "city", "coast", "river", "canal", "strait", "sea", "island", "ice", "hills", "mountains", "desert", "pine", "forest"]);
+function archetypeOf(s) { const sp = s.spec || {}, t = sp.type; if (t && (AR_KNOWN.has(t) || AR_ALIAS[t])) return AR_ALIAS[t] || t;
+  const txt = [...(sp.place || []).map(p => p.what + " " + (p.name || "")), ...(sp.groups || []).map(g => (g.name || "") + " " + (g.form || "")), ...(s.items || []).map(r => r.what + " " + (r.name || ""))].join(" ");
+  const outdoor = !s.isRoom || s.info?.scale === "street" || /\b(city|town|road)\b/.test(txt);
+  if (outdoor) { for (const [re, a] of AR_EXT) if (re.test(txt)) return a; const k = sp.ground?.kind; return "ground:" + (AR_GROUND.has(k) ? k : "plain"); }
+  for (const [re, a] of AR_ROOM) if (re.test(txt)) return a; return "office"; }
+// the whitelist: word -> audio/sfxmap.json words. No chair/papers/mic/walk/car-fallback words exist any more.
+const POSE_WORD = { phone: "phone", applaud: "applause", raise_hand: "cheer" }, DESKWORK = new Set(["office", "newsroom", "lab", "trading"]);
+const ITEM_ROOM = [[/gavel|judgeBench/i, "gavel"], [/tvCamera|camera/i, "camera"], [/loom/i, "loom"], [/register|till|cashier/i, "register"], [/stamp/i, "stamping"], [/conveyor|assembly|machine|lathe/i, "machine"]];
+const ITEM_VEH = [[/\bjet\b|plane|airliner/i, "jet"], [/heli/i, "helicopter"], [/\btrain\b|tram|loco/i, "train"], [/tanker|\bship\b|carrier|\bboat\b|\btug\b|skiff|ferry|barge/i, "ship"], [/truck|lorry/i, "truck"], [/\bcar\b|taxi|motorcade|sedan/i, "car"]];
+const ALLOWED = new Set(["gavel", "camera", "loom", "register", "stamping", "machine", "jet", "helicopter", "train", "ship", "truck", "car", "phone", "applause", "cheer", "typing"]);
+function lineObjs(s, l) { const subj = l.v.subject || "focus"; return subj === "set" ? [] : [].concat(subj === "focus" ? (s.focus?.objs || (s.focus?.obj ? [s.focus.obj] : [])) : (s.subjects[subj] || [])); }
+function wordsFor(s, l) { const out = [], add = (w, src) => { if (!out.some(q => q.word === w)) out.push({ word: w, src }); }, objs = lineObjs(s, l), arch = archetypeOf(s), figs = [];
+  for (const o of objs.slice(0, 8)) o.traverse?.(c => { if (c.userData?.fig && figs.length < 8) figs.push(c.userData.fig); });
+  for (const f of figs) { if (POSE_WORD[f.pose]) add(POSE_WORD[f.pose], "pose:" + f.pose); else if (f.pose === "sit_type" && DESKWORK.has(arch)) add("typing", "pose:sit_type"); }
+  for (const r of (s.items || [])) { const nm = r.what + " " + (r.name || ""); if (r.obj && objs.includes(r.obj)) for (const [re, w] of ITEM_ROOM) if (re.test(nm)) add(w, "item:" + r.what);
+    if (!s.isRoom || s.info?.scale === "street") for (const [re, w] of ITEM_VEH) if (re.test(nm)) add(w, "item:" + r.what); }
+  return out; }
+// key narration words (numbers, proper nouns, a callout) get estimated spans (chars across the line); a cue must stay >= 0.5 s clear of them
+const NUMW = /^(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|billion|trillion|half|nearly|percent)\b/i;
+const WORDS = await fetch(VLINES ? `/films/${FILM}/variants/${VARIANT}/words.json` : `/films/${FILM}/words.json`).then(r => r.ok ? r.json() : null).catch(() => null);   // real word timings [t0, t1, word]; the char-position estimate below is only the fallback
+function keySpans(l) { const rw = Array.isArray(WORDS) ? WORDS.filter(x => x[0] >= l.start - 0.15 && x[1] <= l.end + 0.15) : [];
+  if (rw.length) { const sp = []; rw.forEach((x, i) => { const bare = String(x[2]).replace(/[^\w'-]/g, ""); if (/\d/.test(bare) || NUMW.test(bare) || (i > 0 && /^[A-Z]/.test(bare) && !/[.?!]$/.test(rw[i - 1][2]))) sp.push([x[0], x[1]]); }); return sp; }
+  const w = (l.text || "").split(/\s+/).filter(Boolean), tot = w.reduce((a, x) => a + x.length + 2, 0) || 1, d = l.end - l.start, sp = []; let a = 0;
+  w.forEach((x, i) => { const b = a + x.length + 2, bare = x.replace(/[^\w'-]/g, ""); if (/\d/.test(bare) || NUMW.test(bare) || (i > 0 && /^[A-Z]/.test(bare) && !/[.?!]$/.test(w[i - 1]))) sp.push([l.start + d * a / tot, l.start + d * b / tot]); a = b; }); return sp; }
+const wordClear = t => { const l = LINES.find(q => t >= q.start && t <= q.end); return !l || !keySpans(l).some(([a, b]) => t > a - 0.5 && t < b + 0.5); };
+const WORLD_CUES = []; const tCue = c => Array.isArray(c) ? c[0] : c.t; const CUE_MIN_GAP = 10, CUE_WORD_MAX = 2;
+if ((PLAN.v3 || PLAN.worldSfx) && PLAN.worldSfx !== false) { const cand = [];
+  for (const l of LINES) { if (!l.v.set || l === LINES[LINES.length - 1]) continue; const s = SETS[l.v.set], ws = wordsFor(s, l); if (!ws.length) continue;
+    const objs = lineObjs(s, l), ts = [l.start + 0.35, ...(l.revealT || [])].filter(t => t < l.end - 0.3).slice(0, 2);   // first beat (the cut) + reveal stops; callouts carry no sound
+    ts.forEach((t, k) => { const e = ws[(l.n + k) % ws.length]; let x = 0; if (objs.length) { setCam(t); const bx = new THREE.Box3(); objs.slice(0, 8).forEach(o => bx.expandByObject(o)); if (!bx.isEmpty()) { const q = bx.getCenter(Vv()).project(cam); if (q.z < 1) x = +clamp(q.x, -1, 1).toFixed(2); } }
+      cand.push({ t: +t.toFixed(3), type: "world", word: e.word, src: e.src, x, line: l.n }); }); }
+  cand.sort((a, b) => a.t - b.t); let last = -1e9; for (const c of cand) { if (c.t - last < CUE_MIN_GAP || !wordClear(c.t)) continue; if (WORLD_CUES.filter(q => q.word === c.word && c.t - q.t < 60).length >= CUE_WORD_MAX) continue; WORLD_CUES.push(c); last = c.t; } }
+if ((PLAN.v3 || PLAN.worldSfx) && PLAN.worldSfx !== false) for (const l of LINES) { if (l.kind !== "2d") continue; const ts = cuesOut.map(tCue).filter(t => t > l.start - 0.5 && t < l.end + 0.5).concat([l.start, l.end]).sort((a, b) => a - b);
+  for (let i = 1; i < ts.length; i++) { let a = ts[i - 1]; while (ts[i] - a > 3.5) { a += 3.0; WORLD_CUES.push({ t: +a.toFixed(3), type: "world", word: "paper", db: -18, x: 0, line: l.n, mg: true }); } } }
+cuesOut.push(...WORLD_CUES);
+window.__cues = cuesOut.filter(c => tCue(c) >= 0 && tCue(c) < T).sort((a, b) => tCue(a) - tCue(b));
+// ONE bed per set (audio/sfxmap.json scene = archetypeOf(set)); 2D MG runs keep the neighbouring set's bed, consecutive runs of the same archetype merge so the loop never restarts.
+window.__beds = []; { const sp = []; RUNS0.forEach(ru => { if (ru.key === "map") { sp.push({ a: "map", t0: ru.t0, t1: ru.t1 }); return; } const rs = ru.key.startsWith("set:") ? SETS[ru.key.slice(4)] : null; sp.push({ a: rs ? archetypeOf(rs) : null, t0: ru.t0, t1: ru.t1 }); });
+  let prev = null; for (const q of sp) { if (q.a) prev = q.a; else q.a = prev; } let nxt = null; for (let i = sp.length - 1; i >= 0; i--) { if (sp[i].a) nxt = sp[i].a; else sp[i].a = nxt; }
+  for (const q of sp) { if (!q.a) continue; const b = window.__beds[window.__beds.length - 1]; if (b && b.scene === q.a) b.t1 = +Math.min(T, q.t1 + 0.4).toFixed(2); else window.__beds.push({ scene: q.a, t0: +Math.max(0, q.t0 - 0.4).toFixed(2), t1: +Math.min(T, q.t1 + 0.4).toFixed(2), db: 0 }); } }
+
+// ================= subjects (narration-picture gate) =================
+const SUBJ = installSubjects({ scene: sc, camera: cam, setAt: t => { const { reg } = setCam(t); animate(t, reg); } });
+const is2D = t => MG2D.some(b => b.mode === "full" && t >= b.t0 + 0.2 && t <= b.t1 - 0.2);
+// room/street figures: a person (or group) is SHOWN when a member figure is >= 8% of frame height, >= 60% inside the frame and >= 1 of 3
+// probe rays (head, chest, hips) reaches it unoccluded. The bbox-area rule (minArea 1% of frame) is made for buildings: a readable seated
+// figure at 12% frame height covers only ~0.3% of the frame, so it would fail a shot that plainly shows the person.
+const rcF = new THREE.Raycaster(), fbF = new THREE.Box3(), fpF = Vv();
+const FIG_MIN = 0.08;
+function figShown(objs, region) { const g = REG[region]; if (!g || !g.visible) return { shown: false, why: "hidden" }; let best = { shown: false, why: "small" };
+  for (const o of objs) { let vis = true; for (let p = o; p; p = p.parent) if (!p.visible) vis = false; if (!vis) continue; fbF.setFromObject(o); if (fbF.isEmpty()) continue;
+    let x0 = 9, x1 = -9, y0 = 9, y1 = -9, front = 0; for (let i = 0; i < 8; i++) { fpF.set(i & 1 ? fbF.max.x : fbF.min.x, i & 2 ? fbF.max.y : fbF.min.y, i & 4 ? fbF.max.z : fbF.min.z); const cs = fpF.clone().applyMatrix4(cam.matrixWorldInverse); if (cs.z >= -cam.near) continue; front++; fpF.project(cam); x0 = Math.min(x0, fpF.x); x1 = Math.max(x1, fpF.x); y0 = Math.min(y0, fpF.y); y1 = Math.max(y1, fpF.y); }
+    if (front < 4) { if (!best.shown) best = { shown: false, why: "behind" }; continue; } const hF = (y1 - y0) / 2, full = (x1 - x0) * (y1 - y0), clip = Math.max(0, Math.min(1, x1) - Math.max(-1, x0)) * Math.max(0, Math.min(1, y1) - Math.max(-1, y0)), inside = full > 0 ? clip / full : 0;
+    if (hF < FIG_MIN) continue; if (inside < 0.6) { if (!best.shown) best = { shown: false, why: "offframe" }; continue; }
+    let open = 0; for (const fy of [0.88, 0.62, 0.42]) { fpF.set((fbF.min.x + fbF.max.x) / 2, fbF.min.y + (fbF.max.y - fbF.min.y) * fy, (fbF.min.z + fbF.max.z) / 2); const dir = fpF.clone().sub(cam.position), dl = dir.length(); rcF.set(cam.position, dir.normalize()); rcF.far = dl + 0.5;
+      const hit = rcF.intersectObject(g, true).find(h => h.object.visible && h.object.material && h.object.material.visible !== false && !(h.object.material.transparent && h.object.material.opacity < 0.5));
+      if (!hit) { open++; continue; } let mine = false; for (let p = hit.object; p; p = p.parent) if (p === o) mine = true; if (mine || hit.distance > dl - 0.05) open++; }
+    if (open >= 1) return { shown: true, hFrac: +hF.toFixed(3) }; if (!best.shown) best = { shown: false, why: "occluded" }; }
+  return best; }
+const hasFig = objs => objs.some(o => o.userData?.fig || roomFigs.has(o));
+for (const [id, s] of Object.entries(SETS)) { const reg = "set:" + id, add = (nm, objs) => { objs = [].concat(objs).filter(Boolean); if (!objs.length) return; if (s.isRoom && hasFig(objs)) SUBJ(nm, { virtual: t => figShown(objs, reg) }); else SUBJ(nm, objs); };
+  for (const [name, objs] of Object.entries(s.subjects)) if (name !== "focus") add(`set:${id}:${name}`, objs);
+  if (s.focus) add(`set:${id}:focus`, s.isRoom && s.focus.objs ? s.focus.objs : [s.focus.obj]);   // group focus: register the members, not the invisible box marker
+  SUBJ(`set:${id}:set`, { virtual: t => { const f = clamp(Math.round(t * FPS), 0, NF); return REGF[f] === "set:" + id && !is2D(t) ? { shown: true } : { shown: false, why: "hidden" }; } }); }
+if (MAP) { SUBJ("map:map", MAP.group); for (const [id, R] of Object.entries(MAP.routes)) SUBJ("map:route:" + id, R.mesh); for (const [id, p] of Object.entries(MAP.pins)) SUBJ("map:pin:" + id, [p.pin, p.red, ...MAP.signs.filter(x => x.id === id).map(x => x.s)]); }
+{ const raw = window.subjectsAt; window.subjectsAt = (t, names) => { const o = raw(t, names); if (is2D(t)) for (const n of names || []) if (!n.startsWith("mg:") && o[n]) o[n] = { shown: false, why: "covered" }; return o; }; }
+for (const e of ENDS) SUBJ("end:card", { virtual: t => t >= e.tIn + 0.3 ? { shown: true } : { shown: false, why: "hidden" } });
+for (const [bid, md] of Object.entries(MODS)) md.st.keys.forEach((key, ki) => SUBJ(`mg:${bid}:${ki}`, { virtual: t => { const m = md.mt(t); return m === null ? { shown: false, why: "hidden" } : md.st.onScreen(m, key); } }));
+window.__lineSubjects = LINES.map(l => ({ n: l.n, shows: [l.subj] }));   // the plan's subject per line (render.mjs lines uses lines.json shows; tools/plan_sync writes them)
+
+// ================= compositor =================
+function frame3D(t, fOv) { const { f, reg } = setCam(t, fOv); animate(t, reg, f); comp.render(); octx.drawImage(r.domElement, 0, 0); }
+function world3D(t, fOv) { const d = fOv === undefined && DISS.find(x => !x.live && Math.abs(t - x.t) < x.d / 2); if (!d) return frame3D(t, fOv);
+  const fc = Math.round(d.t * FPS); frame3D(t, fc - 1); x3.clearRect(0, 0, W, H); x3.drawImage(outC, 0, 0); frame3D(t, fc); const u = smooth((t - (d.t - d.d / 2)) / d.d); octx.globalAlpha = 1 - u; octx.drawImage(c3, 0, 0); octx.globalAlpha = 1; }
+function world3DLive(t, fOv) { const f = clamp(Math.round(t * FPS), 0, NF), d = fOv === undefined && PO[f] && DISS.find(x => x.live && Math.abs(t - x.t) < x.d / 2 + 0.5 / FPS);   /* +half a frame: the shot hand-over frame is round(t0*FPS), so the first dissolve frame can sit up to 1/2 frame outside d/2 (it used to flash the incoming shot unblended for one frame) */ if (!d) return world3D(t, fOv);   // both cameras keep moving through the dissolve
+  const sv = [P[f], L[f], REGF[f], FW[f]]; P[f] = PO[f]; L[f] = LO[f]; REGF[f] = RO[f]; FW[f] = FWO[f]; frame3D(t, f); P[f] = sv[0]; L[f] = sv[1]; REGF[f] = sv[2]; FW[f] = sv[3]; x3.clearRect(0, 0, W, H); x3.drawImage(outC, 0, 0); frame3D(t, f); const u = smooth((t - (d.t - d.d / 2)) / d.d); octx.globalAlpha = 1 - u; octx.drawImage(c3, 0, 0); octx.globalAlpha = 1; }
+function drawBeat(b, t, a) { x2.save(); x2.clearRect(0, 0, W, H); b.draw(x2, t - b.t0, W, H); x2.restore(); octx.globalAlpha = a; octx.drawImage(c2, 0, 0); octx.globalAlpha = 1; }
+window.renderAt = t => { const fb = MG2D.find(b => b.mode === "full" && t >= b.t0 && t <= b.t1), inBr = fb && fb.bridge && t - fb.t0 < fb.bridge, a = fb ? (inBr ? 0.999 : fb.fade ? Math.min(fb.bridge ? 1 : smooth((t - fb.t0) / 0.35), smooth((fb.t1 - t) / 0.35)) : 1) : 0;
+  if (fb && a >= 1) octx.clearRect(0, 0, W, H); else world3DLive(t, fb ? near3D(Math.round(t * FPS)) : undefined); if (fb) drawBeat(fb, t, a); else for (const b of MG2D) if (b.mode === "overlay" && t >= b.t0 && t <= b.t1) drawBeat(b, t, 1); };
+
+// ================= gates =================
+const bb = new THREE.Box3(), corners = Array.from({ length: 8 }, () => Vv());
+function figFrac() { let mx = 0; for (const m of figs) { let vis = m.visible; m.traverseAncestors(a => { if (!a.visible) vis = false; }); if (!vis) continue; bb.setFromObject(m); if (bb.isEmpty()) continue; let y0 = 9, y1 = -9, on = false, k = 0;
+  for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) corners[k++].set(x, y, z);
+  for (const c of corners) { c.project(cam); if (c.z < 1 && Math.abs(c.x) < 1.2 && Math.abs(c.y) < 1.2) on = true; y0 = Math.min(y0, c.y); y1 = Math.max(y1, c.y); } if (on) mx = Math.max(mx, (y1 - y0) / 2); } return mx; }
+const pa = Vv(), pb = Vv(), CAPMIN = LAND ? 0.02 * H : 38;
+function textMin(t) { let mn = 1e9, who = ""; for (const m of texts) { const w = m.userData.win; if (!w || t < w[0] + 0.35 || t > w[1] - 0.2) continue; let vis = m.visible; m.traverseAncestors(a => { if (!a.visible) vis = false; }); if (!vis) continue;
+  m.updateMatrixWorld(true); const hh = m.geometry.parameters.height / 2; pa.set(0, hh, 0).applyMatrix4(m.matrixWorld).project(cam); pb.set(0, -hh, 0).applyMatrix4(m.matrixWorld).project(cam);
+  if (pa.z > 1 || pb.z > 1 || Math.abs(pa.x) > 1 || Math.abs(pb.x) > 1 || Math.abs(pa.y) > 1) continue; const px = Math.hypot((pa.x - pb.x) * W / 2, (pa.y - pb.y) * H / 2) * m.userData.cap; if (px < mn) { mn = px; who = m.userData.txt; } } return [mn, who]; }
+const COAST = { ang: { p95: 52.25, max: 62.7 }, pos: { p95: 1.28, max: 1.54 } };
+function camStats() { const cuts = new Set(); for (const ru of RUNS) { const c = Math.round(ru[0] * FPS); [c - 1, c, c + 1].forEach(x => cuts.add(x)); }
+  const R = { room: { a: [], l: [], s: [] }, street: { a: [], l: [], s: [] }, world: { a: [], l: [], s: [] }, other: { a: [], l: [], s: [] } }, all = { a: [], l: [] }, per = {}; let pa = null, pl = null;
+  const scOf = f => { const r = REGF[f]; if (r && r.startsWith("set:")) { const s = SETS[r.slice(4)]; return scaleOf(s); } return "other"; };
+  for (let f = 1; f < NF; f++) { if (cuts.has(f) || !P[f] || !P[f + 1] || REGF[f] !== REGF[f + 1]) { pa = pl = null; continue; } const d0 = L[f].clone().sub(P[f]), d1 = L[f + 1].clone().sub(P[f + 1]), a = d0.angleTo(d1) / D2R * FPS, l = P[f + 1].distanceTo(P[f]) * FPS / d0.length(), sc = scOf(f);
+    const cp = sc === "other" ? { angMax: COAST.ang.max, linMax: COAST.pos.max, step: 1e9, linStep: 1e9 } : CAM_CAP[sc], sa = pa === null ? 0 : Math.abs(a - pa), sl = pl === null ? 0 : Math.abs(l - pl); pa = a; pl = l;
+    R[sc].a.push(a); R[sc].l.push(l); R[sc].s.push(sa); all.a.push(a); all.l.push(l); const r = Math.max(a / cp.angMax, l / cp.linMax, sa / cp.step, sl / cp.linStep); if (r > 1) { const s = Math.floor(f / FPS); per[s] = Math.max(per[s] || 0, +r.toFixed(2)); } }
+  const by = {}; let pass = Object.keys(per).length === 0; for (const sc of ["room", "street", "world", "other"]) { const x = R[sc]; if (!x.a.length) continue; by[sc] = { ang: stt(x.a), pos: stt(x.l), step: stt(x.s) }; const cp = sc === "other" ? { ang: COAST.ang.p95, lin: COAST.pos.p95 } : CAM_CAP[sc]; if (by[sc].ang.p95 > cp.ang || by[sc].pos.p95 > cp.lin) pass = false; }
+  return { ang: stt(all.a), pos: stt(all.l), by, keys: KEYREP, pass: pass && KEYREP.pass !== false, hotSeconds: Object.fromEntries(Object.entries(per).slice(0, 20)) }; }
+// MG legibility + overlaps while each MG line is narrated
+function mgText() { let mn = 1e9, who = ""; const low = [], ov = [];
+  for (const l of LINES) { if (l.kind !== "2d") continue; const md = MODS[l.v.mg]; for (const u of [0.35, 0.6, 0.85]) { const t = l.start + (l.end - l.start) * u, m = md.mt(t); if (m === null) continue;
+    const c = md.st.minCap(m); if (c < mn) { mn = c; who = l.subj + "@" + t.toFixed(1); } if (c < CAPMIN) low.push([+t.toFixed(1), +c.toFixed(1), l.subj]); const o = md.st.textOverlaps(m); if (o.length) ov.push([+t.toFixed(1), l.v.mg, o[0]]); } }
+  return { min: +mn.toFixed(1), who, nLow: low.length, low: low.slice(0, 8), nOverlap: ov.length, overlaps: ov.slice(0, 8), pass: !low.length && !ov.length }; }
+// variety gates (scaled by the script; no quotas): sets, framings, MG kinds, map share, pace
+function variety() {
+  const world = LINES.filter(l => l.v.set), wt = world.reduce((s, l) => s + l.end - l.start, 0), per = {}, consec = []; let run = 0, prev = null;
+  for (const l of LINES) { if (l.v.set) { per[l.v.set] = (per[l.v.set] || 0) + l.end - l.start; run = l.v.set === prev ? run + 1 : 1; prev = l.v.set; if (run > 3) consec.push([l.n, l.v.set]); } else { prev = null; run = 0; } }
+  const distinct = Object.keys(per).length, maxShare = Math.max(...Object.values(per)) / wt, rep = Object.entries(usedFraming).filter(([k, n]) => n > 2);
+  const mgBeats = (PLAN.mg || []).filter(b => MODS[b.id]); const kindTime = {}; let mgT = 0, back2back = [];
+  const beatSeq = []; for (const ru of RUNS0) if (ru.kind === "2d") { const b = MODS[ru.key.slice(3)].beat; beatSeq.push(b); const d = ru.t1 - ru.t0; mgT += d; for (const p of b.parts) kindTime[p.kind] = (kindTime[p.kind] || 0) + d / b.parts.length; }
+  for (let i = 1; i < beatSeq.length; i++) { const a = beatSeq[i - 1].parts.map(p => p.kind), b = beatSeq[i].parts.map(p => p.kind); if (beatSeq[i] !== beatSeq[i - 1] && a[a.length - 1] === b[0]) back2back.push(b[0]); }
+  const maxKind = Math.max(0, ...Object.values(kindTime)) / Math.max(1e-6, mgT), beatLens = RUNS0.filter(r => r.kind === "2d").map(r => +(r.t1 - r.t0).toFixed(1));
+  let mapRun = 0, mapRunMax = 0; for (const l of LINES) { mapRun = l.key === "map" ? mapRun + 1 : 0; mapRunMax = Math.max(mapRunMax, mapRun); }
+  let mapF = 0, mgF = 0; for (let f = 0; f <= NF; f++) { if (REGF[f] === "map") mapF++; if (!P[f]) mgF++; }
+  const ev = window.__cues.map(tCue).concat(LINES.map(l => l.start)).sort((a, b) => a - b); let gap = 0, gapAt = 0; for (let i = 1; i < ev.length; i++) if (ev[i] - ev[i - 1] > gap) { gap = ev[i] - ev[i - 1]; gapAt = ev[i - 1]; }
+  const sets = { distinct, worldLines: world.length, need: Math.ceil(world.length / 3), maxShare: +maxShare.toFixed(3), consec, framingRepeats: rep, pass: distinct >= Math.ceil(world.length / 3) && maxShare <= 0.12 && !consec.length && !rep.length };
+  const mg = { beats: mgBeats.length, kinds: Object.keys(kindTime).length, maxKindShare: +maxKind.toFixed(3), back2back, beatLens, pass: maxKind <= 0.2 && !back2back.length && beatLens.every(x => x >= 3.5 && x <= 14) };
+  const map = { share: +(mapF / (NF + 1)).toFixed(3), maxRun: mapRunMax, pass: mapF / (NF + 1) <= 0.2 && mapRunMax <= 4 };
+  return { sets, mg, map, mgShare: +(mgF / (NF + 1)).toFixed(3), eventGapMax: +gap.toFixed(2), eventGapAt: +gapAt.toFixed(1) }; }
+// ---------------- v3 gates (PLAN.v3 = true enforces them: they then report pass:false and run_final's grep blocks the render;
+// on older films they are reported as {ok:...} only, so the approved exterior films keep passing unchanged) ----------------
+const V3 = !!PLAN.v3;
+function dHash(nw = 17, nh = 16) { const c = dHash.c ??= Object.assign(document.createElement("canvas"), { width: 68, height: 64 }), g = c.getContext("2d", { willReadFrequently: true });
+  const c2 = dHash.c2 ??= Object.assign(document.createElement("canvas"), { width: nw, height: nh }), g2 = c2.getContext("2d", { willReadFrequently: true });
+  g.imageSmoothingQuality = "high"; g.drawImage(outC, 0, 0, 68, 64); g2.imageSmoothingQuality = "high"; g2.drawImage(c, 0, 0, nw, nh); const d = g2.getImageData(0, 0, nw, nh).data, bits = [];
+  const lum = (x, y) => { const i = (y * nw + x) * 4; return 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]; };
+  for (let y = 0; y < nh; y++) for (let x = 0; x < nw - 1; x++) bits.push(lum(x, y) > lum(x + 1, y) ? 1 : 0); return bits; }
+const genOf = l => { const s = SETS[l.v.set]; if (!s) return null; const subj = l.v.subject || "focus"; if (subj === "set") return null;
+  if (subj === "focus") { if (s.isRoom) { const objs = s.focus?.objs || []; return hasFig(objs) ? null : (s.items.find(r => objs.includes(r.obj))?.what ?? null); } return s.focus?.what ?? null; }
+  const objs = [].concat(s.subjects[subj] || []); if (hasFig(objs)) return null; return (s.items || []).find(r => r.obj && objs.includes(r.obj))?.what ?? null; };
+function focusHoldGate() {
+  // 9. focus hold: the red focus of every VISIBLE 3D picture stays constant through a dissolve (outgoing ghost AND incoming) and over the last FH_N frames
+  //    before a hard cut / 0.5 s dissolve / MG cut. Key-list logic on the per-frame focus tables (FW / FWO) the compositor draws from; "legacy" = the old time-keyed focusAt (info only)
+  const FH_N = 6, fhBad = [], fhLeg = [], lineOut = t => { let n = null; for (const l of LINES) if (l.start < t) n = l.n; return n; }, tSig = (reg, f) => reg && reg.startsWith("set:") ? focusSig(focusAt(reg.slice(4), f / FPS)) : "none";
+  const flat = a => a.every(x => x === a[0]);
+  for (const d of DISS) { if (!d.live) continue; const fr = []; for (let f = Math.floor((d.t - d.d / 2) * FPS) - 1; f <= Math.ceil((d.t + d.d / 2) * FPS) + 1; f++) if (f >= 0 && f <= NF && PO[f] && Math.abs(f / FPS - d.t) < d.d / 2 + 0.5 / FPS) fr.push(f); if (!fr.length) continue;
+    const pre = fr[0] - 1, oS = fr.map(f => focusSig(FWO[f])), iS = fr.map(f => focusSig(FW[f])), oPre = P[pre] ? focusSig(FW[pre]) : oS[0];
+    if (!flat(oS) || oS[0] !== oPre || !flat(iS)) fhBad.push({ t: +d.t.toFixed(2), line: lineOut(d.t), out: [...new Set([oPre, ...oS])], in: [...new Set(iS)] });
+    const oL = fr.map(f => tSig(RO[f], f)), iL = fr.map(f => tSig(REGF[f], f)); if (!flat(oL) || oL[0] !== (P[pre] ? tSig(REGF[pre], pre) : oL[0]) || !flat(iL)) fhLeg.push([+d.t.toFixed(2), lineOut(d.t)]); }
+  RUNS.forEach((ru, i) => { if (!i) return; const tc = ru[0]; if (DISS.some(d => d.live && Math.abs(d.t - tc) < d.d / 2 + 0.03)) return; const fc = Math.round(tc * FPS), fr = []; for (let f = fc - FH_N; f < fc; f++) if (f >= 0 && P[f]) fr.push(f); if (fr.length < 2) return;
+    if (!flat(fr.map(f => focusSig(FW[f])))) fhBad.push({ t: +tc.toFixed(2), line: lineOut(tc), cut: true, sigs: [...new Set(fr.map(f => focusSig(FW[f])))] }); if (!flat(fr.map(f => tSig(REGF[f], f)))) fhLeg.push([+tc.toFixed(2), lineOut(tc), "cut"]); });
+  return { liveDissolves: DISS.filter(d => d.live).length, nFrames: FH_N, bad: fhBad.slice(0, 12), nBad: fhBad.length, legacyBad: fhLeg.length, legacyAt: fhLeg.slice(0, 40) }; }
+window.__focusHold = focusHoldGate;
+function v3Gates(maxFigRoom) { const world = LINES.filter(l => l.kind === "3d"), wt = world.reduce((a, l) => a + l.end - l.start, 0) || 1;
+  const pass = ok => V3 ? { pass: ok } : { ok };
+  // 1. world time in room / street scenes >= 50%
+  const roomT = world.filter(l => l.v.set && SETS[l.v.set].isRoom).reduce((a, l) => a + l.end - l.start, 0);
+  const roomShare = { share: +(roomT / wt).toFixed(3), min: 0.5, ...pass(roomT / wt >= 0.5) };
+  // 2. any one structure generator as focus <= 8% of world time (a generator used on a single line never fails: one use is not repetition)
+  const per = {}, nper = {}; for (const l of world) { const g = genOf(l); if (!g || g === "people") continue; per[g] = (per[g] || 0) + l.end - l.start; nper[g] = (nper[g] || 0) + 1; }
+  const over = Object.entries(per).filter(([g, x]) => x / wt > 0.08 && nper[g] > 1).map(([g, x]) => [g, +(x / wt).toFixed(3), nper[g]]);
+  const structShare = { max: Object.keys(per).length ? +(Math.max(...Object.values(per)) / wt).toFixed(3) : 0, per: Object.fromEntries(Object.entries(per).map(([g, x]) => [g, +(x / wt).toFixed(3)])), over, ...pass(!over.length) };
+  // 3. perceptual similarity: one still per world line (mid-line), 256-bit dHash; two non-adjacent lines >= 0.9 similar fail
+  const hs = world.map(l => { window.renderAt((l.start + l.end) / 2); return { n: l.n, i: LINES.indexOf(l), b: dHash() }; }), sim = [];
+  let simMax = 0, simAt = null; for (let a = 0; a < hs.length; a++) for (let b = a + 1; b < hs.length; b++) { if (hs[b].i - hs[a].i <= 1) continue; let h = 0; for (let k = 0; k < hs[a].b.length; k++) h += hs[a].b[k] !== hs[b].b[k]; const x = 1 - h / hs[a].b.length;
+    if (x > simMax) { simMax = x; simAt = [hs[a].n, hs[b].n]; } if (x >= 0.9) sim.push([hs[a].n, hs[b].n, +x.toFixed(3)]); }
+  const similarity = { max: +simMax.toFixed(3), maxPair: simAt, fails: sim.slice(0, 10), nFail: sim.length, ...pass(!sim.length) };
+  // 4. producer tag kind:"person" -> the line's subject must be figures in a room/street set (render.mjs lines then checks they are SHOWN)
+  const pbad = []; for (const l of LINES) { if (l.v.kind !== "person") continue; const s = l.v.set && SETS[l.v.set]; if (!s || !s.isRoom) { pbad.push([l.n, "not a room/street set"]); continue; }
+    const subj = l.v.subject || "focus", objs = subj === "focus" ? (s.focus?.objs || []) : subj === "set" ? [] : [].concat(s.subjects[subj] || []); if (!hasFig(objs)) pbad.push([l.n, "subject " + subj + " has no figures"]); }
+  const person = { lines: LINES.filter(l => l.v.kind === "person").length, bad: pbad, ...pass(!pbad.length) };
+  // 5. event gap: no stretch inside a line > 4 s without a new reveal (line start / cut / reveal stop / callout / MG element cue)
+  const eg = []; let egMax = 0, egAt = null; for (const l of LINES) { const ev = [l.start, l.end]; if (l.cutT !== null && l.cutT !== undefined && l.cutT > l.start) ev.push(l.cutT); for (const t of l.revealT || []) ev.push(t);
+    for (const c of CALLOUTS) if (c.t0 > l.start && c.t0 < l.end) ev.push(c.t0); for (const d of DISS) if (d.t > l.start && d.t < l.end) ev.push(d.t);
+    for (const e of ENDS) if (e.l === l) { const pt = endPressTimes(l); for (const t of [pt.tLike, pt.tPress]) if (t !== null && t > l.start && t < l.end) ev.push(t); }   // end card: the Like press and the Subscribe stamp are visible changes on their words
+    if (l.kind === "2d") for (const c of MG_EV) { const t = tCue(c); if (t > l.start && t < l.end) ev.push(t); }
+    ev.sort((a, b) => a - b); for (let i = 1; i < ev.length; i++) { const g = ev[i] - ev[i - 1]; if (g > egMax) { egMax = g; egAt = l.n; } if (g > 4) { eg.push([l.n, +g.toFixed(2), +ev[i - 1].toFixed(1)]); break; } } }
+  const eventGap = { max: +egMax.toFixed(2), at: egAt, limit: 4, fails: eg.slice(0, 12), nFail: eg.length, ...pass(!eg.length) };
+  // 6. MG share of runtime <= 35%
+  let mgF = 0; for (let f = 0; f <= NF; f++) if (!P[f]) mgF++; const mgShare = { share: +(mgF / (NF + 1)).toFixed(3), max: 0.35, ...pass(mgF / (NF + 1) <= 0.35) };
+  // 7. figure cap in room scenes (0.35 of frame height)
+  const figCap = { maxFigRoom: +maxFigRoom.toFixed(3), at: window.__figRoomAt ?? null, max: 0.35, ...pass(maxFigRoom <= 0.35) };
+  // 8. world SFX (set-driven): bedMatch (each set's bed == archetypeOf(set)), cueMatch (every cue re-derives from a visible event of its line's set, whitelisted word, inside its line),
+  //    maxDensity (<= 3 world cues in any 30 s window = 1 per 8 s; no word > 3x in 60 s, which bounds any id), wordClear (no cue within 0.5 s of a key narration word). Replaces the old ">= 1 cue per line, gap <= 4 s" rule.
+  const sfxOn = V3 && PLAN.worldSfx !== false, wcs = [...WORLD_CUES].sort((a, b) => a.t - b.t), lastL = LINES[LINES.length - 1];
+  const bedBad = []; for (const ru of RUNS0) { if (!ru.key.startsWith("set:")) continue; const want = archetypeOf(SETS[ru.key.slice(4)]), mid = (ru.t0 + ru.t1) / 2, b = window.__beds.find(q => !Array.isArray(q) && q.t0 <= mid && mid <= q.t1); if (!b || b.scene !== want) bedBad.push([ru.key, want, b ? b.scene : null]); }
+  const cueBad = []; for (const c of wcs) { const l = LINES.find(q => q.n === c.line), ok = l && l.v.set && c.t >= l.start && c.t <= l.end && ALLOWED.has(c.word) && wordsFor(SETS[l.v.set], l).some(e => e.word === c.word && e.src === c.src); if (!ok) cueBad.push([c.line, c.word, c.src || null]); if (l === lastL) cueBad.push([c.line, c.word, "final line"]); }
+  const densBad = []; for (const c of wcs) { const n30 = wcs.filter(q => q.t >= c.t && q.t < c.t + 30).length, nw = wcs.filter(q => q.word === c.word && q.t >= c.t && q.t < c.t + 60).length; if (n30 > 3) densBad.push(["30s", +c.t.toFixed(1), n30]); if (nw > 3) densBad.push(["word60s", +c.t.toFixed(1), c.word, nw]); }
+  const clearBad = wcs.filter(c => !wordClear(c.t)).map(c => [c.line, +c.t.toFixed(2)]);
+  const worldSfx = { enabled: sfxOn, worldCues: WORLD_CUES.length, bedMatch: { bad: bedBad.slice(0, 8), n: bedBad.length }, cueMatch: { bad: cueBad.slice(0, 8), n: cueBad.length }, maxDensity: { bad: densBad.slice(0, 8), n: densBad.length }, wordClear: { bad: clearBad.slice(0, 8), n: clearBad.length },
+    ...(sfxOn ? { pass: !bedBad.length && !cueBad.length && !densBad.length && !clearBad.length } : { ok: !bedBad.length && !cueBad.length && !densBad.length && !clearBad.length }) };
+  const mgFails = []; for (const [bid, md] of Object.entries(MODS)) { const c = md.st.check ? md.st.check() : null; if (c && !c.pass) mgFails.push([bid, c.fails.slice(0, 3)]); }
+  const mgCheck = { beats: Object.keys(MODS).length, fails: mgFails.slice(0, 10), nFail: mgFails.length, ...pass(!mgFails.length) };
+  const fh = focusHoldGate(), focusHold = { ...fh, ...pass(!fh.nBad) };
+  return { enforced: V3, mgCheck, roomShare, structShare, similarity, person, eventGap, mgShare, figCap, worldSfx, focusHold }; }
+window.checkSizes = () => { let m = 0, at = 0, tm = 1e9, tw = "", ta = 0, mRoom = 0; const low = [];
+  for (let t = 0; t <= T; t += 0.25) { if (is2D(t)) continue; const { reg } = setCam(t); animate(t, reg); const x = figFrac(); if (x > m) { m = x; at = t; } if (reg.startsWith("set:") && SETS[reg.slice(4)].isRoom) { const s3 = SETS[reg.slice(4)], xr = figMaxFrom(s3, cam.position, L[clamp(Math.round(t * FPS), 0, NF)] || cam.position.clone().add(cam.getWorldDirection(Vv()))); if (xr > mRoom) { mRoom = xr; window.__figRoomAt = t; } }   /* corners behind the camera excluded (figFrac projects them inverted) */ const [c, w] = textMin(t); if (c < tm) { tm = c; tw = w; ta = t; } if (c < CAPMIN) low.push([t, +c.toFixed(1), w]); }
+  const v3 = v3Gates(mRoom);
+  return { speed: camStats(), mgText: mgText(), variety: variety(), v3, maxFig: +m.toFixed(3), maxFigAt: at, minCapPx: +tm.toFixed(1), minCapWho: tw, lowText: low.slice(0, 8), nLow: low.length, solve: solveInfo, solveMs, loadMs: Math.round(performance.now() - tLoad0) }; };
+window.__beats = { RUNS, DISS: DISS.map(d => d.t), SHOT };
+window.__figDbg = (t, id) => { window.renderAt(t); const s = SETS[id], out = []; for (const g of s.figures) { const v = figMaxFrom({ figures: [g] }, cam.position, L[clamp(Math.round(t * FPS), 0, NF)]); const b = new THREE.Box3().setFromObject(g), sz = b.getSize(Vv()); out.push([+v.toFixed(3), g.userData.fig?.pose, g.userData.fig?.name, sz.toArray().map(x => +x.toFixed(2)), +cam.position.distanceTo(b.getCenter(Vv())).toFixed(2)]); } return out.sort((a, b) => b[0] - a[0]).slice(0, 4); };
+window.__dbg = { SETS, MODS, LINES, RUNS0, MAP };
+// real evidence photo cards (plan line field photo: {id, caption}; films/<id>/photos.json): photo_cards.js draws them after the frame and adds v3.photos
+const PHOTO = await (await import("./photo_cards.js")).installPhotos({ FILM, W, H, LINES, DISS, MG2D, SETS, PAL, V3, THREE, cam, setCam, animate, lineObjs, smooth, clamp }); window.__photos = PHOTO.lines;
+{ const ra0 = window.renderAt; window.renderAt = t => { ra0(t); PHOTO.draw(octx, t); }; const cs0 = window.checkSizes; window.checkSizes = () => { const o = cs0(); if (o && o.v3) o.v3.photos = PHOTO.gate(); return o; }; }
+window.renderAt(Number(QS.get("t") || 0));
+window.__info = { shots: 24, T, figs: figs.length, lines: LINES.length, sets: Object.keys(SETS).length, mgBeats: Object.keys(MODS).length, solve: solveInfo, solveMs, loadMs: Math.round(performance.now() - tLoad0) };
+window.__camStats = camStats; window.__cam = { P, L, FPS }; window.__ready = true;
+</script></body></html>

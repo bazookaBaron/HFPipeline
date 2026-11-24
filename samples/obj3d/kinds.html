@@ -1,0 +1,18 @@
+<!doctype html><html><head><meta charset="utf-8"><title>mg kinds harness</title><style>html,body{margin:0;background:#e9e4d8}canvas{display:block}</style></head><body><script type="module">
+// harness: ?kind=<name>[&case=n][&seed=s][&ar=16x9][&data=<json>]  -> one stage from the kind's example data (or example[n], or data), focus ids narrated every 2.6 s.
+//          ?kinds=a,b,c  -> one stage with several parts (layering test; the first part is the primary).   Rendered by mg2d/render2d.mjs (still|video) and mg2d/kindgate.mjs.
+//          &cards=1 legacy card look · &compose=0 no composition solver/dress (v2 look) · &bridge=poster|tabletop|match (world->paper bridge from a test rect)
+import { KINDS } from "./mg2d/kinds/index.js"; import { makeStage } from "./mg2d/core.js";
+const Q = new URLSearchParams(location.search), LAND = Q.get("ar") === "16x9", W = LAND ? 1920 : 1080, H = LAND ? 1080 : 1920;
+const c = document.createElement("canvas"); c.width = W; c.height = H; document.body.appendChild(c); const g = c.getContext("2d");
+const names = (Q.get("kinds") || Q.get("kind") || Object.keys(KINDS)[0]).split(","), seed = +(Q.get("seed") || 7), cs = +(Q.get("case") || 0);
+const DATA = Q.get("data") ? JSON.parse(Q.get("data")) : null;
+const parts = names.map((k, i) => { const ex = KINDS[k].example; return { kind: k, data: DATA ? (Array.isArray(DATA) ? DATA[i] : DATA) : Array.isArray(ex) ? ex[cs % ex.length] : ex }; });
+const extra = {}; if (Q.get("compose") === "0") extra.compose = false; if (Q.get("bridge")) extra.bridge = { from: Q.get("bridge"), rect: [W * 0.56, H * 0.22, W * 0.2, H * 0.24] };
+let st = makeStage({ registry: KINDS, seed, parts, at: {} }, { W, H });   // first pass: learn the keys, then narrate them every 2.6 s
+const at = {}; st.keys.forEach((k, i) => at[k] = 0.4 + i * 2.6); st = makeStage({ registry: KINDS, seed, parts, at, end: 1.4, cards: Q.get("cards") === "1", ...extra }, { W, H });
+window.renderAt = t => { g.clearRect(0, 0, W, H); st.draw(g, t); };
+window.__info = { T: st.T, keys: st.keys, holds: st.stops.map(x => +(x.t + 1.4).toFixed(2)), capAtHolds: st.stops.map(x => +st.minCap(x.t + 1.4).toFixed(1)), overlaps: st.stops.flatMap(x => [x.t + 1.4, x.t + 2.4].flatMap(tt => st.textOverlaps(tt))).slice(0, 6) };
+if (st.check && Q.get("check") !== "0") window.__info.check = st.check();
+window.renderAt(+(Q.get("t") || st.T * 0.7)); window.__ready = true;
+</script></body></html>

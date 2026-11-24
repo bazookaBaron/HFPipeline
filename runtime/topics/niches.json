@@ -1,0 +1,335 @@
+{
+  "_meta": {
+    "created": "2026-11-15",
+    "report": "runtime/topics/NICHE-RESEARCH-2026-11-15.md",
+    "note": "RPM bands are planning ranges from published sources, not guarantees. Measure real RPM in YouTube Studio after ~20 films."
+  },
+  "powder": {
+    "channel": "Powder Keg",
+    "niche": "Corporate collapses and white-collar fraud",
+    "tagline": "How it blew up",
+    "rpmPlanningUSD": [4, 12],
+    "rpmSources": [
+      "https://www.1of10.com/blog/youtube-cpm-rpm-by-niche/",
+      "https://outlierkit.com/resources/faceless-business-documentary-channels/",
+      "https://air.io/en/air-data-findings/which-youtube-niche-makes-the-most-money-in-2026-ranked-by-real-rpm-and-cpm"
+    ],
+    "saturation": "medium-high",
+    "styleFit": 9,
+    "adSafety": "high",
+    "mainRisk": "defamation - name living people only with charges, filings or rulings",
+    "scope": {
+      "in": [
+        "company collapses and bankruptcies",
+        "accounting fraud and auditor failures",
+        "Ponzi and investment scams",
+        "startup implosions",
+        "bank failures and bubbles",
+        "big-tech scandals with a money mechanism",
+        "corporate lawsuits and regulator cases (series: The Trial)",
+        "non-violent heists and money mysteries (series: Where Did the Money Go)",
+        "China-US corporate fights (chip bans hitting a company)"
+      ],
+      "out": [
+        "violent crime",
+        "elections and partisan politics",
+        "war",
+        "celebrity gossip",
+        "personal finance advice or stock tips",
+        "crypto price speculation",
+        "private individuals",
+        "allegation-only stories without filings or charges"
+      ]
+    },
+    "includeTerms": [
+      "bankruptcy", "chapter 11", "chapter 7", "insolvency", "liquidation", "administration",
+      "fraud", "ponzi", "embezzlement", "accounting", "restatement", "auditor", "audit",
+      "sec charges", "indictment", "doj", "ftc", "sfo", "fca", "class action", "securities",
+      "whistleblower", "short seller", "collapse", "implosion", "ousted", "ceo resigns",
+      "unicorn", "startup", "valuation", "bailout", "bank run", "bubble", "antitrust",
+      "lawsuit", "settlement", "fine", "heist", "scam", "money laundering", "missing funds"
+    ],
+    "backlog": [
+      {"name": "Enron", "wiki": "Enron", "match": ["enron"], "angle": "Off-books partnerships hid debt until the share price fell from about $90 to pennies in 2001; the auditor went down with it."},
+      {"name": "Wirecard", "wiki": "Wirecard", "match": ["wirecard"], "angle": "Auditors could not find EUR 1.9bn of cash in 2020; the German payments star was insolvent within days."},
+      {"name": "FTX", "wiki": "FTX", "match": ["ftx", "bankman-fried"], "angle": "Customer deposits went to a sister trading firm; the exchange was bankrupt in about nine days in November 2022."},
+      {"name": "Theranos", "wiki": "Theranos", "match": ["theranos"], "angle": "A blood-test startup valued at $9bn whose machines did not work; the founder was convicted of defrauding investors."},
+      {"name": "Lehman Brothers", "wiki": "Lehman Brothers", "match": ["lehman"], "angle": "The accounting trick called Repo 105 and the largest bankruptcy in US history, September 2008."},
+      {"name": "WorldCom", "wiki": "WorldCom", "match": ["worldcom"], "angle": "Ordinary running costs booked as investments; internal auditors found about $11bn of fake profit in 2002."},
+      {"name": "Luckin Coffee", "wiki": "Luckin Coffee", "match": ["luckin"], "angle": "Fabricated sales of about RMB 2.2bn, exposed by an anonymous research report in 2020."},
+      {"name": "Nikola", "q": "Nikola Motor fraud", "wiki": "Nikola Corporation", "match": ["nikola corp", "nikola motor", "trevor milton"], "angle": "An electric-truck maker whose famous 'driving' video was a truck rolling downhill; the founder was convicted of fraud."},
+      {"name": "Evergrande", "wiki": "Evergrande Group", "match": ["evergrande"], "angle": "China's biggest property developer defaulted in 2021 with more than $300bn of liabilities."},
+      {"name": "Satyam", "wiki": "Satyam scandal", "match": ["satyam"], "angle": "In 2009 the chairman admitted the books showed about $1bn of cash that did not exist; often called India's Enron."},
+      {"name": "Bernie Madoff", "wiki": "Madoff investment scandal", "match": ["madoff"], "angle": "A Ponzi scheme with about $65bn of paper balances that ran for decades until the 2008 crash made clients want their money."},
+      {"name": "Adelphia", "wiki": "Adelphia Communications Corporation", "match": ["adelphia"], "angle": "A cable company whose founding family borrowed billions through hidden loans; bankrupt in 2002."},
+      {"name": "Tyco", "wiki": "Tyco International", "match": ["tyco", "kozlowski"], "angle": "Top executives took unapproved bonuses and company-paid luxuries worth about $150m; the CEO was convicted in 2005."},
+      {"name": "Greensill Capital", "wiki": "Greensill Capital", "match": ["greensill"], "angle": "A supply-chain finance lender that collapsed in 2021 and pulled a steel group down with it."},
+      {"name": "Archegos", "wiki": "Archegos Capital Management", "match": ["archegos", "bill hwang"], "angle": "A family office used hidden leveraged swaps; its 2021 margin calls cost the banks more than $10bn."},
+      {"name": "Silicon Valley Bank", "wiki": "Silicon Valley Bank", "match": ["silicon valley bank", "svb"], "angle": "A bank run that took about two days in March 2023 after bond losses and a tech-only customer base."},
+      {"name": "Carillion", "wiki": "Carillion", "match": ["carillion"], "angle": "The UK government contractor that collapsed in 2018 with a pension hole and optimistic accounting."},
+      {"name": "Toshiba accounting scandal", "wiki": "Toshiba", "match": ["toshiba"], "angle": "Profits overstated by about $1.2bn over years because bosses set targets nobody could refuse."},
+      {"name": "Olympus", "q": "Olympus accounting scandal", "wiki": "Olympus Corporation", "match": ["olympus"], "angle": "Decades of hidden investment losses; the CEO who asked questions was fired in 2011."},
+      {"name": "Parmalat", "wiki": "Parmalat", "match": ["parmalat"], "angle": "An Italian dairy giant claimed a EUR 4bn bank account that was forged, 2003."},
+      {"name": "Valeant", "wiki": "Bausch Health", "match": ["valeant"], "angle": "Huge drug-price increases and a secret pharmacy network; the share price lost about 90% in 2015-16."},
+      {"name": "Steinhoff", "wiki": "Steinhoff International", "match": ["steinhoff"], "angle": "A South African retail empire whose accounting irregularities in 2017 wiped out most of its value."},
+      {"name": "1MDB", "wiki": "1MDB scandal", "match": ["1mdb"], "angle": "A Malaysian state fund where billions were diverted and the bank that sold its bonds was fined."},
+      {"name": "Barings Bank", "wiki": "Barings Bank", "match": ["barings", "nick leeson"], "angle": "One trader hid losses in an error account and a 233-year-old bank was sold for GBP 1 in 1995."},
+      {"name": "Long-Term Capital Management", "wiki": "Long-Term Capital Management", "match": ["ltcm", "long-term capital"], "angle": "A star hedge fund with huge leverage needed a Wall Street rescue in 1998."},
+      {"name": "Bre-X", "wiki": "Bre-X", "match": ["bre-x"], "angle": "A gold 'discovery' in Indonesia built on salted samples; the stock collapsed in 1997."},
+      {"name": "WeWork", "wiki": "WeWork", "match": ["wework"], "angle": "From a $47bn valuation to a pulled IPO in 2019 and bankruptcy in 2023."}
+    ],
+    "strongTerms": ["bankruptcy", "bankrupt", "chapter 11", "insolvency", "liquidation", "ponzi", "fraud", "embezzlement", "restatement", "accounting", "indictment", "collapse", "resigns", "steps down", "ousted", "short seller", "whistleblower", "bailout", "bank run", "sec charges", "class action", "bankruptcy protection"],
+    "gateAny": ["compan", "corp", "inc\\b", "ltd", "plc", "ceo", "cfo", "bank", "shares", "stock", "firm", "startup", "group", "bankrupt", "auditor", "investors", "executive", "chairman", "founder", "retailer", "maker", "fund"],
+    "radarTerms": [
+      "resigns", "resigned", "steps down", "ousts", "scandal", "bankrupt", "bankruptcy protection", "fined", "fines", "probe",
+      "graft", "corruption", "plummets", "plunge", "shares fall", "board", "investigation", "sues", "sued", "pleads guilty",
+      "sentenced", "charged", "accounting", "misconduct", "insider trading", "layoffs", "default", "debt", "bribery", "cover-up"
+    ],
+    "radarExclude": ["joint meeting", "actor", "cartoon", "snap fraud", "taxpayer fraud", "task force"],
+    "excludeTerms": [
+      "murder", "shooting", "stabbing", "election", "campaign rally", "airstrike", "casualties",
+      "celebrity", "stock tip", "price prediction", "memecoin"
+    ],
+    "searchQueries": [
+      "files for chapter 11", "bankruptcy filing", "SEC charges", "DOJ fraud indictment",
+      "accounting irregularities", "auditor resigns", "short seller report", "earnings restatement",
+      "Ponzi scheme", "collapse of", "enters liquidation", "securities class action",
+      "whistleblower company", "CEO ousted", "antitrust ruling", "heist"
+    ],
+    "sources": {
+      "rss": [
+        "https://www.sec.gov/news/pressreleases.rss",
+        "https://www.sec.gov/rss/litigation/litreleases.xml",
+        "https://www.justice.gov/news/rss?type=press_release",
+        "https://www.ftc.gov/feeds/press-release.xml",
+        "https://www.cnbc.com/id/10001147/device/rss/rss.html"
+      ],
+      "rssExtra": [
+        "https://www.theguardian.com/business/rss",
+        "https://feeds.content.dowjones.io/public/rss/mw_topstories",
+        "https://www.theguardian.com/uk/business/rss",
+        "https://www.accountingtoday.com/feed"
+      ],
+      "monitor": [
+        "S&P Global Market Intelligence monthly US bankruptcy report",
+        "UK Serious Fraud Office news",
+        "UK FCA news",
+        "CourtListener dockets for major cases",
+        "Reuters Business",
+        "Financial Times / WSJ business headlines",
+        "Hacker News (tech company implosions)",
+        "Short-seller reports (Muddy Waters, etc.)",
+        "Wikipedia Current events - Business and economy"
+      ]
+    },
+    "audience": "25-54, ~75% male, US/UK/CA/AU/IN; business students, investors, tech workers, 'how did nobody notice' viewers; watches MagnatesMedia, Coffeezilla, ColdFusion, How Money Works",
+    "competitors": [
+      { "name": "MagnatesMedia", "subs": "1.9M" },
+      { "name": "ColdFusion", "subs": "5.2M" },
+      { "name": "Coffeezilla", "subs": "4.7M" },
+      { "name": "Company Man", "subs": "1.8M" },
+      { "name": "How Money Works", "subs": "1.7M" },
+      { "name": "Business Casual", "subs": "1.1M" },
+      { "name": "Modern MBA", "subs": "801K" },
+      { "name": "Wall Street Millennial", "subs": "366K" }
+    ],
+    "titlePatterns": [
+      "The [Object] That Sank a $[N] Billion Company",
+      "Inside the Room Where [Company] [Did X]",
+      "How [Company] Lost $[N] in [Time]",
+      "Why [Number] Companies [Collapsed] in [Year]",
+      "The [Role] Who [Signed/Ignored/Hid] Everything",
+      "[Company]: The [Fraud/Collapse] Explained, Step by Step"
+    ],
+    "thumbnailPatterns": [
+      "white miniature boardroom/office, one red mannequin (decision-maker) or one red document",
+      "big number tag ($40B, 7 DAYS)",
+      "optional small credited photo-pin of the real executive in a corner",
+      "company logo as a small label tag",
+      "monochrome world + one red subject, readable at TV and phone size"
+    ],
+    "idealLengthMin": [14, 18],
+    "chapters": "every 2-3 min",
+    "shorts": {
+      "perFilm": 3,
+      "lengthSec": [35, 55],
+      "beats": ["the hook moment (the memo that...)", "the single most absurd number", "how it was caught"],
+      "rules": "own written hook line per Short via script-writer, end card to full film, never a raw slice; Shorts are discovery only"
+    },
+    "seoKeywords": [
+      "corporate collapse", "company bankruptcy explained", "accounting fraud",
+      "white collar crime documentary", "how a company went bankrupt", "rise and fall",
+      "corporate scandal", "ponzi scheme explained", "startup failure", "bank collapse",
+      "sec fraud case", "auditor failure", "business documentary", "financial fraud explained",
+      "chapter 11 explained", "corporate greed", "biggest business failures",
+      "fraud investigation", "short seller report", "where did the money go"
+    ],
+    "radarBuckets": ["corporate scandals", "money", "big tech", "China-US tech/trade (company angle)"]
+  },
+  "partition": {
+    "channel": "Partition Lines",
+    "niche": "Geo-economics of borders, chokepoints and trade routes",
+    "tagline": "The lines on the map that move money",
+    "rpmPlanningUSD": [3, 9],
+    "rpmSources": [
+      "https://www.1of10.com/blog/youtube-cpm-rpm-by-niche/",
+      "https://air.io/en/air-data-findings/which-youtube-niche-makes-the-most-money-in-2026-ranked-by-real-rpm-and-cpm",
+      "https://outlierkit.com/resources/youtube-news-channel-rpm/"
+    ],
+    "saturation": "medium",
+    "styleFit": 10,
+    "adSafety": "medium",
+    "mainRisk": "war-adjacent topics can get limited ads - non-graphic imagery, neutral titles, no war words in thumbnails",
+    "scope": {
+      "in": [
+        "straits, canals and chokepoints (Hormuz, Suez, Panama, Malacca, Bab-el-Mandeb, Bosphorus)",
+        "shipping and ports",
+        "pipelines and energy routes",
+        "sanctions and sanctions evasion",
+        "tariffs and trade wars (China-US)",
+        "rare earths, chips and critical minerals",
+        "border disputes and their economics",
+        "Arctic routes and resource claims",
+        "undersea cables",
+        "partitions and splits of countries/regions and their cost",
+        "special economic zones and enclaves",
+        "trade-related espionage and smuggling (series: The Smugglers)"
+      ],
+      "out": [
+        "battlefield and war-tactics coverage",
+        "casualty footage or imagery",
+        "elections and partisan politics",
+        "opinion/prediction videos (WW3 is coming)",
+        "religion or ethnicity conflicts as the main topic",
+        "anything that needs real combat footage",
+        "Ukraine content that could read as exploiting, dismissing or condoning the war"
+      ]
+    },
+    "includeTerms": [
+      "strait", "canal", "chokepoint", "shipping", "freight", "tanker", "port", "container",
+      "war risk insurance", "pipeline", "lng", "oil supply", "sanctions", "export controls",
+      "tariff", "trade war", "trade deal", "rare earth", "critical minerals", "semiconductor export",
+      "border", "disputed territory", "arctic", "undersea cable", "shadow fleet", "blockade",
+      "corridor", "belt and road", "special economic zone", "enclave", "customs", "smuggling"
+    ],
+    "backlog": [
+      {"name": "Strait of Hormuz", "wiki": "Strait of Hormuz", "match": ["hormuz"], "angle": "A 21-mile-wide strait through which a large share of the world's seaborne oil passes."},
+      {"name": "Strait of Malacca", "wiki": "Strait of Malacca", "match": ["malacca"], "angle": "The narrow lane between Malaysia and Indonesia that carries most of China's oil imports."},
+      {"name": "Suez Canal and the Ever Given", "wiki": "Suez Canal", "match": ["suez", "ever given"], "angle": "One stuck ship in 2021 blocked a route used by roughly an eighth of world trade."},
+      {"name": "Panama Canal", "wiki": "Panama Canal", "match": ["panama canal"], "angle": "A freshwater-lake canal whose drought limits in 2023 forced ships to queue or sail around."},
+      {"name": "Bab-el-Mandeb", "wiki": "Bab al-Mandab", "match": ["bab-el-mandeb", "bab el-mandeb", "red sea"], "angle": "The gate to the Red Sea; when ships avoid it they sail around Africa and freight rates move."},
+      {"name": "The Bosphorus", "wiki": "Bosporus", "match": ["bosphorus", "turkish straits"], "angle": "A strait through a city of 15 million that a 1936 treaty keeps open to merchant ships."},
+      {"name": "Danish straits", "wiki": "Danish Straits", "match": ["danish straits", "baltic sea exit", "oresund"], "angle": "The exit from the Baltic that carries Russian oil exports past Denmark."},
+      {"name": "Strait of Gibraltar", "wiki": "Strait of Gibraltar", "match": ["gibraltar"], "angle": "A 9-mile gap between two continents and one of the busiest shipping lanes."},
+      {"name": "Taiwan Strait", "wiki": "Taiwan Strait", "match": ["taiwan strait"], "angle": "The shipping lane that a large share of the world's container ships and chip supply depend on."},
+      {"name": "Torkham and the Durand Line", "wiki": "Durand Line", "match": ["torkham", "durand line"], "angle": "A colonial-era border that splits Pashtun trade and now decides when trucks cross between Pakistan and Afghanistan."},
+      {"name": "India-Bangladesh enclaves", "wiki": "Bangladesh–India enclaves", "match": ["enclave", "chhitmahal"], "angle": "About 160 tiny pieces of land inside the other country, swapped in 2015 after decades of border trouble."},
+      {"name": "Kaliningrad", "wiki": "Kaliningrad Oblast", "match": ["kaliningrad", "suwalki"], "angle": "A Russian exclave inside the EU whose rail transit needs permission from Lithuania."},
+      {"name": "Northern Sea Route", "wiki": "Northern Sea Route", "match": ["northern sea route", "arctic shipping"], "angle": "The Arctic shortcut between Asia and Europe that melting ice is slowly opening."},
+      {"name": "Darien Gap", "wiki": "Darién Gap", "match": ["darien", "darién"], "angle": "The 100 km of jungle where the Pan-American road simply stops, and why it was never built."},
+      {"name": "Rhine low water", "wiki": "Rhine", "match": ["rhine"], "angle": "Germany's main cargo river, where low water at Kaub in dry summers cuts barge loads and lifts prices."},
+      {"name": "Kiel Canal", "wiki": "Kiel Canal", "match": ["kiel canal"], "angle": "The busiest artificial waterway in the world, built so ships can skip the Danish straits."},
+      {"name": "Lombok Strait", "wiki": "Lombok Strait", "match": ["lombok"], "angle": "The deep-water back door that big ships use when Malacca is too shallow or too crowded."},
+      {"name": "Mississippi River barges", "wiki": "Mississippi River", "match": ["mississippi river", "barge"], "angle": "The corridor that moves most US grain exports, and what low water does to farm prices."},
+      {"name": "Nord Stream", "wiki": "Nord Stream 1", "match": ["nord stream"], "angle": "Pipelines that bound Germany's energy supply to Russia and ended in a 2022 blast."},
+      {"name": "Druzhba pipeline", "wiki": "Druzhba pipeline", "match": ["druzhba"], "angle": "A Soviet-era oil pipeline that still passes through Ukraine to Hungary and Slovakia."},
+      {"name": "Power of Siberia", "wiki": "Power of Siberia", "match": ["power of siberia"], "angle": "The pipeline that points Russian gas at China instead of Europe, and the price dispute behind it."},
+      {"name": "Gwadar Port", "wiki": "Gwadar Port", "match": ["gwadar", "cpec"], "angle": "A Chinese-built port in Pakistan meant to shorten China's route to the Gulf."},
+      {"name": "Port of Piraeus", "wiki": "Port of Piraeus", "match": ["piraeus"], "angle": "How a Greek port became a Chinese-owned gateway to Europe."},
+      {"name": "Hambantota Port", "wiki": "Hambantota International Port", "match": ["hambantota"], "angle": "A Sri Lankan port leased to China for 99 years after the loans could not be repaid."},
+      {"name": "Kra Canal", "wiki": "Thai Canal", "match": ["kra canal"], "angle": "The canal Thailand has debated for centuries to bypass Malacca."},
+      {"name": "Channel Tunnel", "wiki": "Channel Tunnel", "match": ["channel tunnel", "eurotunnel", "dover"], "angle": "The fixed link where border checks and a few strikes can stop UK-EU freight."},
+      {"name": "Trans-Siberian Railway", "wiki": "Trans-Siberian Railway", "match": ["trans-siberian"], "angle": "The rail route that carries China-Europe freight overland when the sea is blocked."}
+    ],
+    "strongTerms": ["strait", "canal", "chokepoint", "hormuz", "red sea", "suez", "panama", "malacca", "bab-el-mandeb", "bosphorus", "taiwan strait", "sanctions", "sanction", "tariff", "tariffs", "export controls", "freight rates", "blockade", "pipeline", "rare earth", "shipping lane", "shadow fleet", "undersea cable"],
+    "gateAny": ["ship", "port", "oil", "crude", "trade", "tariff", "sanction", "freight", "strait", "canal", "pipeline", "border", "cargo", "export", "route", "energy", "gas", "supply", "tanker", "container", "customs", "minerals", "chip"],
+    "radarTerms": [
+      "hormuz", "red sea", "suez", "panama", "malacca", "bab-el-mandeb", "bosphorus", "taiwan strait", "south china sea", "houthi", "freight rates",
+      "shipping waiver", "blacklists", "blacklist", "crude", "oil exports", "oil revenues", "free-trade", "trade agreement", "tariffs", "ports",
+      "shipping lane", "sanction", "oil price", "opec", "cargo", "baltic", "black sea", "ship", "ships", "vessel", "vessels", "fertilizer", "customs"
+    ],
+    "radarExclude": ["cruise ship", "paddlewheeler", "market report", "assessment index", "capsize", "capsizes", "explosive gel", "scheduled"],
+    "excludeTerms": [
+      "killed", "casualties", "massacre", "beheading", "election", "polls", "campaign",
+      "celebrity", "ww3", "prophecy"
+    ],
+    "searchQueries": [
+      "strait of hormuz", "shipping disruption", "freight rates", "war risk insurance",
+      "sanctions package", "export controls", "tariff", "rare earth export ban", "pipeline",
+      "border dispute", "undersea cable cut", "canal transit", "port closure", "arctic shipping",
+      "trade deal", "critical minerals", "shadow fleet", "chokepoint"
+    ],
+    "sources": {
+      "rss": [
+        "https://gcaptain.com/feed/",
+        "https://splash247.com/feed/",
+        "https://ustr.gov/about-us/policy-offices/press-office/press-releases/rss.xml"
+      ],
+      "rssExtra": [
+        "https://www.hellenicshippingnews.com/feed/",
+        "https://www.freightwaves.com/news/feed",
+        "https://oilprice.com/rss/main",
+        "https://www.supplychaindive.com/feeds/news/",
+        "https://www.theguardian.com/business/rss"
+      ],
+      "monitor": [
+        "Reuters World and Commodities",
+        "Lloyd's List",
+        "TradeWinds",
+        "Kpler / Vortexa public notes",
+        "UKMTO and JMIC maritime security advisories",
+        "US Treasury OFAC recent actions",
+        "US Commerce BIS export-control rules",
+        "EU sanctions press releases",
+        "IEA Oil Market Report",
+        "Panama Canal Authority advisories",
+        "TeleGeography submarine cable news",
+        "Wikipedia Current events - International relations / Business",
+        "GDELT (already in radar)",
+        "What's Going On With Shipping? (topic signal only)"
+      ]
+    },
+    "audience": "22-55, mostly male, US/UK/IN/CA/AU/DE; geography and world-affairs fans, logistics/energy professionals, students; watches Johnny Harris, RealLifeLore, Wendover, CaspianReport, Peter Zeihan, WGOWS",
+    "competitors": [
+      { "name": "Johnny Harris", "subs": "7.8M" },
+      { "name": "RealLifeLore", "subs": "unverified (multi-million)" },
+      { "name": "Wendover Productions", "subs": "unverified (multi-million)" },
+      { "name": "What's Going On With Shipping?", "subs": "700K+" },
+      { "name": "Peter Zeihan", "subs": "957K" },
+      { "name": "Geopolitical Economy Report", "subs": "752K" },
+      { "name": "CaspianReport", "subs": "520K" },
+      { "name": "Good Times Bad Times", "subs": "356K" }
+    ],
+    "titlePatterns": [
+      "The [N]-Mile Line That Controls [Share] of the World's [Thing]",
+      "Why [Place] Suddenly Matters to [Everyone / Your Wallet]",
+      "What Happens to a [Ship/Price/Factory] When [Line Closes]",
+      "The Border Nobody Can Draw: [Place]",
+      "How [Country] Is Quietly [Controlling X]",
+      "[Chokepoint] Explained in [N] Minutes"
+    ],
+    "thumbnailPatterns": [
+      "white paper map or tilt-shift miniature port/strait from above",
+      "one red ship, red pipeline or red border line",
+      "bold map number (21 MILES, 20% OF OIL)",
+      "small country label tag",
+      "no explosions, burning flags or soldiers"
+    ],
+    "idealLengthMin": [12, 16],
+    "chapters": "every 2-3 min",
+    "shorts": {
+      "perFilm": 3,
+      "lengthSec": [35, 55],
+      "beats": ["this one line on the map... (single map move)", "what one ship crossing costs (number reveal)", "the country you didn't expect (twist)"],
+      "rules": "own written hook line per Short via script-writer, end card to full film, never a raw slice; same-day topical Shorts allowed when built from existing sets with a new script line"
+    },
+    "seoKeywords": [
+      "strait of hormuz explained", "chokepoints", "global shipping crisis", "geopolitics explained",
+      "geoeconomics", "trade routes", "sanctions explained", "trade war china us",
+      "rare earth minerals", "suez canal", "panama canal", "malacca strait", "arctic shipping route",
+      "undersea cables", "border disputes explained", "oil supply", "shipping insurance",
+      "export controls", "maps explained", "why this border exists"
+    ],
+    "radarBuckets": ["geopolitics", "China-US tech/trade (trade/route angle)", "espionage (smuggling/sanctions angle)", "Trump-Russia (sanctions/energy angle only)"]
+  }
+}

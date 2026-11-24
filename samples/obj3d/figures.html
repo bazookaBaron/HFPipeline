@@ -1,0 +1,130 @@
+<!doctype html><html><head><meta charset="utf-8"><title>figures harness</title>
+<style>html,body{margin:0;background:#dfe4e8}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/"}}</script></head>
+<body><script type="module">
+// Test sheet for builder B (v3): poses.js (pose sheet x 3 seeds), groups.js (every form), grammar3d landmarks (x 2 seeds, right one in focus red).
+// window.renderAt(page) draws page `page` (tiles) to the canvas; __info.pages lists them. Snap: node render.mjs still figures 0,1,2,...
+// Look = sets.html (materials, morning light, tilt-shift, soft shadows).
+import * as THREE from "three";
+import { posedPerson, POSES, SEAT_H, DESK_H, DESK_EDGE, HANDSHAKE_GAP, EMBRACE_GAP, PERSON_M, partnerAt } from "/sets/poses.js";
+import { stage, FORM_NAMES, minGap } from "/sets/groups.js";
+import { GEN, MK, FOCUSMAP, rng, Builder } from "/sets/grammar3d.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+const QS = new URLSearchParams(location.search), W = 1920, H = 1080, D2R = Math.PI / 180;
+const clamp = (x, a, b) => Math.max(a, Math.min(b, x)), Vv = (x, y, z) => new THREE.Vector3(x, y, z);
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H); r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+const outC = document.createElement("canvas"); outC.width = W; outC.height = H; document.body.appendChild(outC); const octx = outC.getContext("2d"); r.domElement.style.display = "none"; document.body.appendChild(r.domElement);
+const SKY = 0xdfe4e8, sc = new THREE.Scene(); sc.background = new THREE.Color(SKY); sc.fog = new THREE.Fog(SKY, 3000, 9000);
+const WHITE = new THREE.MeshStandardMaterial({ color: 0xf0eee9, roughness: 0.85 }), GREY = new THREE.MeshStandardMaterial({ color: 0xd6d5d1, roughness: 0.9 });
+const SAND = new THREE.MeshStandardMaterial({ color: 0xf2ede2, roughness: 0.95 }), DARK = new THREE.MeshStandardMaterial({ color: 0xb9b8b4, roughness: 0.8 }), RED = new THREE.MeshStandardMaterial({ color: 0xcf2219, roughness: 0.5 });
+const KM = { white: WHITE, grey: new THREE.MeshStandardMaterial({ color: 0xc9c8c4, roughness: 0.6 }), dark: new THREE.MeshStandardMaterial({ color: 0x9a9995, roughness: 0.8 }) };
+const KMR = { white: RED, grey: new THREE.MeshStandardMaterial({ color: 0xa81c14, roughness: 0.55 }), dark: new THREE.MeshStandardMaterial({ color: 0x8c1710, roughness: 0.7 }) };
+const M = { WHITE, GREY, SAND, DARK, RED }, mk = MK(M, KM), fmap = FOCUSMAP(M, KM, KMR);
+sc.add(new THREE.HemisphereLight(0xeef3ff, 0xb9b2a6, 1.15)); const sun = new THREE.DirectionalLight(0xfff0d8, 3.0); sun.castShadow = true; sc.add(sun.target, sun);
+sun.shadow.mapSize.set(4096, 4096); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+const cam = new THREE.PerspectiveCamera(30, W / H, 0.05, 5000), comp = new EffectComposer(r); comp.addPass(new RenderPass(sc, cam));
+const mkTS = d => new ShaderPass({ uniforms: { tDiffuse: { value: null }, dir: { value: d }, res: { value: new THREE.Vector2(W, H) }, fy: { value: 0.5 }, amt: { value: 2.4 }, b0: { value: 0.14 }, b1: { value: 0.48 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 dir, res; uniform float fy, amt, b0, b1; varying vec2 vUv;
+    void main(){ float b = smoothstep(b0, b1, abs(vUv.y-fy)) * amt; vec4 c = vec4(0.0); float w = 0.0;
+      for (int i=-6;i<=6;i++){ float k = exp(-float(i*i)/18.0); c += texture2D(tDiffuse, vUv + dir*float(i)*b/res)*k; w += k; }
+      gl_FragColor = c / w; }` });
+const tx = mkTS(new THREE.Vector2(1, 0)), ty = mkTS(new THREE.Vector2(0, 1)); comp.addPass(tx); comp.addPass(ty); comp.addPass(new OutputPass());
+const focusify = g => g.traverse(m => { if (m.isMesh && !m.userData.noFocus) { const kmr = m.material === KM.white ? KMR.white : m.material === KM.grey ? KMR.grey : m.material === KM.dark ? KMR.dark : fmap.get(m.material); if (kmr) m.material = kmr; } });
+
+// ---------- views: { g: Group, look, d, az, el, fov, shadow } ; pages: { name, tiles: [view...], grid:[cols,rows] } ----------
+const VIEWS = [], PAGES = []; let slot = 0;
+function newView(opts) { const g = new THREE.Group(); g.position.set((slot % 8) * 3000, 0, Math.floor(slot / 8) * 3000); slot++; sc.add(g); g.visible = false; const v = { g, ...opts }; VIEWS.push(v); return v; }
+function floor(g, w, d, k = SAND, y = 0) { const m = new THREE.Mesh(new THREE.BoxGeometry(w, 0.04, d), k); m.position.y = y - 0.02; m.receiveShadow = true; m.userData.noFocus = true; g.add(m); return m; }
+const fig = (o, x, z, h, s = 1, red = false) => { const p = posedPerson(KM, o); p.position.set(x, 0, z); p.rotation.y = h; p.scale.setScalar(s); if (red) focusify(p); return p; };
+const box = (g, mat, w, h, d, x, y, z, ry = 0) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(x, y + h / 2, z); m.rotation.y = ry; m.castShadow = m.receiveShadow = true; g.add(m); return m; };
+// a simple chair under a seated figure (origin = seat centre); heading h; s = figure scale
+function chair(g, x, z, h, s) { const G = new THREE.Group(); G.position.set(x, 0, z); G.rotation.y = h; const sh = SEAT_H * s;
+  box(G, KM.grey, 0.24 * s, 0.025 * s, 0.24 * s, -0.02 * s, sh - 0.025 * s, 0); box(G, KM.grey, 0.025 * s, 0.26 * s, 0.22 * s, -0.15 * s, sh, 0);
+  for (const a of [-1, 1]) for (const b of [-1, 1]) box(G, KM.dark, 0.016 * s, sh - 0.025 * s, 0.016 * s, -0.02 * s + a * 0.1 * s, 0, b * 0.1 * s); g.add(G); }
+function desk(g, x, z, h, s, monitor = true) { const G = new THREE.Group(); G.position.set(x, 0, z); G.rotation.y = h; const dh = DESK_H * s, dd = 0.36 * s, x0 = DESK_EDGE * s + dd / 2;
+  box(G, WHITE, dd, 0.022 * s, 0.6 * s, x0, dh - 0.022 * s, 0); for (const b of [-1, 1]) box(G, KM.grey, dd * 0.9, dh - 0.022 * s, 0.02 * s, x0, 0, b * 0.28 * s);
+  if (monitor) { box(G, KM.dark, 0.012 * s, 0.13 * s, 0.22 * s, x0 + 0.1 * s, dh + 0.03 * s, 0); box(G, KM.grey, 0.04 * s, 0.03 * s, 0.03 * s, x0 + 0.11 * s, dh, 0); } g.add(G); }
+
+// ===== page A/B: pose sheet (every pose x 3 seeds; seated poses on chairs, desk poses at desks, pairs with their partner) =====
+const WARD = [{ coat: true, tie: true, hair: "short", build: 1.0 }, { coat: false, hair: "bun", skirt: true, build: 0.9 }, { coat: true, hair: "long", build: 1.3, hat: "none" },
+  { coat: false, hat: "hard", hair: "short", build: 1.15 }, { coat: true, longCoat: true, hair: "none", hat: "peak", build: 1.05 }, { coat: false, hat: "cap", hair: "short", build: 0.85 }];
+const PROPOF = { stand: "briefcase", speak: "mic", look_down: "papers", walk: "briefcase", sit_listen: "cup", sit: "papers", stand_hips: null, kneel: null };
+function poseSheet(list, name) { const v = newView({ az: 38, el: 26, fov: 24, name }), g = v.g, cols = list.length, sx = 1.15, rows = 3, rz = 1.6;
+  floor(g, cols * sx + 3, rows * rz + 3, SAND);
+  list.forEach((pz, c) => { for (let k = 0; k < rows; k++) { const seed = 11 + k * 97 + c * 7, w = { ...WARD[(c + k * 2) % WARD.length], seed, pose: pz.p, seated: pz.seated };
+      if (k === 1 && PROPOF[pz.p] !== undefined) w.prop = PROPOF[pz.p]; if (pz.prop) w.prop = pz.prop;
+      const x = -k * rz, z = (c - (cols - 1) / 2) * sx; const red = (c + k) % 9 === 4;
+      if (pz.p.startsWith("handshake") || pz.p.startsWith("embrace")) { const gap = pz.p.startsWith("hand") ? HANDSHAKE_GAP : EMBRACE_GAP, L = pz.p.replace("_R", "_L"), Rr = pz.p.replace("_L", "_R");
+        g.add(fig({ ...w, pose: L }, x - gap / 2, z, 0, 1, red)); g.add(fig({ ...WARD[(c + k * 2 + 1) % WARD.length], seed: seed + 3, pose: Rr }, x + gap / 2, z, Math.PI)); continue; }
+      const seatd = /^sit/.test(pz.p) || pz.seated; g.add(fig(w, x, z, 0, 1, red)); if (seatd) chair(g, x, z, 0, 1); if (pz.p === "sit_type" || pz.p === "sit_lean") desk(g, x, z, 0, 1, pz.p === "sit_type"); } });
+  v.look = Vv(-1.6, 0.45, 0); v.d = 15.5; return v; }
+const P1 = ["stand", "stand_hips", "stand_arms_crossed", "phone", "point", "speak", "raise_hand", "applaud", "salute", "walk", "run", "carry"].map(p => ({ p }));
+const P2 = ["sit", "sit_type", "sit_lean", "sit_listen", "handshake_L", "embrace_L", "kneel", "bow", "look_down"].map(p => ({ p })).concat([{ p: "applaud", seated: true }, { p: "raise_hand", seated: true }, { p: "stand", prop: "camera" }, { p: "stand", prop: "photo" }, { p: "walk", prop: "sign" }]);
+PAGES.push({ name: "poses A", tiles: [poseSheet(P1, "poses1")], grid: [1, 1] });
+PAGES.push({ name: "poses B", tiles: [poseSheet(P2, "poses2")], grid: [1, 1] });
+// close-up check at production size (figures ~25-30% frame height), 3/4 high camera
+{ const v = newView({ az: 32, el: 30, fov: 30, name: "closeup" }), g = v.g; floor(g, 12, 8, SAND); const L = ["walk", "run", "point", "applaud", "speak", "phone", "carry", "bow"];
+  L.forEach((p, i) => g.add(fig({ ...WARD[i % 6], seed: 300 + i, pose: p }, (i % 2) * -1.2, (i - 3.5) * 0.85, 0, 1, i === 2)));
+  const H1 = fig({ ...WARD[0], seed: 5, pose: "handshake_L" }, 1.4, -0.8, Math.PI / 2), pt = partnerAt(1.4, -0.8, Math.PI / 2); g.add(H1); g.add(fig({ ...WARD[1], seed: 6, pose: "handshake_R" }, pt.x, pt.z, pt.h));
+  g.add(fig({ ...WARD[2], seed: 7, pose: "sit_type" }, 1.5, 1.2, 0)); chair(g, 1.5, 1.2, 0, 1); desk(g, 1.5, 1.2, 0, 1);
+  v.look = Vv(0, 0.4, 0); v.d = 9.5; PAGES.push({ name: "closeup", tiles: [v], grid: [1, 1] }); }
+
+// ===== groups: every form with simple furniture (room scale: 1 unit = 1 m, figures scaled PERSON_M) =====
+const S = PERSON_M;
+function addPeople(g, L, focusIdx = 0) { L.forEach((e, i) => { g.add(fig(e.o.pose ? e.o : { ...e.o, pose: e.pose }, e.x, e.z, e.h, e.s, i === focusIdx)); if (e.seat) chair(g, e.x, e.z, e.h, e.s); }); return L; }
+const G = {};
+function groupView(name, build, look, d, az = 35, el = 32) { const v = newView({ az, el, fov: 30, name }); floor(v.g, 40, 40, SAND); const L = build(v.g, rng(1234 + slot)); v.look = look; v.d = d; v.count = L.length; v.minGap = +minGap(L).toFixed(3); G[name] = { n: L.length, minGap: v.minGap }; return v; }
+const gv = [];
+gv.push(groupView("table", (g, rnd) => { box(g, WHITE, 4.0, 0.04, 1.3, 0, DESK_H * S - 0.04, 0); for (const x of [-1.7, 1.7]) box(g, KM.grey, 0.08, DESK_H * S - 0.04, 1.0, x, 0, 0);
+  const A = []; for (let i = 0; i < 5; i++) for (const s of [-1, 1]) A.push({ type: "seat", x: -1.6 + i * 0.8, z: s * (0.65 + DESK_EDGE * S) });
+  A.push({ type: "seat", x: 2.0 + DESK_EDGE * S, z: 0 }); const L = stage("table", { anchors: A, center: { x: 0, z: 0 }, faceAcross: "z", n: 11 }, rnd);
+  L.forEach(e => { if (Math.abs(e.x) > 2.1) e.h = Math.PI; }); return addPeople(g, L, 3); }, Vv(0, 0.7, 0), 9.5));
+gv.push(groupView("audience", (g, rnd) => { box(g, WHITE, 1.6, 0.35, 3, 4.5, 0, 0); box(g, KM.grey, 0.5, 1.1, 0.6, 4.3, 0.35, 0); const L = stage("audience", { at: { x: 1.5, z: 0 }, face: { x: 4.4, z: 0 }, n: 24, cols: 8 }, rnd);
+  g.add(fig({ coat: true, tie: true, hair: "short", seed: 4, pose: "speak" }, 4.3 + 0.35, 0, Math.PI, S)); return addPeople(g, L, 9); }, Vv(1, 0.6, 0), 12, 200, 34));
+gv.push(groupView("pair", (g, rnd) => { const L = [...stage("pair", { at: { x: 0, z: -1.6 }, kind: "handshake", h: 0.4 }, rnd), ...stage("pair", { at: { x: 0, z: 0 }, kind: "embrace", h: 0.9 }, rnd), ...stage("pair", { at: { x: 0, z: 1.6 }, kind: "argue", h: 0.2 }, rnd)];
+  return addPeople(g, L, 0); }, Vv(0, 0.8, 0), 7.5));
+gv.push(groupView("podium", (g, rnd) => { box(g, KM.grey, 0.55, 1.1, 0.5, 0.45, 0, 0); for (let i = 0; i < 5; i++) { const m = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.3, 6), KM.dark); m.position.set(0.7, 1.2, -0.12 + i * 0.06); m.rotation.z = 0.5; m.castShadow = true; g.add(m); }
+  const L = stage("podium", { at: { x: 0, z: 0 }, face: { x: 6, z: 0 }, n: 16 }, rnd); return addPeople(g, L, 0); }, Vv(1.8, 0.7, 0), 10.5, 160, 30));
+gv.push(groupView("queue", (g, rnd) => { box(g, WHITE, 0.7, 1.05, 2.4, 3.2, 0, 0); box(g, KM.grey, 0.9, 0.04, 2.6, 3.2, 1.05, 0); const L = stage("queue", { at: { x: 2.4, z: 0 }, to: { x: 3.2, z: 0 }, n: 9 }, rnd); return addPeople(g, L, 2); }, Vv(-0.5, 0.7, 0), 10));
+gv.push(groupView("crowd rally", (g, rnd) => { box(g, WHITE, 2.4, 0.6, 5, 6.5, 0, 0); g.add(fig({ coat: true, tie: true, seed: 2, pose: "point" }, 6.4, 0, Math.PI, S));
+  const L = stage("crowd", { at: { x: 0, z: 0 }, face: { x: 6.4, z: 0 }, n: 60, mode: "rally" }, rnd); return addPeople(g, L, 5); }, Vv(1.5, 0.6, 0), 16, 200, 34));
+gv.push(groupView("crowd protest", (g, rnd) => { const L = stage("crowd", { at: { x: 0, z: 0 }, face: { x: 8, z: 2 }, n: 45, mode: "protest" }, rnd); return addPeople(g, L, 7); }, Vv(0, 0.6, 0), 14));
+gv.push(groupView("procession", (g, rnd) => { const L = stage("procession", { path: [[4, -3], [0, -1], [-4, 2]], n: 14, abreast: 2, carry: true }, rnd); return addPeople(g, L, 0); }, Vv(0, 0.6, -0.5), 13));
+gv.push(groupView("huddle", (g, rnd) => { const L = [...stage("huddle", { at: { x: -1.2, z: 0 }, n: 5 }, rnd), ...stage("huddle", { at: { x: 1.6, z: 0.3 }, n: 7, dress: "work" }, rnd)]; return addPeople(g, L, 0); }, Vv(0.2, 0.7, 0), 8.5));
+gv.push(groupView("bench_row", (g, rnd) => { const L = stage("bench_row", { at: { x: 0, z: 0 }, h: 0, n: 5, len: 3.2 }, rnd);
+  box(g, KM.grey, 0.45, 0.05, 3.4, -0.03 * S, SEAT_H * S - 0.05, 0); box(g, KM.grey, 0.05, 0.45, 3.4, -0.26 * S, SEAT_H * S, 0); return L.map((e, i) => { g.add(fig(e.o, e.x, e.z, e.h, e.s, i === 2)); return e; }); }, Vv(0, 0.6, 0), 7.5));
+gv.push(groupView("workers", (g, rnd) => { const A = []; for (let i = 0; i < 4; i++) for (let k = 0; k < 3; k++) { const x = -2 + k * 2.1, z = -2.4 + i * 1.6, h = k === 1 ? Math.PI : 0; A.push({ type: "seat", x, z, h }); desk(g, x, z, h, S); }
+  for (let i = 0; i < 3; i++) { box(g, KM.grey, 0.8, 0.9, 1.6, 4.4, 0, -2 + i * 2); A.push({ type: "stand", x: 3.65, z: -2 + i * 2, h: 0 }); }
+  const L = stage("workers", { anchors: A, fill: 0.9 }, rnd); return addPeople(g, L, 1); }, Vv(1, 0.6, 0), 14));
+for (let i = 0; i < gv.length; i += 4) PAGES.push({ name: "groups " + gv.slice(i, i + 4).map(v => v.name).join(","), tiles: gv.slice(i, i + 4), grid: [2, 2] });
+
+// ===== landmarks: every new landmark x 2 seeds (right = focus red) at exterior scale (1 unit ~ 20 m) =====
+const LANDS = (QS.get("lands") || "kremlin,onionChurch,courthouse,ministry,hotelTower,glassHQ,parliament,stadium,airportTerminal,bankHQ,pagodaTower,apartmentBlocks,shoppingMall,electronicsMarket,embassy,tvTower,govHall").split(",");
+const lv = [], LINFO = {};
+for (const nm of LANDS) { if (!GEN[nm]) { LINFO[nm] = "missing"; continue; } for (let s = 0; s < 2; s++) { const v = newView({ az: 35 + s * 20, el: 30, fov: 30, name: nm + "#" + s });
+    try { const E = { M, KM, KMR, MK: mk, rnd: rng(101 + s * 7919 + nm.length) }; const it = GEN[nm](E, {}); v.g.add(it.g); if (s === 1) focusify(it.g);
+      const bb = new THREE.Box3().setFromObject(it.g), sz = bb.getSize(Vv()), ctr = bb.getCenter(Vv()); floor(v.g, Math.max(sz.x, sz.z) * 2.2 + 20, Math.max(sz.x, sz.z) * 2.2 + 20, GREY);
+      // a few cars + people for scale (kit-scale figures: 1.75 m / 20 m)
+      const rr = rng(5 + s); for (let k = 0; k < 10; k++) { const a = rr() * 6.28, d = Math.max(sz.x, sz.z) * 0.62 + 1 + rr() * 2; v.g.add(fig({ seed: k + s * 10, pose: rr() < 0.5 ? "walk" : "stand", coat: rr() < 0.5 }, ctr.x + Math.cos(a) * d, ctr.z + Math.sin(a) * d, rr() * 6.28, 0.0875)); }
+      v.look = Vv(ctr.x, sz.y * 0.32, ctr.z); v.d = Math.max(sz.x, sz.z, sz.y * 1.4) * 2.25 + 4; LINFO[nm] = { r: +it.r?.toFixed?.(1), h: +(it.h ?? 0).toFixed?.(1), size: [sz.x, sz.y, sz.z].map(x => +x.toFixed(1)) };
+    } catch (e) { LINFO[nm] = "ERR " + e.message; console.log("LANDMARK ERR", nm, e.stack); } lv.push(v); } }
+for (let i = 0; i < lv.length; i += 4) PAGES.push({ name: "landmarks " + [...new Set(lv.slice(i, i + 4).map(v => v.name.split("#")[0]))].join(","), tiles: lv.slice(i, i + 4), grid: [2, 2] });
+
+// ---------- render ----------
+function setCam(v) { const el = v.el * D2R, az = v.az * D2R, look = v.look.clone().add(v.g.position);
+  cam.position.copy(look).add(Vv(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az)).multiplyScalar(v.d)); cam.lookAt(look); cam.fov = v.fov ?? 30; cam.aspect = W / H; cam.near = v.d * 0.02; cam.far = v.d * 20; cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+  const p = look.clone().project(cam); tx.uniforms.fy.value = ty.uniforms.fy.value = clamp(p.y * 0.5 + 0.5, 0.15, 0.85); for (const q of [tx, ty]) q.uniforms.amt.value = 2.4;
+  const a = 118 * D2R, e = 28 * D2R, tg = look.clone().setY(0); sun.target.position.copy(tg); sun.position.copy(tg).add(Vv(Math.cos(e) * Math.cos(a), Math.sin(e), Math.cos(e) * Math.sin(a)).multiplyScalar(v.d * 3)); sun.target.updateMatrixWorld();
+  const hs = v.d * 0.75, sh = sun.shadow.camera; sh.left = sh.bottom = -hs; sh.right = sh.top = hs; sh.near = 0.1; sh.far = v.d * 8; sh.updateProjectionMatrix(); }
+window.renderAt = t => { const pg = PAGES[Math.max(0, Math.min(PAGES.length - 1, Math.floor(t + 1e-6)))], [cx, cy] = pg.grid, tw = W / cx, th = H / cy; octx.fillStyle = "#dfe4e8"; octx.fillRect(0, 0, W, H);
+  pg.tiles.forEach((v, i) => { VIEWS.forEach(u => u.g.visible = u === v); setCam(v); comp.render(); octx.drawImage(r.domElement, 0, 0, W, H, (i % cx) * tw, Math.floor(i / cx) * th, tw, th);
+    if (pg.tiles.length > 1) { octx.fillStyle = "rgba(40,40,40,.75)"; octx.font = "22px sans-serif"; octx.fillText(v.name + (v.count ? `  n=${v.count} minGap=${v.minGap}` : ""), (i % cx) * tw + 14, Math.floor(i / cx) * th + 30); } });
+  console.log("PAGE", pg.name); };
+window.__info = { T: PAGES.length, shots: PAGES.length, pages: PAGES.map((p, i) => i + ":" + p.name), groups: G, landmarks: LINFO };
+window.__ready = true;
+</script></body></html>

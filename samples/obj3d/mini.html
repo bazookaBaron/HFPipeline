@@ -1,0 +1,75 @@
+<!doctype html><html><head><meta charset="utf-8"><title>miniature look</title>
+<style>html,body{margin:0;background:#dfe6ec}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/"}}</script></head>
+<body><script type="module">
+// Miniature-city look: white matte world, soft sun shadows, tilt-shift blur; the focus object is the only red thing.
+import * as THREE from "three"; import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { mergeVertices } from "three/addons/utils/BufferGeometryUtils.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+const Q = new URLSearchParams(location.search), focus = Q.get("focus") || "building", W = 1600, H = 900;
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H);
+r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap; document.body.appendChild(r.domElement);
+const sc = new THREE.Scene(); sc.background = new THREE.Color(0xdfe6ec); sc.fog = new THREE.Fog(0xdfe6ec, 14, 34);
+const WHITE = new THREE.MeshStandardMaterial({ color: 0xf1efea, roughness: 0.85, flatShading: true }), RED = new THREE.MeshStandardMaterial({ color: 0xd3241c, roughness: 0.55, flatShading: true });
+// low-poly: snap vertices to a grid (vertex clustering), drop collapsed triangles, flat normals
+function lowpoly(src, cells) {
+  const g = mergeVertices(src); g.computeBoundingBox(); const b = g.boundingBox, sz = b.getSize(new THREE.Vector3());
+  const cell = Math.max(sz.x, sz.y, sz.z) / cells, P = g.attributes.position, I = g.index.array, key = new Map(), sum = [], rep = new Int32Array(P.count);
+  for (let i = 0; i < P.count; i++) { const k = Math.floor(P.getX(i) / cell) + "," + Math.floor(P.getY(i) / cell) + "," + Math.floor(P.getZ(i) / cell);
+    let id = key.get(k); if (id === undefined) { id = sum.length; key.set(k, id); sum.push([0, 0, 0, 0]); } rep[i] = id; const a = sum[id]; a[0] += P.getX(i); a[1] += P.getY(i); a[2] += P.getZ(i); a[3]++; }
+  const pos = [];
+  for (let t = 0; t < I.length; t += 3) { const a = rep[I[t]], b2 = rep[I[t + 1]], c = rep[I[t + 2]]; if (a === b2 || b2 === c || a === c) continue;
+    for (const v of [a, b2, c]) { const q = sum[v]; pos.push(q[0] / q[3], q[1] / q[3], q[2] / q[3]); } }
+  // largest connected component (drops floating noise, ghost slabs)
+  const nt = pos.length / 9, par = new Int32Array(sum.length).map((_, i) => i), f = x => { while (par[x] !== x) x = par[x] = par[par[x]]; return x; };
+  const tv = []; for (let t = 0, k = 0; t < I.length; t += 3) { const a = rep[I[t]], b2 = rep[I[t + 1]], c = rep[I[t + 2]]; if (a === b2 || b2 === c || a === c) continue; tv.push(a); par[f(a)] = f(b2); par[f(b2)] = f(c); }
+  const cnt = new Map(); for (let t = 0; t < nt; t++) { const r = f(tv[t]); cnt.set(r, (cnt.get(r) || 0) + 1); }
+  let best = -1, bc = 0; for (const [k, v] of cnt) if (v > bc) { bc = v; best = k; }
+  const keep = []; for (let t = 0; t < nt; t++) if (f(tv[t]) === best) for (let j = 0; j < 9; j++) keep.push(pos[t * 9 + j]);
+  const out = new THREE.BufferGeometry(); out.setAttribute("position", new THREE.Float32BufferAttribute(keep, 3)); out.computeVertexNormals(); return out; }
+const CELLS = { building: 22, burj: 90, dragon: 75, gun: 40, mannequin: 45 };
+async function load(n) { const g = await new GLTFLoader().loadAsync(`out/${n}.glb`); let geo;
+  g.scene.traverse(o => { if (o.isMesh && !geo) geo = lowpoly(o.geometry, CELLS[n] || 36); });
+  (window.__tris = window.__tris || {})[n] = geo.attributes.position.count / 3;
+  geo.computeBoundingBox(); const b = geo.boundingBox, c = b.getCenter(new THREE.Vector3()); geo.translate(-c.x, -b.min.y, -c.z); geo.computeBoundingBox(); return geo; }
+function put(geo, mat, x, z, h, ry = 0) { const m = new THREE.Mesh(geo, mat); const s = h / (geo.boundingBox.max.y - geo.boundingBox.min.y);
+  m.scale.setScalar(s); m.position.set(x, 0, z); m.rotation.y = ry; m.castShadow = m.receiveShadow = true; sc.add(m); return m; }
+const fg = await load(focus); const bld = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0); bld.computeBoundingBox();
+// ground + street grid
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(80, 80), new THREE.MeshStandardMaterial({ color: 0xe9e7e2, roughness: 0.95 }));
+ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; sc.add(ground);
+const road = new THREE.MeshStandardMaterial({ color: 0xcfd0cf, roughness: 0.9 });
+for (const [w, d, x, z] of [[80, 1.1, 0, 0], [1.1, 80, 0, 0], [80, 1.1, 0, -4.2], [1.1, 80, 4.2, 0], [1.1, 80, -4.2, 0], [80, 1.1, 0, 4.2]]) {
+  const p = new THREE.Mesh(new THREE.PlaneGeometry(w, d), road); p.rotation.x = -Math.PI / 2; p.position.set(x, 0.003, z); p.receiveShadow = true; sc.add(p); }
+// white city blocks from the generated building, varied height/rotation (deterministic)
+let s = 9; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+for (let gx = -4; gx <= 4; gx++) for (let gz = -5; gz <= 2; gz++) {
+  for (const [ox, oz] of [[-0.9, -0.9], [0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]]) {
+    const x = gx * 4.2 + 2.1 + ox, z = gz * 4.2 + 2.1 + oz; if (Math.hypot(x, z - 0.0) < 2.2) continue; if (focus === "burj" && Math.hypot(x, z) < 6 && rnd() < 0.3) continue;
+    const h = 0.6 + rnd() * rnd() * 2.6, m = put(bld, WHITE, x, z, h); m.scale.set(1.2 + rnd() * 0.4, h, 1.2 + rnd() * 0.4);
+    if (rnd() < 0.5) { const t = put(bld, WHITE, x + 0.1, z - 0.1, 1); t.scale.set(0.6, h * 0.5 + 0.3, 0.6); t.position.y = h; } } }
+// the focus object, red, at the crossing
+const fh = { building: 2.2, mannequin: 1.0, gun: 0.55, burj: 8.0, dragon: 2.2 }[focus] || 1.2;
+const f = put(fg, RED, 0, 0, fh, 0.6);
+if (focus === "gun") { f.rotation.z = Math.PI / 2; f.position.y = 0.32; const pl = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.2, 0.6), WHITE); pl.position.y = 0.1; pl.castShadow = pl.receiveShadow = true; sc.add(pl); }
+// light: low warm sun + sky
+sc.add(new THREE.HemisphereLight(0xeef4ff, 0xb8b0a4, 1.2));
+const sun = new THREE.DirectionalLight(0xfff1dc, 3.0); sun.position.set(-8, 7, 5); sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096); Object.assign(sun.shadow.camera, { left: -14, right: 14, top: 14, bottom: -14, near: 1, far: 40 }); sun.shadow.bias = -0.0004; sun.shadow.radius = 3; sc.add(sun);
+// elevated miniature camera, looking at the focus
+const cam = new THREE.PerspectiveCamera(32, W / H, 0.05, 100);
+if (focus === "burj") { cam.position.set(10, 5.5, 15); cam.lookAt(0, 4.2, 0); } else { cam.position.set(4.6, 4.2, 6.2); cam.lookAt(0, fh * 0.35, 0); }
+const comp = new EffectComposer(r); comp.addPass(new RenderPass(sc, cam));
+const tilt = d => new ShaderPass({ uniforms: { tDiffuse: { value: null }, dir: { value: d }, res: { value: new THREE.Vector2(W, H) } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 dir, res; varying vec2 vUv;
+    void main(){ float b = smoothstep(0.2, 0.55, abs(vUv.y-0.5)) * 4.0; vec4 c = vec4(0.0); float w = 0.0;
+      for (int i=-6;i<=6;i++){ float k = exp(-float(i*i)/18.0); c += texture2D(tDiffuse, vUv + dir*float(i)*b/res)*k; w += k; }
+      gl_FragColor = c / w; }` });
+comp.addPass(tilt(new THREE.Vector2(1, 0))); comp.addPass(tilt(new THREE.Vector2(0, 1))); comp.addPass(new OutputPass());
+comp.render(); window.__info = window.__tris; window.__ready = true;
+</script></body></html>

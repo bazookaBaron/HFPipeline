@@ -1,0 +1,345 @@
+<!doctype html><html><head><meta charset="utf-8"><title>malacca miniature</title>
+<style>html,body{margin:0;background:#dfe4e8}canvas{display:block}</style>
+<script type="importmap">{"imports":{"three":"/three/build/three.module.js","three/addons/":"/three/jsm/"}}</script></head>
+<body><script type="module">
+// "The 2.8 km of water China is afraid of" (Malacca Dilemma), ~9 min. Script-first: every shot, MG beat, callout and sound cue is solved
+// at load from films/malacca/lines.json (voiced line times) + the [shows:] subject of each line. Nothing is hand-timed.
+// Engine = suez.html (camera solver, occlusion fix, gates, MG2D compositor, subjects registry); world = malacca-world.js; map = malacca-map.js;
+// 2D MG = mg2d/board.js (link boards) + mg2d/timeline.js (paper-strip timeline); callouts = MG2D overlay beats anchored to 3D objects.
+import * as THREE from "three";
+import { buildWorld, MY_O, GW_O, zN, zS } from "./malacca-world.js";
+import { buildMap } from "./malacca-map.js";
+import { installSubjects } from "./subjects.js";
+import { makeBoard, PAL } from "./mg2d/board.js";
+import { makeTimeline } from "./mg2d/timeline.js";
+import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js";
+import { OutputPass } from "three/addons/postprocessing/OutputPass.js";
+const QS = new URLSearchParams(location.search), LAND = QS.get("ar") === "16x9";
+const W = LAND ? 1920 : 1080, H = LAND ? 1080 : 1920, FPS = 30;
+const LINES = await (await fetch("/films/malacca/lines.json")).json();
+const T = Math.ceil((LINES[LINES.length - 1].end + 3.6) * 10) / 10, NF = Math.round(T * FPS);
+const smooth = x => x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x), clamp = (x, a, b) => Math.max(a, Math.min(b, x)), D2R = Math.PI / 180;
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); r.setSize(W, H);
+r.outputColorSpace = THREE.SRGBColorSpace; r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.05;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+const outC = document.createElement("canvas"); outC.width = W; outC.height = H; document.body.appendChild(outC); const octx = outC.getContext("2d");
+r.domElement.style.display = "none"; document.body.appendChild(r.domElement);
+const c2 = document.createElement("canvas"); c2.width = W; c2.height = H; const x2 = c2.getContext("2d");
+const c3 = document.createElement("canvas"); c3.width = W; c3.height = H; const x3 = c3.getContext("2d");
+const SKY = new THREE.Color(0xdfe4e8);
+const sc = new THREE.Scene(); sc.background = SKY.clone(); sc.fog = new THREE.Fog(SKY.clone(), 120, 420);
+const WHITE = new THREE.MeshStandardMaterial({ color: 0xf0eee9, roughness: 0.85 }), GREY = new THREE.MeshStandardMaterial({ color: 0xd6d5d1, roughness: 0.9 });
+const SAND = new THREE.MeshStandardMaterial({ color: 0xf2ede2, roughness: 0.95 }), DARK = new THREE.MeshStandardMaterial({ color: 0xb9b8b4, roughness: 0.8 });
+const RED = new THREE.MeshStandardMaterial({ color: 0xcf2219, roughness: 0.5 });
+const KM = { white: WHITE, grey: new THREE.MeshStandardMaterial({ color: 0xc9c8c4, roughness: 0.6 }), dark: new THREE.MeshStandardMaterial({ color: 0x9a9995, roughness: 0.8 }) };
+const KMR = { white: RED, grey: new THREE.MeshStandardMaterial({ color: 0xa81c14, roughness: 0.55 }), dark: new THREE.MeshStandardMaterial({ color: 0x8c1710, roughness: 0.7 }) };
+const texts = [], figs = [], PX = [];
+const proxy = (mesh, region, hs, dyn = false) => { mesh.updateMatrixWorld(true); PX.push({ mesh, region, hs, dyn, inv: new THREE.Matrix4().copy(mesh.matrixWorld).invert() }); };
+const ctx = { M: { WHITE, GREY, SAND, DARK, RED }, KM, KMR, texts, figs, proxy };
+const Vv = (x, y, z) => new THREE.Vector3(x, y, z);
+
+// ---------------- set
+const WD = buildWorld(ctx); const MAP_O = Vv(-900, 0, 0);
+const MAP = buildMap(ctx, await (await fetch("/data/ne_110m_admin_0_countries.geojson")).json(), MAP_O);
+const REG = { strait: WD.G.strait, myanmar: WD.G.myanmar, gwadar: WD.G.gwadar, map: MAP.group }; for (const g of Object.values(REG)) sc.add(g);
+// invisible measuring volumes for the gate (a "place" is a subject too): the narrows and the strait
+const ghost = (w, h, d, x, y, z, g) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false })); m.position.set(x, y, z); g.add(m); return m; };
+const NARROWS = ghost(26, 2, 70, 0, 1, 0, REG.strait), STRAIT = ghost(260, 2, 100, -40, 1, 0, REG.strait);
+sc.add(new THREE.HemisphereLight(0xeef3ff, 0xb9b2a6, 1.15));
+const sun = new THREE.DirectionalLight(0xfff0d8, 3.0); sun.castShadow = true; sc.add(sun.target, sun);
+sun.shadow.mapSize.set(4096, 4096); Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, near: 1, far: 500 }); sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.03;
+const cam = new THREE.PerspectiveCamera(40, W / H, 0.1, 900);
+const comp = new EffectComposer(r); comp.addPass(new RenderPass(sc, cam));
+const mk = d => new ShaderPass({ uniforms: { tDiffuse: { value: null }, dir: { value: d }, res: { value: new THREE.Vector2(W, H) }, fy: { value: 0.5 }, amt: { value: 4 }, b0: { value: 0.1 }, b1: { value: 0.42 } },
+  vertexShader: `varying vec2 vUv; void main(){vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}`,
+  fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 dir, res; uniform float fy, amt, b0, b1; varying vec2 vUv;
+    void main(){ float b = smoothstep(b0, b1, abs(vUv.y-fy)) * amt; vec4 c = vec4(0.0); float w = 0.0;
+      for (int i=-6;i<=6;i++){ float k = exp(-float(i*i)/18.0); c += texture2D(tDiffuse, vUv + dir*float(i)*b/res)*k; w += k; }
+      gl_FragColor = c / w; }` });
+const tx = mk(new THREE.Vector2(1, 0)), ty = mk(new THREE.Vector2(0, 1)); comp.addPass(tx); comp.addPass(ty); comp.addPass(new OutputPass());
+
+// ================= script -> beats =================
+const BOARDS = { flows: ["oil", "chips", "food", "cars", "chinaOil"], closers: ["navy", "pirates", "accident", "suez", "queue", "money"],
+  gaps: ["pipe", "war", "tankerIn", "gwadar", "canal"], closure: ["insurance", "factory", "neighbours", "reserve"] };
+const CARD = { oil: ["Oil, ≈23 M bbl/day", "oil"], share: ["⅕–¼ of sea trade", "globe", { share: 0.22 }], chips: ["Chips", "chip"], food: ["Food", "food"], cars: ["Cars, ore, goods", "goods"],
+  chinaOil: ["China's oil imports", "barrels"], navy: ["A navy", "navy"], pirates: ["Pirates", "skiff"], accident: ["An accident", "collision"], suez: ["Suez, 2021", "canal"],
+  queue: ["≈369 ships", "grid", { n: 369 }], money: ["≈$9.6 bn / day", "money"], pipe: ["Pipe: ≈4% of imports", "gauge"], war: ["Civil war", "conflict"], tankerIn: ["Still by sea", "tankerRoute"],
+  gwadar: ["A quiet port", "quietPort"], canal: ["Still a drawing", "blueprint"], arctic: ["Open ≈4 months", "ice"], insurance: ["Insurance, freight", "insurance"], factory: ["Factories wait", "factory"],
+  neighbours: ["Not only China", "neighbours"], reserve: ["≈100 days of stock", "tanks"] };
+const KEYC = { flows: "chinaOil", closers: "suez", gaps: "pipe", closure: "reserve" };
+const TLE = { 2003: ["“Malacca Dilemma”", "podium"], 2013: ["Gas pipeline, Myanmar", "pipeGas"], 2015: ["Corridor, Pakistan", "corridor"], 2017: ["Oil pipeline, Myanmar", "pipeOil"], 2021: ["Ever Given, Suez", "canal"], 2024: ["Arctic record", "ice"] };
+const WORLD3 = { queue: "strait", tanker: "strait", narrows: "strait", strait: "strait", port: "strait", patrol: "strait", stuck: "strait", landfall: "myanmar", pipeline: "myanmar", gwadar: "gwadar" };
+function classify(s) { if (s.startsWith("card:")) { const id = s.slice(5); const b = Object.keys(BOARDS).find(k => BOARDS[k].includes(id)); if (!b) throw new Error("card not on a board: " + s); return { kind: "2d", group: "board:" + b, item: id }; }
+  if (s.startsWith("tl:")) return { kind: "2d", group: "tl", item: s.slice(3) };
+  if (s === "map" || s.startsWith("route:") || s.startsWith("pin:")) return { kind: "3d", region: "map" };
+  if (WORLD3[s]) return { kind: "3d", region: WORLD3[s] }; throw new Error("no beat for subject " + s); }
+const occ = {}; LINES.forEach(l => { l.subj = l.shows[0]; l.c = classify(l.subj); l.k = occ[l.subj] = (occ[l.subj] ?? -1) + 1; });
+// runs: consecutive lines with the same region / 2D group; boundary just before the next line starts (inside the pause)
+const RUNS0 = []; for (const l of LINES) { const key = l.c.kind === "2d" ? l.c.group : l.c.region, last = RUNS0[RUNS0.length - 1];
+  if (last && last.key === key) last.lines.push(l); else RUNS0.push({ key, kind: l.c.kind, lines: [l] }); }
+RUNS0.forEach((ru, i) => { ru.t0 = i ? RUNS0[i - 1].t1 : 0; const nx = RUNS0[i + 1]; ru.t1 = nx ? Math.max(ru.lines[ru.lines.length - 1].end + 0.1, nx.lines[0].start - 0.55) : T; });
+
+// ================= 2D MG modules (one per group; a group split over several runs continues where it left off) =================
+const MG2D = window.MG2D = [], MODS = {}, cuesOut = [];
+for (const key of new Set(RUNS0.filter(r => r.kind === "2d").map(r => r.key))) {
+  const runs = RUNS0.filter(r => r.key === key); let acc = 0; const items = [], at = [];
+  runs.forEach(ru => { ru.m0 = acc; for (const l of ru.lines) if (!items.includes(l.c.item)) { items.push(l.c.item); at.push(items.length === 1 ? 0 : acc + l.start - ru.t0); } acc += ru.t1 - ru.t0; });
+  const last = runs[runs.length - 1], lastEnd = last.m0 + last.lines[last.lines.length - 1].end - last.t0, avail = acc;   // module time available
+  const la = at[at.length - 1], tail = Math.max(0.3, lastEnd - la + 0.1), pull = clamp(avail - la - tail - 0.15, 0.9, 1.8), end = 0.15;   // pull-back starts after the last line (in the pause)
+  let M;
+  if (key === "tl") M = makeTimeline({ seed: 3, at, tail, pull, end, events: items.map(y => ({ id: y, year: y, cap: TLE[y][0], art: TLE[y][1], key: y === "2003" })) }, { W, H });
+  else { const b = key.slice(6); for (let sd = 5 + b.length; sd < 80 + b.length; sd++) { M = makeBoard({ seed: sd, at, tail, pull, end, hold0: 0.6, items: items.map(id => ({ id, cap: CARD[id][0], art: CARD[id][1], p: CARD[id][2], key: id === KEYC[b] })) }, { W, H }); if (!boardFailsFor(M, key).length) break; } }   // layout re-solved until the board gate passes
+  const over = M.T - acc; if (over > 0) { last.t1 += over; const nx = RUNS0[RUNS0.indexOf(last) + 1]; if (nx) nx.t0 = last.t1; }   // overrun pushes the next run start (never past its first line)
+  MODS[key] = { M, runs, items, mt: t => { for (const ru of runs) if (t >= ru.t0 - 1e-6 && t <= ru.t1 + 1e-6) return ru.m0 + t - ru.t0; return null; } };
+  runs.forEach(ru => MG2D.push({ t0: ru.t0, t1: ru.t1, mode: "full", fade: true, key, draw: (g, tl) => M.draw(g, ru.m0 + tl) }));
+  for (const [t, id, db, pan] of M.cues) { const ru = runs.find(q => t >= q.m0 && t < q.m0 + (q.t1 - q.t0)); if (ru) cuesOut.push([ru.t0 + t - ru.m0, id, db, pan]); }
+}
+
+// ================= camera: shot recipes per subject (look point + az/el/d; drift during the line) =================
+// pos = look + d * (cos el cos az, sin el, cos el sin az); az 90 = camera to the south (+z) looking north
+const wpos = o => { const b = new THREE.Box3().setFromObject(o); return b.getCenter(Vv()); };
+const pick = (arr, k) => arr[k % arr.length];
+function shot(l) {
+  const s = l.subj, k = l.k, t = l.start; WD.update(t, WIN); MAP.update(t);
+  const tk = WD.tankerRed.position.clone();
+  const S = (look, az, el, d, daz = 8, dd = 0.9, dlook = Vv(0, 0, 0)) => ({ look, az, el, d, daz, dd, dlook });
+  switch (s) {
+    case "queue": { const a = WD.queue[6].position.clone().add(Vv(0, 2, 0)), b = WD.queue[1].position.clone().add(Vv(4, 2, 0)); return S(a, pick([70, 112, 62], k), 17, 62, 6, 0.95, b.sub(a)); }
+    case "tanker": return S(tk.clone().add(Vv(0, 2, 0)), pick([118, 64, 140, 80, 100], k), pick([22, 26, 18, 24], k), 40, pick([10, -10], k), 0.86);
+    case "narrows": return S(Vv(4, 0, 2), pick([96, 80, 110, 88, 100, 92], k), pick([50, 58, 46, 62, 54, 48], k), 118, pick([6, -6], k), 0.92);
+    case "strait": return S(Vv(-30, 0, 4), pick([118, 70, 96], k), pick([30, 50, 40], k), pick([200, 175, 200], k), 8, k === 2 ? 1.12 : 0.94);
+    case "port": return S(Vv(-115, 4, -48), pick([66, 112, 88], k), pick([26, 20, 32], k), pick([82, 64, 74], k), 8, 0.9);
+    case "patrol": { const w = Vv(168, 2, 0), base = Vv(170, 2, zN(170) - 6), car = wpos(WD.carrier);
+      return [S(WD.patrol[1].position.clone().add(Vv(0, 2, 0)), 82, 20, 52), S(WD.patrol[0].position.clone().add(Vv(0, 2, 0)), 128, 18, 44, -8), S(w, 40, 32, 80, 8, 1.05), S(base, 110, 26, 62), S(car, 140, 24, 62, -10), S(w, 70, 24, 66, 8)][Math.min(k, 5)]; }
+    case "stuck": return S(WD.stuck.position.clone().add(Vv(0, 2, 0)), 140, 30, 60, 14, 0.9);
+    case "landfall": return S(MY_O.clone().add(Vv(2, 2, -10)), 104, 36, 82, 8, 0.92);
+    case "pipeline": return [S(MY_O.clone().add(Vv(70, 5, -50)), 208, 30, 86, 8, 0.92, Vv(30, 2, -30)), S(MY_O.clone().add(Vv(130, 7, -100)), 160, 24, 70, -8), S(MY_O.clone().add(Vv(56, 4, -38)), 64, 40, 74, 8)][Math.min(k, 2)];
+    case "gwadar": return S(GW_O.clone().add(Vv(22, 2, -22)), 112, 28, 98, 6, 0.95, Vv(16, 0, -50));
+    case "map": { const c = MAP.center.clone().add(MAP_O); c.z += 2; return S(c, 90, 60, pick([60, 56, 62], k), 4, 0.95); }
+  }
+  if (s.startsWith("route:")) { const R = MAP.routes[s.slice(6)], b = R.box, c = b.getCenter(Vv()).add(MAP_O), sz = b.getSize(Vv());
+    const d = Math.max(sz.x / (2 * Math.tan(32 * D2R)), sz.z / (2 * Math.tan(20 * D2R)) * 0.8) * 1.2 + 9; return S(c, pick([90, 98, 84], k), 58, d, pick([5, -5], k), 0.94); }
+  if (s.startsWith("pin:")) { const p = MAP.pins[s.slice(4)].pin.position.clone().add(MAP_O); return S(p, pick([94, 86], k), 55, pick([21, 19], k), 5, 0.92); }
+  throw new Error("no shot for " + s);
+}
+const spher = (S, u) => { const az = (S.az + S.daz * u) * D2R, el = S.el * D2R, d = S.d * (1 + (S.dd - 1) * u), look = S.look.clone().addScaledVector(S.dlook, u);
+  return { look, pos: look.clone().add(Vv(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az)).multiplyScalar(d)) }; };
+// windows for world props / focus colours, from the line times (never hand-timed)
+const WIN = { focus: {}, stuck: null };
+for (const l of LINES) (WIN.focus[l.subj] ??= []).push([l.start, l.end]);
+{ const st = LINES.filter(l => l.subj === "stuck")[0], ch8 = RUNS0.find(r => r.lines.includes(st)); const ch9 = LINES.find(l => l.n > st.n && l.subj === "tanker");
+  WIN.stuck = [ch8.t0, ch9 ? RUNS0.find(r => r.lines.includes(ch9)).t0 - 0.01 : T, st.start + 0.4, st.end - 0.3]; }
+for (const l of LINES) { if (!l.subj.startsWith("route:") && !l.subj.startsWith("pin:")) continue; MAP.focusWin[l.subj] ??= []; MAP.focusWin[l.subj].push([l.start, l.end]); MAP.intro(l.subj.split(":")[1], l.start + 0.15); }
+for (const l of LINES) { const s = l.subj; if (s.startsWith("route:") || s.startsWith("pin:")) { const id = s.split(":")[1]; MAP.setSignWin(id, l.start - 0.2, l.end + 0.6); MAP.setSignWin(id + "2", l.start - 0.2, l.end + 0.6);
+  if (id === "main") { MAP.setSignWin("gulf", l.start, l.end + 0.6); MAP.setSignWin("china", l.start, l.end + 0.6); } } }
+MAP.intro("gulf", LINES.find(l => l.subj === "route:main").start); MAP.intro("china", LINES.find(l => l.subj === "route:main").start + 2.4); MAP.finalize(T);
+
+// keys per 3D run: A_i reached shortly after the line starts, drift to B_i by its end; travel happens mostly in the pause.
+// A travel that would beat the coast2 speed caps becomes a cut (dissolve) instead - solved here, never hand-placed.
+const RUNS = [], DISS = [];   // RUNS = [t0, t1, region] continuous camera runs (cuts between them)
+const KEYS = [];              // per continuous run: { t0, t1, region, keys: [[t, pos, look]] }
+const angV = (a, b) => { const d0 = a.look.clone().sub(a.pos).normalize(), d1 = b.look.clone().sub(b.pos).normalize(); return Math.acos(clamp(d0.dot(d1), -1, 1)) / D2R; };
+for (const ru of RUNS0) {
+  if (ru.kind === "2d") { RUNS.push([ru.t0, ru.t1, "mg"]); continue; }
+  let cur = null;
+  const open = t => { cur = { t0: t, region: ru.key, keys: [] }; KEYS.push(cur); };
+  ru.lines.forEach((l, i) => {
+    const S = shot(l), A = spher(S, 0), B = spher(S, 1), tA = l.start + Math.min(0.5, (l.end - l.start) * 0.15);
+    if (!cur) { open(ru.t0); cur.keys.push([ru.t0, A.pos, A.look]); }
+    else { const pv = cur.keys[cur.keys.length - 1], dt = tA - pv[0], dist = pv[1].distanceTo(A.pos) / Math.max(20, A.pos.distanceTo(A.look)), ang = angV({ pos: pv[1], look: pv[2] }, A);
+      if (dist / dt > 0.55 || ang / dt > 22) { const tc = Math.max(pv[0] + 0.2, l.start - 0.45); cur.t1 = tc; open(tc); DISS.push({ t: tc, d: 0.5 }); cur.keys.push([tc, A.pos, A.look]); } }
+    if (Math.abs(cur.keys[cur.keys.length - 1][0] - tA) > 0.05) cur.keys.push([tA, A.pos, A.look]);
+    cur.keys.push([Math.max(tA + 0.3, l.end), B.pos, B.look]);
+  });
+  const last = ru.lines[ru.lines.length - 1], S = shot(last), E = spher(S, 1 + (ru.t1 - last.end) / Math.max(4, last.end - last.start));
+  cur.keys.push([ru.t1, E.pos, E.look]); cur.t1 = ru.t1;
+  for (const k of KEYS.filter(q => q.region === ru.key && q.t0 >= ru.t0 - 1e-6 && q.t1 <= ru.t1 + 1e-6)) RUNS.push([k.t0, k.t1, k.region]);
+}
+// ending: the last shot keeps rising slowly (camera only)
+// 2D <-> 3D hand-overs fade through MG2D fade; 3D <-> 3D run changes dissolve
+RUNS.forEach((ru, i) => { if (i && ru[2] !== "mg" && RUNS[i - 1][2] !== "mg" && !DISS.some(d => Math.abs(d.t - ru[0]) < 0.01)) DISS.push({ t: ru[0], d: 0.5 }); });
+function hermF(kt, vals) { const n = kt.length;
+  return t => { if (n === 1 || t <= kt[0]) return vals[0]; if (t >= kt[n - 1]) return vals[n - 1];
+    let i = 0; while (kt[i + 1] < t) i++; const t0 = kt[i], t1 = kt[i + 1], h = t1 - t0, u = (t - t0) / h;
+    const m = j => j <= 0 ? 0 : j >= n - 1 ? 0 : (vals[j + 1] - vals[j - 1]) / (kt[j + 1] - kt[j - 1]) * 0.85;
+    const h00 = 2 * u * u * u - 3 * u * u + 1, h10 = u * u * u - 2 * u * u + u, h01 = -2 * u * u * u + 3 * u * u, h11 = u * u * u - u * u;
+    return h00 * vals[i] + h10 * h * m(i) + h01 * vals[i + 1] + h11 * h * m(i + 1); }; }
+for (const k of KEYS) { const kt = k.keys.map(q => q[0]); const F = [0, 1, 2].map(j => hermF(kt, k.keys.map(q => q[1].getComponent(j)))), G = [0, 1, 2].map(j => hermF(kt, k.keys.map(q => q[2].getComponent(j))));
+  k.gen = t => ({ pos: Vv(F[0](t), F[1](t), F[2](t)), look: Vv(G[0](t), G[1](t), G[2](t)) }); }
+
+// ================= solver (suez.html): every frame checked (inside / ground / blocked), fixed by swing then lift, smoothed per run =================
+const PXR = {}; for (const p of PX) (PXR[p.region] ??= []).push(p);
+const ray = new THREE.Raycaster(), tmp = Vv(0, 0, 0);
+const containsP = (p, pos) => { tmp.copy(pos).applyMatrix4(p.inv); return Math.abs(tmp.x) <= p.hs.x && Math.abs(tmp.y) <= p.hs.y && Math.abs(tmp.z) <= p.hs.z; };
+const groundY = reg => reg === "map" ? 1.6 : 1.6;
+function refreshDyn(t) { WD.update(t, WIN, true); for (const p of PX) if (p.dyn) { p.mesh.updateMatrixWorld(true); p.inv.copy(p.mesh.matrixWorld).invert(); } }
+function bad(pos, look, reg) {
+  if (pos.y < groundY(reg) + 0.3) return "ground"; const list = PXR[reg] || [];
+  for (const p of list) if (containsP(p, pos)) return "inside";
+  const dir = Vv().subVectors(look, pos), dl = dir.length(); ray.set(pos, dir.normalize()); ray.far = Math.max(0.01, dl - 0.4);
+  const holder = new Set(list.filter(p => containsP(p, look)).map(p => p.mesh));
+  if (ray.intersectObjects(list.map(p => p.mesh), false).some(h => !holder.has(h.object))) return "blocked";
+  return null; }
+const camAz = (pos, look, sw, lift) => { const d = pos.clone().sub(look), c = Math.cos(sw), s = Math.sin(sw); const x = d.x * c - d.z * s, z = d.x * s + d.z * c; return Vv(look.x + x, pos.y + lift, look.z + z); };
+const gauss = (a, R, lo, hi) => { const o = new Float32Array(a.length); for (let f = lo; f <= hi; f++) { let s2 = 0, w = 0; for (let j = -R; j <= R; j++) { const g = Math.exp(-(j * j) / (2 * (R / 2) ** 2)), x = a[Math.min(hi, Math.max(lo, f + j))]; s2 += g * x; w += g; } o[f] = s2 / w; } return o; };
+const holdMax = (a, R, lo, hi) => { const o = new Float32Array(a.length); for (let f = lo; f <= hi; f++) { let m = 0, mi = 0; for (let j = Math.max(lo, f - R); j <= Math.min(hi, f + R); j++) if (Math.abs(a[j]) > m) { m = Math.abs(a[j]); mi = a[j]; } o[f] = mi; } return o; };
+const SW = [0, 8, -8, 16, -16, 24, -24, 34, -34, 45, -45, 60, -60, 75, -75, 90, -90].map(x => x * D2R);
+const bestFix = (pos, look, reg, baseA, baseL) => { let best = null;
+  for (const sw of SW) for (let k = 0; k <= 22; k++) { const p = camAz(pos, look, baseA + sw, baseL + k * 0.6); if (!bad(p, look, reg)) { const cost = Math.abs(sw) * 6 + k * 0.6; if (!best || cost < best.cost) best = { cost, sw, k }; break; } }
+  return best; };
+const P = new Array(NF + 1), L = new Array(NF + 1), REGF = new Array(NF + 1);
+const solveInfo = { fixed: 0, stillBad: 0, why: {}, badSec: {} }, tSolve0 = performance.now();
+for (const k of KEYS) {
+  const f0 = Math.round(k.t0 * FPS), f1 = Math.min(NF, Math.round(k.t1 * FPS) - (k.t1 < T - 1e-6 ? 1 : 0)), reg = k.region; if (f1 < f0) continue;
+  const bp = [], bl = []; for (let f = f0; f <= f1; f++) { const g = k.gen(f / FPS); bp.push(g.pos); bl.push(g.look); }
+  const n = f1 - f0 + 1, daz = new Float32Array(n), lift = new Float32Array(n), dynReg = reg === "strait";
+  if (reg !== "map") {
+    for (let i = 0; i < n; i++) { if (dynReg) refreshDyn((f0 + i) / FPS); if (!bad(bp[i], bl[i], reg)) continue; const bf = bestFix(bp[i], bl[i], reg, 0, 0); if (bf) { daz[i] = bf.sw; lift[i] = bf.k * 0.6; solveInfo.fixed++; } }
+    let dazS = gauss(holdMax(daz, 20, 0, n - 1), 30, 0, n - 1), liftS = gauss(holdMax(lift, 20, 0, n - 1), 30, 0, n - 1);
+    for (let it = 0; it < 6; it++) { let nBad = 0; const addA = new Float32Array(n), addL = new Float32Array(n);
+      for (let i = 0; i < n; i++) { if (dynReg) refreshDyn((f0 + i) / FPS); const p = camAz(bp[i], bl[i], dazS[i], liftS[i]); if (!bad(p, bl[i], reg)) continue; nBad++; const bf = bestFix(bp[i], bl[i], reg, dazS[i], liftS[i]); if (bf) { addA[i] = bf.sw; addL[i] = bf.k * 0.6 + 0.3; } }
+      if (!nBad) break; const a2 = gauss(holdMax(addA, 20, 0, n - 1), 30, 0, n - 1), l2 = gauss(holdMax(addL, 20, 0, n - 1), 30, 0, n - 1);
+      for (let i = 0; i < n; i++) { dazS[i] += a2[i] * 1.3; liftS[i] += l2[i] * 1.3; } }
+    for (let i = 0; i < n; i++) { daz[i] = dazS[i]; lift[i] = liftS[i]; } }
+  for (let i = 0; i < n; i++) { const f = f0 + i; if (dynReg) refreshDyn(f / FPS); let pos = camAz(bp[i], bl[i], daz[i], lift[i]); const look = bl[i].clone();
+    let bd = bad(pos, look, reg), q = 0; while (bd && q < 25 && reg !== "map") { pos.y += 0.6; q++; bd = bad(pos, look, reg); }
+    if (bd) { solveInfo.stillBad++; solveInfo.why[bd] = (solveInfo.why[bd] || 0) + 1; const sec = Math.floor(f / FPS); solveInfo.badSec[sec] = (solveInfo.badSec[sec] || 0) + 1; }
+    P[f] = pos; L[f] = look; REGF[f] = reg; } }
+for (let f = 0; f <= NF; f++) if (!P[f]) REGF[f] = "mg";
+const solveMs = Math.round(performance.now() - tSolve0);
+const near3D = f => { for (let d = 0; d < NF; d++) { if (P[f - d]) return f - d; if (P[f + d]) return f + d; } return 0; };
+
+// ================= per-frame state =================
+const sunOff = Vv(-30, 42, 27), v = Vv(0, 0, 0), FOG = { strait: [140, 460], myanmar: [120, 420], gwadar: [120, 420], map: [90, 320] };
+const AMT = { strait: 2.4, myanmar: 2.4, gwadar: 2.4, map: 1.4 }, B0 = { strait: 0.14, myanmar: 0.14, gwadar: 0.14, map: 0.22 };
+function setCam(t, fOv) { let f = fOv ?? clamp(Math.round(t * FPS), 0, NF); if (!P[f]) f = near3D(f); const reg = REGF[f];
+  for (const k in REG) REG[k].visible = k === reg;
+  cam.position.copy(P[f]); cam.up.set(0, 1, 0); cam.lookAt(L[f]); cam.fov = 40; cam.aspect = W / H; cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+  v.copy(L[f]).project(cam); tx.uniforms.fy.value = ty.uniforms.fy.value = clamp(v.y * 0.5 + 0.5, 0.15, 0.85);
+  tx.uniforms.amt.value = ty.uniforms.amt.value = AMT[reg]; tx.uniforms.b0.value = ty.uniforms.b0.value = B0[reg]; tx.uniforms.b1.value = ty.uniforms.b1.value = B0[reg] + 0.34;
+  sc.fog.near = FOG[reg][0]; sc.fog.far = FOG[reg][1];
+  const dist = P[f].distanceTo(L[f]), hs = clamp(dist * 1.1, 60, 230); const sh = sun.shadow.camera; if (sh.right !== hs) { sh.left = sh.bottom = -hs; sh.right = sh.top = hs; sh.updateProjectionMatrix(); }
+  const tg = Vv(Math.round(L[f].x), 0, Math.round(L[f].z)); sun.target.position.copy(tg); sun.position.copy(tg).add(sunOff); sun.target.updateMatrixWorld();
+  return { f, reg }; }
+function animate(t, reg) { if (reg === "map") MAP.update(t, cam.position); else WD.update(t, WIN); }
+
+// ================= callouts: ring + leader + paper label on 3D objects (MG2D overlay beats) =================
+const CALL = { queue: [["Tanker queue"]], tanker: [["≈2 million barrels"], [], [], []], narrows: [["≈2.8 km", "dim"]], port: [["Port of Singapore"], [], ["≈41 M container units, 2024"]],
+  patrol: [["Warships"], [], [], ["Naval base, Singapore"], ["Carrier pier, Changi"]], stuck: [["What if: steering failure"]], landfall: [["Kyaukphyu terminal"]],
+  pipeline: [["Twin pipelines to Yunnan"], ["Oil: ≈22 Mt / year (design)"], ["Gas: ≈12 bcm / year"]], gwadar: [["Gwadar port"]] };
+const anchorOf = (s, k) => s === "tanker" ? WD.tankerRed : s === "queue" ? WD.queue[3] : s === "port" ? WD.cranes[4] : s === "stuck" ? WD.stuck : s === "landfall" ? WD.tanks[4]
+  : s === "pipeline" ? WD.pipes[0] : s === "gwadar" ? WD.gwCranes[1] : s === "patrol" ? (k === 3 ? WD.navalBase[2] : k === 4 ? WD.carrier : WD.patrol[1]) : null;
+const projPx = p => { const q = p.clone().project(cam); return q.z < 1 && q.z > -1 ? [(q.x + 1) / 2 * W, (1 - q.y) / 2 * H] : null; };
+function label(g, x, y, txt, a) { g.save(); g.globalAlpha = a; g.font = "600 34px 'Segoe UI'"; const w = g.measureText(txt).width + 44, h = 60;
+  g.shadowColor = "rgba(70,55,30,.25)"; g.shadowBlur = 18; g.shadowOffsetY = 6; g.fillStyle = PAL.paper; rr(g, x - w / 2, y - h / 2, w, h, 10); g.fill(); g.shadowColor = "transparent";
+  g.strokeStyle = "rgba(43,42,39,.35)"; g.lineWidth = 2; g.stroke(); g.fillStyle = PAL.ink; g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(txt, x, y + 1); g.restore(); return [w, h]; }
+function rr(g, x, y, w, h, q) { g.beginPath(); g.moveTo(x + q, y); g.arcTo(x + w, y, x + w, y + h, q); g.arcTo(x + w, y + h, x, y + h, q); g.arcTo(x, y + h, x, y, q); g.arcTo(x, y, x + w, y, q); g.closePath(); }
+const CALLOUTS = [];
+for (const l of LINES) { const spec = CALL[l.subj]?.[Math.min(l.k, CALL[l.subj].length - 1)]; if (!spec || !spec.length || (l.subj === "tanker" && l.k > 0) || (l.subj === "queue" && l.k > 0)) continue;
+  const [txt, kind] = spec, t0 = l.start + 0.45, t1 = l.end + 0.1; CALLOUTS.push({ t0, t1, txt });
+  MG2D.push({ t0, t1, mode: "overlay", draw: (g, tl) => { const t = t0 + tl, a = Math.min(smooth(tl / 0.35), smooth((t1 - t) / 0.3)); if (a <= 0) return;
+    if (kind === "dim") { const pa = projPx(Vv(0, 1.2, zN(0) + 0.5)), pb = projPx(Vv(0, 1.2, zS(0) - 0.5)); if (!pa || !pb) return; const u = smooth(tl / 0.8);
+      const ex = pa[0] + (pb[0] - pa[0]) * u, ey = pa[1] + (pb[1] - pa[1]) * u; g.save(); g.globalAlpha = a; g.strokeStyle = PAL.red; g.lineWidth = 5; g.lineCap = "round";
+      g.beginPath(); g.moveTo(...pa); g.lineTo(ex, ey); g.stroke(); const nx = -(pb[1] - pa[1]), ny = pb[0] - pa[0], nl = Math.hypot(nx, ny) || 1;
+      for (const [px, py] of [pa, u >= 1 ? pb : null].filter(Boolean)) { g.beginPath(); g.moveTo(px + nx / nl * 18, py + ny / nl * 18); g.lineTo(px - nx / nl * 18, py - ny / nl * 18); g.stroke(); }
+      g.restore(); if (u > 0.6) label(g, (pa[0] + pb[0]) / 2 + 130, (pa[1] + pb[1]) / 2, txt, a * smooth((u - 0.6) / 0.4)); return; }
+    const o = anchorOf(l.subj, l.k); if (!o) return; const bx = new THREE.Box3().setFromObject(o), c = bx.getCenter(Vv()); c.y = bx.max.y; const p = projPx(c); if (!p) return;
+    const lx = clamp(p[0] + (p[0] < W * 0.62 ? 210 : -210), 240, W - 240), ly = clamp(p[1] - 150, 70, H - 70), u = smooth(tl / 0.5);
+    g.save(); g.globalAlpha = a; g.strokeStyle = PAL.red; g.lineWidth = 4; g.beginPath(); g.arc(p[0], p[1], 22 * (0.6 + 0.4 * u), 0, 7); g.stroke();
+    g.strokeStyle = PAL.ink; g.lineWidth = 2.5; g.beginPath(); g.moveTo(p[0] + (lx - p[0]) * 0.08, p[1] + (ly - p[1]) * 0.08); g.lineTo(p[0] + (lx - p[0]) * u, p[1] + (ly - p[1]) * u); g.stroke(); g.restore();
+    if (u > 0.7) label(g, lx, ly, txt, a * smooth((u - 0.7) / 0.3)); } }); }
+
+// ================= sound cues (from the same constants that drive the picture) =================
+for (const [id, R] of Object.entries(MAP.routes)) if (R.t0 !== null) cuesOut.push([R.t0, "ui.line.draw", -6, 0]);
+for (const [id, p] of Object.entries(MAP.pins)) if (p.t0 !== null) cuesOut.push([p.t0, "ui.pin.drop", -6, 0]);
+for (const c of CALLOUTS) cuesOut.push([c.t0 + 0.3, "ui.pop.tiny", -10, 0]);
+for (const ru of RUNS0.slice(1)) if (ru.kind === "2d" || RUNS0[RUNS0.indexOf(ru) - 1].kind === "2d") cuesOut.push([ru.t0, "ui.whoosh.soft", -14, 0]);
+// ambience beds per run (zone): 1.5 s fades in mix.py; overlap 0.8 s at run changes = crossfade. Library gaps: no sea/harbour/ship-horn -> closest substitutes
+const BED = { strait: [["amb.lake.lapping", -5], ["amb.city.distant", -12]], myanmar: [["amb.lake.lapping", -6], ["amb.wind.pines", -10]], gwadar: [["amb.wind.pines", -6], ["amb.lake.lapping", -10]],
+  map: [["amb.breeze.night", -10]], mg: [["amb.breeze.night.alt", -14]] };
+window.__beds = []; RUNS0.forEach(ru => { const zone = ru.kind === "2d" ? "mg" : ru.key; for (const [id, db] of BED[zone]) window.__beds.push([id, db, Math.max(0, ru.t0 - 0.4), Math.min(T, ru.t1 + 0.4)]); });
+window.__cues = cuesOut.filter(c => c[0] >= 0 && c[0] < T).sort((a, b) => a[0] - b[0]);
+
+// ================= subjects (narration-picture gate) =================
+const SUBJ = installSubjects({ scene: sc, camera: cam, setAt: t => { const { reg } = setCam(t); animate(t, reg); } });
+const is2D = t => MG2D.some(b => b.mode === "full" && t >= b.t0 + 0.2 && t <= b.t1 - 0.2);
+const gate3D = (objs) => objs;   // 3D subjects are measured by subjects.js; while a full 2D beat covers the frame they are "covered"
+SUBJ("queue", WD.queue); SUBJ("tanker", [WD.tankerRed]); SUBJ("narrows", NARROWS); SUBJ("strait", STRAIT); SUBJ("port", WD.portGroup); SUBJ("patrol", [...WD.patrol, WD.carrier]);
+SUBJ("stuck", WD.stuck); SUBJ("landfall", [WD.myTanker, WD.myTankerR, ...WD.tanks]); SUBJ("pipeline", WD.pipes); SUBJ("gwadar", [...WD.gwCranes, WD.gwShip]);
+SUBJ("map", MAP.group); for (const [id, R] of Object.entries(MAP.routes)) SUBJ("route:" + id, R.mesh); for (const [id, p] of Object.entries(MAP.pins)) SUBJ("pin:" + id, [p.pin, p.red, ...MAP.signs.filter(x => x.id === id).map(x => x.s)]);   // a pin and its place-name sign are one map element
+// a 3D subject cannot count while a full-frame 2D beat hides the world: wrap subjectsAt
+{ const raw = window.subjectsAt; window.subjectsAt = (t, names) => { const o = raw(t, names); if (is2D(t)) for (const n of names || []) if (!n.startsWith("card:") && !n.startsWith("tl:") && o[n]) o[n] = { shown: false, why: "covered" }; return o; }; }
+for (const [key, md] of Object.entries(MODS)) for (const id of md.items) SUBJ((key === "tl" ? "tl:" : "card:") + id, { virtual: t => { const m = md.mt(t); return m === null ? { shown: false, why: "hidden" } : md.M.onScreen(m, id); } });
+
+// ================= compositor =================
+function frame3D(t, fOv) { const { reg } = setCam(t, fOv); animate(t, reg); comp.render(); octx.drawImage(r.domElement, 0, 0); }
+function world3D(t, fOv) { const d = fOv === undefined && DISS.find(x => Math.abs(t - x.t) < x.d / 2); if (!d) return frame3D(t, fOv);
+  const fc = Math.round(d.t * FPS); frame3D(t, fc - 1); x3.clearRect(0, 0, W, H); x3.drawImage(outC, 0, 0);
+  frame3D(t, fc); const u = smooth((t - (d.t - d.d / 2)) / d.d); octx.globalAlpha = 1 - u; octx.drawImage(c3, 0, 0); octx.globalAlpha = 1; }
+function drawBeat(b, t, a) { x2.save(); x2.clearRect(0, 0, W, H); b.draw(x2, t - b.t0, W, H); x2.restore(); octx.globalAlpha = a; octx.drawImage(c2, 0, 0); octx.globalAlpha = 1; }
+window.renderAt = t => {
+  const fb = MG2D.find(b => b.mode === "full" && t >= b.t0 && t <= b.t1);
+  const a = fb ? (fb.fade ? Math.min(smooth((t - fb.t0) / 0.35), smooth((fb.t1 - t) / 0.35)) : 1) : 0;
+  if (fb && a >= 1) octx.clearRect(0, 0, W, H); else world3D(t, fb ? near3D(Math.round(t * FPS)) : undefined);   // fade edges: the neighbouring 3D shot keeps animating
+  if (fb) drawBeat(fb, t, a);
+  else for (const b of MG2D) if (b.mode === "overlay" && t >= b.t0 && t <= b.t1) drawBeat(b, t, 1); };
+
+// ================= gates =================
+const bb = new THREE.Box3(), corners = Array.from({ length: 8 }, () => Vv());
+function figFrac() { let mx = 0; for (const m of figs) { let vis = true; m.traverseAncestors(a => { if (!a.visible) vis = false; }); if (!vis) continue; bb.setFromObject(m); let y0 = 9, y1 = -9, on = false, k = 0;
+  for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) corners[k++].set(x, y, z);
+  for (const c of corners) { c.project(cam); if (c.z < 1 && Math.abs(c.x) < 1.2 && Math.abs(c.y) < 1.2) on = true; y0 = Math.min(y0, c.y); y1 = Math.max(y1, c.y); }
+  if (on) mx = Math.max(mx, (y1 - y0) / 2); } return mx; }
+const pa = Vv(), pb = Vv(), CAPMIN = LAND ? 0.02 * H : 38;
+function textMin(t) { let mn = 1e9, who = ""; for (const m of texts) { const w = m.userData.win; if (!w || t < w[0] + 0.35 || t > w[1] - 0.2) continue; let vis = m.visible; m.traverseAncestors(a => { if (!a.visible) vis = false; }); if (!vis) continue;
+  m.updateMatrixWorld(true); const hh = m.geometry.parameters.height / 2; pa.set(0, hh, 0).applyMatrix4(m.matrixWorld).project(cam); pb.set(0, -hh, 0).applyMatrix4(m.matrixWorld).project(cam);
+  if (pa.z > 1 || pb.z > 1 || Math.abs(pa.x) > 1 || Math.abs(pb.x) > 1 || Math.abs(pa.y) > 1) continue; const px = Math.hypot((pa.x - pb.x) * W / 2, (pa.y - pb.y) * H / 2) * m.userData.cap; if (px < mn) { mn = px; who = m.userData.txt; } } return [mn, who]; }
+const COAST = { ang: { p95: 52.25, max: 62.7 }, pos: { p95: 1.28, max: 1.54 } };
+function camStats() { const cuts = new Set(); for (const ru of RUNS) { const c = Math.round(ru[0] * FPS); [c - 1, c, c + 1].forEach(x => cuts.add(x)); }
+  const a = [], b = [], per = {};
+  for (let f = 1; f < NF; f++) { if (cuts.has(f) || !P[f] || !P[f + 1]) continue; const d0 = L[f].clone().sub(P[f]), d1 = L[f + 1].clone().sub(P[f + 1]); const A = d0.angleTo(d1) / D2R * FPS, B = P[f + 1].distanceTo(P[f]) * FPS / d0.length();
+    a.push(A); b.push(B); const s = Math.floor(f / FPS); if (A > COAST.ang.p95 || B > COAST.pos.p95) per[s] = Math.max(per[s] || 0, Math.max(A / COAST.ang.p95, B / COAST.pos.p95)); }
+  const q = (x, p) => { const s = [...x].sort((m, n) => m - n); return +s[Math.min(s.length - 1, Math.floor(p * s.length))].toFixed(2); }, st = x => ({ p50: q(x, .5), p95: q(x, .95), max: +Math.max(...x).toFixed(2) });
+  const ang = st(a), pos = st(b);
+  return { ang, pos, coast: COAST, pass: ang.p95 <= COAST.ang.p95 && ang.max <= COAST.ang.max && pos.p95 <= COAST.pos.p95 && pos.max <= COAST.pos.max, hotSeconds: Object.fromEntries(Object.entries(per).map(([k, v]) => [k, +v.toFixed(2)]).slice(0, 20)) }; }
+// 2D link-board gate (board space, camera independent): cards never overlap, strings never run over a third card, strings never cross
+function boardGate() { const fails = []; for (const [key, md] of Object.entries(MODS)) if (key !== "tl") fails.push(...boardFailsFor(md.M, key)); return { pass: fails.length === 0, fails }; }
+function boardFailsFor(M, key) { const fails = [];
+  const sag = (A, B, u) => { const Lq = Math.hypot(B.x - A.x, B.y - A.y), cx = (A.x + B.x) / 2, cy = (A.y + B.y) / 2 + Lq * 0.085, w = 1 - u; return { x: w * w * A.x + 2 * w * u * cx + u * u * B.x, y: w * w * A.y + 2 * w * u * cy + u * u * B.y }; };
+  const pinOf = c => { const a = c.r * D2R, py = -c.h / 2 + 40; return { x: c.x - Math.sin(a) * py, y: c.y + Math.cos(a) * py }; };
+  const inCard = (p, c) => { const a = -c.r * D2R, dx = p.x - c.x, dy = p.y - c.y, x = dx * Math.cos(a) - dy * Math.sin(a), y = dx * Math.sin(a) + dy * Math.cos(a); return Math.abs(x) < c.w / 2 + 8 && Math.abs(y) < c.h / 2 + 8; };
+  { const cs = M.cards, n = cs.length;
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { const A = cs[i], B = cs[j]; for (let s = 0; s <= 24; s++) for (let q = 0; q <= 24; q++) { const p = { x: A.x - A.w / 2 + A.w * s / 24, y: A.y - A.h / 2 + A.h * q / 24 }; if ((s % 24 === 0 || q % 24 === 0) && inCard(p, B)) { fails.push([key, "cards overlap", A.id, B.id]); s = q = 99; } } }
+    const legs = []; for (let i = 0; i < n; i++) legs.push([i, (i + 1) % n]);
+    for (const [a, b] of legs) for (let j = 0; j < n; j++) { if (j === a || j === b) continue; for (let u = 0; u <= 1; u += 1 / 40) if (inCard(sag(pinOf(cs[a]), pinOf(cs[b]), u), cs[j])) { fails.push([key, "string over card", cs[a].id + "-" + cs[b].id, cs[j].id]); break; } }
+    const cr = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x), X = (p1, p2, p3, p4) => cr(p3, p4, p1) * cr(p3, p4, p2) < 0 && cr(p1, p2, p3) * cr(p1, p2, p4) < 0;
+    for (let i = 0; i < legs.length; i++) for (let j = i + 1; j < legs.length; j++) { const [a, b] = legs[i], [c, d] = legs[j]; if (new Set([a, b, c, d]).size < 4) continue;
+      for (let u = 0; u < 1; u += 1 / 30) for (let w = 0; w < 1; w += 1 / 30) if (X(sag(pinOf(cs[a]), pinOf(cs[b]), u), sag(pinOf(cs[a]), pinOf(cs[b]), u + 1 / 30), sag(pinOf(cs[c]), pinOf(cs[d]), w), sag(pinOf(cs[c]), pinOf(cs[d]), w + 1 / 30))) { fails.push([key, "strings cross", cs[a].id + "-" + cs[b].id, cs[c].id + "-" + cs[d].id]); u = w = 9; } } }
+  return fails; }
+// 2D caption legibility while a card / event is being narrated (line midpoints)
+function cap2D() { let mn = 1e9, who = ""; const low = []; for (const l of LINES) { if (l.c.kind !== "2d") continue; const md = MODS[l.c.group === "tl" ? "tl" : l.c.group]; for (const u of [0.35, 0.5, 0.65, 0.8]) { const t = l.start + (l.end - l.start) * u, m = md.mt(t); if (m === null) continue; const c = md.M.minCap(m); if (c < mn) { mn = c; who = l.subj + "@" + t.toFixed(1); } if (c < CAPMIN) low.push([+t.toFixed(1), +c.toFixed(1), l.subj]); } }
+  return { min: +mn.toFixed(1), who, low: low.slice(0, 10), nLow: low.length }; }
+window.checkSizes = () => { let m = 0, at = 0, tm = 1e9, tw = "", ta = 0; const low = [];
+  for (let t = 0; t <= T; t += 0.25) { if (is2D(t)) continue; const { reg } = setCam(t); animate(t, reg); const x = figFrac(); if (x > m) { m = x; at = t; } const [c, w] = textMin(t); if (c < tm) { tm = c; tw = w; ta = t; } if (c < CAPMIN) low.push([t, +c.toFixed(1), w]); }
+  let mgF = 0; for (let f = 0; f <= NF; f++) if (!P[f]) mgF++; const mapF = REGF.filter(r => r === "map").length;
+  return { speed: camStats(), board: boardGate(), cap2D: cap2D(), maxFig: +m.toFixed(3), maxFigAt: at, minCapPx: +tm.toFixed(1), minCapWho: tw, minCapAt: ta, lowText: low.slice(0, 12), nLow: low.length,
+    solve: solveInfo, solveMs, share: { mg2d: +(mgF / (NF + 1)).toFixed(3), map: +(mapF / (NF + 1)).toFixed(3) }, runs: RUNS.length, diss: DISS.length }; };
+window.__beats = { RUNS, DISS: DISS.map(d => d.t), MG2D: MG2D.map(b => [b.mode, +b.t0.toFixed(2), +b.t1.toFixed(2), b.key || ""]) };
+window.renderAt(Number(QS.get("t") || 0));
+// thumbnail (1280x720 after downscale): frozen climax = the red tanker swung across the narrows, top-down; number hook + label tag (flat, poster style)
+window.renderThumb = () => { const st = WIN.stuck, t = st[3] + 0.5; const reg = "strait"; for (const k in REG) REG[k].visible = k === reg; WD.update(t, WIN);
+  const look = Vv(12, 0, 2), az = 104 * D2R, el = 64 * D2R, d = 112; cam.position.copy(look).add(Vv(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az)).multiplyScalar(d)); cam.up.set(0, 1, 0); cam.lookAt(look); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+  tx.uniforms.fy.value = ty.uniforms.fy.value = 0.5; tx.uniforms.amt.value = ty.uniforms.amt.value = 2.2; tx.uniforms.b0.value = ty.uniforms.b0.value = 0.16; tx.uniforms.b1.value = ty.uniforms.b1.value = 0.5;
+  sc.fog.near = 200; sc.fog.far = 600; sun.target.position.copy(look); sun.position.copy(look).add(sunOff); sun.target.updateMatrixWorld(); comp.render(); octx.drawImage(r.domElement, 0, 0);
+  const g = octx, pa2 = projPx(Vv(0, 1.2, zN(0) + 0.5)), pb2 = projPx(Vv(0, 1.2, zS(0) - 0.5));
+  g.save(); g.strokeStyle = PAL.ink; g.lineWidth = 7; g.lineCap = "round"; g.beginPath(); g.moveTo(...pa2); g.lineTo(...pb2); g.stroke();
+  for (const [px, py] of [pa2, pb2]) { g.beginPath(); g.moveTo(px - 26, py); g.lineTo(px + 26, py); g.stroke(); } g.restore();
+  g.save(); g.font = "900 250px 'Segoe UI'"; g.fillStyle = PAL.ink; g.textBaseline = "alphabetic"; g.shadowColor = "rgba(255,255,255,.9)"; g.shadowBlur = 30; g.fillText("2.8", 90, 330);
+  g.font = "900 120px 'Segoe UI'"; g.fillText("KM", 96, 460); g.restore();
+  g.save(); g.font = "800 46px 'Segoe UI'"; const tw = g.measureText("THE MALACCA DILEMMA").width + 60; g.fillStyle = PAL.ink; g.fillRect(96, 520, tw, 82); g.fillStyle = "#fff"; g.textBaseline = "middle"; g.fillText("THE MALACCA DILEMMA", 126, 563); g.restore(); };
+window.__dbg = { MAP, WD, MODS, RUNS0, MG2D, LINES };
+window.__info = { shots: 24, T, figs: figs.length, lines: LINES.length, solve: solveInfo, solveMs };
+window.__cam = { P, L, FPS }; window.__ready = true;
+</script></body></html>

@@ -1,0 +1,9 @@
+.env
+/projects/*
+!/projects/example/
+/projects/example/*
+!/projects/example/brief.json
+__pycache__/
+node_modules/
+*.part
+/build/

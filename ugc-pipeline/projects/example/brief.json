@@ -1,0 +1,22 @@
+{
+  "brand": "Pebblenook",
+  "url": "https://example.com/pebblenook",
+  "topic": "a fictional countertop herb-growing kit for small kitchens",
+  "language": "English",
+  "audience": "adults who rent small flats and would like fresh herbs without much effort",
+  "cta": "Find Pebblenook at the link in the description.",
+  "presenter": {
+    "description": "a woman in her early thirties with shoulder-length wavy dark brown hair, brown eyes and a relaxed friendly expression",
+    "wardrobe": "an olive green knit sweater and a thin gold chain",
+    "voice": "warm, relaxed, mid-range, conversational",
+    "room": "a bright kitchen with a wooden table, a window and a few potted plants"
+  },
+  "claims": [
+    {"id": "c1", "text": "Pebblenook arrives as a complete kit with seed pods, soil and a small tray.", "source": "product page (fictional example)"},
+    {"id": "c2", "text": "The tray fits on a standard windowsill.", "source": "product page (fictional example)"},
+    {"id": "c3", "text": "Setup takes about ten minutes.", "source": "product page (fictional example)"},
+    {"id": "c4", "text": "A printed guide for beginners comes in the box.", "source": "product page (fictional example)"}
+  ],
+  "forbidden": ["guarantee", "miracle", "cure", "cheapest", "best", "organic"],
+  "pronounce": {"Pebblenook": "pebble nook"}
+}
